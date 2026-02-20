@@ -220,7 +220,7 @@ AC_CHECK_HEADERS([Carbon/Carbon.h CHUD/CHUD.h direct.h fcntl.h io.h \
                   mach/mach_error.h mach/mach_syscalls.h mach/mach_time.h \
                   mach/mach_types.h mach/message.h malloc.h \
                   malloc/malloc.h math.h stdarg.h stddef.h stdio.h \
-                  sys/sysctl.h sys/time.h utime.h windows.h])dnl
+                  sys/sysctl.h sys/time.h unix.h utime.h windows.h])dnl
   ## probably unnecessary:
 if test "x${ac_cv_header_stdint_h}" = "x"; then
   test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
@@ -283,7 +283,7 @@ if test "x${ac_cv_func_mmap}" = "x" && test "x${ac_cv_func_mmap_fixed_mapped}" =
   AC_FUNC_MMAP
 fi
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([access atexit chmod exit fprintf fseeko ftruncate \
+AC_CHECK_FUNCS([access atexit chmod exit fdopen fprintf fseeko ftruncate \
                 gettimeofday localeconv memchr memmove memset mkdir \
                 munmap snprintf sprintf strchr strdup strrchr strtol \
                 system utime vsnprintf vsprintf])dnl

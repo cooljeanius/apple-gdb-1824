@@ -43,6 +43,9 @@
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
+/* Define to 1 if you have the 'fdopen' function. */
+#undef HAVE_FDOPEN
+
 /* Define to 1 if you have the 'fprintf' function. */
 #undef HAVE_FPRINTF
 
@@ -233,6 +236,9 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the <unix.h> header file. */
+#undef HAVE_UNIX_H
 
 /* Define to 1 if you have the 'utime' function. */
 #undef HAVE_UTIME

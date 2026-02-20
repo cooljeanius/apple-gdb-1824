@@ -13,6 +13,10 @@
 #ifndef ZUTIL_H
 #define ZUTIL_H
 
+#ifndef __has_include
+# define __has_include(foo) 0
+#endif /* !__has_include */
+
 #ifdef HAVE_HIDDEN
 #  define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
 #else
@@ -122,21 +126,22 @@ extern z_const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #  if defined(M_I86) && !defined(Z_SOLO)
 #    include <malloc.h>
 #  endif
-#endif
+#endif /* OS2 */
 
 #if defined(MACOS) || defined(TARGET_OS_MAC)
 #  define OS_CODE  0x07
 #  ifndef Z_SOLO
 #    if (defined(__MWERKS__) && (__dest_os != __be_os) && \
-         (__dest_os != __win32_os)) || defined(HAVE_UNIX_H)
+         (__dest_os != __win32_os)) || defined(HAVE_UNIX_H) || \
+	__has_include(<unix.h>)
 #      include <unix.h> /* for fdopen */
 #    else
 #      if !defined(fdopen) && !defined(HAVE_FDOPEN)
 #        define fdopen(fd,mode) NULL /* No fdopen() */
-#      endif
-#    endif
-#  endif
-#endif
+#      endif /* !fdopen && !HAVE_FDOPEN */
+#    endif /* __MWERKS__ || HAVE_UNIX_H */
+#  endif /* !Z_SOLO */
+#endif /* MACOS || TARGET_OS_MAC */
 
 #ifdef TOPS20
 #  define OS_CODE  0x0a
