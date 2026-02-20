@@ -54,7 +54,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ['c-cpp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby']
+        language: ['actions', 'c-cpp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby']
         # CodeQL supports the following languages:
         # 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript',
         # 'python', 'ruby', 'swift'
@@ -116,7 +116,9 @@ jobs:
     - name: Dependencies
       run: |
         sudo apt-get -qq update
-        if test ${{ matrix.language }} == 'c-cpp'; then \
+        if test ${{ matrix.language }} == 'actions'; then \
+          sync && echo "TODO: find way to install actionlint on runner" && sleep 1; \
+        elif test ${{ matrix.language }} == 'c-cpp'; then \
           sudo apt-get -y install autopoint gobjc clang autogen curl \
             guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev \
             guile-3.0-libs libguile-ssh14 libiconv-hook1 libiconv-hook-dev \

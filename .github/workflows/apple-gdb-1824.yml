@@ -27,12 +27,11 @@ jobs:
             binutils-multiarch pax binutils-gold libcurses-perl dejagnu expect \
             expect-dev libexpect-perl guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 \
             guile-3.0-dev guile-3.0-libs libguile-ssh13 tclreadline m4 xutils-dev \
-            gfortran gfortran-aarch64-linux-gnu gfortran-mingw-w64 gccgo libdmalloc-dev \
-            libdmalloc5 gnulib fastjar gdb gdbserver autopoint gperf help2man \
-            libextutils-f77-perl emacs sharutils texlive latex2html ddd xterm \
-            x11-utils ${{ matrix.compiler }} gnat ratfor libmpfr-dev \
-            libmpfi-dev libmpc-dev libgmp-dev libmath-mpfr-perl libmpfrc++-dev \
-            f2c libbsd0 libbsd-dev mtree-netbsd libieee1284-3 \
+            gfortran gfortran-mingw-w64 gccgo libdmalloc-dev libdmalloc5 gnulib fastjar \
+            gdb gdbserver autopoint gperf help2man libextutils-f77-perl emacs sharutils \
+            texlive latex2html ddd xterm x11-utils ${{ matrix.compiler }} gnat ratfor \
+            libmpfr-dev libmpfi-dev libmpc-dev libgmp-dev libmath-mpfr-perl \
+            libmpfrc++-dev f2c libbsd0 libbsd-dev mtree-netbsd libieee1284-3 \
             libieee1284-3-dev fort77 libiconv-hook1 libiconv-hook-dev \
             win-iconv-mingw-w64-dev libltdl7 libltdl-dev libasprintf-dev \
             libgettextpo-dev tix tix-dev splint comprez cxref cxref-emacs \

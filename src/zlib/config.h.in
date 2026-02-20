@@ -27,6 +27,10 @@
 /* Define to 1 if you have the <cpu_capabilities.h> header file. */
 #undef HAVE_CPU_CAPABILITIES_H
 
+/* Define to 1 if you have the declaration of 'fdopen', and to 0 if you don't.
+   */
+#undef HAVE_DECL_FDOPEN
+
 /* Define to 1 if you have the <direct.h> header file. */
 #undef HAVE_DIRECT_H
 

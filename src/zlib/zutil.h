@@ -136,9 +136,10 @@ extern z_const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 	__has_include(<unix.h>)
 #      include <unix.h> /* for fdopen */
 #    else
-#      if !defined(fdopen) && !defined(HAVE_FDOPEN)
+#      if !defined(fdopen) && !defined(HAVE_FDOPEN) && \
+	  (!defined(HAVE_DECL_FDOPEN) || !HAVE_DECL_FDOPEN)
 #        define fdopen(fd,mode) NULL /* No fdopen() */
-#      endif /* !fdopen && !HAVE_FDOPEN */
+#      endif /* !fdopen && !HAVE_FDOPEN && !HAVE_DECL_FDOPEN */
 #    endif /* __MWERKS__ || HAVE_UNIX_H */
 #  endif /* !Z_SOLO */
 #endif /* MACOS || TARGET_OS_MAC */

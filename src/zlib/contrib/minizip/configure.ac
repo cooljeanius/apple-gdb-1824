@@ -101,7 +101,7 @@ AC_EXEEXT
 AC_CHECK_LIB([z],[gzopen])dnl
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h stddef.h stdio.h utime.h])
+AC_CHECK_HEADERS([fcntl.h stddef.h stdio.h unix.h utime.h])
 AC_SUBST([HAVE_UNISTD_H],[0])
 unset ac_cv_header_unistd_h
 AC_CHECK_HEADERS([unistd.h],[HAVE_UNISTD_H=1],[])
@@ -116,7 +116,10 @@ AC_TYPE_UINT64_T
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_MKTIME
-AC_CHECK_FUNCS([memset mkdir utime])dnl
+AC_CHECK_FUNCS([fdopen memset mkdir utime])dnl
+
+# ...and their declarations:
+AC_CHECK_DECLS_ONCE([fdopen])dnl
 
 # Checks for warning flags.
 ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings -Wpointer-arith \

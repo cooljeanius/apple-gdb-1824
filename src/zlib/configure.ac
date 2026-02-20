@@ -293,6 +293,9 @@ if test "x${ac_cv_func_strerror}" = "x"; then
   AC_CHECK_FUNCS([strerror])
 fi
 
+# ...and their declarations:
+AC_CHECK_DECLS_ONCE([fdopen])dnl
+
 # Output.
 if test -n "${with_cross_host}" &&
    test x"${with_cross_host}" != x"no"; then
