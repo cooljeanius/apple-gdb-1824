@@ -129,19 +129,25 @@ extern z_const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #endif /* OS2 */
 
 #if defined(MACOS) || defined(TARGET_OS_MAC)
-#  define OS_CODE  0x07
-#  ifndef Z_SOLO
-#    if (defined(__MWERKS__) && (__dest_os != __be_os) && \
-         (__dest_os != __win32_os)) || defined(HAVE_UNIX_H) || \
-	__has_include(<unix.h>)
-#      include <unix.h> /* for fdopen */
-#    else
-#      if !defined(fdopen) && !defined(HAVE_FDOPEN) && \
-	  (!defined(HAVE_DECL_FDOPEN) || !HAVE_DECL_FDOPEN)
-#        define fdopen(fd,mode) NULL /* No fdopen() */
-#      endif /* !fdopen && !HAVE_FDOPEN && !HAVE_DECL_FDOPEN */
-#    endif /* __MWERKS__ || HAVE_UNIX_H */
-#  endif /* !Z_SOLO */
+# define OS_CODE  0x07
+# ifndef Z_SOLO
+#  if (defined(__MWERKS__) && defined(__dest_os) && (__dest_os != __be_os) && \
+       (__dest_os != __win32_os)) || \
+      defined(HAVE_UNIX_H) || __has_include(<unix.h>)
+#   include <unix.h> /* for fdopen */
+#  else
+#   if defined(__STDC__) || defined(STDC_HEADERS) || defined(HAVE_STDIO_H) || \
+       __has_include(<stdio.h>)
+#    include <stdio.h>
+#   else
+#    if !defined(fdopen) && !defined(HAVE_FDOPEN) && \
+        (!defined(HAVE_DECL_FDOPEN) || !HAVE_DECL_FDOPEN) && \
+        (!defined(__DARWIN_C_LEVEL) || (__DARWIN_C_LEVEL < 198808L))
+#     define fdopen(fd,mode) NULL /* No fdopen() */
+#    endif /* !fdopen && !HAVE_FDOPEN && !HAVE_DECL_FDOPEN */
+#   endif /* __STDC__ || STDC_HEADERS || HAVE_STDIO_H */
+#  endif /* __MWERKS__ || HAVE_UNIX_H */
+# endif /* !Z_SOLO */
 #endif /* MACOS || TARGET_OS_MAC */
 
 #ifdef TOPS20

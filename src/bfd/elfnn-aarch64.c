@@ -2051,7 +2051,8 @@ elfNN_aarch64_copy_indirect_symbol (struct bfd_link_info *info,
 	}
     }
 
-  _bfd_elf_link_hash_copy_indirect (info, dir, ind);
+  _bfd_elf_link_hash_copy_indirect((const struct elf_backend_data *)info, dir,
+				   ind);
 }
 
 /* Create an AArch64 elf linker hash table.  */
@@ -2115,7 +2116,7 @@ elfNN_aarch64_hash_table_free (struct bfd_link_hash_table *hash)
     objalloc_free ((struct objalloc *) ret->loc_hash_memory);
 
   bfd_hash_table_free (&ret->stub_hash_table);
-  _bfd_elf_link_hash_table_free (hash);
+  _bfd_elf_link_hash_table_free((bfd *)hash);
 }
 
 /* */
