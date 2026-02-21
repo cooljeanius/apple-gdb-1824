@@ -230,20 +230,26 @@ HAVE_NATIVE_GCORE_TARGET = @HAVE_NATIVE_GCORE_TARGET@
 all:
 
 info: $(INFO_DEPS)
+	@echo "$@ target (in `pwd`) just makes its dependencies, '$^'"
 dvi: gdb.dvi gdbint.dvi stabs.dvi refcard.dvi annotate.dvi
+	@echo "$@ target (in `pwd`) just makes its dependencies, '$^'"
 ps: gdb.ps gdbint.ps stabs.ps refcard.ps annotate.ps
+	@echo "$@ target (in `pwd`) just makes its dependencies, '$^'"
 html: gdb_toc.html gdbint_toc.html stabs_toc.html annotate_toc.html
+	@echo "$@ target (in `pwd`) just makes its dependencies, '$^'"
 html-local: $(HTMLFILES)
+	@echo "$@ target (in `pwd`) just makes its dependencies, '$^'"
 pdf: $(PDFFILES)
+	@echo "$@ target (in `pwd`) just makes its dependencies, '$^'"
 man: $(MANS)
+	@echo "$@ target (in `pwd`) just makes its dependencies, '$^'"
 
 DOXYGEN = doxygen
 doxyedit = $(SED) -e 's,@srcdir\@,$(srcdir),g'
 
-doxy:	doxy/index.html \
-	doxy/gdb-api/index.html \
-	doxy/gdb-xref/index.html \
-	doxy/gdbserver/index.html
+doxy: doxy/index.html doxy/gdb-api/index.html \
+  doxy/gdb-xref/index.html doxy/gdbserver/index.html
+	@echo "$@ target (in `pwd`) just makes its dependencies, '$^'"
 
 doxy/index.html: $(srcdir)/doxy-index.in
 	-$(MKDIR_P) $(AM_V_v) doxy
@@ -589,6 +595,10 @@ links2roff: $(GDB_DOC_SOURCE_INCLUDES)
 	    $(LN_S) $(AM_V_v) $(GDB_DOC_SOURCE_INCLUDES) .) || \
 	  ln $(AM_V_v) $(GDB_DOC_SOURCE_INCLUDES) . || \
 	  cp $(AM_V_v) $(GDB_DOC_SOURCE_INCLUDES) . ; \
+	elif [ -r gdb.texinfo ]; then \
+	  stat gdb.texinfo; \
+	elif [ -x "`which find`" ]; then \
+	  find . -name "gdb.texinfo" -print; \
 	fi
 	touch links2roff
 

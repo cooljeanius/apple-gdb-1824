@@ -26,3 +26,4 @@ core
 *.cache
 gdbme.c
 READMEdvi
+conf*/*.awk

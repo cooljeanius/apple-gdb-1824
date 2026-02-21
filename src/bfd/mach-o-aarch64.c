@@ -178,8 +178,10 @@ bfd_mach_o_arm64_canonicalize_one_reloc (bfd *abfd,
       return FALSE;
     }
 
+#if 0 /* TODO: find where the function used here is supposed to be defined */
   if (!bfd_mach_o_canonicalize_non_scattered_reloc (abfd, &reloc, res, syms))
     return FALSE;
+#endif /* 0 */
 
   switch (reloc.r_type)
     {

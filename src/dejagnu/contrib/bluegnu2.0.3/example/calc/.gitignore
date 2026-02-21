@@ -15,3 +15,4 @@ calc
 *.psum
 *.cache
 site.exp
+conf*/*.awk
