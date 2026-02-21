@@ -5526,7 +5526,11 @@ elfNN_aarch64_post_process_headers(bfd *abfd,
   i_ehdrp = elf_elfheader(abfd);
   i_ehdrp->e_ident[EI_ABIVERSION] = AARCH64_ELF_ABI_VERSION;
 
+#if 0 /* TODO: version check */
   _bfd_elf_set_osabi(abfd, link_info);
+#else
+  (void)link_info;
+#endif /* 0 */
 }
 
 /* */
@@ -7197,7 +7201,9 @@ const struct elf_size_info elfNN_aarch64_size_info =
   ELFCLASSNN, EV_CURRENT,
   bfd_elfNN_write_out_phdrs,
   bfd_elfNN_write_shdrs_and_ehdr,
+#if 0 /* TODO: use better preprocessor conditional here */
   bfd_elfNN_checksum_contents,
+#endif /* 0 */
   bfd_elfNN_write_relocs,
   bfd_elfNN_swap_symbol_in,
   bfd_elfNN_swap_symbol_out,

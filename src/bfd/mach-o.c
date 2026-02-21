@@ -2855,6 +2855,35 @@ bfd_mach_o_mkobject(bfd *abfd)
   return TRUE;
 }
 
+bfd_boolean
+bfd_mach_o_mkobject_init(bfd *abfd)
+{
+  bfd_mach_o_data_struct *mdata = NULL;
+ 
+  mdata = ((bfd_mach_o_data_struct *)
+	   bfd_alloc(abfd, sizeof(bfd_mach_o_data_struct)));
+  if (mdata == NULL)
+    return FALSE;
+  abfd->tdata.mach_o_data = mdata;
+
+  mdata->header.magic = 0;
+  mdata->header.cputype = 0;
+  mdata->header.cpusubtype = 0;
+  mdata->header.filetype = 0;
+  mdata->header.ncmds = 0;
+  mdata->header.sizeofcmds = 0;
+  mdata->header.flags = 0;
+  mdata->header.byteorder = BFD_ENDIAN_UNKNOWN;
+  mdata->commands = NULL;
+  mdata->nsects = 0;
+  mdata->sections = NULL;
+#if 0
+  mdata->dyn_reloc_cache = NULL;
+#endif /* 0 */
+
+  return TRUE;
+}
+
 const bfd_target *
 bfd_mach_o_object_p(bfd *abfd)
 {
@@ -2949,6 +2978,92 @@ bfd_mach_o_core_p(bfd *abfd)
  fail:
   if (preserve.marker != NULL)
     bfd_preserve_restore(abfd, &preserve);
+  return NULL;
+}
+
+const bfd_target *
+bfd_mach_o_header_p(bfd *abfd, file_ptr hdr_off,
+		    bfd_mach_o_filetype file_type,
+		    bfd_mach_o_cpu_type cpu_type)
+{
+  bfd_mach_o_header header;
+  bfd_mach_o_data_struct *mdata;
+
+  if (!bfd_mach_o_read_header(abfd, &header))
+    goto wrong;
+  else
+    (void)hdr_off;
+
+  if (! (header.byteorder == BFD_ENDIAN_BIG
+	 || header.byteorder == BFD_ENDIAN_LITTLE))
+    {
+      _bfd_error_handler (_("unknown header byte-order value %#x"),
+			  header.byteorder);
+      goto wrong;
+    }
+
+  if (! ((header.byteorder == BFD_ENDIAN_BIG
+	  && abfd->xvec->byteorder == BFD_ENDIAN_BIG
+	  && abfd->xvec->header_byteorder == BFD_ENDIAN_BIG)
+	 || (header.byteorder == BFD_ENDIAN_LITTLE
+	     && abfd->xvec->byteorder == BFD_ENDIAN_LITTLE
+	     && abfd->xvec->header_byteorder == BFD_ENDIAN_LITTLE)))
+    goto wrong;
+
+  /* Check cputype and filetype.
+     In case of wildcard, do not accept magics that are handled by existing
+     targets.  */
+  if (cpu_type)
+    {
+      if (header.cputype != cpu_type)
+	goto wrong;
+    }
+  else
+    {
+#ifndef BFD64
+      /* Do not recognize 64 architectures if not configured for 64bit targets.
+	 This could happen only for generic targets.  */
+      if (mach_o_wide_p(&header))
+	 goto wrong;
+#endif /* !BFD64 */
+    }
+
+  if (file_type)
+    {
+      if (header.filetype != file_type)
+	goto wrong;
+    }
+  else
+    {
+      switch (header.filetype)
+	{
+	case BFD_MACH_O_MH_CORE:
+	  /* Handled by core_p */
+	  goto wrong;
+	default:
+	  break;
+	}
+    }
+
+  mdata = (bfd_mach_o_data_struct *)bfd_zalloc(abfd, sizeof(*mdata));
+  if (mdata == NULL)
+    return NULL;
+  abfd->tdata.mach_o_data = mdata;
+
+#if 0
+  mdata->hdr_offset = hdr_off;
+#endif /* 0 */
+
+  if (!bfd_mach_o_scan(abfd, &header, mdata))
+    {
+      bfd_release(abfd, mdata);
+      return NULL;
+    }
+
+  return abfd->xvec;
+
+ wrong:
+  bfd_set_error(bfd_error_wrong_format);
   return NULL;
 }
 

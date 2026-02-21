@@ -1764,6 +1764,10 @@ void bfd_section_list_clear (bfd *);
 
 asection *bfd_get_section_by_name (bfd *abfd, const char *name);
 
+asection *bfd_get_next_section_by_name (bfd *ibfd, asection *sec);
+
+asection *bfd_get_linker_section (bfd *abfd, const char *name);
+
 asection *bfd_get_section_by_name_if
    (bfd *abfd,
     const char *name,
@@ -6402,6 +6406,13 @@ struct bfd
   /* A field used by _bfd_generic_link_add_archive_symbols.  This will
      be used only for archive elements.  */
   int archive_pass;
+
+  union {
+    /* For input BFDs, a chain of BFDs involved in a link.  */
+    struct bfd *next;
+    /* For output BFD, the linker hash table.  */
+    struct bfd_link_hash_table *hash;
+  } link;
 
   /* Used by the back end to hold private data.  */
   union

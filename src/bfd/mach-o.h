@@ -260,11 +260,14 @@ typedef enum bfd_mach_o_cpu_type
   BFD_MACH_O_CPU_TYPE_SPARC = 14,
   BFD_MACH_O_CPU_TYPE_I860 = 15,
   BFD_MACH_O_CPU_TYPE_ALPHA = 16,
-  BFD_MACH_O_CPU_TYPE_POWERPC = 18
+  BFD_MACH_O_CPU_TYPE_POWERPC = 18,
   /* APPLE LOCAL 64-bit */
-  , BFD_MACH_O_CPU_TYPE_POWERPC_64 = (18 | BFD_MACH_O_CPU_IS64BIT)
+  BFD_MACH_O_CPU_TYPE_POWERPC_64 = (18 | BFD_MACH_O_CPU_IS64BIT),
   /* APPLE LOCAL x86_64 */
-  , BFD_MACH_O_CPU_TYPE_X86_64 = (BFD_MACH_O_CPU_TYPE_I386 | BFD_MACH_O_CPU_IS64BIT)
+  BFD_MACH_O_CPU_TYPE_X86_64 =
+    (BFD_MACH_O_CPU_TYPE_I386 | BFD_MACH_O_CPU_IS64BIT),
+  BFD_MACH_O_CPU_TYPE_ARM64 =
+    (BFD_MACH_O_CPU_TYPE_ARM | BFD_MACH_O_CPU_IS64BIT)
 }
 bfd_mach_o_cpu_type;
 #endif /* !_ENUM_BFD_MACH_O_CPU_TYPE_DEFINED */
@@ -273,15 +276,26 @@ bfd_mach_o_cpu_type;
 # define _ENUM_BFD_MACH_O_CPU_SUBTYPE_DEFINED 1
 typedef enum bfd_mach_o_cpu_subtype
   {
+    /* powerpc: */
     BFD_MACH_O_CPU_SUBTYPE_POWERPC_ALL = 0,
+
+    /* i386: */
     BFD_MACH_O_CPU_SUBTYPE_X86_ALL = 3,
+
+    /* arm: */
+    BFD_MACH_O_CPU_SUBTYPE_ARM_ALL = 0,
     BFD_MACH_O_CPU_SUBTYPE_ARM_4T = 5,
     BFD_MACH_O_CPU_SUBTYPE_ARM_6 = 6,
+    BFD_MACH_O_CPU_SUBTYPE_ARM_V5TEJ = 7,
+    BFD_MACH_O_CPU_SUBTYPE_ARM_XSCALE = 8,
     BFD_MACH_O_CPU_SUBTYPE_ARM_7 = 9,
     BFD_MACH_O_CPU_SUBTYPE_ARM_7F = 10,
     BFD_MACH_O_CPU_SUBTYPE_ARM_7S = 11,
     BFD_MACH_O_CPU_SUBTYPE_ARM_7K = 12,
-    BFD_MACH_O_CPU_SUBTYPE_POWERPC_970 = 100
+
+    /* arm64: */
+    BFD_MACH_O_CPU_SUBTYPE_ARM64_ALL = 0,
+    BFD_MACH_O_CPU_SUBTYPE_ARM64_V8 = 1
   }
 bfd_mach_o_cpu_subtype;
 #endif /* !_ENUM_BFD_MACH_O_CPU_SUBTYPE_DEFINED */
@@ -1114,8 +1128,13 @@ int bfd_mach_o_scan_read_dysymtab_symbol(bfd *,
 int bfd_mach_o_scan_start_address(bfd *);
 int bfd_mach_o_scan(bfd *, bfd_mach_o_header *, bfd_mach_o_data_struct *);
 bfd_boolean bfd_mach_o_mkobject(bfd *);
+bfd_boolean bfd_mach_o_mkobject_init(bfd *);
 const bfd_target *bfd_mach_o_object_p(bfd *);
 const bfd_target *bfd_mach_o_core_p(bfd *);
+const bfd_target *bfd_mach_o_header_p(bfd *, file_ptr, bfd_mach_o_filetype,
+                                      bfd_mach_o_cpu_type);
+/* FIXME: updating to the modern prototype for bfd_mach_o_header_p will need
+ * typedef for bfd_cleanup */
 const bfd_target *bfd_mach_o_archive_p(bfd *);
 bfd *bfd_mach_o_openr_next_archived_file(bfd *, bfd *);
 int bfd_mach_o_lookup_section(bfd *, asection *,
@@ -1133,7 +1152,6 @@ bfd_boolean bfd_mach_o_get_uuid(bfd *, unsigned char* buf,
                                 unsigned long buf_len);
 unsigned int bfd_mach_o_flavour_from_string(unsigned long cputype,
                                             const char* s);
-/* FIXME: prototype for bfd_mach_o_header_p needs typedef for bfd_cleanup */
 
 #ifndef bfd_mach_o_find_line
 # define bfd_mach_o_find_line _bfd_nosymbols_find_line
@@ -1187,6 +1205,8 @@ typedef struct bfd_mach_o_backend_data
 }
 bfd_mach_o_backend_data;
 
+void bfd_mach_o_swap_in_non_scattered_reloc(bfd *, bfd_mach_o_reloc_info *,
+					    unsigned char *);
 
 /* Values used in symbol.udata.i, to signal that the mach-o-specific data
  * in the symbol are not yet set, or need validation (where this is

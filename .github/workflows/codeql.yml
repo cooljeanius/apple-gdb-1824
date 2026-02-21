@@ -305,6 +305,8 @@ jobs:
           else \
             sync && echo "autopep8 missing or unusable; skipping..."; \
           fi; \
+        elif test ${{ matrix.language }} == 'actions' && test -x "$(which actionlint)"; then \
+          actionlint; \
         else \
           sync && echo "unhandled case for syntax check step!"; \
           sync && echo "(matrix.language is ${{ matrix.language }})"; \

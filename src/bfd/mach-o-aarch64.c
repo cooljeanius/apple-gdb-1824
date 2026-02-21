@@ -146,6 +146,8 @@ static reloc_howto_type arm64_howto_table[]=
 	 FALSE, 0xffffffff, 0xffffffff, TRUE),
 };
 
+#include "mach-o/external.h"
+
 static bfd_boolean
 bfd_mach_o_arm64_canonicalize_one_reloc (bfd *abfd,
 				       struct mach_o_reloc_info_external *raw,

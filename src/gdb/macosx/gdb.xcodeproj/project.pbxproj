@@ -645,6 +645,7 @@
 		A5A18647247DA6F800B30E00 /* elf-nacl.c in Sources */ = {isa = PBXBuildFile; fileRef = A5A18645247DA6F800B30E00 /* elf-nacl.c */; };
 		A5A18648247DA6F800B30E00 /* elf-nacl.h in Headers */ = {isa = PBXBuildFile; fileRef = A5A18646247DA6F800B30E00 /* elf-nacl.h */; };
 		A5A66DD41A54CA6000EDD221 /* trad-user.h in Headers */ = {isa = PBXBuildFile; fileRef = A5A66DD31A54CA6000EDD221 /* trad-user.h */; };
+		A5ABE10D2F4934EE00CA8D7D /* mach-o-aarch64.c in Sources */ = {isa = PBXBuildFile; fileRef = A5ABE10C2F4934EE00CA8D7D /* mach-o-aarch64.c */; };
 		A5D6C4BD1ADB411B00E04E36 /* efence.h in Headers */ = {isa = PBXBuildFile; fileRef = A53AC1A21A3F7EFE002F20B2 /* efence.h */; };
 		A5D6C4C31ADB412A00E04E36 /* efence.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC1A11A3F7EFE002F20B2 /* efence.c */; };
 		A5D6C4C41ADB412A00E04E36 /* nspage.c in Sources */ = {isa = PBXBuildFile; fileRef = A53AC1A71A3F7EFE002F20B2 /* nspage.c */; };
@@ -6024,6 +6025,10 @@
 		A5A673FF1A589F9E00EDD221 /* target-descriptions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "target-descriptions.c"; sourceTree = "<group>"; };
 		A5A674001A589F9E00EDD221 /* target-descriptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "target-descriptions.h"; sourceTree = "<group>"; };
 		A5A674011A589F9E00EDD221 /* target-memory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "target-memory.c"; sourceTree = "<group>"; };
+		A5ABE0F92F492F2200CA8D7D /* aarch64-dis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "aarch64-dis.h"; sourceTree = "<group>"; };
+		A5ABE0FA2F492F2200CA8D7D /* aarch64-dis.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "aarch64-dis.c"; sourceTree = "<group>"; };
+		A5ABE0FB2F492F2200CA8D7D /* aarch64-dis-2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "aarch64-dis-2.c"; sourceTree = "<group>"; };
+		A5ABE10C2F4934EE00CA8D7D /* mach-o-aarch64.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "mach-o-aarch64.c"; sourceTree = "<group>"; };
 		A5AFD1491A58ADD2006C21FE /* SysTypes.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; path = SysTypes.r; sourceTree = "<group>"; };
 		A5AFD14A1A58ADE9006C21FE /* symfile-debug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "symfile-debug.c"; sourceTree = "<group>"; };
 		A5AFD14B1A58ADFF006C21FE /* stap-probe.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "stap-probe.c"; sourceTree = "<group>"; };
@@ -6857,6 +6862,7 @@
 				2609CF9C0E82C408008125DE /* m68knetbsd.c */,
 				2609CF9D0E82C408008125DE /* m88kmach3.c */,
 				2609CF9E0E82C408008125DE /* m88kopenbsd.c */,
+				A5ABE10C2F4934EE00CA8D7D /* mach-o-aarch64.c */,
 				A531D98C2C8EB0B300C1FAF8 /* mach-o-arm.c */,
 				A52B84172B677EBD00F3C9EA /* mach-o-i386.c */,
 				2609CF9F0E82C408008125DE /* mach-o-target.c */,
@@ -9523,6 +9529,9 @@
 			children = (
 				2609DE870E82C411008125DE /* a29k-dis.c */,
 				61190B141CAB777300AD73D8 /* a29k-dis.h */,
+				A5ABE0F92F492F2200CA8D7D /* aarch64-dis.h */,
+				A5ABE0FA2F492F2200CA8D7D /* aarch64-dis.c */,
+				A5ABE0FB2F492F2200CA8D7D /* aarch64-dis-2.c */,
 				2609DE8A0E82C411008125DE /* alpha-dis.c */,
 				2609DE8B0E82C411008125DE /* alpha-opc.c */,
 				2609DE8C0E82C411008125DE /* arc-dis.c */,
@@ -14987,6 +14996,7 @@
 				61D220FC192D617D00FA979E /* elf32-h8300.c in Sources */,
 				61D220FD192D617D00FA979E /* elf32-hppa.c in Sources */,
 				61D220FF192D617D00FA979E /* elf32-i370.c in Sources */,
+				A5ABE10D2F4934EE00CA8D7D /* mach-o-aarch64.c in Sources */,
 				61D22100192D617D00FA979E /* elf32-i386.c in Sources */,
 				61D22101192D617D00FA979E /* elf32-i860.c in Sources */,
 				61D22102192D617D00FA979E /* elf32-i960.c in Sources */,

@@ -29,7 +29,9 @@
 #ifndef bfd_elfNN_close_and_cleanup
 # define bfd_elfNN_close_and_cleanup _bfd_elf_close_and_cleanup
 #endif /* !bfd_elfNN_close_and_cleanup */
-#define bfd_elfNN_bfd_free_cached_info _bfd_generic_bfd_free_cached_info
+#ifndef bfd_elfNN_bfd_free_cached_info
+# define bfd_elfNN_bfd_free_cached_info _bfd_generic_bfd_free_cached_info
+#endif /* !bfd_elfNN_bfd_free_cached_info */
 #ifndef bfd_elfNN_get_section_contents
 # define bfd_elfNN_get_section_contents _bfd_generic_get_section_contents
 #endif /* !bfd_elfNN_get_section_contents */
@@ -568,6 +570,8 @@ extern const struct elf_size_info _bfd_elfNN_size_info;
 #  if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
 #   pragma GCC diagnostic push
 #   pragma GCC diagnostic ignored "-Wsuggest-attribute=format"
+#   pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+#   pragma GCC diagnostic ignored "-Wint-conversion"
 #  endif /* gcc 4.6+ */
 # endif /* any gcc */
 static const struct elf_backend_data elfNN_bed =
