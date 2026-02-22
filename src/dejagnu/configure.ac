@@ -48,15 +48,18 @@ if test "x${ac_cv_prog_AR}" = "x"; then
   AC_PROG_AR
 fi
 if test "x${CC}" = "x"; then
-  test -z "${CC}"
+  test -z "${CC}" || unset CC
   AC_PROG_CC
 else
-  test ! -z "${CC}"
+  test -n "${CC}" || echo "inconsistent situation with CC variable"
 fi
 rm -rf *.dSYM
 AC_PROG_CXX
 CXXFLAGSOLD="${CXXFLAGS}"
 AC_PROG_CXX_OLD
+CXXFLAGS_FROM_CXX_OLD="${CXXFLAGS}"
+AC_SUBST([CXXFLAGS_FROM_CXX_OLD])dnl
+  ## restore from previously:
 CXXFLAGS="${CXXFLAGSOLD}"
 AC_PROG_CXXCPP
 AC_PROG_CXX_C_O

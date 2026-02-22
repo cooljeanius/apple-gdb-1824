@@ -32,6 +32,7 @@ m4_include([ltversion.m4])
 m4_include([lt~obsolete.m4])
 m4_include([config/isl.m4])
 m4_include([config/warnings.m4])
+m4_include([config/autoopts.m4])
 
 AC_PREREQ([2.69])
 dnl# This is a hack because autoconf finds the AC\_INIT from
@@ -91,24 +92,45 @@ AC_ARG_PROGRAM
 AC_OBJEXT
 AC_EXEEXT
 AC_USE_SYSTEM_EXTENSIONS
-if test -n "${BUILD_ARCHITECTURE}"; then
+  ## 1: build
+AS_IF([test -n "${BUILD_ARCHITECTURE}"],[
   AC_MSG_NOTICE([BUILD_ARCHITECTURE is "${BUILD_ARCHITECTURE}"; seeing if we can use it as an archflag])
   ACX_PROG_CC_WARNING_OPTS(["-arch ${BUILD_ARCHITECTURE}"],
                            [C_BUILD_ARCHFLAGS])dnl
-  AC_SUBST([C_BUILD_ARCHFLAGS])
-fi
-if test -n "${HOST_ARCHITECTURE}"; then
+  AC_SUBST([C_BUILD_ARCHFLAGS])dnl
+  ## In case CC and CXX are different:
+  AS_IF([test "x${CC}" != "x${CXX}"],[
+    ACX_PROG_CXX_WARNING_OPTS(["-arch ${BUILD_ARCHITECTURE}"],
+                              [CXX_BUILD_ARCHFLAGS])dnl
+    AC_SUBST([CXX_BUILD_ARCHFLAGS])dnl
+  ])dnl
+])dnl
+  ## 2: host
+AS_IF([test -n "${HOST_ARCHITECTURE}"],[
   AC_MSG_NOTICE([HOST_ARCHITECTURE is "${HOST_ARCHITECTURE}"; seeing if we can use it as an archflag])
   ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],
                            [C_HOST_ARCHFLAGS])dnl
-  AC_SUBST([C_HOST_ARCHFLAGS])
-fi
-if test -n "${TARGET_ARCHITECTURE}"; then
+  AC_SUBST([C_HOST_ARCHFLAGS])dnl
+  ## In case CC and CXX are different:
+  AS_IF([test "x${CC}" != "x${CXX}"],[
+    ACX_PROG_CXX_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],
+                              [CXX_HOST_ARCHFLAGS])dnl
+    AC_SUBST([CXX_HOST_ARCHFLAGS])dnl
+  ])dnl
+])dnl
+  ## 3: target
+AS_IF([test -n "${TARGET_ARCHITECTURE}"],[
   AC_MSG_NOTICE([TARGET_ARCHITECTURE is "${TARGET_ARCHITECTURE}"; seeing if we can use it as an archflag])
   ACX_PROG_CC_WARNING_OPTS(["-arch ${TARGET_ARCHITECTURE}"],
                            [C_TARG_ARCHFLAGS])dnl
-  AC_SUBST([C_TARG_ARCHFLAGS])
-fi
+  AC_SUBST([C_TARG_ARCHFLAGS])dnl
+  ## In case CC and CXX are different:
+  AS_IF([test "x${CC}" != "x${CXX}"],[
+    ACX_PROG_CXX_WARNING_OPTS(["-arch ${TARGET_ARCHITECTURE}"],
+                              [CXX_TARG_ARCHFLAGS])dnl
+    AC_SUBST([CXX_TARG_ARCHFLAGS])dnl
+  ])dnl
+])dnl
 
 # Autobuild:
 AB_INIT

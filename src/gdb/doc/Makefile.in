@@ -544,6 +544,10 @@ gdb.dvi: ${GDB_DOC_FILES}
 	    echo "using old rules to make $@"; \
 	    $(SET_TEXINPUTS) $(TEXI2DVI) $(srcdir)/gdb.texinfo; \
 	  fi; \
+	elif [ -r gdb.dvi ]; then \
+	  stat gdb.dvi; \
+	elif [ -r . ]; then \
+	  ls ./*.dvi; \
 	fi
 
 gdb.ps: gdb.dvi
