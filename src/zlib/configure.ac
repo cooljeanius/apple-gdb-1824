@@ -157,7 +157,8 @@ AC_LANG([C])dnl
 # libtool:
 LT_INIT([win32-dll])dnl
 LT_LANG([C])dnl
-LT_PREREQ([2.4.6])dnl
+dnl# https://lists.gnu.org/archive/html/libtool/2026-01/msg00001.html
+LT_PREREQ([2.5.4])dnl
 
 # Find CPP now so that any conditional tests below will NOT do it and
 # thereby make the resulting definitions conditional:

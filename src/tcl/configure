@@ -2862,10 +2862,14 @@ am_lf='
 '
 case `pwd` in
   *[\\\"\#\$\&\'\`$am_lf]*)
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
     as_fn_error $? "unsafe absolute working directory name" "$LINENO" 5;;
 esac
 case $srcdir in
   *[\\\"\#\$\&\'\`$am_lf\ \	]*)
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
     as_fn_error $? "unsafe srcdir value: '$srcdir'" "$LINENO" 5;;
 esac
 
@@ -3015,7 +3019,8 @@ printf "%s\n" "$am_cv_make_support_nested_variables" >&6; }
 AM_BACKSLASH='\'
 
 
-AM_DEFAULT_VERBOSITY=1
+AM_DEFAULT_VERBOSITY=0
+
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ${MAKE-make} supports the include directive" >&5
 printf %s "checking whether ${MAKE-make} supports the include directive... " >&6; }

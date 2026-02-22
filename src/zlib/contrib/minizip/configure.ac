@@ -43,7 +43,8 @@ AC_REQUIRE_RANLIB
 LT_INIT([win32-dll disable-static])dnl
 LT_LANG([C])dnl
 LT_LANG([Windows Resource])dnl
-LT_PREREQ([2.4.6])dnl
+dnl# https://lists.gnu.org/archive/html/libtool/2026-01/msg00001.html
+LT_PREREQ([2.5.4])dnl
 
 if test -e ./config.cache; then
     echo "hacking ./config.cache"

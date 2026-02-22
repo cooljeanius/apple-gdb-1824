@@ -123,8 +123,8 @@ AC_REQUIRE_GREPS
 AC_DISABLE_SHARED
 LT_INIT([shared static win32-dll])dnl
 LT_LANG([C])dnl
-dnl# temporarily set this while I update everything libtool-related:
-LT_PREREQ([2.4.6])dnl
+dnl# https://lists.gnu.org/archive/html/libtool/2026-01/msg00001.html
+LT_PREREQ([2.5.4])dnl
 AM_PROG_INSTALL_STRIP
 AC_PROG_INSTALL
 AC_SUBST([INSTALLdir])dnl

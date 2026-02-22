@@ -1237,6 +1237,13 @@ Thumb 22 bit pc-relative branch.  The lowest bit must be zero and is
 not stored in the instruction.  The 2nd lowest bit comes from a 1 bit
 field in the instruction.
 @end deffn
+@deffn {} BFD_RELOC_ARM_PCREL_CALL
+ARM 26-bit pc-relative branch for an unconditional BL or BLX
+instruction.
+@end deffn
+@deffn {} BFD_RELOC_ARM_PCREL_JUMP
+ARM 26-bit pc-relative branch for B or conditional BL instruction.
+@end deffn
 @deffn {} BFD_RELOC_THUMB_PCREL_BRANCH7
 @deffnx {} BFD_RELOC_THUMB_PCREL_BRANCH9
 @deffnx {} BFD_RELOC_THUMB_PCREL_BRANCH12
@@ -1272,6 +1279,16 @@ pc-relative or some form of GOT-indirect relocation.
 @end deffn
 @deffn {} BFD_RELOC_ARM_PREL31
 31-bit PC relative address.
+@end deffn
+@deffn {} BFD_RELOC_ARM_MOVW
+@deffnx {} BFD_RELOC_ARM_MOVT
+@deffnx {} BFD_RELOC_ARM_MOVW_PCREL
+@deffnx {} BFD_RELOC_ARM_MOVT_PCREL
+@deffnx {} BFD_RELOC_ARM_THUMB_MOVW
+@deffnx {} BFD_RELOC_ARM_THUMB_MOVT
+@deffnx {} BFD_RELOC_ARM_THUMB_MOVW_PCREL
+@deffnx {} BFD_RELOC_ARM_THUMB_MOVT_PCREL
+Low and High halfword relocations for MOVW and MOVT instructions.
 @end deffn
 @deffn {} BFD_RELOC_ARM_JUMP_SLOT
 @deffnx {} BFD_RELOC_ARM_GLOB_DAT

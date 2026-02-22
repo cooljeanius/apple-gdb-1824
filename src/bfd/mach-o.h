@@ -1192,6 +1192,8 @@ bfd_mach_o_section_data_for_mach_sect(bfd *, const char *, const char *);
 const mach_o_section_name_xlat *
 bfd_mach_o_section_data_for_bfd_name(bfd *, const char *, const char **);
 
+struct mach_o_reloc_info_external;
+
 typedef struct bfd_mach_o_backend_data
 {
   enum bfd_architecture arch;
@@ -1207,6 +1209,14 @@ bfd_mach_o_backend_data;
 
 void bfd_mach_o_swap_in_non_scattered_reloc(bfd *, bfd_mach_o_reloc_info *,
 					    unsigned char *);
+bfd_boolean
+bfd_mach_o_canonicalize_non_scattered_reloc(bfd *, bfd_mach_o_reloc_info *,
+					    arelent *, asymbol **);
+bfd_boolean
+bfd_mach_o_pre_canonicalize_one_reloc(bfd *,
+				      struct mach_o_reloc_info_external *,
+				      bfd_mach_o_reloc_info *, arelent *,
+				      asymbol **);
 
 /* Values used in symbol.udata.i, to signal that the mach-o-specific data
  * in the symbol are not yet set, or need validation (where this is

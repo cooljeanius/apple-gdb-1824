@@ -92,8 +92,8 @@ LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])dnl
 LT_LANG([C])dnl
 LT_LANG([C++])dnl
 LT_LANG([Windows Resource])dnl
-dnl# temporarily set this while I update everything libtool-related:
-LT_PREREQ([2.4.7])dnl
+dnl# https://lists.gnu.org/archive/html/libtool/2026-01/msg00001.html
+LT_PREREQ([2.5.4])dnl
 dnl# (largefile check is done farther below)
 
 # flags:
@@ -337,7 +337,7 @@ AC_DEFUN([AM_REQUIRE_EXTRA_AUTOMAKE_CHECKS],[
   AC_REQUIRE([AC_PROG_AWK])dnl
   AC_REQUIRE([AC_PROG_CPP])dnl
 ])dnl
-AM_REQUIRE_EXTRA_AUTOMAKE_CHECKS
+AM_REQUIRE_EXTRA_AUTOMAKE_CHECKS dnl# just in case...
 
 BFD_CC_FOR_BUILD
 

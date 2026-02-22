@@ -1,4 +1,4 @@
-This is binutils.info, produced by makeinfo version 7.1 from
+This is binutils.info, produced by makeinfo version 7.2 from
 binutils.texi.
 
 START-INFO-DIR-ENTRY
@@ -3647,7 +3647,6 @@ Index
 * VMA in objdump:                        objdump.             (line  65)
 * wide output, printing:                 objdump.             (line 360)
 * writing archive index:                 ar cmdline.          (line 166)
-
 
 
 Tag Table:
