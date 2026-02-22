@@ -60,7 +60,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, moving it aside])
   mv -vf ${srcdir}/config.status ${srcdir}/config.status~
 fi
-AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu no-dist info-in-builddir -Wno-obsolete])dnl
+AM_INIT_AUTOMAKE([1.18.1 gnits dejagnu no-dist info-in-builddir -Wno-obsolete])dnl
 AM_SANITY_CHECK
 AC_SUBST([am_aux_dir])dnl
 
@@ -75,11 +75,17 @@ if test -e `pwd`/config.cache; then
   sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" `pwd`/config.cache
   sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" `pwd`/config.cache
   sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
 elif test -e ./config.cache; then
   echo "hacking ./config.cache"
   sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
   sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
   sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
 else
   echo "config.cache is missing, which means we can skip attempts to hack it"
 fi

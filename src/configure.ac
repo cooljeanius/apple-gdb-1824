@@ -3949,8 +3949,8 @@ if test -x ${srcdir}/libtool -a ! -d ${srcdir}/libtool; then
     test -n "${LIBTOOLFLAGS}"
     AC_MSG_NOTICE([LIBTOOLFLAGS are set to "${LIBTOOLFLAGS}"])
   fi
-  dnl# TODO: update to 2.5.4:
-  LT_PREREQ([2.5.3])dnl
+  dnl# https://lists.gnu.org/archive/html/libtool/2026-01/msg00001.html
+  LT_PREREQ([2.5.4])dnl
   dnl#TODO: finish updating the libtool_gnu subdir as well... (?)
 else
   test -e libtool && stat libtool

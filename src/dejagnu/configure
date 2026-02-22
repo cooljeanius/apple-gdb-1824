@@ -6727,7 +6727,7 @@ fi
 
 
 else
-  test -n "${CC}" || echo "inconsistent situation with CC variable"
+  test -n "${CC}" && export CC
 fi
 rm -rf *.dSYM
 
@@ -8622,6 +8622,8 @@ if test -z "${CVS_RSH}"; then
     export CVS_RSH=/usr/bin/ssh
   elif test -n "`which ssh`" && test -x "`which ssh`"; then
     export CVS_RSH="`which ssh`"
+  else
+    echo "unsure what to set CVS_RSH to"
   fi
 fi
 # Extract the first word of "telnet", so it can be a program name with args.
@@ -10104,10 +10106,10 @@ for real_option in -stdlib=macports-libstdc++; do
     -Wno-*) option=-W`expr x$real_option : 'x-Wno-\(.*\)'` ;;
     *) option=$real_option ;;
   esac
-  as_acx_Woption=`printf "%s\n" "acx_cv_prog_cc_warning_$option" | sed "$as_sed_sh"`
+  as_acx_Woption=`printf "%s\n" "acx_cv_prog_cxx_warning_$option" | sed "$as_sed_sh"`
 
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports $option" >&5
-printf %s "checking whether $CXX supports $option... " >&6; }
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ${CXX} supports ${option}" >&5
+printf %s "checking whether ${CXX} supports ${option}... " >&6; }
 if eval test \${$as_acx_Woption+y}
 then :
   printf %s "(cached) " >&6

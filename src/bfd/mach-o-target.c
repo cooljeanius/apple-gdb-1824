@@ -26,7 +26,7 @@
 # define __BFD_MACH_O_TARGET_C__ 1
 #endif /* !__BFD_MACH_O_TARGET_C__ */
 
-#ifdef __BFD_MACH_O_C__
+#if defined(__BFD_MACH_O_C__) || defined(__BFD_MACH_O_A_C__)
 
 /* Define generic entry points here so that we do NOT need to duplicate the
  * defines in every target.  But define once as this file may be included
@@ -241,6 +241,6 @@ typedef int mach_o_target_c_dummy_t;
 # ifdef __BFD_MACH_O_TARGET_C__
 #  undef __BFD_MACH_O_TARGET_C__
 # endif /* __BFD_MACH_O_TARGET_C__ */
-#endif /* __BFD_MACH_O_C__ */
+#endif /* __BFD_MACH_O_C__ || __BFD_MACH_O_A_C__ */
 
 /* EOF */

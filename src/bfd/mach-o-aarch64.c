@@ -1,4 +1,4 @@
-/* AArch-64 Mach-O support for BFD.
+/* mach-o-aarch64.c: AArch-64 Mach-O support for BFD.
    Copyright (C) 2015-2016 Free Software Foundation, Inc.
 
    This file is part of BFD, the Binary File Descriptor library.
@@ -17,6 +17,9 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
+
+#ifndef __BFD_MACH_O_A_C__
+#define __BFD_MACH_O_A_C__ 1
 
 #include "sysdep.h"
 #include "mach-o.h"
@@ -39,6 +42,26 @@
 #define bfd_mach_o_print_thread NULL
 #define bfd_mach_o_tgt_seg_table NULL
 #define bfd_mach_o_section_type_valid_for_tgt NULL
+
+#define bfd_mach_o_close_and_cleanup _bfd_generic_close_and_cleanup
+#define bfd_mach_o_new_section_hook _bfd_generic_new_section_hook
+#define bfd_mach_o_get_section_contents_in_window_with_mode _bfd_generic_get_section_contents_in_window_with_mode
+#define bfd_mach_o_bfd_set_private_flags _bfd_generic_bfd_set_private_flags
+#define bfd_mach_o_find_nearest_line _bfd_nosymbols_find_nearest_line
+#define bfd_mach_o_get_reloc_upper_bound _bfd_norelocs_get_reloc_upper_bound
+#define bfd_mach_o_canonicalize_reloc _bfd_norelocs_canonicalize_reloc
+#define bfd_mach_o_set_arch_mach bfd_default_set_arch_mach
+#define bfd_mach_o_set_section_contents _bfd_generic_set_section_contents
+
+#ifndef bfd_mach_o_bfd_copy_private_header_data
+# define bfd_mach_o_bfd_copy_private_header_data _bfd_generic_bfd_copy_private_header_data
+#endif /* !bfd_mach_o_bfd_copy_private_header_data */
+
+#if !defined(__STDC_VERSION__) || (__STDC_VERSION__ < 199101L)
+# ifndef ALLOW_IMPLICIT_FUNCDECLS
+#  define ALLOW_IMPLICIT_FUNCDECLS 1
+# endif /* !ALLOW_IMPLICIT_FUNCDECLS */
+#endif /* old versions of C */
 
 static const bfd_target *
 bfd_mach_o_arm64_object_p (bfd *abfd)
@@ -178,10 +201,12 @@ bfd_mach_o_arm64_canonicalize_one_reloc (bfd *abfd,
       return FALSE;
     }
 
-#if 0 /* TODO: find where the function used here is supposed to be defined */
+#ifdef ALLOW_IMPLICIT_FUNCDECLS
   if (!bfd_mach_o_canonicalize_non_scattered_reloc (abfd, &reloc, res, syms))
     return FALSE;
-#endif /* 0 */
+#else
+  (void)syms;
+#endif /* ALLOW_IMPLICIT_FUNCDECLS */
 
   switch (reloc.r_type)
     {
@@ -290,9 +315,10 @@ bfd_mach_o_arm64_bfd_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
   return NULL;
 }
 
+/* */
 static reloc_howto_type *
-bfd_mach_o_arm64_bfd_reloc_name_lookup (bfd *abfd ATTRIBUTE_UNUSED,
-				      const char *name ATTRIBUTE_UNUSED)
+bfd_mach_o_arm64_bfd_reloc_name_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+				       const char *name ATTRIBUTE_UNUSED)
 {
   return NULL;
 }
@@ -310,3 +336,5 @@ bfd_mach_o_arm64_bfd_reloc_name_lookup (bfd *abfd ATTRIBUTE_UNUSED,
 #undef TARGET_STRING
 #undef TARGET_ARCHIVE
 #undef TARGET_PRIORITY
+
+#endif /* !__BFD_MACH_O_A_C__ */

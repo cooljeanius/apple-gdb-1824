@@ -1218,6 +1218,20 @@ bfd_mach_o_pre_canonicalize_one_reloc(bfd *,
 				      bfd_mach_o_reloc_info *, arelent *,
 				      asymbol **);
 
+bfd_boolean bfd_mach_o_write_contents(bfd *);
+
+bfd_boolean bfd_mach_o_bfd_copy_private_symbol_data(bfd *, asymbol *,
+                                                    bfd *, asymbol *);
+bfd_boolean bfd_mach_o_bfd_copy_private_section_data(bfd *, asection *,
+						     bfd *, asection *);
+bfd_boolean bfd_mach_o_bfd_copy_private_bfd_data(bfd *, bfd *);
+long bfd_mach_o_get_symtab_upper_bound(bfd *);
+long bfd_mach_o_canonicalize_symtab(bfd *, asymbol **);
+asymbol *bfd_mach_o_make_empty_symbol(bfd *);
+void bfd_mach_o_get_symbol_info(bfd *, asymbol *, symbol_info *);
+void bfd_mach_o_print_symbol(bfd *, void *, asymbol *, bfd_print_symbol_type);
+int bfd_mach_o_sizeof_headers(bfd *, bfd_boolean);
+
 /* Values used in symbol.udata.i, to signal that the mach-o-specific data
  * in the symbol are not yet set, or need validation (where this is
  * possible): */

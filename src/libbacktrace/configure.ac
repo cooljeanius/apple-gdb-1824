@@ -89,14 +89,14 @@ if test -f ${srcdir}/config.status; then
     AC_MSG_WARN([srcdir is unwritable])
   fi
 fi
-# 1.11.6: Require that version of automake.
+# 1.18.1: Require that version of automake.
 # foreign: Do NOT require README, INSTALL, NEWS, etc.
 # no-define: Do NOT define PACKAGE and VERSION.
 # no-dependencies: Do NOT generate automatic dependencies.
 #    (because it breaks when using bootstrap-lean, since some of the
 #    headers are gone at "make install" time).
 # -Wall: Issue all automake warnings.
-AM_INIT_AUTOMAKE([1.11.6 foreign no-dist no-define no-dependencies -Wall])
+AM_INIT_AUTOMAKE([1.18.1 foreign no-dist no-define no-dependencies -Wall])
 
 AM_MAINTAINER_MODE([disable])dnl
 AC_SUBST([am_aux_dir])dnl
@@ -159,7 +159,8 @@ esac
 AC_PROG_CXX
 LT_INIT([disable-shared dlopen win32-dll])dnl
 LT_LANG([C])dnl
-LT_PREREQ([2.4.6])dnl
+dnl# https://lists.gnu.org/archive/html/libtool/2026-01/msg00001.html
+LT_PREREQ([2.5.4])dnl
 
 AM_CONDITIONAL([ENABLE_DARWIN_AT_RPATH],
                [test "x${enable_darwin_at_rpath}" = "xyes"])dnl

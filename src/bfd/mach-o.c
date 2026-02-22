@@ -138,53 +138,53 @@ extern const bfd_target mach_o_fat_vec;
 # define bfd_mach_o_write_armap _bfd_noarchive_write_armap
 # define bfd_mach_o_get_elt_at_index _bfd_noarchive_get_elt_at_index
 #endif /* 0 */
-#define bfd_mach_o_generic_stat_arch_elt              _bfd_noarchive_generic_stat_arch_elt
+#define bfd_mach_o_generic_stat_arch_elt _bfd_noarchive_generic_stat_arch_elt
 #ifndef bfd_mach_o_update_armap_timestamp
 # define bfd_mach_o_update_armap_timestamp _bfd_noarchive_update_armap_timestamp
 #endif /* !bfd_mach_o_update_armap_timestamp */
-#define bfd_mach_o_close_and_cleanup                  _bfd_generic_close_and_cleanup
-#define bfd_mach_o_new_section_hook                   _bfd_generic_new_section_hook
+#define bfd_mach_o_close_and_cleanup _bfd_generic_close_and_cleanup
+#define bfd_mach_o_new_section_hook _bfd_generic_new_section_hook
 #ifndef bfd_mach_o_get_section_contents_in_window
 # define bfd_mach_o_get_section_contents_in_window _bfd_generic_get_section_contents_in_window
 #endif /* !bfd_mach_o_get_section_contents_in_window */
 #define bfd_mach_o_get_section_contents_in_window_with_mode _bfd_generic_get_section_contents_in_window_with_mode
-#define bfd_mach_o_bfd_is_target_special_symbol       ((bfd_boolean (*) (bfd *, asymbol *)) bfd_false)
-#define bfd_mach_o_bfd_is_local_label_name            _bfd_nosymbols_bfd_is_local_label_name
+#define bfd_mach_o_bfd_is_target_special_symbol ((bfd_boolean (*)(bfd *, asymbol *)) bfd_false)
+#define bfd_mach_o_bfd_is_local_label_name _bfd_nosymbols_bfd_is_local_label_name
 #ifndef bfd_mach_o_get_lineno
 # define bfd_mach_o_get_lineno _bfd_nosymbols_get_lineno
 #endif /* !bfd_mach_o_get_lineno */
-#define bfd_mach_o_find_nearest_line                  _bfd_nosymbols_find_nearest_line
+#define bfd_mach_o_find_nearest_line _bfd_nosymbols_find_nearest_line
 #if 0 /* FIXME: only ifdef-ing out for '-Wunused-macros' */
 # define bfd_mach_o_find_inliner_info _bfd_nosymbols_find_inliner_info
 # define bfd_mach_o_bfd_make_debug_symbol _bfd_nosymbols_bfd_make_debug_symbol
 # define bfd_mach_o_read_minisymbols _bfd_generic_read_minisymbols
 # define bfd_mach_o_minisymbol_to_symbol _bfd_generic_minisymbol_to_symbol
 #endif /* 0 */
-#define bfd_mach_o_get_reloc_upper_bound              _bfd_norelocs_get_reloc_upper_bound
-#define bfd_mach_o_canonicalize_reloc                 _bfd_norelocs_canonicalize_reloc
-#define bfd_mach_o_bfd_reloc_type_lookup              _bfd_norelocs_bfd_reloc_type_lookup
+#define bfd_mach_o_get_reloc_upper_bound _bfd_norelocs_get_reloc_upper_bound
+#define bfd_mach_o_canonicalize_reloc _bfd_norelocs_canonicalize_reloc
+#define bfd_mach_o_bfd_reloc_type_lookup _bfd_norelocs_bfd_reloc_type_lookup
 #if 0 /* FIXME: only ifdef-ing out for '-Wunused-macros' */
 # define bfd_mach_o_bfd_get_relocated_section_contents bfd_generic_get_relocated_section_contents
 # define bfd_mach_o_bfd_relax_section bfd_generic_relax_section
 # define bfd_mach_o_bfd_link_hash_table_create _bfd_generic_link_hash_table_create
 #endif /* 0 */
-#define bfd_mach_o_bfd_link_hash_table_free           _bfd_generic_link_hash_table_free
+#define bfd_mach_o_bfd_link_hash_table_free _bfd_generic_link_hash_table_free
 #if 0 /* FIXME: only ifdef-ing out for '-Wunused-macros' */
 # define bfd_mach_o_bfd_link_add_symbols _bfd_generic_link_add_symbols
 # define bfd_mach_o_bfd_link_just_syms _bfd_generic_link_just_syms
 # define bfd_mach_o_bfd_final_link _bfd_generic_final_link
 # define bfd_mach_o_bfd_link_split_section _bfd_generic_link_split_section
 #endif /* 0 */
-#define bfd_mach_o_set_arch_mach                      bfd_default_set_arch_mach
+#define bfd_mach_o_set_arch_mach bfd_default_set_arch_mach
 #ifndef bfd_mach_o_bfd_merge_private_bfd_data
 # define bfd_mach_o_bfd_merge_private_bfd_data _bfd_generic_bfd_merge_private_bfd_data
 #endif /* !bfd_mach_o_bfd_merge_private_bfd_data */
-#define bfd_mach_o_bfd_set_private_flags              _bfd_generic_bfd_set_private_flags
+#define bfd_mach_o_bfd_set_private_flags _bfd_generic_bfd_set_private_flags
 #if 0 /* FIXME: only ifdef-ing out for '-Wunused-macros' */
 # define bfd_mach_o_bfd_print_private_bfd_data _bfd_generic_bfd_print_private_bfd_data
 # define bfd_mach_o_get_section_contents _bfd_generic_get_section_contents
 #endif /* 0 */
-#define bfd_mach_o_set_section_contents               _bfd_generic_set_section_contents
+#define bfd_mach_o_set_section_contents _bfd_generic_set_section_contents
 #if 0 /* FIXME: only ifdef-ing out for '-Wunused-macros' */
 # define bfd_mach_o_bfd_gc_sections bfd_generic_gc_sections
 # define bfd_mach_o_bfd_merge_sections bfd_generic_merge_sections
@@ -367,9 +367,6 @@ bfd_mach_o_kernel_image(bfd *abfd)
 
 /* Copy any private info we understand from the input symbol to the output
  * symbol: */
-#ifdef __APPLE__
-static
-#endif /* __APPLE__ */
 bfd_boolean
 bfd_mach_o_bfd_copy_private_symbol_data(bfd *ibfd ATTRIBUTE_UNUSED,
                                         asymbol *isymbol,
@@ -390,9 +387,6 @@ bfd_mach_o_bfd_copy_private_symbol_data(bfd *ibfd ATTRIBUTE_UNUSED,
 
 /* Copy any private info we understand from the input section to the output
  * section: */
-#ifdef __APPLE__
-static
-#endif /* __APPLE__ */
 bfd_boolean
 bfd_mach_o_bfd_copy_private_section_data(bfd *ibfd, asection *isection,
 					 bfd *obfd, asection *osection)
@@ -417,9 +411,6 @@ bfd_mach_o_bfd_copy_private_section_data(bfd *ibfd, asection *isection,
 
 /* Copy any private info we understand from the input bfd to the output
  * bfd: */
-#ifdef __APPLE__
-static
-#endif /* __APPLE__ */
 bfd_boolean
 bfd_mach_o_bfd_copy_private_bfd_data(bfd *ibfd, bfd *obfd)
 {
@@ -451,7 +442,7 @@ bfd_mach_o_count_symbols(bfd *abfd)
   return nsyms;
 }
 
-static long
+long
 bfd_mach_o_get_symtab_upper_bound(bfd *abfd)
 {
   long nsyms = bfd_mach_o_count_symbols(abfd);
@@ -462,7 +453,7 @@ bfd_mach_o_get_symtab_upper_bound(bfd *abfd)
   return (long)((size_t)(nsyms + 1L) * sizeof(asymbol *));
 }
 
-static long
+long
 bfd_mach_o_canonicalize_symtab(bfd *abfd, asymbol **alocation)
 {
   bfd_mach_o_data_struct *mdata = abfd->tdata.mach_o_data;
@@ -665,7 +656,8 @@ bfd_mach_o_symbol_type(bfd *abfd, unsigned char macho_type,
   return ntype;
 }
 
-static void
+/* */
+void
 bfd_mach_o_get_symbol_info(bfd *abfd, asymbol *symbol, symbol_info *ret)
 {
   unsigned int type, section, desc;
@@ -700,7 +692,8 @@ bfd_mach_o_get_symbol_info(bfd *abfd, asymbol *symbol, symbol_info *ret)
     }
 }
 
-static void
+/* */
+void
 bfd_mach_o_print_symbol(bfd *abfd, PTR afile, asymbol *symbol,
                         bfd_print_symbol_type how)
 {
@@ -773,6 +766,10 @@ bfd_mach_o_convert_architecture(bfd_mach_o_cpu_type mtype,
     case BFD_MACH_O_CPU_TYPE_POWERPC_64:
       *type = bfd_arch_powerpc;
       *subtype = bfd_mach_ppc64;
+      break;
+    case BFD_MACH_O_CPU_TYPE_ARM64:
+      *type = bfd_arch_aarch64;
+      *subtype = bfd_mach_aarch64;
       break;
     default:
       *type = bfd_arch_unknown;
@@ -1098,7 +1095,7 @@ bfd_mach_o_scan_write_symtab(bfd *abfd, bfd_mach_o_load_command *command)
 # endif /* gcc 4.2 (non-clang) */
 #endif /* any gcc */
 
-static bfd_boolean
+bfd_boolean
 bfd_mach_o_write_contents(bfd *abfd)
 {
   unsigned int i;
@@ -1238,7 +1235,8 @@ bfd_mach_o_write_contents(bfd *abfd)
   return TRUE;
 }
 
-static int
+/* */
+int
 bfd_mach_o_sizeof_headers(bfd *a ATTRIBUTE_UNUSED,
                           bfd_boolean b ATTRIBUTE_UNUSED)
 {
@@ -1247,7 +1245,7 @@ bfd_mach_o_sizeof_headers(bfd *a ATTRIBUTE_UNUSED,
 
 /* Make an empty symbol.  This is required only because
  * bfd_make_section_anyway wants to create a symbol for the section: */
-static asymbol *
+asymbol *
 bfd_mach_o_make_empty_symbol(bfd *abfd)
 {
   asymbol *newsym;

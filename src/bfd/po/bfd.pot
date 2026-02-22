@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-22 11:21-0500\n"
+"POT-Creation-Date: 2026-02-22 14:08-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3157,7 +3157,7 @@ msgstr ""
 msgid "%B: warning: duplicate section `%A' has different size\n"
 msgstr ""
 
-#: mach-o.c:3000
+#: mach-o.c:2998
 #, c-format
 msgid "unknown header byte-order value %#x"
 msgstr ""

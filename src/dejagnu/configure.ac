@@ -51,7 +51,7 @@ if test "x${CC}" = "x"; then
   test -z "${CC}" || unset CC
   AC_PROG_CC
 else
-  test -n "${CC}" || echo "inconsistent situation with CC variable"
+  test -n "${CC}" && export CC
 fi
 rm -rf *.dSYM
 AC_PROG_CXX
@@ -79,6 +79,8 @@ if test -z "${CVS_RSH}"; then
     export CVS_RSH=/usr/bin/ssh
   elif test -n "`which ssh`" && test -x "`which ssh`"; then
     export CVS_RSH="`which ssh`"
+  else
+    echo "unsure what to set CVS_RSH to"
   fi
 fi
 AC_SUBST([CVS_RSH])dnl
