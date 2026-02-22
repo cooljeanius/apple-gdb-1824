@@ -1257,6 +1257,7 @@ struct current_record_state
   vm_address_t block_address;
 };
 
+#if HAVE_64_BIT_STACK_LOGGING || HAVE_32_BIT_STACK_LOGGING
 /* This is the iterator function that libc uses in
    stack_logging_enumerate_records.  It calls this function for each
    uniqued stack that allocated a given address.  We just
@@ -1267,17 +1268,17 @@ struct current_record_state
    we record the start block so we can match the free to this malloc
    event.  */
 
-#if HAVE_64_BIT_STACK_LOGGING
+# if HAVE_64_BIT_STACK_LOGGING
 static void
 do_over_unique_frames(mach_stack_logging_record_t record, void *data)
 {
   mach_vm_address_t frames[MAX_NUM_FRAMES];
-#elif HAVE_32_BIT_STACK_LOGGING
+# elif HAVE_32_BIT_STACK_LOGGING
 static void
 do_over_unique_frames(stack_logging_record_t record, void *data)
 {
   vm_address_t frames[MAX_NUM_FRAMES];
-#endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
+# endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
   unsigned int num_frames;
   struct cleanup *cleanup;
   struct symtab_and_line sal = {
@@ -1314,16 +1315,16 @@ do_over_unique_frames(stack_logging_record_t record, void *data)
 	return;
     }
 
-#if HAVE_64_BIT_STACK_LOGGING
+# if HAVE_64_BIT_STACK_LOGGING
   if (__mach_stack_logging_frames_for_uniqued_stack(macosx_status->task,
 						    record.stack_identifier,
 						    frames, MAX_NUM_FRAMES, &num_frames))
-#elif HAVE_32_BIT_STACK_LOGGING
+# elif HAVE_32_BIT_STACK_LOGGING
   if (stack_logging_frames_for_uniqued_stack(macosx_status->task,
 					     gdb_malloc_reader,
 					     record.uniqued_stack,
 					     frames, MAX_NUM_FRAMES, &num_frames))
-#endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
+# endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
     {
       warning("Error running stack_logging_frames_for_uniqued_stack");
       return;
@@ -1435,12 +1436,12 @@ do_over_unique_frames(stack_logging_record_t record, void *data)
     ui_out_text(uiout, "\n");
 
   /* make sure the braces match the condition at the head of the func: */
-#if HAVE_64_BIT_STACK_LOGGING
+# if HAVE_64_BIT_STACK_LOGGING
 }
-#elif HAVE_32_BIT_STACK_LOGGING
+# elif HAVE_32_BIT_STACK_LOGGING
 }
-#endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
-
+# endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
+#endif /* HAVE_64_BIT_STACK_LOGGING || HAVE_32_BIT_STACK_LOGGING  */
 
 /* This adds the "info malloc-history" command.  Requires one argument
    (an address) and returns the malloc history for that address, as
