@@ -165,8 +165,8 @@ for real_option in $1; do
     -Wno-*) option=-W`expr x$real_option : 'x-Wno-\(.*\)'` ;;
     *) option=$real_option ;;
   esac
-  AS_VAR_PUSHDEF([acx_Woption], [acx_cv_prog_cc_warning_$option])
-  AC_CACHE_CHECK([whether $CXX supports $option], acx_Woption,
+  AS_VAR_PUSHDEF([acx_Woption],[acx_cv_prog_cxx_warning_$option])
+  AC_CACHE_CHECK([whether ${CXX} supports ${option}],[acx_Woption],
     [CXXFLAGS="$option"
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],[])],
       [AS_VAR_SET(acx_Woption, yes)],

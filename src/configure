@@ -5808,10 +5808,10 @@ for real_option in "-arch ${BUILD_ARCHITECTURE}"; do
     -Wno-*) option=-W`expr x$real_option : 'x-Wno-\(.*\)'` ;;
     *) option=$real_option ;;
   esac
-  as_acx_Woption=`printf "%s\n" "acx_cv_prog_cc_warning_$option" | sed "$as_sed_sh"`
+  as_acx_Woption=`printf "%s\n" "acx_cv_prog_cxx_warning_$option" | sed "$as_sed_sh"`
 
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports $option" >&5
-printf %s "checking whether $CXX supports $option... " >&6; }
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ${CXX} supports ${option}" >&5
+printf %s "checking whether ${CXX} supports ${option}... " >&6; }
 if eval test \${$as_acx_Woption+y}
 then :
   printf %s "(cached) " >&6
@@ -5983,10 +5983,10 @@ for real_option in "-arch ${HOST_ARCHITECTURE}"; do
     -Wno-*) option=-W`expr x$real_option : 'x-Wno-\(.*\)'` ;;
     *) option=$real_option ;;
   esac
-  as_acx_Woption=`printf "%s\n" "acx_cv_prog_cc_warning_$option" | sed "$as_sed_sh"`
+  as_acx_Woption=`printf "%s\n" "acx_cv_prog_cxx_warning_$option" | sed "$as_sed_sh"`
 
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports $option" >&5
-printf %s "checking whether $CXX supports $option... " >&6; }
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ${CXX} supports ${option}" >&5
+printf %s "checking whether ${CXX} supports ${option}... " >&6; }
 if eval test \${$as_acx_Woption+y}
 then :
   printf %s "(cached) " >&6
@@ -6158,10 +6158,10 @@ for real_option in "-arch ${TARGET_ARCHITECTURE}"; do
     -Wno-*) option=-W`expr x$real_option : 'x-Wno-\(.*\)'` ;;
     *) option=$real_option ;;
   esac
-  as_acx_Woption=`printf "%s\n" "acx_cv_prog_cc_warning_$option" | sed "$as_sed_sh"`
+  as_acx_Woption=`printf "%s\n" "acx_cv_prog_cxx_warning_$option" | sed "$as_sed_sh"`
 
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports $option" >&5
-printf %s "checking whether $CXX supports $option... " >&6; }
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ${CXX} supports ${option}" >&5
+printf %s "checking whether ${CXX} supports ${option}... " >&6; }
 if eval test \${$as_acx_Woption+y}
 then :
   printf %s "(cached) " >&6
