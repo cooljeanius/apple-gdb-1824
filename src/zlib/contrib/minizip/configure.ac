@@ -10,7 +10,7 @@ m4_include([../../../config/warnings.m4])
 AC_CANONICAL_TARGET
 AC_USE_SYSTEM_EXTENSIONS
 AC_SYS_LARGEFILE
-AM_INIT_AUTOMAKE([1.11.6 foreign no-dist])
+AM_INIT_AUTOMAKE([1.18.1 foreign no-dist])
 AM_MAINTAINER_MODE
 AC_PROG_MKDIR_P
 
@@ -40,6 +40,9 @@ AC_DEFUN([AC_REQUIRE_RANLIB],[
   AC_REQUIRE([AC_PROG_RANLIB])dnl
 ])dnl
 AC_REQUIRE_RANLIB
+if test -d conftest.dSYM; then
+  rm -rf conftest.dSYM 2>/dev/null || rmdir conftest.dSYM 2>/dev/null
+fi
 LT_INIT([win32-dll disable-static])dnl
 LT_LANG([C])dnl
 LT_LANG([Windows Resource])dnl
@@ -50,6 +53,7 @@ if test -e ./config.cache; then
     echo "hacking ./config.cache"
     sed -i.bak -e "s|ac_cv_prog_AR|bad_AR|g" ./config.cache
     sed -i.bak -e "s|am_cv_ar_interface|bad_ar_interface|g" ./config.cache
+    sed -i.bak -e "s|lt_cv_ar_at_file|bad_ar_at_file|g" ./config.cache
     sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_status|g" ./config.cache
     sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP|g" ./config.cache
     sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
@@ -57,6 +61,7 @@ elif test -e ../.././config.cache; then
     echo "hacking ../.././config.cache"
     sed -i.bak -e "s|ac_cv_prog_AR|bad_AR|g" ../.././config.cache
     sed -i.bak -e "s|am_cv_ar_interface|bad_ar_interface|g" ../.././config.cache
+    sed -i.bak -e "s|lt_cv_ar_at_file|bad_ar_at_file|g" ../.././config.cache
     sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_status|g" ../.././config.cache
     sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP|g" ../.././config.cache
     sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ../.././config.cache
@@ -68,12 +73,16 @@ if test "x${AR}" = "x"; then
   if test "x${ac_cv_prog_AR}" = "x"; then
     test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
     AC_PROG_AR
-    if test "x${ARFLAGS}" = "x"; then
-      test -z "${ARFLAGS}" && export ARFLAGS="cru"
-    fi
+  else
+    test -n "${ac_cv_prog_AR}" && echo "ac_cv_prog_AR already cached to '${ac_cv_prog_AR}'"
   fi
 else
-  test -n "${AR}" && export AR
+  test -n "${AR}" && export AR && echo "AR set to '${AR}'"
+fi
+if test "x${ARFLAGS}" = "x"; then
+  test -z "${ARFLAGS}" && export ARFLAGS="cru"
+else
+  test -n "${ARFLAGS}" && echo "ARFLAGS are '${ARFLAGS}'"
 fi
 ])dnl
 
@@ -134,6 +143,12 @@ ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-Wno-long-long])dnl
 ACX_PROG_CC_WARNINGS_ARE_ERRORS([manual])dnl
 
 # Output.
+if test "x${lt_ar_flags}" = "x"; then
+  test -z "${lt_ar_flags}" && echo "lt_ar_flags are empty; setting them" && export lt_ar_flags="cru"
+else
+  test -n "${lt_ar_flags}" && echo "lt_ar_flags are '${lt_ar_flags}'"
+fi
+AC_SUBST([lt_ar_flags])dnl
 AC_CONFIG_FILES([Makefile minizip.pc])
 AC_CONFIG_COMMANDS([top_original],[
 if test ! -e ../../Makefile.am || test -e ../../Makefile_orig.in; then

@@ -57,6 +57,7 @@ minizip_SOURCES = minizip.c
 minizip_LDADD = libminizip.la -lz
 
 ARFLAGS = cru
+libminizip_la_ARFLAGS = $(ARFLAGS)
 
 CLEANFILES = *~ autoscan.log .DS_Store
 

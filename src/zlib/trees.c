@@ -231,7 +231,7 @@ local void send_bits(s, value, length)
 /* ===========================================================================
  * Initialize the various 'constant' tables.
  */
-local void tr_static_init()
+local void tr_static_init(void)
 {
 #if defined(GEN_TREES_H) || !defined(STDC)
     static int static_init_done = 0;
@@ -1056,17 +1056,18 @@ int ZLIB_INTERNAL _tr_tally (s, dist, lc)
 
 /* ===========================================================================
  * Send the block data compressed using the given Huffman trees
+ * s: state
+ * ltree: literal tree
+ * dtree: distance tree
  */
-local void compress_block(s, ltree, dtree)
-    deflate_state *s;
-    const ct_data *ltree; /* literal tree */
-    const ct_data *dtree; /* distance tree */
+local void compress_block(deflate_state *s, const ct_data *ltree,
+			  const ct_data *dtree)
 {
-    unsigned dist;      /* distance of matched string */
-    int lc;             /* match length or unmatched char (if dist == 0) */
-    unsigned lx = 0;    /* running index in l_buf */
-    unsigned code;      /* the code to send */
-    int extra;          /* number of extra bits to send */
+    unsigned int dist;    /* distance of matched string */
+    int lc;               /* match length or unmatched char (if dist == 0) */
+    unsigned int lx = 0U; /* running index in l_buf */
+    unsigned int code;    /* the code to send */
+    int extra;            /* number of extra bits to send */
 
     if (s->last_lit != 0) do {
         dist = s->d_buf[lx];
@@ -1117,8 +1118,7 @@ local void compress_block(s, ltree, dtree)
  *   (7 {BEL}, 8 {BS}, 11 {VT}, 12 {FF}, 26 {SUB}, 27 {ESC}).
  * IN assertion: the fields Freq of dyn_ltree are set.
  */
-local int detect_data_type(s)
-    deflate_state *s;
+local int detect_data_type(deflate_state *s)
 {
     /* black_mask is the bit mask of black-listed bytes
      * set bits 0..6, 14..25, and 28..31
@@ -1150,24 +1150,23 @@ local int detect_data_type(s)
  * Reverse the first len bits of a code, using straightforward code (a faster
  * method would use a table)
  * IN assertion: 1 <= len <= 15
+ * code: the value to invert
+ * len: its bit length
  */
-local unsigned bi_reverse(code, len)
-    unsigned code; /* the value to invert */
-    int len;       /* its bit length */
+local unsigned int bi_reverse(unsigned int code, int len)
 {
-    register unsigned res = 0;
+    register unsigned int res = 0U;
     do {
-        res |= code & 1;
-        code >>= 1, res <<= 1;
+        res |= (code & 1U);
+        code >>= 1U, res <<= 1U;
     } while (--len > 0);
-    return res >> 1;
+    return (res >> 1U);
 }
 
 /* ===========================================================================
  * Flush the bit buffer, keeping at most 7 bits in it.
  */
-local void bi_flush(s)
-    deflate_state *s;
+local void bi_flush(deflate_state *s)
 {
     if (s->bi_valid == 16) {
         put_short(s, s->bi_buf);
@@ -1183,8 +1182,7 @@ local void bi_flush(s)
 /* ===========================================================================
  * Flush the bit buffer and align the output on a byte boundary
  */
-local void bi_windup(s)
-    deflate_state *s;
+local void bi_windup(deflate_state *s)
 {
     if (s->bi_valid > 8) {
         put_short(s, s->bi_buf);
@@ -1201,12 +1199,13 @@ local void bi_windup(s)
 /* ===========================================================================
  * Copy a stored block, storing first the length and its
  * one's complement if requested.
+ * s: state
+ * buf: the input data
+ * len: its length
+ * header: true if block header must be written
  */
-local void copy_block(s, buf, len, header)
-    deflate_state *s;
-    charf    *buf;    /* the input data */
-    unsigned len;     /* its length */
-    int      header;  /* true if block header must be written */
+local void copy_block(deflate_state *s, charf *buf, unsigned int len,
+		      int header)
 {
     bi_windup(s);        /* align on byte boundary */
 

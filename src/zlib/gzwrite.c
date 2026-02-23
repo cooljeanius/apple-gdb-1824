@@ -16,8 +16,7 @@ local int gz_zero OF((gz_statep, z_off64_t));
 
 /* Initialize state for writing a gzip file.  Mark initialization by setting
    state->size to non-zero.  Return -1 on failure or 0 on success. */
-local int gz_init(state)
-    gz_statep state;
+local int gz_init(gz_statep state)
 {
     int ret;
     z_streamp strm = &(state->strm);
@@ -196,7 +195,7 @@ int ZEXPORT gzwrite(file, buf, len)
     /* if len is zero, avoid unnecessary operations */
     if (len == 0) {
         return 0;
-	}
+    }
 
     /* allocate memory if this is the first time through */
     if (state->size == 0 && gz_init(state) == -1)
@@ -332,25 +331,25 @@ int ZEXPORTVA gzvprintf(gzFile file, const char *format, va_list va)
     /* check that we are writing and that there is/was no error */
     if (state->mode != GZ_WRITE || state->err != Z_OK) {
         return 0;
-	}
+    }
 
     /* make sure we have some buffer space */
     if (state->size == 0 && gz_init(state) == -1) {
         return 0;
-	}
+    }
 
     /* check for seek request */
     if (state->seek) {
         state->seek = 0;
         if (gz_zero(state, state->skip) == -1) {
             return 0;
-		}
+	}
     }
 
     /* consume whatever is/was left in the input buffer */
     if (strm->avail_in && gz_comp(state, Z_NO_FLUSH) == -1) {
         return 0;
-	}
+    }
 
     /* do the printf() into the input buffer, put length in len */
     size = (int)(state->size);
@@ -411,24 +410,24 @@ int ZEXPORTVA gzprintf (file, format, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10,
     /* get internal structure */
     if (file == NULL) {
         return -1;
-	}
+    }
     state = (gz_statep)file;
     strm = &(state->strm);
 
     /* check that can really pass pointer in ints */
     if (sizeof(int) != sizeof(void *)) {
         return 0;
-	}
+    }
 
     /* check that we are writing and that there is/was no error */
     if (state->mode != GZ_WRITE || state->err != Z_OK) {
         return 0;
-	}
+    }
 
     /* make sure we have some buffer space */
     if (state->size == 0 && gz_init(state) == -1) {
         return 0;
-	}
+    }
 
     /* check for seek request */
     if (state->seek) {
@@ -489,13 +488,13 @@ int ZEXPORT gzflush(file, flush)
     /* get internal structure */
     if (file == NULL) {
         return -1;
-	}
+    }
     state = (gz_statep)file;
 
     /* check that we are writing and that there is/was no error */
     if (state->mode != GZ_WRITE || state->err != Z_OK) {
         return Z_STREAM_ERROR;
-	}
+    }
 
     /* check flush parameter */
     if (flush < 0 || flush > Z_FINISH)
@@ -531,12 +530,12 @@ int ZEXPORT gzsetparams(file, level, strategy)
     /* check that we are writing and that there is/was no error */
     if (state->mode != GZ_WRITE || state->err != Z_OK) {
         return Z_STREAM_ERROR;
-	}
+    }
 
     /* if no change is requested, then do nothing */
     if (level == state->level && strategy == state->strategy) {
         return Z_OK;
-	}
+    }
 
     /* check for seek request */
     if (state->seek) {
@@ -550,7 +549,7 @@ int ZEXPORT gzsetparams(file, level, strategy)
         /* flush previous input with previous parameters before changing */
         if (strm->avail_in && gz_comp(state, Z_PARTIAL_FLUSH) == -1) {
             return state->err;
-		}
+	}
         deflateParams(strm, level, strategy);
     }
     state->level = level;
@@ -572,20 +571,20 @@ int ZEXPORT gzclose_w(file)
     /* get internal structure */
     if (file == NULL) {
         return Z_STREAM_ERROR;
-	}
+    }
     state = (gz_statep)file;
 
     /* check that we a re writing */
     if (state->mode != GZ_WRITE) {
         return Z_STREAM_ERROR;
-	}
+    }
 
     /* check for seek request */
     if (state->seek) {
         state->seek = 0;
         if (gz_zero(state, state->skip) == -1) {
             ret = state->err;
-		}
+	}
     }
 
     /* flush, free memory, and close file */
@@ -602,7 +601,7 @@ int ZEXPORT gzclose_w(file)
     free(state->path);
     if (close(state->fd) == -1) {
         ret = Z_ERRNO;
-	}
+    }
     free(state);
     return ret;
 }
