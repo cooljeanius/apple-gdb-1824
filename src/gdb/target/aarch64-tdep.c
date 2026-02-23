@@ -1,4 +1,4 @@
-/* Common target dependent code for GDB on AArch64 systems.
+/* aarch64-tdep.c: Common target dependent code for GDB on AArch64 systems.
 
    Copyright (C) 2009-2013 Free Software Foundation, Inc.
    Contributed by ARM Ltd.
@@ -226,8 +226,8 @@ decode_add_sub_imm (CORE_ADDR addr, uint32_t insn, unsigned *rd, unsigned *rn,
 {
   if ((insn & 0x9f000000) == 0x91000000)
     {
-      unsigned shift;
-      unsigned op_is_sub;
+      unsigned int shift;
+      unsigned int op_is_sub;
 
       *rd = (insn >> 0) & 0x1f;
       *rn = (insn >> 5) & 0x1f;
@@ -658,13 +658,11 @@ decode_tb (CORE_ADDR addr,
 /* Analyze a prologue, looking for a recognizable stack frame
    and frame pointer.  Scan until we encounter a store that could
    clobber the stack frame unexpectedly, or an unknown instruction.  */
-
 static CORE_ADDR
-aarch64_analyze_prologue (struct gdbarch *gdbarch,
-			  CORE_ADDR start, CORE_ADDR limit,
-			  struct aarch64_prologue_cache *cache)
+aarch64_analyze_prologue(struct gdbarch *gdbarch,
+			 CORE_ADDR start, CORE_ADDR limit,
+			 struct aarch64_prologue_cache *cache)
 {
-  enum bfd_endian byte_order_for_code = gdbarch_byte_order_for_code (gdbarch);
   int i;
   pv_t regs[AARCH64_X_REGISTER_COUNT];
   struct pv_area *stack;
@@ -678,22 +676,21 @@ aarch64_analyze_prologue (struct gdbarch *gdbarch,
   for (; start < limit; start += 4)
     {
       uint32_t insn;
-      unsigned rd;
-      unsigned rn;
-      unsigned rm;
-      unsigned rt;
-      unsigned rt1;
-      unsigned rt2;
-      int op_is_sub;
+      unsigned int rd;
+      unsigned int rn;
+      unsigned int rm;
+      unsigned int rt;
+      unsigned int rt1;
+      unsigned int rt2;
       int32_t imm;
-      unsigned cond;
+      unsigned int cond;
       int is64;
-      unsigned is_link;
-      unsigned op;
-      unsigned bit;
+      unsigned int is_link;
+      unsigned int op;
+      unsigned int bit;
       int32_t offset;
 
-      insn = read_memory_unsigned_integer (start, 4, byte_order_for_code);
+      insn = read_memory_unsigned_integer(start, 4);
 
       if (decode_add_sub_imm (start, insn, &rd, &rn, &imm))
 	regs[rd] = pv_add_constant (regs[rn], imm);
@@ -846,38 +843,34 @@ aarch64_analyze_prologue (struct gdbarch *gdbarch,
 /* Implement the "skip_prologue" gdbarch method.  */
 
 static CORE_ADDR
-aarch64_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
+aarch64_skip_prologue(struct gdbarch *gdbarch, CORE_ADDR pc)
 {
-  unsigned long inst;
-  CORE_ADDR skip_pc;
   CORE_ADDR func_addr, limit_pc;
-  struct symtab_and_line sal;
 
   /* See if we can determine the end of the prologue via the symbol
      table.  If so, then return either PC, or the PC after the
      prologue, whichever is greater.  */
-  if (find_pc_partial_function (pc, NULL, &func_addr, NULL))
+  if (find_pc_partial_function(pc, NULL, &func_addr, NULL))
     {
-      CORE_ADDR post_prologue_pc
-	= skip_prologue_using_sal (gdbarch, func_addr);
+      CORE_ADDR post_prologue_pc = skip_prologue_using_sal(func_addr);
 
       if (post_prologue_pc != 0)
-	return max (pc, post_prologue_pc);
+	return max(pc, post_prologue_pc);
     }
 
-  /* Can't determine prologue from the symbol table, need to examine
+  /* Cannot determine prologue from the symbol table, need to examine
      instructions.  */
 
   /* Find an upper limit on the function prologue using the debug
      information.  If the debug information could not be used to
      provide that bound, then use an arbitrary large number as the
      upper bound.  */
-  limit_pc = skip_prologue_using_sal (gdbarch, pc);
+  limit_pc = skip_prologue_using_sal(pc);
   if (limit_pc == 0)
-    limit_pc = pc + 128;	/* Magic.  */
+    limit_pc = (pc + 128); /* Magic.  */
 
-  /* Try disassembling prologue.  */
-  return aarch64_analyze_prologue (gdbarch, pc, limit_pc, NULL);
+  /* Try disassembling prologue: */
+  return aarch64_analyze_prologue(gdbarch, pc, limit_pc, NULL);
 }
 
 /* Scan the function prologue for THIS_FRAME and populate the prologue
@@ -919,11 +912,8 @@ aarch64_scan_prologue (struct frame_info *this_frame,
   else
     {
       CORE_ADDR frame_loc;
-      LONGEST saved_fp;
-      LONGEST saved_lr;
-      enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
 
-      frame_loc = get_frame_register_unsigned (this_frame, AARCH64_FP_REGNUM);
+      frame_loc = get_frame_register_unsigned(this_frame, AARCH64_FP_REGNUM);
       if (frame_loc == 0)
 	return;
 
@@ -979,8 +969,8 @@ aarch64_prologue_this_id (struct frame_info *this_frame,
   CORE_ADDR pc, func;
 
   if (*this_cache == NULL)
-    *this_cache = aarch64_make_prologue_cache (this_frame);
-  cache = *this_cache;
+    *this_cache = aarch64_make_prologue_cache(this_frame);
+  cache = *(struct aarch64_prologue_cache **)this_cache;
 
   /* This is meant to halt the backtrace at "_start".  */
   pc = get_frame_pc (this_frame);
@@ -1006,8 +996,8 @@ aarch64_prologue_prev_register (struct frame_info *this_frame,
   struct aarch64_prologue_cache *cache;
 
   if (*this_cache == NULL)
-    *this_cache = aarch64_make_prologue_cache (this_frame);
-  cache = *this_cache;
+    *this_cache = aarch64_make_prologue_cache(this_frame);
+  cache = *(struct aarch64_prologue_cache **)this_cache;
 
   /* If we are asked to unwind the PC, then we need to return the LR
      instead.  The prologue may save PC, but it will point into this
@@ -1212,6 +1202,8 @@ aarch64_dwarf2_frame_init_reg (struct gdbarch *gdbarch, int regnum,
       break;
     case AARCH64_SP_REGNUM:
       reg->how = DWARF2_FRAME_REG_CFA;
+      break;
+    default:
       break;
     }
 }
@@ -2734,3 +2726,5 @@ When on, AArch64 specific debugging is enabled."),
 			    show_aarch64_debug,
 			    &setdebuglist, &showdebuglist);
 }
+
+/* EOF */
