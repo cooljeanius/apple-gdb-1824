@@ -222,6 +222,10 @@ m4_ifdef([SC_PUBLIC_TK_HEADERS],[
   ## just these:
 SC_PRIVATE_TK_HEADERS
 
+## also some X11 ones:
+AC_PATH_XTRA
+AC_CHECK_HEADERS([X11/Xlib.h])dnl
+
 #--------------------------------------------------------------------
 # __CHANGE__
 # A few miscellaneous platform-specific items:

@@ -102,7 +102,8 @@ AC_PROG_INSTALL
 # I am not sure why these need to come before all of the other tests
 #------------------------------------------------------------------------
 
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h netinet/in.h sys/file.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h netinet/in.h sys/file.h \
+                  X11/Xlib.h])dnl
 
 #------------------------------------------------------------------------
 # Threads support

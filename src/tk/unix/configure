@@ -4323,7 +4323,12 @@ then :
   printf "%s\n" "#define HAVE_SYS_FILE_H 1" >>confdefs.h
 
 fi
+ac_fn_c_check_header_compile "$LINENO" "X11/Xlib.h" "ac_cv_header_X11_Xlib_h" "$ac_includes_default"
+if test "x$ac_cv_header_X11_Xlib_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_X11_XLIB_H 1" >>confdefs.h
 
+fi
 
 #------------------------------------------------------------------------
 # Threads support
