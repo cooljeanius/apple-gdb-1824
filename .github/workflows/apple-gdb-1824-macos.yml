@@ -191,7 +191,7 @@ jobs:
     - run: cd src && make all-mmalloc
     - run: cd src && make configure-readline
     - run: cd src && for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/configure; then (echo "configuring in ${dir}" && make configure-${dir} && ls ${dir}/config*); elif test -d ${dir}; then ls ${dir}/configure*; else echo "skipping configuring in ${dir}"; fi; done
-    - run: cd src && for dir in sim utils tcl expect dejagnu libgui; do if test -e ${dir}/Makefile; then (echo "building in ${dir}" && make -C ${dir}); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
+    - run: cd src && for dir in sim utils tcl expect dejagnu; do if test -e ${dir}/Makefile; then (echo "building in ${dir}" && make -C ${dir}); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
     - run: cd src && (make all-readline || (pushd readline && (make depend || make stamp-framework-headers) && popd) || make am--refresh)
     - run: cd src && make configure-gdb
     - run: cd src && make all-gdb
@@ -431,8 +431,34 @@ jobs:
         # A file, directory or wildcard pattern that describes what to upload
         path: |
           **/*.log
-    - run: find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
+    - name: Explain failure
       if: "${{ failure() }}"
+      run: |
+        find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
+        if test ! -e /var/db/locate.database; then \
+          if test -e /System/Library/LaunchDaemons/com.apple.locate.plist; then \
+            if test -z "$(sudo launchctl list | grep locate)"; then \
+              sync && echo "attempting to ensure that locate will work..."; \
+              sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist; \
+            else \
+              sync && echo "printing launchctl jobs related to locate:"; \
+              sudo launchctl list | grep locate; \
+            fi; \
+          elif test -r /System/Library/LaunchDaemons; then \
+            ls /System/Library/LaunchDaemons/*locate*; \
+          else \
+            sync && echo "Warning: missing launchd plist for locate!" >&2; \
+          fi; \
+        elif test -r /var/db && test -r /var/db/locate.database; then \
+          stat /var/db/locate.database && du /var/db/locate.database; \
+        else \
+          sleep 1; \
+        fi
+        if test -x "$(which locate)"; then \
+          sync && (locate X11/Xlib.h || sleep 1); \
+        else \
+          sync && sleep 1; \
+        fi
     strategy:
       fail-fast: false
       matrix:
