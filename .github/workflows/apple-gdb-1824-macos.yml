@@ -9,9 +9,10 @@ on:
   pull_request:
 jobs:
   test:
-    # seeing if we can bump this; looks like "-large" is necessary to keep it
-    # x86_64 for versions 14+:
-    runs-on: macos-14-large
+    # seeing if we can bump this; looks like there's an intel image again for 15,
+    # but let's specify a suffix explicitly anyways just in case; see:
+    # https://github.com/actions/runner-images#available-images
+    runs-on: macos-15-intel
     steps:
     - name: checkout
       uses: actions/checkout@v4
