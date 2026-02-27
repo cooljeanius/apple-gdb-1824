@@ -87,7 +87,8 @@ local void make_crc_table OF((void));
   allow for word-at-a-time CRC calculation for both big-endian and little-
   endian machines, where a word is four bytes.
 */
-local void make_crc_table()
+local void 
+make_crc_table (void)
 {
     z_crc_t c;
     int n, k;
@@ -325,9 +326,8 @@ local unsigned long crc32_big(crc, buf, len)
 #define GF2_DIM 32      /* dimension of GF(2) vectors (length of CRC) */
 
 /* ========================================================================= */
-local unsigned long gf2_matrix_times(mat, vec)
-    unsigned long *mat;
-    unsigned long vec;
+local unsigned long 
+gf2_matrix_times (unsigned long *mat, unsigned long vec)
 {
     unsigned long sum;
 
@@ -342,9 +342,8 @@ local unsigned long gf2_matrix_times(mat, vec)
 }
 
 /* ========================================================================= */
-local void gf2_matrix_square(square, mat)
-    unsigned long *square;
-    unsigned long *mat;
+local void 
+gf2_matrix_square (unsigned long *square, unsigned long *mat)
 {
     int n;
 

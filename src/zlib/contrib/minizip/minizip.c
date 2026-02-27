@@ -150,8 +150,8 @@ uLong filetime(f, tmzip, dt)
 
 
 
-int check_exist_file(filename)
-    const char* filename;
+int 
+check_exist_file (const char *filename)
 {
     FILE* ftestexist;
     int ret = 1;
@@ -163,13 +163,15 @@ int check_exist_file(filename)
     return ret;
 }
 
-void do_banner()
+void 
+do_banner (void)
 {
     printf("MiniZip 1.1, demo of zLib + MiniZip64 package, written by Gilles Vollant\n");
     printf("more info on MiniZip at http://www.winimage.com/zLibDll/minizip.html\n\n");
 }
 
-void do_help()
+void 
+do_help (void)
 {
     printf("Usage : minizip [-o] [-a] [-0 to -9] [-p password] [-j] file.zip [files_to_add]\n\n" \
            "  -o  Overwrite existing file.zip\n" \
@@ -243,9 +245,8 @@ int isLargeFile(const char* filename)
  return largeFile;
 }
 
-int main(argc,argv)
-    int argc;
-    char *argv[];
+int 
+main (int argc, char *argv[])
 {
     int i;
     int opt_overwrite=0;

@@ -325,7 +325,8 @@ local void tr_static_init(void)
       ((i) == (last)? "\n};\n\n" :    \
        ((i) % (width) == (width)-1 ? ",\n" : ", "))
 
-void gen_trees_header()
+void 
+gen_trees_header (void)
 {
     FILE *header = fopen("trees.h", "w");
     int i;

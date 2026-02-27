@@ -424,6 +424,9 @@ AC_DEFUN([AC_EXTRA_THINGS_LIBTOOL_WANTS],[
   AC_REQUIRE([AC_PROG_MAKE_SET])dnl
 ])dnl
 AC_EXTRA_THINGS_LIBTOOL_WANTS
+if test -d conftest.dSYM; then
+  rm -rf conftest.dSYM 2>/dev/null || rmdir conftest.dSYM 2>/dev/null
+fi
 LT_INIT([disable-shared pic-only])dnl
 dnl# https://lists.gnu.org/archive/html/libtool/2026-01/msg00001.html
 LT_PREREQ([2.5.4])dnl

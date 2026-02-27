@@ -48,7 +48,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu -Wno-obsolete])
+AM_INIT_AUTOMAKE([1.18.1 gnits dejagnu -Wno-obsolete])
 m4_ifdef([AM_MAINTAINER_MODE],[
   test -e "." && test -d "." && test -r "." && stat "."
   if test -e "Makefile"; then
@@ -121,6 +121,9 @@ AC_DEFUN([AC_REQUIRE_GREPS],[
 ])dnl
 AC_REQUIRE_GREPS
 AC_DISABLE_SHARED
+if test -d conftest.dSYM; then
+  rm -rf conftest.dSYM 2>/dev/null || rmdir conftest.dSYM 2>/dev/null
+fi
 LT_INIT([shared static win32-dll])dnl
 LT_LANG([C])dnl
 dnl# https://lists.gnu.org/archive/html/libtool/2026-01/msg00001.html
