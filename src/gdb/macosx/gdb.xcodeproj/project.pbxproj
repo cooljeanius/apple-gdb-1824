@@ -3213,6 +3213,7 @@
 		61F331671CCDDE9D00C05007 /* cris-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "cris-tdep.h"; sourceTree = "<group>"; };
 		61F331CB1CCF226400C05007 /* fr30-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "fr30-tdep.h"; sourceTree = "<group>"; };
 		61F333921CD3B44100C05007 /* remote-m32r-sdi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "remote-m32r-sdi.h"; sourceTree = "<group>"; };
+		A503DF6F2F5117EE005FD7BB /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
 		A50558F82AEB12BD00DFAB6C /* .github */ = {isa = PBXFileReference; lastKnownFileType = folder; name = .github; path = ../../../.github; sourceTree = "<group>"; };
 		A50C0F7D29701B0600E82F7F /* m68klynx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = m68klynx.c; sourceTree = "<group>"; };
 		A50DD7D41B30D2AC00F50318 /* AppleMakefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = AppleMakefile; sourceTree = "<group>"; };
@@ -12834,6 +12835,7 @@
 				A589C8E21A30EC7500E717B9 /* build.xml */,
 				A589C8E31A30EC8600E717B9 /* cache-symfiles.sh */,
 				A589C8E41A30ED2200E717B9 /* ChangeLog_just_me.txt */,
+				A503DF6F2F5117EE005FD7BB /* CLAUDE.md */,
 				A589C8E81A30ED5F00E717B9 /* doc */,
 				A589C93B1A30EDF400E717B9 /* gdb.plist */,
 				A589C93D1A30EDF400E717B9 /* gdb.txt */,
