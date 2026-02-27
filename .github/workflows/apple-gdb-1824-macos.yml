@@ -107,9 +107,8 @@ jobs:
         sync && printf '\n' && sync && date && sync
     - name: Install XQuartz
       run: |
-        wget https://dl.bintray.com/xquartz/downloads/XQuartz-2.7.11.dmg
-        sudo hdiutil attach XQuartz-2.7.11.dmg
-        sudo installer -package /Volumes/XQuartz-2.7.11/XQuartz.pkg -target / 
+        wget https://github.com/XQuartz/XQuartz/releases/download/XQuartz-2.8.5/XQuartz-2.8.5.pkg
+        sudo installer -package XQuartz-2.8.5.pkg -target /
     - run: cd .profile.d && test -e ./.profile_generic && test -r ./.profile_generic && test -s ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq | grep -v "\*\*\*" | grep -v "PWD\=") && sync && (if test -x "$(which xcode-select)"; then stat "$(which xcode-select)" && xcode-select --print-path && xcode-select --version; else echo "no usable xcode-select found"; fi)
     - run: ./configure --enable-silent-rules --disable-dependency-tracking CC="sccache ${{ matrix.compiler }}" OBJC="sccache ${{ matrix.compiler }}"
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then (ant || echo "FIXME, ant build is broken!"); else echo "ant missing"; fi)
