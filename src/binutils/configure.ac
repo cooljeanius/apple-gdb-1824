@@ -89,6 +89,7 @@ elif test -e ./config.cache; then
 else
   echo "config.cache is missing, which means we can skip attempts to hack it"
 fi
+AC_SUBST([GCC])dnl
 
 # Libtool checks:
 AC_MSG_CHECKING([libtool stuff])
@@ -426,12 +427,14 @@ AC_GETTEXT_SUBCHECKS
 dnl# I forget, why am I not just using AM\_GNU\_GETTEXT?
 dnl# Anyways... continuing with library checks:
 AC_CHECK_LIB([c],[printf])
-AC_CHECK_LIB([ssp],[__chk_fail],[],[
-  AC_CHECK_LIB([ssp],[__memcpy_chk],[],[
-    AC_CHECK_LIB([ssp],[__strcpy_chk],[],[])
-  ])
-])
-# check arch when "main()" is the only function for which we check:
+AS_IF([test "x${GCC}" = "xyes" && test "x${CC}" != "xclang"],[
+  AC_CHECK_LIB([ssp],[__chk_fail],[],[
+    AC_CHECK_LIB([ssp],[__memcpy_chk],[],[
+      AC_CHECK_LIB([ssp],[__strcpy_chk],[],[])dnl
+    ])dnl
+  ])dnl
+])dnl
+  ## check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
 # OK to use 'main' here:

@@ -44,7 +44,7 @@ fi
 AC_SUBST([REPORT_BUGS_TEXI])dnl
 ])dnl
 AM_MAINTAINER_MODE
-AM_SILENT_RULES
+AM_SILENT_RULES([no])dnl
 #### check arg val for silent rules:
 if test "x${enable_silent_rules}" = "xno"; then
   : ${V=1}

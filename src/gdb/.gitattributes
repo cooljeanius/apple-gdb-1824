@@ -11,10 +11,11 @@ gdbinit.in linguist-language=gdb
 *.ac	whitespace=space-before-tab,indent-with-non-tab,trailing-space
 *.m4	whitespace=space-before-tab,indent-with-non-tab,trailing-space
 
-# Generated files.
+# Generated/vendored files.
 
 configure   -whitespace
 aclocal.m4  -whitespace
+m4/libtool.m4 -whitespace
 
 # Tab-indented files.
 

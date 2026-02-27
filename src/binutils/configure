@@ -776,6 +776,7 @@ CXXDEPMODE
 ac_ct_CXX
 CXXFLAGS
 CXX
+GCC
 SED
 am_aux_dir
 am__xargs_n
@@ -26871,7 +26872,10 @@ then :
 
 fi
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for __chk_fail in -lssp" >&5
+if test "x${GCC}" = "xyes" && test "x${CC}" != "xclang"
+then :
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for __chk_fail in -lssp" >&5
 printf %s "checking for __chk_fail in -lssp... " >&6; }
 if test ${ac_cv_lib_ssp___chk_fail+y}
 then :
@@ -26922,7 +26926,7 @@ then :
 
 else case e in #(
   e)
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for __memcpy_chk in -lssp" >&5
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for __memcpy_chk in -lssp" >&5
 printf %s "checking for __memcpy_chk in -lssp... " >&6; }
 if test ${ac_cv_lib_ssp___memcpy_chk+y}
 then :
@@ -26973,7 +26977,7 @@ then :
 
 else case e in #(
   e)
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for __strcpy_chk in -lssp" >&5
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for __strcpy_chk in -lssp" >&5
 printf %s "checking for __strcpy_chk in -lssp... " >&6; }
 if test ${ac_cv_lib_ssp___strcpy_chk+y}
 then :
@@ -27023,16 +27027,14 @@ then :
   LIBS="-lssp $LIBS"
 
 fi
-
+     ;;
+esac
+fi
    ;;
 esac
 fi
 
- ;;
-esac
-fi
-
-# check arch when "main()" is the only function for which we check:
+fi  ## check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
 # OK to use 'main' here:

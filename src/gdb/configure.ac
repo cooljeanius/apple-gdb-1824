@@ -157,7 +157,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu \
+AM_INIT_AUTOMAKE([1.18.1 gnits dejagnu \
                   dist-bzip2 dist-xz dist-zip dist-tarZ])dnl
   ## make sure this is in the right place:
 if test -x ${srcdir}/missing; then
@@ -973,8 +973,8 @@ AC_MSG_CHECKING([libtool things])
 AC_MSG_RESULT([ ])
 LT_INIT([disable-fast-install dlopen])dnl
 LT_LANG([C])dnl
-dnl# temporarily set this while I update everything libtool-related:
-LT_PREREQ([2.4.7])dnl
+dnl# https://lists.gnu.org/archive/html/libtool/2026-01/msg00001.html
+LT_PREREQ([2.5.4])dnl
 dnl# even though gdb is written only in C, it has tests written
 dnl# for debugging the following languages, so check them, too:
 LT_LANG([C++])dnl

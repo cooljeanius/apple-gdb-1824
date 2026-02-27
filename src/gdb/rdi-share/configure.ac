@@ -107,7 +107,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu -Wall])
+AM_INIT_AUTOMAKE([1.18.1 gnits dejagnu -Wall])
 AM_MAINTAINER_MODE
 AC_EXEEXT
 

@@ -2375,6 +2375,7 @@ AM_BACKSLASH='\'
 
 
 AM_DEFAULT_VERBOSITY=1
+
 #### check arg val for silent rules:
 if test "x${enable_silent_rules}" = "xno"; then
   : ${V=1}

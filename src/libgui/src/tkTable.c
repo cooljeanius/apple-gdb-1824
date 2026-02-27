@@ -164,25 +164,36 @@ static Cmd_Struct state_vals[]= {
 #if defined(__GNUC__) && (__GNUC__ > 5)
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
-#endif /* GCC > 5 */
+#elif defined(__clang__) && (__clang__ > 1)
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wincompatible-function-pointer-types"
+#endif /* (GCC > 5) || clang */
 
 /* The widget configuration table */
-static Tk_CustomOption drawOpt		= { Cmd_OptionSet, Cmd_OptionGet,
-					    (ClientData)(&drawmode_vals) };
-static Tk_CustomOption resizeTypeOpt	= { Cmd_OptionSet, Cmd_OptionGet,
-					    (ClientData)(&resize_vals) };
-static Tk_CustomOption stretchOpt	= { Cmd_OptionSet, Cmd_OptionGet,
-					    (ClientData)(&stretch_vals) };
-static Tk_CustomOption selTypeOpt	= { Cmd_OptionSet, Cmd_OptionGet,
-					    (ClientData)(&sel_vals) };
-static Tk_CustomOption stateTypeOpt	= { Cmd_OptionSet, Cmd_OptionGet,
-					    (ClientData)(&state_vals) };
-static Tk_CustomOption bdOpt		= { TableOptionBdSet, TableOptionBdGet,
-					    (ClientData) BD_TABLE };
+static Tk_CustomOption drawOpt = { (Tk_OptionParseProc *)Cmd_OptionSet,
+				   (Tk_OptionPrintProc *)Cmd_OptionGet,
+				   (ClientData)(&drawmode_vals) };
+static Tk_CustomOption resizeTypeOpt = { (Tk_OptionParseProc *)Cmd_OptionSet,
+					 (Tk_OptionPrintProc *)Cmd_OptionGet,
+					 (ClientData)(&resize_vals) };
+static Tk_CustomOption stretchOpt = { (Tk_OptionParseProc *)Cmd_OptionSet,
+				      (Tk_OptionPrintProc *)Cmd_OptionGet,
+				      (ClientData)(&stretch_vals) };
+static Tk_CustomOption selTypeOpt = { (Tk_OptionParseProc *)Cmd_OptionSet,
+				      (Tk_OptionPrintProc *)Cmd_OptionGet,
+				      (ClientData)(&sel_vals) };
+static Tk_CustomOption stateTypeOpt = { (Tk_OptionParseProc *)Cmd_OptionSet,
+					(Tk_OptionPrintProc *)Cmd_OptionGet,
+					(ClientData)(&state_vals) };
+static Tk_CustomOption bdOpt = { (Tk_OptionParseProc *)TableOptionBdSet,
+				 (Tk_OptionPrintProc *)TableOptionBdGet,
+				 (ClientData)BD_TABLE };
 
 #if defined(__GNUC__) && (__GNUC__ > 5)
 # pragma GCC diagnostic pop
-#endif /* GCC > 5 */
+#elif defined(__clang__) && (__clang__ > 1)
+# pragma clang diagnostic pop
+#endif /* (GCC > 5) || clang */
 
 Tk_ConfigSpec tableSpecs[] = {
     {TK_CONFIG_ANCHOR, "-anchor", "anchor", "Anchor", "center",
