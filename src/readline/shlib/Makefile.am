@@ -185,12 +185,12 @@ installdirs-local: $(topdir)/support/mkdirs
 install-readline-shlib: installdirs-local $(SHLIB_STATUS)
 	$(SHELL) $(topdir)/support/shlib-install -O $(host_os) -d $(DESTDIR)$(libdir) -i "$(INSTALL_DATA)" $(SHARED_HISTORY)
 	$(SHELL) $(topdir)/support/shlib-install -O $(host_os) -d $(DESTDIR)$(libdir) -i "$(INSTALL_DATA)" $(SHARED_READLINE)
-	@echo install: you may need to run ldconfig
+	@echo "install: you may need to run ldconfig"
 
 uninstall-local:
 	$(SHELL) $(topdir)/support/shlib-install -O $(host_os) -d $(DESTDIR)$(libdir) -U $(SHARED_HISTORY)
 	$(SHELL) $(topdir)/support/shlib-install -O $(host_os) -d $(DESTDIR)$(libdir) -U $(SHARED_READLINE)
-	@echo uninstall: you may need to run ldconfig
+	@echo "uninstall: you may need to run ldconfig"
 
 clean-local mostlyclean-local:	force
 	$(RM) $(SHARED_OBJ) $(SHARED_LIBS)

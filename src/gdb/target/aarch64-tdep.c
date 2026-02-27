@@ -690,7 +690,7 @@ aarch64_analyze_prologue(struct gdbarch *gdbarch,
       unsigned int bit;
       int32_t offset;
 
-      insn = read_memory_unsigned_integer(start, 4);
+      insn = (uint32_t)read_memory_unsigned_integer(start, 4);
 
       if (decode_add_sub_imm (start, insn, &rd, &rn, &imm))
 	regs[rd] = pv_add_constant (regs[rn], imm);
@@ -991,13 +991,17 @@ aarch64_prologue_this_id (struct frame_info *this_frame,
 # pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
 # pragma GCC diagnostic ignored "-Wint-conversion"
 # pragma GCC diagnostic ignored "-Wunused-variable"
-#endif /* GCC > 5 */
+#elif defined(__clang__) && (__clang__ >= 1)
+# pragma clang diagnostic ignored "-Wimplicit-function-declaration"
+# pragma clang diagnostic ignored "-Wincompatible-pointer-types"
+# pragma clang diagnostic ignored "-Wint-conversion"
+# pragma clang diagnostic ignored "-Wunused-variable"
+#endif /* (GCC > 5) || clang */
 
-/* Implement the "prev_register" frame_unwind method.  */
-
+/* Implement the "prev_register" frame_unwind method: */
 static struct value *
-aarch64_prologue_prev_register (struct frame_info *this_frame,
-				void **this_cache, int prev_regnum)
+aarch64_prologue_prev_register(struct frame_info *this_frame,
+			       void **this_cache, int prev_regnum)
 {
   struct gdbarch *gdbarch = get_frame_arch (this_frame);
   struct aarch64_prologue_cache *cache;
@@ -1013,8 +1017,8 @@ aarch64_prologue_prev_register (struct frame_info *this_frame,
     {
       CORE_ADDR lr;
 
-      lr = frame_unwind_register_unsigned (this_frame, AARCH64_LR_REGNUM);
-      return frame_unwind_got_constant (this_frame, prev_regnum, lr);
+      lr = frame_unwind_register_unsigned(this_frame, AARCH64_LR_REGNUM);
+      return frame_unwind_got_constant(this_frame, prev_regnum, lr);
     }
 
   /* SP is generally not saved to the stack, but this frame is
@@ -1033,11 +1037,12 @@ aarch64_prologue_prev_register (struct frame_info *this_frame,
          |          |<- SP
          +----------+  */
   if (prev_regnum == AARCH64_SP_REGNUM)
-    return frame_unwind_got_constant (this_frame, prev_regnum,
-				      cache->prev_sp);
+    return frame_unwind_got_constant(this_frame, prev_regnum,
+				     cache->prev_sp);
 
-  return trad_frame_get_prev_register (this_frame, cache->saved_regs,
-				       prev_regnum);
+  trad_frame_get_prev_register(this_frame, cache->saved_regs, prev_regnum,
+			       NULL, NULL, NULL, NULL, NULL);
+  return NULL;
 }
 
 /* AArch64 prologue unwinder.  */
@@ -1096,7 +1101,7 @@ aarch64_stub_unwind_sniffer (const struct frame_unwind *self,
   gdb_byte dummy[4];
 
   addr_in_block = get_frame_address_in_block (this_frame);
-  if (in_plt_section (addr_in_block)
+  if (in_plt_section(addr_in_block, NULL)
       /* We also use the stub winder if the target memory is unreadable
 	 to avoid having the prologue unwinder trying to read it.  */
       || target_read_memory (get_frame_pc (this_frame), dummy, 4) != 0)
@@ -1365,10 +1370,8 @@ pass_in_x (struct gdbarch *gdbarch, struct regcache *regcache,
 
   while (len > 0)
     {
-      int partial_len = len < X_REGISTER_SIZE ? len : X_REGISTER_SIZE;
-      CORE_ADDR regval = extract_unsigned_integer (buf, partial_len,
-						   byte_order);
-
+      int partial_len = ((len < X_REGISTER_SIZE) ? len : X_REGISTER_SIZE);
+      CORE_ADDR regval = extract_unsigned_integer(buf, partial_len);
 
       /* Adjust sub-word struct/union args when big-endian.  */
       if (byte_order == BFD_ENDIAN_BIG
@@ -1434,7 +1437,7 @@ pass_on_stack (struct aarch64_call_info *info, struct type *type,
 
   /* PCS C.17 Stack should be aligned to the larger of 8 bytes or the
      Natural alignment of the argument's type.  */
-  align = align_up (align, 8);
+  align = (int)align_up(align, 8);
 
   /* The AArch64 PCS requires at most doubleword alignment.  */
   if (align > 16)

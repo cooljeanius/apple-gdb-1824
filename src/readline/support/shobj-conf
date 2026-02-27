@@ -140,7 +140,7 @@ darwin*|macosx*)
 
 	SHOBJ_CFLAGS='-dynamic -fno-common'
 
-	SHOBJ_LD=cc
+	SHOBJ_LD='${CC}'
 
 	SHLIB_LIBVERSION='$(SHLIB_MAJOR)$(SHLIB_MINOR).$(SHLIB_LIBSUFF)'
 	SHLIB_LIBSUFF='dylib'
