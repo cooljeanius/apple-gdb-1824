@@ -43,7 +43,7 @@ jobs:
           osslsigncode gperf help2man findutils grep coreutils remake byacc \
           texlive gawk util-macros autoconf-archive automake scons smake \
           termbox termcolor cdk cgdb ncurses groff splint makedepend \
-          libapplewm libxpresent xcb-util-image tkdiff wget \
+          libapplewm libxpresent xcb-util-image tkdiff wget2 wgetpaste \
           "${COMPILER_FORMULA}"
         if test -z "$(which term)" || test ! -x "$(which term)"; then \
           brew install termshot || brew install termrec || sync; \

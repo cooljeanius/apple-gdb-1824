@@ -161,6 +161,11 @@ static Cmd_Struct state_vals[]= {
     {"",	 0 }
 };
 
+#if defined(__GNUC__) && (__GNUC__ > 5)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+#endif /* GCC > 5 */
+
 /* The widget configuration table */
 static Tk_CustomOption drawOpt		= { Cmd_OptionSet, Cmd_OptionGet,
 					    (ClientData)(&drawmode_vals) };
@@ -174,6 +179,10 @@ static Tk_CustomOption stateTypeOpt	= { Cmd_OptionSet, Cmd_OptionGet,
 					    (ClientData)(&state_vals) };
 static Tk_CustomOption bdOpt		= { TableOptionBdSet, TableOptionBdGet,
 					    (ClientData) BD_TABLE };
+
+#if defined(__GNUC__) && (__GNUC__ > 5)
+# pragma GCC diagnostic pop
+#endif /* GCC > 5 */
 
 Tk_ConfigSpec tableSpecs[] = {
     {TK_CONFIG_ANCHOR, "-anchor", "anchor", "Anchor", "center",

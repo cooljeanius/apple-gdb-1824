@@ -2392,8 +2392,8 @@ LayoutTree AC1(Layout_Graph*,This)
   return result;
 }
 
-Layout_Graph*
-LayoutCreateGraph()
+Layout_Graph *
+LayoutCreateGraph (void)
 {
     register Layout_Graph* This;
 
@@ -2615,9 +2615,8 @@ LayoutSetEdgeDim(This,id,geom)
     return LAYOUT_OK;
 }
 
-char*
-LayoutGetError(This)
-	struct Layout_Graph* This;
+char *
+LayoutGetError (struct Layout_Graph *This)
 {
     register char* msg = THIS(errmsg);
     THIS(errmsg) = (char*)0;
@@ -2627,51 +2626,44 @@ LayoutGetError(This)
 
 /* KHAMIS */
 
-void * MY_EdgeFromNode (This, i)
-	struct Layout_Graph* This;
-	int i;
+void *
+MY_EdgeFromNode (struct Layout_Graph *This, int i)
 {
 	return THIS(edges)[i]->fromNode;
 }
 
-void * MY_EdgeToNode (This, i)
-	struct Layout_Graph* This;
-	int i;
+void *
+MY_EdgeToNode (struct Layout_Graph *This, int i)
 {
 	return THIS(edges)[i]->toNode;
 }
 
-int MY_EdgeParentNum (This, i)
-	struct Layout_Graph* This;
-	int i;
+int 
+MY_EdgeParentNum (struct Layout_Graph *This, int i)
 {
 	return THIS(edges)[i]->toNode->parentNum;
 }
 
-void * MY_EdgeParent (This, i, num)
-	struct Layout_Graph* This;
-	int i;
-	int num;
+void *
+MY_EdgeParent (struct Layout_Graph *This, int i, int num)
 {
 	return THIS(edges)[i]->toNode->parent[num]->fromNode;
 }
 
-int MY_EdgeSuccNum (This, i)
-	struct Layout_Graph* This;
-	int i;
+int 
+MY_EdgeSuccNum (struct Layout_Graph *This, int i)
 {
 	return THIS(edges)[i]->fromNode->succNum;
 }
 
-void * MY_EdgeSucc (This, i, num)
-	struct Layout_Graph* This;
-	int i;
+void *
+MY_EdgeSucc (struct Layout_Graph *This, int i, int num)
 {
 	return THIS(edges)[i]->fromNode->succ[num]->toNode;
 }
 
-int MY_graphOrder (This)
-	struct Layout_Graph* This;
+int 
+MY_graphOrder (struct Layout_Graph *This)
 {
 	return THIS(graphOrder);
 }
