@@ -42,8 +42,9 @@ jobs:
         brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar \
           osslsigncode gperf help2man findutils grep coreutils remake byacc \
           texlive gawk util-macros autoconf-archive automake scons smake \
-          termbox termcolor cdk cgdb ncurses groff splint makedepend libapplewm \
-          libxpresent xcb-util-image tkdiff "${COMPILER_FORMULA}"
+          termbox termcolor cdk cgdb ncurses groff splint makedepend \
+          libapplewm libxpresent xcb-util-image tkdiff wget \
+          "${COMPILER_FORMULA}"
         if test -z "$(which term)" || test ! -x "$(which term)"; then \
           brew install termshot || brew install termrec || sync; \
         else \
@@ -104,6 +105,11 @@ jobs:
           export PPC_CONFIG_PATH=/opt/sw/etc/; \
         fi
         sync && printf '\n' && sync && date && sync
+    - name: Install XQuartz
+      run: |
+        wget https://dl.bintray.com/xquartz/downloads/XQuartz-2.7.11.dmg
+        sudo hdiutil attach XQuartz-2.7.11.dmg
+        sudo installer -package /Volumes/XQuartz-2.7.11/XQuartz.pkg -target / 
     - run: cd .profile.d && test -e ./.profile_generic && test -r ./.profile_generic && test -s ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq | grep -v "\*\*\*" | grep -v "PWD\=") && sync && (if test -x "$(which xcode-select)"; then stat "$(which xcode-select)" && xcode-select --print-path && xcode-select --version; else echo "no usable xcode-select found"; fi)
     - run: ./configure --enable-silent-rules --disable-dependency-tracking CC="sccache ${{ matrix.compiler }}" OBJC="sccache ${{ matrix.compiler }}"
     - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then (ant || echo "FIXME, ant build is broken!"); else echo "ant missing"; fi)
