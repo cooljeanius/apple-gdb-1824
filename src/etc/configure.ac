@@ -16,8 +16,12 @@ AC_PROG_SED
 
 if test -e `pwd`/config.cache; then
   sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_set|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS_value|g" `pwd`/config.cache
 elif test -e ./config.cache; then
   sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_set|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS_value|g" ./config.cache
 else
   echo "config.cache is missing, which means we can skip attempts to hack it"
 fi

@@ -986,6 +986,13 @@ aarch64_prologue_this_id (struct frame_info *this_frame,
   *this_id = id;
 }
 
+#if defined(__GNUC__) && (__GNUC__ > 5)
+# pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
+# pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+# pragma GCC diagnostic ignored "-Wint-conversion"
+# pragma GCC diagnostic ignored "-Wunused-variable"
+#endif /* GCC > 5 */
+
 /* Implement the "prev_register" frame_unwind method.  */
 
 static struct value *
