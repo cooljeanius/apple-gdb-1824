@@ -1,8 +1,8 @@
-/* 
+/*
  * tkSquare.c --
  *
  *	This module implements "square" widgets that are object
- *	based.  A "square" is a widget that displays a single square that can 
+ *	based.  A "square" is a widget that displays a single square that can
  *	be moved around and resized.  This file is intended as an example
  *	of how to build a widget;  it isn't included in the
  *	normal wish, but it is included in "tktest".
@@ -93,7 +93,7 @@ static Tk_OptionSpec optionSpecs[] = {
  */
 
 int			SquareObjCmd _ANSI_ARGS_((ClientData clientData,
-			    Tcl_Interp *interp, int objc, 
+			    Tcl_Interp *interp, int objc,
 			    Tcl_Obj * CONST objv[]));
 static void		SquareDeletedProc _ANSI_ARGS_((
 			    ClientData clientData));
@@ -140,7 +140,7 @@ SquareObjCmd(clientData, interp, objc, objv)
 	return TCL_ERROR;
     }
 
-    tkwin = Tk_CreateWindowFromPath(interp, Tk_MainWindow(interp), 
+    tkwin = Tk_CreateWindowFromPath(interp, Tk_MainWindow(interp),
 	    Tcl_GetStringFromObj(objv[1], NULL), (char *) NULL);
     if (tkwin == NULL) {
 	return TCL_ERROR;
@@ -245,7 +245,7 @@ SquareWidgetObjCmd(clientData, interp, objc, objv)
     }
 
     Tcl_Preserve((ClientData) squarePtr);
-    
+
     switch (index) {
 	case SQUARE_CGET: {
 	    if (objc != 3) {
@@ -336,7 +336,7 @@ SquareConfigure(interp, squarePtr)
      * for use during redisplay.
      */
 
-    bgBorder = Tk_Get3DBorderFromObj(squarePtr->tkwin, 
+    bgBorder = Tk_Get3DBorderFromObj(squarePtr->tkwin,
 	    squarePtr->bgBorderPtr);
     Tk_SetWindowBackground(squarePtr->tkwin,
 	    Tk_3DBorderColor(bgBorder)->pixel);
@@ -509,10 +509,9 @@ SquareDisplay(clientData)
     /*
      * Redraw the widget's background and border.
      */
-
     Tk_GetPixelsFromObj(NULL, squarePtr->tkwin, squarePtr->borderWidthPtr,
 	    &borderWidth);
-    bgBorder = Tk_Get3DBorderFromObj(squarePtr->tkwin, 
+    bgBorder = Tk_Get3DBorderFromObj(squarePtr->tkwin,
 	    squarePtr->bgBorderPtr);
     Tk_GetReliefFromObj(NULL, squarePtr->reliefPtr, &relief);
     Tk_Fill3DRectangle(tkwin, d, bgBorder, 0, 0, Tk_Width(tkwin),
@@ -521,17 +520,15 @@ SquareDisplay(clientData)
     /*
      * Display the square.
      */
-
     Tk_GetPixelsFromObj(NULL, squarePtr->tkwin, squarePtr->sizeObjPtr, &size);
-    fgBorder = Tk_Get3DBorderFromObj(squarePtr->tkwin, 
+    fgBorder = Tk_Get3DBorderFromObj(squarePtr->tkwin,
 	    squarePtr->fgBorderPtr);
-    Tk_Fill3DRectangle(tkwin, d, fgBorder, squarePtr->x, squarePtr->y, size, 
+    Tk_Fill3DRectangle(tkwin, d, fgBorder, squarePtr->x, squarePtr->y, size,
 	    size, borderWidth, TK_RELIEF_RAISED);
 
     /*
      * If double-buffered, copy to the screen and release the pixmap.
      */
-
     if (doubleBuffer) {
 	XCopyArea(Tk_Display(tkwin), pm, Tk_WindowId(tkwin), squarePtr->gc,
 		0, 0, (unsigned) Tk_Width(tkwin), (unsigned) Tk_Height(tkwin),
@@ -559,11 +556,12 @@ SquareDisplay(clientData)
  */
 
 static void
-SquareDestroy(memPtr)
-    char *memPtr;		/* Info about square widget. */
+SquareDestroy (
+    char *memPtr		/* Info about square widget. */
+)
 {
     Square *squarePtr = (Square *) memPtr;
-    
+
     ckfree((char *) squarePtr);
 }
 
@@ -586,17 +584,18 @@ SquareDestroy(memPtr)
  */
 
 static void
-KeepInWindow(squarePtr)
-    register Square *squarePtr;		/* Pointer to widget record. */
+KeepInWindow (
+    register Square *squarePtr		/* Pointer to widget record. */
+)
 {
     int i, bd, relief;
     int borderWidth, size;
 
     Tk_GetPixelsFromObj(NULL, squarePtr->tkwin, squarePtr->borderWidthPtr,
 	    &borderWidth);
-    Tk_GetPixelsFromObj(NULL, squarePtr->tkwin, squarePtr->xPtr, 
+    Tk_GetPixelsFromObj(NULL, squarePtr->tkwin, squarePtr->xPtr,
 	    &squarePtr->x);
-    Tk_GetPixelsFromObj(NULL, squarePtr->tkwin, squarePtr->yPtr, 
+    Tk_GetPixelsFromObj(NULL, squarePtr->tkwin, squarePtr->yPtr,
 	    &squarePtr->y);
     Tk_GetPixelsFromObj(NULL, squarePtr->tkwin, squarePtr->sizeObjPtr, &size);
     Tk_GetReliefFromObj(NULL, squarePtr->reliefPtr, &relief);

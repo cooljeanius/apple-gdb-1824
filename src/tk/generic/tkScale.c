@@ -1,11 +1,11 @@
-/* 
+/*
  * tkScale.c --
  *
  *	This module implements a scale widgets for the Tk toolkit.
  *	A scale displays a slider that can be adjusted to change a
  *	value;  it also displays numeric labels and a textual label,
  *	if desired.
- *	
+ *
  *	The modifications to use floating-point values are based on
  *	an implementation by Paul Mackerras.  The -variable option
  *	is due to Henning Schulzrinne.  All of these are used with
@@ -53,14 +53,14 @@ static Tk_OptionSpec optionSpecs[] = {
 	DEF_SCALE_BG_COLOR, -1, Tk_Offset(TkScale, bgBorder),
 	0, (ClientData) DEF_SCALE_BG_MONO, 0},
     {TK_OPTION_DOUBLE, "-bigincrement", "bigIncrement", "BigIncrement",
-        DEF_SCALE_BIG_INCREMENT, -1, Tk_Offset(TkScale, bigIncrement), 
+        DEF_SCALE_BIG_INCREMENT, -1, Tk_Offset(TkScale, bigIncrement),
         0, 0, 0},
     {TK_OPTION_SYNONYM, "-bd", (char *) NULL, (char *) NULL,
 	(char *) NULL, 0, -1, 0, (ClientData) "-borderwidth", 0},
     {TK_OPTION_SYNONYM, "-bg", (char *) NULL, (char *) NULL,
 	(char *) NULL, 0, -1, 0, (ClientData) "-background", 0},
     {TK_OPTION_PIXELS, "-borderwidth", "borderWidth", "BorderWidth",
-	DEF_SCALE_BORDER_WIDTH, -1, Tk_Offset(TkScale, borderWidth), 
+	DEF_SCALE_BORDER_WIDTH, -1, Tk_Offset(TkScale, borderWidth),
         0, 0, 0},
     {TK_OPTION_STRING, "-command", "command", "Command",
 	DEF_SCALE_COMMAND, -1, Tk_Offset(TkScale, command),
@@ -68,27 +68,27 @@ static Tk_OptionSpec optionSpecs[] = {
     {TK_OPTION_CURSOR, "-cursor", "cursor", "Cursor",
 	DEF_SCALE_CURSOR, -1, Tk_Offset(TkScale, cursor),
 	TK_OPTION_NULL_OK, 0, 0},
-    {TK_OPTION_INT, "-digits", "digits", "Digits", 
-	DEF_SCALE_DIGITS, -1, Tk_Offset(TkScale, digits), 
+    {TK_OPTION_INT, "-digits", "digits", "Digits",
+	DEF_SCALE_DIGITS, -1, Tk_Offset(TkScale, digits),
         0, 0, 0},
     {TK_OPTION_SYNONYM, "-fg", "foreground", (char *) NULL,
 	(char *) NULL, 0, -1, 0, (ClientData) "-foreground", 0},
     {TK_OPTION_FONT, "-font", "font", "Font",
 	DEF_SCALE_FONT, -1, Tk_Offset(TkScale, tkfont), 0, 0, 0},
     {TK_OPTION_COLOR, "-foreground", "foreground", "Foreground",
-	DEF_SCALE_FG_COLOR, -1, Tk_Offset(TkScale, textColorPtr), 0, 
+	DEF_SCALE_FG_COLOR, -1, Tk_Offset(TkScale, textColorPtr), 0,
         (ClientData) DEF_SCALE_FG_MONO, 0},
-    {TK_OPTION_DOUBLE, "-from", "from", "From", DEF_SCALE_FROM, -1, 
+    {TK_OPTION_DOUBLE, "-from", "from", "From", DEF_SCALE_FROM, -1,
         Tk_Offset(TkScale, fromValue), 0, 0, 0},
     {TK_OPTION_BORDER, "-highlightbackground", "highlightBackground",
 	"HighlightBackground", DEF_SCALE_HIGHLIGHT_BG_COLOR,
-	-1, Tk_Offset(TkScale, highlightBorder), 
+	-1, Tk_Offset(TkScale, highlightBorder),
         0, (ClientData) DEF_SCALE_HIGHLIGHT_BG_MONO, 0},
     {TK_OPTION_COLOR, "-highlightcolor", "highlightColor", "HighlightColor",
 	DEF_SCALE_HIGHLIGHT, -1, Tk_Offset(TkScale, highlightColorPtr),
 	0, 0, 0},
     {TK_OPTION_PIXELS, "-highlightthickness", "highlightThickness",
-	"HighlightThickness", DEF_SCALE_HIGHLIGHT_WIDTH, -1, 
+	"HighlightThickness", DEF_SCALE_HIGHLIGHT_WIDTH, -1,
 	Tk_Offset(TkScale, highlightWidth), 0, 0, 0},
     {TK_OPTION_STRING, "-label", "label", "Label",
 	DEF_SCALE_LABEL, -1, Tk_Offset(TkScale, label),
@@ -96,7 +96,7 @@ static Tk_OptionSpec optionSpecs[] = {
     {TK_OPTION_PIXELS, "-length", "length", "Length",
 	DEF_SCALE_LENGTH, -1, Tk_Offset(TkScale, length), 0, 0, 0},
     {TK_OPTION_STRING_TABLE, "-orient", "orient", "Orient",
-        DEF_SCALE_ORIENT, -1, Tk_Offset(TkScale, orient), 
+        DEF_SCALE_ORIENT, -1, Tk_Offset(TkScale, orient),
         0, (ClientData) orientStrings, 0},
     {TK_OPTION_RELIEF, "-relief", "relief", "Relief",
 	DEF_SCALE_RELIEF, -1, Tk_Offset(TkScale, relief), 0, 0, 0},
@@ -116,10 +116,10 @@ static Tk_OptionSpec optionSpecs[] = {
         DEF_SCALE_SLIDER_LENGTH, -1, Tk_Offset(TkScale, sliderLength),
         0, 0, 0},
     {TK_OPTION_RELIEF, "-sliderrelief", "sliderRelief", "SliderRelief",
-	DEF_SCALE_SLIDER_RELIEF, -1, Tk_Offset(TkScale, sliderRelief), 
+	DEF_SCALE_SLIDER_RELIEF, -1, Tk_Offset(TkScale, sliderRelief),
         0, 0, 0},
     {TK_OPTION_STRING_TABLE, "-state", "state", "State",
-        DEF_SCALE_STATE, -1, Tk_Offset(TkScale, state), 
+        DEF_SCALE_STATE, -1, Tk_Offset(TkScale, state),
         0, (ClientData) stateStrings, 0},
     {TK_OPTION_STRING, "-takefocus", "takeFocus", "TakeFocus",
 	DEF_SCALE_TAKE_FOCUS, Tk_Offset(TkScale, takeFocusPtr), -1,
@@ -142,8 +142,8 @@ static Tk_OptionSpec optionSpecs[] = {
 };
 
 /*
- * The following tables define the scale widget commands and map the 
- * indexes into the string tables into a single enumerated type used 
+ * The following tables define the scale widget commands and map the
+ * indexes into the string tables into a single enumerated type used
  * to dispatch the scale widget command.
  */
 
@@ -174,7 +174,7 @@ static char *		ScaleVarProc _ANSI_ARGS_((ClientData clientData,
 			    Tcl_Interp *interp, CONST char *name1,
 			    CONST char *name2, int flags));
 static int		ScaleWidgetObjCmd _ANSI_ARGS_((ClientData clientData,
-			    Tcl_Interp *interp, int objc, 
+			    Tcl_Interp *interp, int objc,
 			    Tcl_Obj *CONST objv[]));
 static void		ScaleWorldChanged _ANSI_ARGS_((
 			    ClientData instanceData));
@@ -399,7 +399,7 @@ ScaleWidgetObjCmd(clientData, interp, objc, objv)
 		goto error;
 	    }
 	    if (objc == 3) {
-	        if (Tcl_GetDoubleFromObj(interp, objv[2], &value) 
+	        if (Tcl_GetDoubleFromObj(interp, objv[2], &value)
                         != TCL_OK) {
 		    goto error;
 		}
@@ -432,7 +432,7 @@ ScaleWidgetObjCmd(clientData, interp, objc, objv)
 	        value = scalePtr->value;
 	    } else {
 	        if ((Tcl_GetIntFromObj(interp, objv[2], &x) != TCL_OK)
-		        || (Tcl_GetIntFromObj(interp, objv[3], &y) 
+		        || (Tcl_GetIntFromObj(interp, objv[3], &y)
                         != TCL_OK)) {
 		    goto error;
 		}
@@ -481,7 +481,7 @@ ScaleWidgetObjCmd(clientData, interp, objc, objv)
 	      TkScaleSetValue(scalePtr, value, 1, 1);
 	    }
 	    break;
-        } 
+        }
     }
     Tcl_Release((ClientData) scalePtr);
     return result;
@@ -510,8 +510,9 @@ ScaleWidgetObjCmd(clientData, interp, objc, objv)
  */
 
 static void
-DestroyScale(memPtr)
-    char *memPtr;	/* Info about scale widget. */
+DestroyScale (
+    char *memPtr	/* Info about scale widget. */
+)
 {
     register TkScale *scalePtr = (TkScale *) memPtr;
 
@@ -614,7 +615,7 @@ ConfigureScale(interp, scalePtr, objc, objv)
 	}
 
 	/*
-	 * If the scale is tied to the value of a variable, then set 
+	 * If the scale is tied to the value of a variable, then set
 	 * the scale's value from the value of the variable, if it exists
 	 * and it holds a valid double value.
 	 */
@@ -636,7 +637,7 @@ ConfigureScale(interp, scalePtr, objc, objv)
 	 * orientation and creating GCs.
 	 */
 
-	scalePtr->fromValue = TkRoundToResolution(scalePtr, 
+	scalePtr->fromValue = TkRoundToResolution(scalePtr,
                 scalePtr->fromValue);
 	scalePtr->toValue = TkRoundToResolution(scalePtr, scalePtr->toValue);
 	scalePtr->tickInterval = TkRoundToResolution(scalePtr,
@@ -727,7 +728,7 @@ ConfigureScale(interp, scalePtr, objc, objv)
  *
  *---------------------------------------------------------------------------
  */
- 
+
 static void
 ScaleWorldChanged(instanceData)
     ClientData instanceData;	/* Information about widget. */
@@ -1221,7 +1222,7 @@ ScaleVarProc(clientData, interp, name1, name2, flags)
 	return (char *) NULL;
     }
     resultStr = NULL;
-    valuePtr = Tcl_ObjGetVar2(interp, scalePtr->varNamePtr, NULL, 
+    valuePtr = Tcl_ObjGetVar2(interp, scalePtr->varNamePtr, NULL,
             TCL_GLOBAL_ONLY);
     result = Tcl_GetDoubleFromObj(interp, valuePtr, &value);
     if (result != TCL_OK) {
@@ -1232,7 +1233,7 @@ ScaleVarProc(clientData, interp, name1, name2, flags)
 
 	/*
 	 * This code is a bit tricky because it sets the scale's value before
-	 * calling TkScaleSetValue.  This way, TkScaleSetValue won't bother 
+	 * calling TkScaleSetValue.  This way, TkScaleSetValue won't bother
 	 * to set the variable again or to invoke the -command.  However, it
 	 * also won't redisplay the scale, so we have to ask for that
 	 * explicitly.
@@ -1433,3 +1434,5 @@ TkScaleValueToPixel(scalePtr, value)
     y += scalePtr->sliderLength/2 + scalePtr->inset + scalePtr->borderWidth;
     return y;
 }
+
+/* EOF */

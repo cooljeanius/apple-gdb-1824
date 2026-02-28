@@ -48,20 +48,20 @@
  * information about the file dialog and the file filters.
  */
 typedef struct _OpenFileData {
-    FileFilterList fl;                        /* List of file filters. */
-    SInt16 curType;                        /* The filetype currently being
+    FileFilterList fl;                  /* List of file filters. */
+    SInt16 curType;                     /* The filetype currently being
                                          * listed. */
-    short popupItem;                        /* Item number of the popup in the
+    short popupItem;                    /* Item number of the popup in the
                                          * dialog. */
-    int usePopup;                        /* True if we show the popup menu (this
-                                             * is an open operation and the
+    int usePopup;                       /* True if we show the popup menu (this
+                                         * is an open operation and the
                                          * -filetypes option is set). */
 } OpenFileData;
 
 
 static Boolean                MatchOneType _ANSI_ARGS_((StringPtr fileNamePtr, OSType fileType,
                             OpenFileData *myofdPtr, FileFilter *filterPtr));
-static pascal Boolean   OpenFileFilterProc(AEDesc* theItem, void* info, 
+static pascal Boolean   OpenFileFilterProc(AEDesc* theItem, void* info,
                             NavCallBackUserData callBackUD,
                             NavFilterModes filterMode );
 pascal void             OpenEventProc(NavEventCallbackMessage callBackSelector,
@@ -76,7 +76,7 @@ static int              HandleInitialDirectory (Tcl_Interp *interp,
                                                 char *initialFile, char *initialDir,
                                                 FSRef *dirRef,
                                                 AEDescList *selectDescPtr,
-                                                AEDesc *dirDescPtr);                            
+                                                AEDesc *dirDescPtr);
 
 /*
  * Have we initialized the file dialog subsystem
@@ -136,33 +136,33 @@ Tk_ChooseColorObjCmd(
              * 'in' stores the last color picked.  The next time the color dialog
              * pops up, the last color will remain in the dialog.
              */
-             
+
         in.red = 0xffff;
         in.green = 0xffff;
         in.blue = 0xffff;
         inited = 1;
     }
-    
+
     parent = (Tk_Window) clientData;
     title = "Choose a color:";
     picked = 0;
-        
+
     for (i = 1; i < objc; i += 2) {
             int index;
             char *option, *value;
-            
+
         if (Tcl_GetIndexFromObj(interp, objv[i], optionStrings, "option",
                 TCL_EXACT, &index) != TCL_OK) {
             return TCL_ERROR;
         }
         if (i + 1 == objc) {
             option = Tcl_GetStringFromObj(objv[i], NULL);
-            Tcl_AppendResult(interp, "value for \"", option, "\" missing", 
+            Tcl_AppendResult(interp, "value for \"", option, "\" missing",
                     (char *) NULL);
             return TCL_ERROR;
         }
         value = Tcl_GetStringFromObj(objv[i + 1], NULL);
-        
+
         switch ((enum options) index) {
             case COLOR_INITIAL: {
                 XColor *colorPtr;
@@ -190,23 +190,23 @@ Tk_ChooseColorObjCmd(
             }
         }
     }
-        
+
 
     cpinfo.theColor.profile = 0L;
     cpinfo.theColor.color.rgb.red   = in.red;
     cpinfo.theColor.color.rgb.green = in.green;
     cpinfo.theColor.color.rgb.blue  = in.blue;
     cpinfo.dstProfile = 0L;
-    cpinfo.flags = kColorPickerCanModifyPalette 
+    cpinfo.flags = kColorPickerCanModifyPalette
             |  kColorPickerCanAnimatePalette;
     cpinfo.placeWhere = kDeepestColorScreen;
     cpinfo.pickerType = 0L;
     cpinfo.eventProc = NULL;
     cpinfo.colorProc = NULL;
     cpinfo.colorProcData = NULL;
-    
+
     /* This doesn't seem to actually set the title! */
-    Tcl_UtfToExternal(NULL, NULL, title, -1, 0, NULL, 
+    Tcl_UtfToExternal(NULL, NULL, title, -1, 0, NULL,
         StrBody(cpinfo.prompt), 255, &srcRead, &dstWrote, NULL);
     StrLength(cpinfo.prompt) = (unsigned char) dstWrote;
 
@@ -216,15 +216,15 @@ Tk_ChooseColorObjCmd(
         in.blue   = cpinfo.theColor.color.rgb.blue;
         picked = 1;
     }
-     
+
     if (picked != 0) {
         char result[32];
 
-        sprintf(result, "#%02x%02x%02x", in.red >> 8, in.green >> 8, 
+        sprintf(result, "#%02x%02x%02x", in.red >> 8, in.green >> 8,
                 in.blue >> 8);
         Tcl_AppendResult(interp, result, NULL);
     }
-    
+
     return TCL_OK;
 }
 
@@ -262,30 +262,30 @@ Tk_GetOpenFileObjCmd(
     AEDescList selectDesc = {typeNull, NULL};
     char *initialFile = NULL, *initialDir = NULL;
     static CONST char *openOptionStrings[] = {
-            "-defaultextension", "-filetypes", 
-            "-initialdir", "-initialfile", 
+            "-defaultextension", "-filetypes",
+            "-initialdir", "-initialfile",
             "-message", "-multiple",
             "-parent",        "-title",         NULL
     };
     enum openOptions {
-            OPEN_DEFAULT, OPEN_FILETYPES,        
+            OPEN_DEFAULT, OPEN_FILETYPES,
             OPEN_INITDIR, OPEN_INITFILE,
-            OPEN_MESSAGE, OPEN_MULTIPLE, 
+            OPEN_MESSAGE, OPEN_MULTIPLE,
             OPEN_PARENT, OPEN_TITLE
     };
-    
+
     if (!fileDlgInited) {
         InitFileDialogs();
     }
-    
-    result = TCL_ERROR;    
-    parent = (Tk_Window) clientData; 
+
+    result = TCL_ERROR;
+    parent = (Tk_Window) clientData;
     multiple = false;
     title[0] = 0;
-    message[0] = 0;   
+    message[0] = 0;
 
     TkInitFileFilters(&ofd.fl);
-    
+
     ofd.curType                = 0;
     ofd.popupItem        = OPEN_POPUP_ITEM;
     ofd.usePopup         = 1;
@@ -303,18 +303,18 @@ Tk_GetOpenFileObjCmd(
         }
         if (i + 1 == objc) {
             string = Tcl_GetStringFromObj(objv[i], NULL);
-            Tcl_AppendResult(interp, "value for \"", string, "\" missing", 
+            Tcl_AppendResult(interp, "value for \"", string, "\" missing",
                     (char *) NULL);
             result = TCL_ERROR;
             goto end;
         }
-        
+
         switch (index) {
             case OPEN_DEFAULT:
                 break;
             case OPEN_FILETYPES:
                 choice = Tcl_GetStringFromObj(objv[i + 1], NULL);
-                if (TkGetFileFilters(interp, &ofd.fl, choice, 0) 
+                if (TkGetFileFilters(interp, &ofd.fl, choice, 0)
                         != TCL_OK) {
                     result = TCL_ERROR;
                     goto end;
@@ -328,13 +328,13 @@ Tk_GetOpenFileObjCmd(
                 break;
             case OPEN_MESSAGE:
                 choice = Tcl_GetStringFromObj(objv[i + 1], &choiceLen);
-                Tcl_UtfToExternal(NULL, TkMacOSXCarbonEncoding, choice, choiceLen, 
-                        0, NULL, StrBody(message), 255, 
+                Tcl_UtfToExternal(NULL, TkMacOSXCarbonEncoding, choice, choiceLen,
+                        0, NULL, StrBody(message), 255,
                         &srcRead, &dstWrote, NULL);
                 message[0] = dstWrote;
                 break;
             case OPEN_MULTIPLE:
-                if (Tcl_GetBooleanFromObj(interp, objv[i + 1], &multiple) 
+                if (Tcl_GetBooleanFromObj(interp, objv[i + 1], &multiple)
                         != TCL_OK) {
                     result = TCL_ERROR;
                     goto end;
@@ -350,8 +350,8 @@ Tk_GetOpenFileObjCmd(
                 break;
             case OPEN_TITLE:
                 choice = Tcl_GetStringFromObj(objv[i + 1], &choiceLen);
-                Tcl_UtfToExternal(NULL, TkMacOSXCarbonEncoding, choice, choiceLen, 
-                        0, NULL, StrBody(title), 255, 
+                Tcl_UtfToExternal(NULL, TkMacOSXCarbonEncoding, choice, choiceLen,
+                        0, NULL, StrBody(title), 255,
                         &srcRead, &dstWrote, NULL);
                 title[0] = dstWrote;
                 break;
@@ -363,19 +363,19 @@ Tk_GetOpenFileObjCmd(
         result = TCL_ERROR;
         goto end;
     }
-    
+
     if (initialDesc.descriptorType == typeFSRef) {
         initialPtr = &initialDesc;
     }
     result = NavServicesGetFile(interp, &ofd, initialPtr,
-            NULL, &selectDesc, 
+            NULL, &selectDesc,
             title, message, multiple, OPEN_FILE);
 
     end:
     TkFreeFileFilters(&ofd.fl);
     AEDisposeDesc(&initialDesc);
     AEDisposeDesc(&selectDesc);
-    
+
     return result;
 }
 
@@ -411,7 +411,7 @@ Tk_GetSaveFileObjCmd(
     Str255 title, message;
     OpenFileData ofd;
     static CONST char *saveOptionStrings[] = {
-            "-defaultextension", "-filetypes", "-initialdir", "-initialfile", 
+            "-defaultextension", "-filetypes", "-initialdir", "-initialfile",
             "-message", "-parent",        "-title",         NULL
     };
     enum saveOptions {
@@ -422,12 +422,12 @@ Tk_GetSaveFileObjCmd(
     if (!fileDlgInited) {
         InitFileDialogs();
     }
-    
-    result = TCL_ERROR;    
-    parent = (Tk_Window) clientData;    
+
+    result = TCL_ERROR;
+    parent = (Tk_Window) clientData;
     StrLength(initialFile) = 0;
     title[0] = 0;
-    message[0] = 0;   
+    message[0] = 0;
 
     for (i = 1; i < objc; i += 2) {
         char *choice;
@@ -442,7 +442,7 @@ Tk_GetSaveFileObjCmd(
         }
         if (i + 1 == objc) {
             string = Tcl_GetStringFromObj(objv[i], NULL);
-            Tcl_AppendResult(interp, "value for \"", string, "\" missing", 
+            Tcl_AppendResult(interp, "value for \"", string, "\" missing",
                     (char *) NULL);
             return TCL_ERROR;
         }
@@ -454,7 +454,7 @@ Tk_GetSaveFileObjCmd(
                 break;
             case SAVE_INITDIR:
                 choice = Tcl_GetStringFromObj(objv[i + 1], NULL);
-                if (HandleInitialDirectory(interp, NULL, choice, &dirRef, 
+                if (HandleInitialDirectory(interp, NULL, choice, &dirRef,
                         NULL, &initialDesc) != TCL_OK) {
                     result = TCL_ERROR;
                     goto end;
@@ -466,16 +466,16 @@ Tk_GetSaveFileObjCmd(
                     result = TCL_ERROR;
                     goto end;
                 }
-                Tcl_UtfToExternal(NULL, TkMacOSXCarbonEncoding, Tcl_DStringValue(&ds), 
-                        Tcl_DStringLength(&ds), 0, NULL, 
+                Tcl_UtfToExternal(NULL, TkMacOSXCarbonEncoding, Tcl_DStringValue(&ds),
+                        Tcl_DStringLength(&ds), 0, NULL,
                         StrBody(initialFile), 255, &srcRead, &dstWrote, NULL);
                 StrLength(initialFile) = (unsigned char) dstWrote;
-                Tcl_DStringFree(&ds);            
+                Tcl_DStringFree(&ds);
                 break;
             case SAVE_MESSAGE:
                 choice = Tcl_GetStringFromObj(objv[i + 1], &choiceLen);
-                Tcl_UtfToExternal(NULL, TkMacOSXCarbonEncoding, choice, choiceLen, 
-                        0, NULL, StrBody(message), 255, 
+                Tcl_UtfToExternal(NULL, TkMacOSXCarbonEncoding, choice, choiceLen,
+                        0, NULL, StrBody(message), 255,
                         &srcRead, &dstWrote, NULL);
                 StrLength(message) = (unsigned char) dstWrote;
                 break;
@@ -489,14 +489,14 @@ Tk_GetSaveFileObjCmd(
                 break;
             case SAVE_TITLE:
                 choice = Tcl_GetStringFromObj(objv[i + 1], &choiceLen);
-                Tcl_UtfToExternal(NULL, TkMacOSXCarbonEncoding, choice, choiceLen, 
-                        0, NULL, StrBody(title), 255, 
+                Tcl_UtfToExternal(NULL, TkMacOSXCarbonEncoding, choice, choiceLen,
+                        0, NULL, StrBody(title), 255,
                         &srcRead, &dstWrote, NULL);
                 StrLength(title) = (unsigned char) dstWrote;
                 break;
         }
     }
-         
+
     TkInitFileFilters(&ofd.fl);
     ofd.usePopup = 0;
 
@@ -507,9 +507,9 @@ Tk_GetSaveFileObjCmd(
         title, message, false, SAVE_FILE);
 
     end:
-    
+
     AEDisposeDesc(&initialDesc);
-    
+
     return result;
 }
 
@@ -518,8 +518,8 @@ Tk_GetSaveFileObjCmd(
  *
  * Tk_ChooseDirectoryObjCmd --
  *
- *        This procedure implements the "tk_chooseDirectory" dialog box 
- *        for the Windows platform. See the user documentation for details 
+ *        This procedure implements the "tk_chooseDirectory" dialog box
+ *        for the Windows platform. See the user documentation for details
  *        on what it does.
  *
  * Results:
@@ -551,11 +551,11 @@ Tk_ChooseDirectoryObjCmd(clientData, interp, objc, objv)
             "-initialdir", "-message", "-mustexist", "-parent", "-title", NULL
     };
     enum chooseOptions {
-            CHOOSE_INITDIR,        CHOOSE_MESSAGE, CHOOSE_MUSTEXIST, 
+            CHOOSE_INITDIR,        CHOOSE_MESSAGE, CHOOSE_MUSTEXIST,
             CHOOSE_PARENT, CHOOSE_TITLE
     };
-  
-    
+
+
     if (!NavServicesAvailable()) {
         return TCL_ERROR;
     }
@@ -563,10 +563,10 @@ Tk_ChooseDirectoryObjCmd(clientData, interp, objc, objv)
     if (!fileDlgInited) {
         InitFileDialogs();
     }
-    result = TCL_ERROR;    
-    parent = (Tk_Window) clientData;    
+    result = TCL_ERROR;
+    parent = (Tk_Window) clientData;
     title[0] = 0;
-    message[0] = 0;   
+    message[0] = 0;
 
     for (i = 1; i < objc; i += 2) {
         char *choice;
@@ -579,14 +579,14 @@ Tk_ChooseDirectoryObjCmd(clientData, interp, objc, objv)
         }
         if (i + 1 == objc) {
             string = Tcl_GetStringFromObj(objv[i], NULL);
-            Tcl_AppendResult(interp, "value for \"", string, "\" missing", 
+            Tcl_AppendResult(interp, "value for \"", string, "\" missing",
                     (char *) NULL);
             return TCL_ERROR;
         }
         switch (index) {
             case CHOOSE_INITDIR:
                 choice = Tcl_GetStringFromObj(objv[i + 1], NULL);
-                if (HandleInitialDirectory(interp, NULL, choice, &dirRef,  
+                if (HandleInitialDirectory(interp, NULL, choice, &dirRef,
                         NULL, &initialDesc) != TCL_OK) {
                     result = TCL_ERROR;
                     goto end;
@@ -594,8 +594,8 @@ Tk_ChooseDirectoryObjCmd(clientData, interp, objc, objv)
                 break;
             case CHOOSE_MESSAGE:
                 choice = Tcl_GetStringFromObj(objv[i + 1], &choiceLen);
-                Tcl_UtfToExternal(NULL, TkMacOSXCarbonEncoding, choice, choiceLen, 
-                        0, NULL, StrBody(message), 255, 
+                Tcl_UtfToExternal(NULL, TkMacOSXCarbonEncoding, choice, choiceLen,
+                        0, NULL, StrBody(message), 255,
                         &srcRead, &dstWrote, NULL);
                 StrLength(message) = (unsigned char) dstWrote;
                 break;
@@ -609,18 +609,18 @@ Tk_ChooseDirectoryObjCmd(clientData, interp, objc, objv)
                 break;
             case CHOOSE_TITLE:
                 choice = Tcl_GetStringFromObj(objv[i + 1], &choiceLen);
-                Tcl_UtfToExternal(NULL, TkMacOSXCarbonEncoding, choice, choiceLen, 
-                        0, NULL, StrBody(title), 255, 
+                Tcl_UtfToExternal(NULL, TkMacOSXCarbonEncoding, choice, choiceLen,
+                        0, NULL, StrBody(title), 255,
                         &srcRead, &dstWrote, NULL);
                 StrLength(title) = (unsigned char) dstWrote;
                 break;
         }
     }
-             
+
     TkInitFileFilters(&ofd.fl);
     ofd.usePopup = 0;
 
-        
+
     if (initialDesc.descriptorType == typeFSRef) {
         initialPtr = &initialDesc;
     }
@@ -629,7 +629,7 @@ Tk_ChooseDirectoryObjCmd(clientData, interp, objc, objv)
 
     end:
     AEDisposeDesc(&initialDesc);
-    
+
     return result;
 }
 
@@ -638,7 +638,7 @@ HandleInitialDirectory (
     Tcl_Interp *interp,
     char *initialFile,
     char *initialDir,
-    FSRef *dirRef, 
+    FSRef *dirRef,
     AEDescList *selectDescPtr,
     AEDesc *dirDescPtr)
 {
@@ -655,7 +655,7 @@ HandleInitialDirectory (
         }
 
         err = FSPathMakeRef(dirName,
-                dirRef, &isDirectory);     
+                dirRef, &isDirectory);
 
         if (err != noErr) {
             Tcl_AppendResult(interp, "bad directory \"",
@@ -707,7 +707,7 @@ end:
 }
 
 static void
-InitFileDialogs()
+InitFileDialogs (void)
 {
     fileDlgInited = 1;
     openFileFilterUPP = NewNavObjectFilterUPP(OpenFileFilterProc);
@@ -742,39 +742,39 @@ NavServicesGetFile(
     }
     diagOptions.location.h = -1;
     diagOptions.location.v = -1;
-    diagOptions.optionFlags = kNavDontAutoTranslate 
+    diagOptions.optionFlags = kNavDontAutoTranslate
         + kNavDontAddTranslateItems;
-            
+
     if (multiple) {
         diagOptions.optionFlags += kNavAllowMultipleFiles;
     }
-    
+
     if (ofdPtr != NULL && ofdPtr->usePopup) {
         FileFilter *filterPtr;
-        
+
         filterPtr = ofdPtr->fl.filters;
         if (filterPtr == NULL) {
             ofdPtr->usePopup = 0;
         }
     }
-    
-    if (ofdPtr != NULL && ofdPtr->usePopup) {    
+
+    if (ofdPtr != NULL && ofdPtr->usePopup) {
         FileFilter *filterPtr;
         int index = 0;
         ofdPtr->curType = 0;
-        
-        menuItemNames = (CFStringRef *)ckalloc(ofdPtr->fl.numFilters 
+
+        menuItemNames = (CFStringRef *)ckalloc(ofdPtr->fl.numFilters
             * sizeof(CFStringRef));
-        
-        for (filterPtr = ofdPtr->fl.filters; filterPtr != NULL; 
+
+        for (filterPtr = ofdPtr->fl.filters; filterPtr != NULL;
                 filterPtr = filterPtr->next, index++) {
-            menuItemNames[index] = CFStringCreateWithCString(NULL, 
+            menuItemNames[index] = CFStringCreateWithCString(NULL,
                     filterPtr->name, encoding);
         }
-        diagOptions.popupExtension = CFArrayCreate(NULL, 
+        diagOptions.popupExtension = CFArrayCreate(NULL,
                 (const void **)menuItemNames, ofdPtr->fl.numFilters, NULL);;
-    } else {        
-        diagOptions.optionFlags += kNavNoTypePopup; 
+    } else {
+        diagOptions.optionFlags += kNavNoTypePopup;
         diagOptions.popupExtension = NULL;
     }
 
@@ -782,9 +782,9 @@ NavServicesGetFile(
      * This is required to allow App packages to be selectable in the
      * file dialogs...
      */
-    
+
     diagOptions.optionFlags += kNavSupportPackages;
-    
+
     diagOptions.clientName = CFStringCreateWithCString(NULL, "Wish", encoding);
     if (message == NULL) {
         diagOptions.message = NULL;
@@ -802,16 +802,16 @@ NavServicesGetFile(
     } else {
         diagOptions.windowTitle = CFStringCreateWithPascalString(NULL, title, encoding);
     }
-    
+
     diagOptions.actionButtonLabel = NULL;
     diagOptions.cancelButtonLabel = NULL;
     diagOptions.preferenceKey = 0;
-    
-    /* 
+
+    /*
      * Now process the selection list.  We have to use the popupExtension
      * to fill the menu.
      */
-    
+
     if (isOpen == OPEN_FILE) {
         err = NavCreateGetFileDialog(&diagOptions,
             NULL,
@@ -825,14 +825,14 @@ NavServicesGetFile(
             dialogRef = NULL;
         }
     } else if (isOpen == SAVE_FILE) {
-        err = NavCreatePutFileDialog(&diagOptions, 'TEXT', 'WIsH', 
+        err = NavCreatePutFileDialog(&diagOptions, 'TEXT', 'WIsH',
                 openFileEventUPP, NULL, &dialogRef);
         if (err!=noErr){
             fprintf(stderr,"NavCreatePutFileDialog failed, %d\n", err );
             dialogRef = NULL;
         }
     } else if (isOpen == CHOOSE_FOLDER) {
-        err = NavCreateChooseFolderDialog(&diagOptions, openFileEventUPP, 
+        err = NavCreateChooseFolderDialog(&diagOptions, openFileEventUPP,
                 openFileFilterUPP, NULL, &dialogRef);
         if (err!=noErr){
             fprintf(stderr,"NavCreateChooseFolderDialog failed, %d\n", err );
@@ -848,7 +848,7 @@ NavServicesGetFile(
                 && (selectDescPtr->descriptorType != typeNull)) {
             NavCustomControl(dialogRef, kNavCtlSetSelection, &selectDescPtr);
         }
-        
+
         if ((err = NavDialogRun(dialogRef)) != noErr ){
             fprintf(stderr,"NavDialogRun failed, %d\n", err );
         } else {
@@ -887,7 +887,7 @@ NavServicesGetFile(
                     i, typeFSRef, NULL, &resultDesc);
                 pathValid = 0;
                 if (err == noErr) {
-                    if ((err = AEGetDescData(&resultDesc, &fsRef, sizeof(fsRef))) 
+                    if ((err = AEGetDescData(&resultDesc, &fsRef, sizeof(fsRef)))
                             != noErr ) {
                         fprintf(stderr,"AEGetDescData failed %d\n", err );
                     } else {
@@ -898,7 +898,7 @@ NavServicesGetFile(
                                 CFStringRef saveNameRef;
                                 char saveName [1024];
                                 if (saveNameRef = NavDialogGetSaveFileName(dialogRef)) {
-                                    if (CFStringGetCString(saveNameRef, saveName, 
+                                    if (CFStringGetCString(saveNameRef, saveName,
                                             1024, encoding)) {
                                         strcat(pathPtr, "/");
                                         strcat(pathPtr, saveName);
@@ -913,18 +913,18 @@ NavServicesGetFile(
                                 pathValid = 1;
                             }
                             if (pathValid) {
-                                /* 
+                                /*
                                  * Tested this and NULL=utf-8 encoding is
                                  * good here
                                  */
-                                Tcl_ExternalToUtfDString(NULL, pathPtr, -1, 
+                                Tcl_ExternalToUtfDString(NULL, pathPtr, -1,
 							 &fileName);
                                 if (multiple) {
-                                    Tcl_ListObjAppendElement(interp, theResult, 
-                                        Tcl_NewStringObj(Tcl_DStringValue(&fileName), 
+                                    Tcl_ListObjAppendElement(interp, theResult,
+                                        Tcl_NewStringObj(Tcl_DStringValue(&fileName),
                                         Tcl_DStringLength(&fileName)));
                                 } else {
-                                    Tcl_SetStringObj(theResult, Tcl_DStringValue(&fileName), 
+                                    Tcl_SetStringObj(theResult, Tcl_DStringValue(&fileName),
                                         Tcl_DStringLength(&fileName));
                                 }
                                 Tcl_DStringFree(&fileName);
@@ -943,12 +943,12 @@ NavServicesGetFile(
     } else {
         result = TCL_ERROR;
     }
-    
-    /* 
+
+    /*
      * Clean up any allocated strings
-     * dispose of things in reverse order of creation 
+     * dispose of things in reverse order of creation
      */
-     
+
     if (diagOptions.windowTitle) {
         CFRelease(diagOptions.windowTitle);
     }
@@ -961,10 +961,10 @@ NavServicesGetFile(
     if (diagOptions.clientName) {
         CFRelease(diagOptions.clientName);
     }
-    /* 
-     * dispose of the CFArray diagOptions.popupExtension 
+    /*
+     * dispose of the CFArray diagOptions.popupExtension
      */
-     
+
     if (menuItemNames) {
         int i;
         for (i=0;i < ofdPtr->fl.numFilters;i++) {
@@ -975,12 +975,12 @@ NavServicesGetFile(
     if (diagOptions.popupExtension != NULL) {
         CFRelease(diagOptions.popupExtension);
     }
-    
+
     return result;
 }
 
-static pascal Boolean 
-OpenFileFilterProc( 
+static pascal Boolean
+OpenFileFilterProc(
     AEDesc* theItem, void* info,
     NavCallBackUserData callBackUD,
     NavFilterModes filterMode )
@@ -992,21 +992,21 @@ OpenFileFilterProc(
         if (ofdPtr->fl.numFilters == 0) {
             return true;
         } else {
-            
+
             if ( theItem->descriptorType == typeFSS ) {
                 NavFileOrFolderInfo* theInfo = (NavFileOrFolderInfo*)info;
                 int result;
-                
+
                 if ( !theInfo->isFolder ) {
                     OSType fileType;
                     StringPtr fileNamePtr;
                     int i;
                     FileFilter *filterPtr;
-               
+
                     fileType = theInfo->fileAndFolder.fileInfo.finderInfo.fdType;
                     HLock((Handle)theItem->dataHandle);
                     fileNamePtr = (((FSSpec *) *theItem->dataHandle)->name);
-                    
+
                     if (ofdPtr->usePopup) {
                         i = ofdPtr->curType;
                         for (filterPtr = ofdPtr->fl.filters; filterPtr && i > 0; i--) {
@@ -1033,7 +1033,7 @@ OpenFileFilterProc(
                             }
                         }
                     }
-                    
+
                     HUnlock((Handle)theItem->dataHandle);
                     return (result == MATCHED);
                 } else {
@@ -1041,12 +1041,12 @@ OpenFileFilterProc(
                 }
             }
         }
-        
+
         return true;
     }
 }
 
-pascal void 
+pascal void
 OpenEventProc(
     NavEventCallbackMessage callBackSelector,
     NavCBRecPtr callBackParams,
@@ -1057,14 +1057,14 @@ OpenEventProc(
     static SInt32 otherEvent = ~(kNavCBCustomize|kNavCBStart|kNavCBTerminate
             |kNavCBNewLocation|kNavCBShowDesktop|kNavCBSelectEntry|kNavCBAccept
             |kNavCBCancel|kNavCBAdjustPreview);
-        
+
     if (callBackSelector ==  kNavCBPopupMenuSelect) {
         chosenItem = (NavMenuItemSpec *) callBackParams->eventData.eventDataParms.param;
         ofd->curType = chosenItem->menuType;
-    } else if (callBackSelector == kNavCBAdjustRect 
-            || callBackSelector & otherEvent != 0) { 
+    } else if (callBackSelector == kNavCBAdjustRect
+            || callBackSelector & otherEvent != 0) {
         while (Tcl_DoOneEvent(TCL_IDLE_EVENTS
-                | TCL_DONT_WAIT 
+                | TCL_DONT_WAIT
                 | TCL_WINDOW_EVENTS)) {
             /* Empty Body */
         }
@@ -1091,7 +1091,7 @@ OpenEventProc(
 static Boolean
 MatchOneType(
     StringPtr fileNamePtr,        /* Name of the file */
-    OSType    fileType,         /* Type of the file */ 
+    OSType    fileType,         /* Type of the file */
     OpenFileData * ofdPtr,        /* Information about this file dialog */
     FileFilter * filterPtr)        /* Match the file described by pb against
                                  * this filter */
@@ -1132,7 +1132,7 @@ MatchOneType(
             char filename[256];
             int len;
             char * p, *q, *ext;
-        
+
             if (fileNamePtr == NULL) {
                 continue;
             }
@@ -1154,7 +1154,7 @@ MatchOneType(
                 }
                 goto glob_matched;
             }
-        
+
             if (Tcl_StringMatch(filename, ext)) {
                 goto glob_matched;
             } else {
@@ -1201,28 +1201,28 @@ MatchOneType(
  *----------------------------------------------------------------------
  */
 
-void 
-TkAboutDlg()
+void
+TkAboutDlg (void)
 {
     DialogPtr aboutDlog;
     WindowRef windowRef;
     short itemHit = -9;
-        
+
     aboutDlog = GetNewDialog(128, NULL, (void *) (-1));
-        
+
     if (!aboutDlog) {
         return;
     }
-        
+
     windowRef=GetDialogWindow(aboutDlog);
     SelectWindow(windowRef);
-        
+
     while (itemHit != 1) {
         ModalDialog( NULL, &itemHit);
     }
     DisposeDialog(aboutDlog);
     aboutDlog = NULL;
-        
+
     SelectWindow(FrontNonFloatingWindow());
 
     return;

@@ -1,4 +1,4 @@
-/* 
+/*
  * tkObj.c --
  *
  *	This file contains procedures that implement the common Tk object
@@ -17,7 +17,7 @@
 /*
  * The following structure is the internal representation for pixel objects.
  */
- 
+
 typedef struct PixelRep {
     double value;
     int units;
@@ -46,7 +46,7 @@ typedef struct PixelRep {
 /*
  * The following structure is the internal representation for mm objects.
  */
- 
+
 typedef struct MMRep {
     double value;
     int units;
@@ -57,7 +57,7 @@ typedef struct MMRep {
 /*
  * The following structure is the internal representation for window objects.
  */
- 
+
 typedef struct WindowRep {
     Tk_Window tkwin;
     Tk_Window mainwin;
@@ -144,7 +144,7 @@ static Tcl_ObjType windowObjType = {
  *
  * Side effects:
  *	If the object is not already a pixel, the conversion will free
- *	any old internal representation. 
+ *	any old internal representation.
  *
  *----------------------------------------------------------------------
  */
@@ -215,7 +215,7 @@ FreePixelInternalRep(objPtr)
     Tcl_Obj *objPtr;		/* Pixel object with internal rep to free. */
 {
     PixelRep *pixelPtr;
-    
+
     if (!SIMPLE_PIXELREP(objPtr)) {
 	pixelPtr = GET_COMPLEXPIXEL(objPtr);
 	ckfree((char *) pixelPtr);
@@ -229,7 +229,7 @@ FreePixelInternalRep(objPtr)
  * DupPixelInternalRep --
  *
  *	Initialize the internal representation of a pixel Tcl_Obj to a
- *	copy of the internal representation of an existing pixel object. 
+ *	copy of the internal representation of an existing pixel object.
  *
  * Results:
  *	None.
@@ -247,7 +247,7 @@ DupPixelInternalRep(srcPtr, copyPtr)
     register Tcl_Obj *copyPtr;	/* Object with internal rep to set. */
 {
     PixelRep *oldPtr, *newPtr;
-    
+
     copyPtr->typePtr = srcPtr->typePtr;
 
     if (SIMPLE_PIXELREP(srcPtr)) {
@@ -340,7 +340,7 @@ SetPixelFromAny(interp, objPtr)
     }
 
     /*
-     * Free the old internalRep before setting the new one. 
+     * Free the old internalRep before setting the new one.
      */
 
     typePtr = objPtr->typePtr;
@@ -380,7 +380,7 @@ SetPixelFromAny(interp, objPtr)
  *
  * Side effects:
  *	If the object is not already a pixel, the conversion will free
- *	any old internal representation. 
+ *	any old internal representation.
  *
  *----------------------------------------------------------------------
  */
@@ -455,7 +455,7 @@ FreeMMInternalRep(objPtr)
  * DupMMInternalRep --
  *
  *	Initialize the internal representation of a pixel Tcl_Obj to a
- *	copy of the internal representation of an existing pixel object. 
+ *	copy of the internal representation of an existing pixel object.
  *
  * Results:
  *	None.
@@ -473,7 +473,7 @@ DupMMInternalRep(srcPtr, copyPtr)
     register Tcl_Obj *copyPtr;	/* Object with internal rep to set. */
 {
     MMRep *oldPtr, *newPtr;
-    
+
     copyPtr->typePtr = srcPtr->typePtr;
     oldPtr = (MMRep *) srcPtr->internalRep.otherValuePtr;
     newPtr = (MMRep *) ckalloc(sizeof(MMRep));
@@ -633,7 +633,7 @@ SetMMFromAny(interp, objPtr)
     }
 
     /*
-     * Free the old internalRep before setting the new one. 
+     * Free the old internalRep before setting the new one.
      */
 
     typePtr = objPtr->typePtr;
@@ -670,7 +670,7 @@ SetMMFromAny(interp, objPtr)
  *
  * Side effects:
  *	If the object is not already a Tk_Window, the conversion will free
- *	any old internal representation. 
+ *	any old internal representation.
  *
  *----------------------------------------------------------------------
  */
@@ -745,7 +745,7 @@ SetWindowFromAny(interp, objPtr)
     Tcl_ObjType *typePtr;
 
     /*
-     * Free the old internalRep before setting the new one. 
+     * Free the old internalRep before setting the new one.
      */
 
     Tcl_GetStringFromObj(objPtr, NULL);
@@ -765,7 +765,7 @@ SetWindowFromAny(interp, objPtr)
  * DupWindowInternalRep --
  *
  *	Initialize the internal representation of a window Tcl_Obj to a
- *	copy of the internal representation of an existing window object. 
+ *	copy of the internal representation of an existing window object.
  *
  * Results:
  *	None.
@@ -843,7 +843,7 @@ FreeWindowInternalRep(objPtr)
  */
 
 void
-TkRegisterObjTypes()
+TkRegisterObjTypes (void)
 {
     Tcl_RegisterObjType(&tkBorderObjType);
     Tcl_RegisterObjType(&tkBitmapObjType);
@@ -856,3 +856,5 @@ TkRegisterObjTypes()
     Tcl_RegisterObjType(&tkStateKeyObjType);
     Tcl_RegisterObjType(&windowObjType);
 }
+
+/* EOF */

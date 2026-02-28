@@ -5127,10 +5127,10 @@ TkUnsupported1Cmd(
                     Tcl_ListObjAppendElement(interp, attributeList,
                             Tcl_NewStringObj("none", -1));
                 } else if (wmPtr->attributes == kWindowStandardDocumentAttributes) {
-		    Tcl_ListObjAppendElement(interp, attributeList, 
+		    Tcl_ListObjAppendElement(interp, attributeList,
                             Tcl_NewStringObj("standardDocument", -1));
                 } else if (wmPtr->attributes == kWindowStandardFloatingAttributes) {
-		    Tcl_ListObjAppendElement(interp, attributeList, 
+		    Tcl_ListObjAppendElement(interp, attributeList,
                             Tcl_NewStringObj("standardFloating", -1));
                 } else {
                     if (wmPtr->attributes & kWindowCloseBoxAttribute) {
@@ -5760,7 +5760,7 @@ TkpWmSetState(winPtr, state)
  */
 
 int
-TkMacHaveAppearance()
+TkMacHaveAppearance (void)
 {
     static initialized = false;
     static int TkMacHaveAppearance = 0;
@@ -5773,7 +5773,7 @@ TkMacHaveAppearance()
 	    TkMacHaveAppearance = 1;
 	}
 /* even if AppearanceManager 1.1 routines are present,
-we can't call them from 68K code, so we pretend
+we cannot call them from 68K code, so we pretend
 to be running Apperarance Mgr 1.0 */
 #if !(GENERATING68K && !GENERATINGCFM)
 	err = Gestalt(gestaltAppearanceVersion, &response);

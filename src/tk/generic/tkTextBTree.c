@@ -1,4 +1,4 @@
-/* 
+/*
  * tkTextBTree.c --
  *
  *	This file contains code that manages the B-tree representation
@@ -127,7 +127,7 @@ static void		CheckNodeConsistency _ANSI_ARGS_((Node *nodePtr));
 static void		CleanupLine _ANSI_ARGS_((TkTextLine *linePtr));
 static void		DeleteSummaries _ANSI_ARGS_((Summary *tagPtr));
 static void		DestroyNode _ANSI_ARGS_((Node *nodePtr));
-static TkTextSegment *	FindTagEnd _ANSI_ARGS_((TkTextBTree tree, 
+static TkTextSegment *	FindTagEnd _ANSI_ARGS_((TkTextBTree tree,
 			    TkTextTag *tagPtr, TkTextIndex *indexPtr));
 static void		IncCount _ANSI_ARGS_((TkTextTag *tagPtr, int inc,
 			    TagInfo *tagInfoPtr));
@@ -282,7 +282,7 @@ TkBTreeCreate(textPtr)
 
 void
 TkBTreeDestroy(tree)
-    TkTextBTree tree;			/* Pointer to tree to delete. */ 
+    TkTextBTree tree;			/* Pointer to tree to delete. */
 {
     BTree *treePtr = (BTree *) tree;
 
@@ -308,8 +308,7 @@ TkBTreeDestroy(tree)
  */
 
 static void
-DestroyNode(nodePtr)
-    register Node *nodePtr;
+DestroyNode (register Node *nodePtr)
 {
     if (nodePtr->level == 0) {
 	TkTextLine *linePtr;
@@ -356,9 +355,10 @@ DestroyNode(nodePtr)
  */
 
 static void
-DeleteSummaries(summaryPtr)
-    register Summary *summaryPtr;	/* First in list of node's tag
+DeleteSummaries (
+    register Summary *summaryPtr	/* First in list of node's tag
 					 * summaries. */
+)
 {
     register Summary *nextPtr;
     while (summaryPtr != NULL) {
@@ -402,7 +402,7 @@ TkBTreeInsertChars(indexPtr, string)
 					 * new segment (NULL means new segment
 					 * is at beginning of line). */
     TkTextSegment *curPtr;		/* Current segment;  new characters
-					 * are inserted just after this one. 
+					 * are inserted just after this one.
 					 * NULL means insert at beginning of
 					 * line. */
     TkTextLine *linePtr;		/* Current line (new segments are
@@ -968,7 +968,7 @@ TkBTreePreviousLine(linePtr)
 	    break;
 	}
     }
-    for (node2Ptr = nodePtr->parentPtr->children.nodePtr; ; 
+    for (node2Ptr = nodePtr->parentPtr->children.nodePtr; ;
 	    node2Ptr = node2Ptr->children.nodePtr) {
 	while (node2Ptr->nextPtr != nodePtr) {
 	    node2Ptr = node2Ptr->nextPtr;
@@ -1330,7 +1330,7 @@ ChangeNodeToggleCount(nodePtr, tagPtr, delta)
 	 * See if there's already an entry for this tag for this node.  If so,
 	 * perhaps all we have to do is adjust its count.
 	 */
-    
+
 	for (prevPtr = NULL, summaryPtr = nodePtr->summaryPtr;
 		summaryPtr != NULL;
 		prevPtr = summaryPtr, summaryPtr = summaryPtr->nextPtr) {
@@ -1354,7 +1354,7 @@ ChangeNodeToggleCount(nodePtr, tagPtr, delta)
 		panic("ChangeNodeToggleCount: bad toggle count (%d) max (%d)",
 		    summaryPtr->toggleCount, tagPtr->toggleCount);
 	    }
-    
+
 	    /*
 	     * Zero toggle count;  must remove this tag from the list.
 	     */
@@ -1369,9 +1369,9 @@ ChangeNodeToggleCount(nodePtr, tagPtr, delta)
 	    /*
 	     * This tag isn't currently in the summary information list.
 	     */
-    
+
 	    if (rootLevel == nodePtr->level) {
-    
+
 		/*
 		 * The old tag root is at the same level in the tree as this
 		 * node, but it isn't at this node.  Move the tag root up
@@ -1382,7 +1382,7 @@ ChangeNodeToggleCount(nodePtr, tagPtr, delta)
 		 * information at the old root and change the root to its
 		 * parent node.
 		 */
-    
+
 		Node *rootNodePtr = tagPtr->tagRootPtr;
 		summaryPtr = (Summary *) ckalloc(sizeof(Summary));
 		summaryPtr->tagPtr = tagPtr;
@@ -1602,7 +1602,7 @@ FindTagEnd(tree, tagPtr, indexPtr)
     for (lastLinePtr = NULL, linePtr = nodePtr->children.linePtr;
 	    linePtr != (TkTextLine *) NULL; linePtr = linePtr->nextPtr) {
 	for (offset = 0, lastSegPtr = NULL, segPtr = linePtr->segPtr ;
-		segPtr != NULL; 
+		segPtr != NULL;
 		offset += segPtr->size, segPtr = segPtr->nextPtr) {
 	    if (((segPtr->typePtr == &tkTextToggleOnType)
 		    || (segPtr->typePtr == &tkTextToggleOffType))
@@ -1637,7 +1637,7 @@ FindTagEnd(tree, tagPtr, indexPtr)
  * Side effects:
  *	The information at *searchPtr is set up so that subsequent calls
  *	to TkBTreeNextTag or TkBTreePrevTag will return information about the
- *	locations of tag transitions.  Note that TkBTreeNextTag or 
+ *	locations of tag transitions.  Note that TkBTreeNextTag or
  *	TkBTreePrevTag must be called to get the first transition.
  *	Note: unlike TkBTreeNextTag and TkBTreePrevTag, this routine does not
  *	guarantee that searchPtr->curIndex is equal to *index1Ptr.  It may be
@@ -1708,9 +1708,9 @@ TkBTreeStartSearch(index1Ptr, index2Ptr, tagPtr, searchPtr)
 	 * first.  A search does not return a toggle at the very start of
 	 * the range, unless the range is artificially moved up to index0.
 	 */
-	if (((index1Ptr == &index0) && 
+	if (((index1Ptr == &index0) &&
 		(index1Ptr->byteIndex > index2Ptr->byteIndex)) ||
-	    ((index1Ptr != &index0) && 
+	    ((index1Ptr != &index0) &&
 		(index1Ptr->byteIndex >= index2Ptr->byteIndex))) {
 		searchPtr->linesLeft = 0;
 	}
@@ -1726,7 +1726,7 @@ TkBTreeStartSearch(index1Ptr, index2Ptr, tagPtr, searchPtr)
  *	a given tag (or all tags) in a given range of the text.  In the
  *	normal case the first index (*index1Ptr) is beyond the second
  *	index (*index2Ptr).
- *	
+ *
  *
  * Results:
  *	None.
@@ -1891,7 +1891,7 @@ TkBTreeNextTag(searchPtr)
 	    }
 	    searchPtr->curIndex.byteIndex += segPtr->size;
 	}
-    
+
 	/*
 	 * See if there are more lines associated with the current parent
 	 * node.  If so, go back to the top of the loop to search the next
@@ -1912,14 +1912,14 @@ TkBTreeNextTag(searchPtr)
 	if (nodePtr == searchPtr->tagPtr->tagRootPtr) {
 	    goto searchOver;
 	}
-    
+
 	/*
 	 * Search across and up through the B-tree's node hierarchy looking
 	 * for the next node that has a relevant tag transition somewhere in
 	 * its subtree.  Be sure to update linesLeft as we skip over large
 	 * chunks of lines.
 	 */
-    
+
 	while (1) {
 	    while (nodePtr->nextPtr == NULL) {
 		if (nodePtr->parentPtr == NULL ||
@@ -1938,13 +1938,13 @@ TkBTreeNextTag(searchPtr)
 	    }
 	    searchPtr->linesLeft -= nodePtr->numLines;
 	}
-    
+
 	/*
 	 * At this point we've found a subtree that has a relevant tag
 	 * transition.  Now search down (and across) through that subtree
 	 * to find the first level-0 node that has a relevant tag transition.
 	 */
-    
+
 	gotNodeWithTag:
 	while (nodePtr->level > 0) {
 	    for (nodePtr = nodePtr->children.nodePtr; ;
@@ -1964,7 +1964,7 @@ TkBTreeNextTag(searchPtr)
 	    nextChild:
 	    continue;
 	}
-    
+
 	/*
 	 * Now we're down to a level-0 node that contains a line that contains
 	 * a relevant tag transition.  Set up line information and go back to
@@ -2034,7 +2034,7 @@ TkBTreePrevTag(searchPtr)
      * The outermost loop iterates over lines that may potentially contain
      * a relevant tag transition, starting from the current segment in
      * the current line.  "nextPtr" is maintained as the last segment in
-     * a line that we can look at. 
+     * a line that we can look at.
      */
 
     while (1) {
@@ -2043,10 +2043,10 @@ TkBTreePrevTag(searchPtr)
 	 */
 	byteIndex = 0;
 	if (searchPtr->lastPtr == NULL) {
-	    /* 
+	    /*
 	     * Search back to the very beginning, so pastLast is irrelevent.
 	     */
-	    pastLast = 1; 
+	    pastLast = 1;
 	} else {
 	    pastLast = 0;
 	}
@@ -2079,7 +2079,7 @@ TkBTreePrevTag(searchPtr)
 	    searchPtr->tagPtr = prevPtr->body.toggle.tagPtr;
 	    return 1;
 	}
-    
+
 	searchPtr->linesLeft--;
 	if (searchPtr->linesLeft <= 0) {
 	    goto searchOver;
@@ -2105,7 +2105,7 @@ TkBTreePrevTag(searchPtr)
 	if (nodePtr == searchPtr->tagPtr->tagRootPtr) {
 	    goto searchOver;
 	}
-    
+
 	/*
 	 * Search across and up through the B-tree's node hierarchy looking
 	 * for the previous node that has a relevant tag transition somewhere in
@@ -2115,7 +2115,7 @@ TkBTreePrevTag(searchPtr)
 	 * one we find, if any, is recorded in prevNodePtr, and any nodes
 	 * past prevNodePtr that don't have tag state increment linesSkipped.
 	 */
-    
+
 	while (1) {
 	    for (prevNodePtr = NULL, linesSkipped = 0,
 		    node2Ptr = nodePtr->parentPtr->children.nodePtr ;
@@ -2145,13 +2145,13 @@ TkBTreePrevTag(searchPtr)
 		goto searchOver;
 	    }
 	}
-    
+
 	/*
 	 * At this point we've found a subtree that has a relevant tag
 	 * transition.  Now search down (and across) through that subtree
 	 * to find the last level-0 node that has a relevant tag transition.
 	 */
-    
+
 	gotNodeWithTag:
 	while (nodePtr->level > 0) {
 	    for (linesSkipped = 0, prevNodePtr = NULL,
@@ -2177,7 +2177,7 @@ TkBTreePrevTag(searchPtr)
 	    searchPtr->linesLeft -= linesSkipped;
 	    nodePtr = prevNodePtr;
 	}
-    
+
 	/*
 	 * Now we're down to a level-0 node that contains a line that contains
 	 * a relevant tag transition.  Set up line information and go back to
@@ -2233,7 +2233,7 @@ TkBTreeCharTagged(indexPtr, tagPtr)
     TkTextSegment *toggleSegPtr;
     int toggles, index;
 
-    /* 
+    /*
      * Check for toggles for the tag in indexPtr's line but before
      * indexPtr.  If there is one, its type indicates whether or
      * not the character is tagged.
@@ -2287,7 +2287,7 @@ TkBTreeCharTagged(indexPtr, tagPtr)
 	register Node *siblingPtr;
 	register Summary *summaryPtr;
 
-	for (siblingPtr = nodePtr->parentPtr->children.nodePtr; 
+	for (siblingPtr = nodePtr->parentPtr->children.nodePtr;
 		siblingPtr != nodePtr; siblingPtr = siblingPtr->nextPtr) {
 	    for (summaryPtr = siblingPtr->summaryPtr; summaryPtr != NULL;
 		    summaryPtr = summaryPtr->nextPtr) {
@@ -2395,7 +2395,7 @@ TkBTreeGetTags(indexPtr, numTagsPtr)
 	register Node *siblingPtr;
 	register Summary *summaryPtr;
 
-	for (siblingPtr = nodePtr->parentPtr->children.nodePtr; 
+	for (siblingPtr = nodePtr->parentPtr->children.nodePtr;
 		siblingPtr != nodePtr; siblingPtr = siblingPtr->nextPtr) {
 	    for (summaryPtr = siblingPtr->summaryPtr; summaryPtr != NULL;
 		    summaryPtr = summaryPtr->nextPtr) {
@@ -2474,7 +2474,7 @@ TkTextIsElided(textPtr, indexPtr)
 	tagCnts = (int *)ckalloc((unsigned)sizeof(int) * numTags);
 	tagPtrs = (TkTextTag **)ckalloc((unsigned)sizeof(TkTextTag *) * numTags);
     }
- 
+
     for (i=0; i<numTags; i++) {
 	tagCnts[i] = 0;
     }
@@ -2528,7 +2528,7 @@ TkTextIsElided(textPtr, indexPtr)
 	register Node *siblingPtr;
 	register Summary *summaryPtr;
 
-	for (siblingPtr = nodePtr->parentPtr->children.nodePtr; 
+	for (siblingPtr = nodePtr->parentPtr->children.nodePtr;
 	     siblingPtr != nodePtr; siblingPtr = siblingPtr->nextPtr) {
 	    for (summaryPtr = siblingPtr->summaryPtr; summaryPtr != NULL;
 		 summaryPtr = summaryPtr->nextPtr) {
@@ -2544,7 +2544,7 @@ TkTextIsElided(textPtr, indexPtr)
     }
 
     /*
-     * Now traverse from highest priority to lowest, 
+     * Now traverse from highest priority to lowest,
      * take elided value from first odd count (= on)
      */
 
@@ -2798,9 +2798,10 @@ TkBTreeCheck(tree)
  */
 
 static void
-CheckNodeConsistency(nodePtr)
-    register Node *nodePtr;		/* Node whose subtree should be
+CheckNodeConsistency (
+    register Node *nodePtr		/* Node whose subtree should be
 					 * checked. */
+)
 {
     register Node *childNodePtr;
     register Summary *summaryPtr, *summaryPtr2;
@@ -2959,9 +2960,10 @@ CheckNodeConsistency(nodePtr)
  */
 
 static void
-Rebalance(treePtr, nodePtr)
-    BTree *treePtr;			/* Tree that is being rebalanced. */
-    register Node *nodePtr;		/* Node that may be out of balance. */
+Rebalance (
+    BTree *treePtr,			/* Tree that is being rebalanced. */
+    register Node *nodePtr		/* Node that may be out of balance. */
+)
 {
     /*
      * Loop over the entire ancestral chain of the node, working up
@@ -2987,7 +2989,7 @@ Rebalance(treePtr, nodePtr)
 		 * If the node being split is the root node, then make a
 		 * new root node above it first.
 		 */
-    
+
 		if (nodePtr->parentPtr == NULL) {
 		    newPtr = (Node *) ckalloc(sizeof(Node));
 		    newPtr->parentPtr = NULL;
@@ -3188,9 +3190,10 @@ Rebalance(treePtr, nodePtr)
  */
 
 static void
-RecomputeNodeCounts(nodePtr)
-    register Node *nodePtr;		/* Node whose tag summary information
+RecomputeNodeCounts (
+    register Node *nodePtr		/* Node whose tag summary information
 					 * must be recomputed. */
+)
 {
     register Summary *summaryPtr, *summaryPtr2;
     register Node *childPtr;
@@ -3283,7 +3286,7 @@ RecomputeNodeCounts(nodePtr)
 
     summaryPtr2 = NULL;
     for (summaryPtr = nodePtr->summaryPtr; summaryPtr != NULL; ) {
-	if (summaryPtr->toggleCount > 0 && 
+	if (summaryPtr->toggleCount > 0 &&
 		summaryPtr->toggleCount < summaryPtr->tagPtr->toggleCount) {
 	    if (nodePtr->level == summaryPtr->tagPtr->tagRootPtr->level) {
 		/*
@@ -3753,3 +3756,5 @@ TkBTreeBytesInLine(linePtr)
     }
     return count;
 }
+
+/* EOF */

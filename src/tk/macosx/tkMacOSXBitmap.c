@@ -1,4 +1,4 @@
-/* 
+/*
  * tkMacOSXBitmap.c --
  *
  *        This file handles the implementation of native bitmaps.
@@ -17,12 +17,12 @@
 #include "tkMacOSXInt.h"
 
 #include <Carbon/Carbon.h>
-/*
-#include <Icons.h>
-#include <Dialogs.h>
-#include <Resources.h>
-#include <Strings.h>
-*/
+#if 0
+# include <Icons.h>
+# include <Dialogs.h>
+# include <Resources.h>
+# include <Strings.h>
+#endif /* 0 */
 
 /*
  * Depending on the resource type there are different ways to
@@ -96,7 +96,7 @@ static BuiltInIcon builtInIcons[] = {
  */
 
 void
-TkpDefineNativeBitmaps()
+TkpDefineNativeBitmaps (void)
 {
     int new;
     Tcl_HashEntry *predefHashPtr;
@@ -105,7 +105,7 @@ TkpDefineNativeBitmaps()
     BuiltInIcon *builtInPtr;
     NativeIcon *nativeIconPtr;
     Tcl_HashTable *tablePtr;
-    
+
     for (builtInPtr = builtInIcons; builtInPtr->name != NULL; builtInPtr++) {
         name = Tk_GetUid(builtInPtr->name);
         tablePtr = TkGetBitmapPredefTable();
@@ -155,7 +155,7 @@ TkpCreateNativeBitmap(
     CGrafPtr saveWorld;
     GDHandle saveDevice;
     NativeIcon *nativeIconPtr;
-    
+
     pix = Tk_GetPixmap(display, None, 32, 32, 0);
     destPort = TkMacOSXGetDrawablePort(pix);
 
@@ -174,7 +174,7 @@ TkpCreateNativeBitmap(
         icon = GetIcon(nativeIconPtr->id);
         if (icon != NULL) {
             RGBColor black = {0, 0, 0};
-        
+
             RGBForeColor(&black);
             PlotIcon(&destRect, icon);
             ReleaseResource(icon);
@@ -218,13 +218,13 @@ TkpGetNativeAppBitmap(
     Handle resource;
     int type = -1, destWrote;
     Str255 nativeName;
-    
+
     /*
      * macRoman is the encoding that the resource fork uses.
      */
 
     Tcl_UtfToExternal(NULL, Tcl_GetEncoding(NULL, "macRoman"), name,
-            strlen(name), 0, NULL, 
+            strlen(name), 0, NULL,
             (char *) &nativeName[1],
             255, NULL, &destWrote, NULL); /* Internalize native */
     nativeName[0] = destWrote;
@@ -238,21 +238,21 @@ TkpGetNativeAppBitmap(
             type = TYPE2;
         }
     }
-    
+
     if (resource == NULL) {
         return NULL;
     }
-    
+
     pix = Tk_GetPixmap(display, None, 32, 32, 0);
     destPort = TkMacOSXGetDrawablePort(pix);
 
     GetGWorld(&saveWorld, &saveDevice);
     SetGWorld(destPort, NULL);
-    
+
     SetRect(&destRect, 0, 0, 32, 32);
     if (type == TYPE2) {
         RGBColor black = {0, 0, 0};
-        
+
         RGBForeColor(&black);
         PlotIcon(&destRect, resource);
         ReleaseResource(resource);
@@ -261,7 +261,7 @@ TkpGetNativeAppBitmap(
         short id;
         ResType theType;
         Str255 dummy;
-        
+
         /*
          * We need to first paint the background white.  Also, for
          * some reason we *must* use GetCIcon instead of GetNamedResource
@@ -275,7 +275,7 @@ TkpGetNativeAppBitmap(
         PlotCIcon(&destRect, (CIconHandle) resource);
         DisposeCIcon((CIconHandle) resource);
     }
-    
+
     *width = 32;
     *height = 32;
     SetGWorld(saveWorld, saveDevice);

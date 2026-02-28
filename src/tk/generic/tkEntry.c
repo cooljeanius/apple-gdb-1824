@@ -1,5 +1,5 @@
 /*
- * Entry.c --
+ * tkEntry.c --
  *
  *	This module implements entry and spinbox widgets for the Tk toolkit.
  *	An entry displays a string and allows the string to be edited.
@@ -1318,8 +1318,9 @@ EntryWidgetObjCmd(clientData, interp, objc, objv)
  */
 
 static void
-DestroyEntry(memPtr)
-    char *memPtr;		/* Info about entry widget. */
+DestroyEntry (
+    char *memPtr		/* Info about entry widget. */
+)
 {
     Entry *entryPtr = (Entry *) memPtr;
 
@@ -2086,8 +2087,9 @@ DisplayEntry(clientData)
  */
 
 static void
-EntryComputeGeometry(entryPtr)
-    Entry *entryPtr;		/* Widget record for entry. */
+EntryComputeGeometry (
+    Entry *entryPtr		/* Widget record for entry. */
+)
 {
     int totalLength, overflow, maxOffScreen, rightX;
     int height, width, i;
@@ -2219,12 +2221,13 @@ EntryComputeGeometry(entryPtr)
  */
 
 static void
-InsertChars(entryPtr, index, value)
-    Entry *entryPtr;		/* Entry that is to get the new elements. */
-    int index;			/* Add the new elements before this
+InsertChars (
+    Entry *entryPtr,		/* Entry that is to get the new elements. */
+    int index,			/* Add the new elements before this
 				 * character index. */
-    char *value;		/* New characters to add (NULL-terminated
+    char *value 		/* New characters to add (NULL-terminated
 				 * string). */
+)
 {
     int byteIndex, byteCount, oldChars, charsAdded, newByteCount;
     CONST char *string;
@@ -2319,10 +2322,11 @@ InsertChars(entryPtr, index, value)
  */
 
 static void
-DeleteChars(entryPtr, index, count)
-    Entry *entryPtr;		/* Entry widget to modify. */
-    int index;			/* Index of first character to delete. */
-    int count;			/* How many characters to delete. */
+DeleteChars (
+    Entry *entryPtr,		/* Entry widget to modify. */
+    int index,			/* Index of first character to delete. */
+    int count			/* How many characters to delete. */
+)
 {
     int byteIndex, byteCount, newByteCount;
     CONST char *string;
@@ -2840,9 +2844,10 @@ GetEntryIndex(interp, entryPtr, string, indexPtr)
  */
 
 static void
-EntryScanTo(entryPtr, x)
-    Entry *entryPtr;		/* Information about widget. */
-    int x;			/* X-coordinate to use for scan operation. */
+EntryScanTo (
+    Entry *entryPtr,		/* Information about widget. */
+    int x			/* X-coordinate to use for scan operation. */
+)
 {
     int newLeftIndex;
 
@@ -2898,10 +2903,11 @@ EntryScanTo(entryPtr, x)
  */
 
 static void
-EntrySelectTo(entryPtr, index)
-    Entry *entryPtr;		/* Information about widget. */
-    int index;			/* Character index of element that is to
+EntrySelectTo (
+    Entry *entryPtr,		/* Information about widget. */
+    int index			/* Character index of element that is to
 				 * become the "other" end of the selection. */
+)
 {
     int newFirst, newLast;
 
@@ -3057,8 +3063,9 @@ EntryLostSelection(clientData)
  */
 
 static void
-EventuallyRedraw(entryPtr)
-    Entry *entryPtr;		/* Information about widget. */
+EventuallyRedraw (
+    Entry *entryPtr		/* Information about widget. */
+)
 {
     if ((entryPtr->flags & ENTRY_DELETED) || !Tk_IsMapped(entryPtr->tkwin)) {
 	return;
@@ -3096,12 +3103,13 @@ EventuallyRedraw(entryPtr)
  */
 
 static void
-EntryVisibleRange(entryPtr, firstPtr, lastPtr)
-    Entry *entryPtr;		/* Information about widget. */
-    double *firstPtr;		/* Return position of first visible
+EntryVisibleRange (
+    Entry *entryPtr,		/* Information about widget. */
+    double *firstPtr,		/* Return position of first visible
 				 * character in widget. */
-    double *lastPtr;		/* Return position of char just after last
+    double *lastPtr		/* Return position of char just after last
 				 * visible one. */
+)
 {
     int charsInWindow;
 
@@ -3147,8 +3155,9 @@ EntryVisibleRange(entryPtr, firstPtr, lastPtr)
  */
 
 static void
-EntryUpdateScrollbar(entryPtr)
-    Entry *entryPtr;			/* Information about widget. */
+EntryUpdateScrollbar (
+    Entry *entryPtr			/* Information about widget. */
+)
 {
     char args[TCL_DOUBLE_SPACE * 2];
     int code;
@@ -3235,10 +3244,11 @@ EntryBlinkProc(clientData)
  */
 
 static void
-EntryFocusProc(entryPtr, gotFocus)
-    Entry *entryPtr;		/* Entry that got or lost focus. */
-    int gotFocus;		/* 1 means window is getting focus, 0 means
+EntryFocusProc (
+    Entry *entryPtr,		/* Entry that got or lost focus. */
+    int gotFocus		/* 1 means window is getting focus, 0 means
 				 * it's losing it. */
+)
 {
     Tcl_DeleteTimerHandler(entryPtr->insertBlinkHandler);
     if (gotFocus) {
@@ -3356,10 +3366,11 @@ EntryTextVarProc(clientData, interp, name1, name2, flags)
  */
 
 static int
-EntryValidate(entryPtr, cmd)
-     register Entry *entryPtr;	/* Entry that needs validation. */
-     register char *cmd;	/* Validation command (NULL-terminated
+EntryValidate (
+    register Entry *entryPtr,	/* Entry that needs validation. */
+    register char *cmd  	/* Validation command (NULL-terminated
 				 * string). */
+)
 {
     register Tcl_Interp *interp = entryPtr->interp;
     int code, bool;
@@ -4356,11 +4367,12 @@ SpinboxWidgetObjCmd(clientData, interp, objc, objv)
  */
 
 static int
-GetSpinboxElement(sbPtr, x, y)
-    Spinbox *sbPtr;		/* Spinbox for which the index is being
+GetSpinboxElement (
+    Spinbox *sbPtr,		/* Spinbox for which the index is being
 				 * specified. */
-    int x;			/* x coord */
-    int y;			/* y coord */
+    int x,			/* x coord */
+    int y			/* y coord */
+)
 {
     Entry *entryPtr = (Entry *) sbPtr;
 
@@ -4560,8 +4572,9 @@ SpinboxInvoke(interp, sbPtr, element)
  *----------------------------------------------------------------------
  */
 static int
-ComputeFormat(sbPtr)
-     Spinbox *sbPtr;			/* Information about dial widget. */
+ComputeFormat (
+    Spinbox *sbPtr			/* Information about dial widget. */
+)
 {
     double maxValue, x;
     int mostSigDigit, numDigits, leastSigDigit, afterDecimal;

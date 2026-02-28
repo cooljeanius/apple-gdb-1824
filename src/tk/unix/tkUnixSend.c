@@ -1,4 +1,4 @@
-/* 
+/*
  * tkUnixSend.c --
  *
  *	This file provides procedures that implement the "send"
@@ -19,7 +19,7 @@
 #include "tkInt.h"
 #include "tkUnixInt.h"
 
-/* 
+/*
  * The following structure is used to keep track of the interpreters
  * registered by this process.
  */
@@ -107,7 +107,7 @@ typedef struct PendingCommand {
 } PendingCommand;
 
 typedef struct ThreadSpecificData {
-    PendingCommand *pendingCommands;				
+    PendingCommand *pendingCommands;
                                 /* List of all commands currently
 				 * being waited for. */
     RegisteredInterp *interpListPtr;
@@ -439,7 +439,6 @@ RegDeleteName(regPtr, name)
 	     * Found the matching entry.  Copy everything after it
 	     * down on top of it.
 	     */
-
 	    count = regPtr->propLength - (p - regPtr->property);
 	    if (count > 0)  {
 		char *src, *dst;
@@ -528,9 +527,10 @@ RegAddName(regPtr, name, commWindow)
  */
 
 static void
-RegClose(regPtr)
-    NameRegistry *regPtr;	/* Pointer to a registry opened with a
+RegClose (
+    NameRegistry *regPtr	/* Pointer to a registry opened with a
 				 * previous call to RegOpen. */
+)
 {
     if (regPtr->modified) {
 	if (!regPtr->locked && !sendDebug) {
@@ -754,7 +754,7 @@ Tk_SetAppName(tkwin, name)
     CONST char *actualName;
     Tcl_DString dString;
     int offset, i;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     interp = winPtr->mainPtr->interp;
@@ -830,7 +830,7 @@ Tk_SetAppName(tkwin, name)
 	if (w == None) {
 	    break;
 	}
-    
+
 	/*
 	 * The name appears to be in use already, but double-check to
 	 * be sure (perhaps the application died without removing its
@@ -838,7 +838,7 @@ Tk_SetAppName(tkwin, name)
 	 */
 
 	if (w == Tk_WindowId(dispPtr->commTkwin)) {
-	    for (riPtr2 = tsdPtr->interpListPtr; riPtr2 != NULL; 
+	    for (riPtr2 = tsdPtr->interpListPtr; riPtr2 != NULL;
                     riPtr2 = riPtr2->nextPtr) {
 		if ((riPtr2->interp != interp) &&
 			(strcmp(riPtr2->name, actualName) == 0)) {
@@ -911,7 +911,7 @@ Tk_SendCmd(clientData, interp, argc, argv)
     Tcl_Time timeout;
     NameRegistry *regPtr;
     Tcl_DString request;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
     Tcl_Interp *localInterp;		/* Used when the interpreter to
                                          * send the command to is within
@@ -974,7 +974,7 @@ Tk_SendCmd(clientData, interp, argc, argv)
      * could be the same!
      */
 
-    for (riPtr = tsdPtr->interpListPtr; riPtr != NULL; 
+    for (riPtr = tsdPtr->interpListPtr; riPtr != NULL;
             riPtr = riPtr->nextPtr) {
 	if ((riPtr->dispPtr != dispPtr)
 		|| (strcmp(riPtr->name, destName) != 0)) {
@@ -1366,7 +1366,7 @@ SendInit(interp, dispPtr)
 
 static void
 SendEventProc(clientData, eventPtr)
-    ClientData clientData;	/* Display information. */	
+    ClientData clientData;	/* Display information. */
     XEvent *eventPtr;		/* Information about event. */
 {
     TkDisplay *dispPtr = (TkDisplay *) clientData;
@@ -1376,7 +1376,7 @@ SendEventProc(clientData, eventPtr)
     unsigned long numItems, bytesAfter;
     Atom actualType;
     Tcl_Interp *remoteInterp;	/* Interp in which to execute the command. */
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     if ((eventPtr->xproperty.atom != dispPtr->commProperty)
@@ -1541,7 +1541,7 @@ SendEventProc(clientData, eventPtr)
 			-1);
 		if (result == TCL_ERROR) {
 		    CONST char *varValue;
-    
+
 		    varValue = Tcl_GetVar2(remoteInterp, "errorInfo",
 			    (char *) NULL, TCL_GLOBAL_ONLY);
 		    if (varValue != NULL) {
@@ -1570,7 +1570,7 @@ SendEventProc(clientData, eventPtr)
 	    if (commWindow != None) {
 		if (result != TCL_OK) {
 		    char buffer[TCL_INTEGER_SPACE];
-    
+
 		    sprintf(buffer, "%d", result);
 		    Tcl_DStringAppend(&reply, "\0-c ", 4);
 		    Tcl_DStringAppend(&reply, buffer, -1);
@@ -1742,7 +1742,7 @@ AppendErrorProc(clientData, errorPtr)
 {
     PendingCommand *pendingPtr = (PendingCommand *) clientData;
     register PendingCommand *pcPtr;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     if (pendingPtr == NULL) {
@@ -1793,7 +1793,7 @@ DeleteProc(clientData)
     RegisteredInterp *riPtr = (RegisteredInterp *) clientData;
     register RegisteredInterp *riPtr2;
     NameRegistry *regPtr;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     regPtr = RegOpen(riPtr->interp, riPtr->dispPtr, 1);
@@ -1847,7 +1847,7 @@ SendRestrictProc(clientData, eventPtr)
     if (eventPtr->type != PropertyNotify) {
 	return TK_DEFER_EVENT;
     }
-    for (dispPtr = TkGetDisplayList(); dispPtr != NULL; 
+    for (dispPtr = TkGetDisplayList(); dispPtr != NULL;
             dispPtr = dispPtr->nextPtr) {
 	if ((eventPtr->xany.display == dispPtr->display)
 		&& (eventPtr->xproperty.window
@@ -1883,11 +1883,11 @@ UpdateCommWindow(dispPtr)
 {
     Tcl_DString names;
     RegisteredInterp *riPtr;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     Tcl_DStringInit(&names);
-    for (riPtr = tsdPtr->interpListPtr; riPtr != NULL; 
+    for (riPtr = tsdPtr->interpListPtr; riPtr != NULL;
             riPtr = riPtr->nextPtr) {
 	Tcl_DStringAppendElement(&names, riPtr->name);
     }

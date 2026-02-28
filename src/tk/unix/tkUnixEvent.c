@@ -1,4 +1,4 @@
-/* 
+/*
  * tkUnixEvent.c --
  *
  *	This file implements an event source for X displays for the
@@ -73,9 +73,9 @@ static void		OpenIM _ANSI_ARGS_((TkDisplay *dispPtr));
  */
 
 void
-TkCreateXEventSource()
+TkCreateXEventSource (void)
 {
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     if (!tsdPtr->initialized) {
@@ -106,7 +106,7 @@ static void
 DisplayExitHandler(clientData)
     ClientData clientData;	/* Not used. */
 {
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     Tcl_DeleteEventSource(DisplaySetupProc, DisplayCheckProc, NULL);
@@ -156,7 +156,7 @@ TkpOpenDisplay(display_name)
  *
  * TkpCloseDisplay --
  *
- *	Cancels notifier callbacks and closes a display.  
+ *	Cancels notifier callbacks and closes a display.
  *
  * Results:
  *	None.
@@ -357,13 +357,13 @@ DisplayFileProc(clientData, flags)
     XFlush(display);
     numFound = XEventsQueued(display, QueuedAfterReading);
     if (numFound == 0) {
-	
+
 	/*
 	 * Things are very tricky if there aren't any events readable
 	 * at this point (after all, there was supposedly data
 	 * available on the connection).  A couple of things could
 	 * have occurred:
-	 * 
+	 *
 	 * One possibility is that there were only error events in the
 	 * input from the server.  If this happens, we should return
 	 * (we don't want to go to sleep in XNextEvent below, since
@@ -380,15 +380,15 @@ DisplayFileProc(clientData, flags)
 	 * and won't invoke the X error function to print a nice (?!)
 	 * message.
 	 */
-	
+
 	void (*oldHandler)();
-	
+
 	oldHandler = (void (*)()) signal(SIGPIPE, SIG_IGN);
 	XNoOp(display);
 	XFlush(display);
 	(void) signal(SIGPIPE, oldHandler);
     }
-    
+
     TransferXEventsToTcl(display);
 }
 
@@ -426,7 +426,7 @@ TkUnixDoOneXEvent(timePtr)
     int fd, index, bit, numFound, numFdBits = 0;
 
     /*
-     * Look for queued events first. 
+     * Look for queued events first.
      */
 
     if (Tcl_ServiceEvent(TCL_WINDOW_EVENTS)) {
@@ -559,7 +559,7 @@ TkpSync(display)
 }
 #ifdef TK_USE_INPUT_METHODS
 
-/* 
+/*
  *--------------------------------------------------------------
  *
  * OpenIM --
@@ -612,7 +612,7 @@ OpenIM(dispPtr)
 	    return;
 	}
     }
-#endif
+#endif /* TK_XIM_SPOT */
     for (i = 0; i < stylePtr->count_styles; i++) {
 	if (stylePtr->supported_styles[i]
 		== (XIMPreeditNothing | XIMStatusNothing)) {

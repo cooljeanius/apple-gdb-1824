@@ -1,4 +1,4 @@
-/* 
+/*
  * tkAppInit.c --
  *
  *        Provides a default version of the Tcl_AppInit procedure for
@@ -13,6 +13,7 @@
  *
  * RCS: @(#) $Id: tkMacOSXAppInit.c,v 1.3 2003/01/21 20:24:49 hunt Exp $
  */
+
 #include <pthread.h>
 #include <sys/stat.h>
 #include "tk.h"
@@ -30,7 +31,7 @@
  * Tcl_Init is run, or it gets blown away.  This stores what we
  * figured out in main.
  */
- 
+
 char scriptPath[PATH_MAX + 1];
 
 extern Tcl_Interp *gStdoutInterp;
@@ -57,11 +58,12 @@ extern int                Tktest_Init _ANSI_ARGS_((Tcl_Interp *interp));
  */
 
 int
-main(argc, argv)
-    int argc;                        /* Number of command-line arguments. */
-    char **argv;                /* Values of command-line arguments. */
+main (
+    int argc,                        /* Number of command-line arguments. */
+    char **argv                /* Values of command-line arguments. */
+)
 {
-    int textEncoding; /* 
+    int textEncoding; /*
                        * Variable used to take care of
                        * lazy font initialization
                        */
@@ -73,9 +75,9 @@ main(argc, argv)
      * of rewriting this entire file.  The #if checks for that
      * #define and uses Tcl_AppInit if it doesn't exist.
      */
-    
+
 #ifndef TK_LOCAL_APPINIT
-#define TK_LOCAL_APPINIT Tcl_AppInit    
+#define TK_LOCAL_APPINIT Tcl_AppInit
 #endif
     extern int TK_LOCAL_APPINIT _ANSI_ARGS_((Tcl_Interp *interp));
 
@@ -88,7 +90,7 @@ main(argc, argv)
      * hook, then I won't do the CFBundle lookup, since if you are messing
      * around at this level, you probably don't want me to do this for you...
      */
-    
+
 #ifdef TK_LOCAL_MAIN_HOOK
     extern int TK_LOCAL_MAIN_HOOK _ANSI_ARGS_((int *argc, char ***argv));
     TK_LOCAL_MAIN_HOOK(&argc, &argv);
@@ -101,20 +103,20 @@ main(argc, argv)
      * the auto_path.  If we don't find the startup script, we just bag
      * it, assuming the user is starting up some other way.
      */
-    
+
     bundleRef = CFBundleGetMainBundle();
-    
+
     if (bundleRef != NULL) {
         CFURLRef appMainURL;
-        appMainURL = CFBundleCopyResourceURL(bundleRef, 
-                CFSTR("AppMain"), 
-                CFSTR("tcl"), 
+        appMainURL = CFBundleCopyResourceURL(bundleRef,
+                CFSTR("AppMain"),
+                CFSTR("tcl"),
                 CFSTR("Scripts"));
 
         if (appMainURL != NULL) {
             CFURLRef scriptFldrURL;
             char *startupScript = malloc(PATH_MAX + 1);
-                            
+
             if (CFURLGetFileSystemRepresentation (appMainURL, true,
                     startupScript, PATH_MAX)) {
                 TclSetStartupScriptFileName(startupScript);
@@ -122,7 +124,7 @@ main(argc, argv)
                         CFSTR("Scripts"),
                         NULL,
                         NULL);
-                CFURLGetFileSystemRepresentation(scriptFldrURL, 
+                CFURLGetFileSystemRepresentation(scriptFldrURL,
                         true, scriptPath, PATH_MAX);
                 CFRelease(scriptFldrURL);
             } else {
@@ -134,11 +136,11 @@ main(argc, argv)
 
 #endif
     textEncoding=GetApplicationTextEncoding();
-    
+
     /*
      * Now add the scripts folder to the auto_path.
      */
-     
+
     Tk_Main(argc,argv,TK_LOCAL_APPINIT);
     return 0;                        /* Needed only to prevent compiler warning. */
 }
@@ -165,10 +167,10 @@ main(argc, argv)
 int
 Tcl_AppInit(interp)
     Tcl_Interp *interp;                /* Interpreter for application. */
-{        
+{
     if (Tcl_Init(interp) == TCL_ERROR) {
         return TCL_ERROR;
-    }    
+    }
     if (Tk_Init(interp) == TCL_ERROR) {
         return TCL_ERROR;
     }
@@ -178,7 +180,7 @@ Tcl_AppInit(interp)
         Tcl_SetVar(interp, "auto_path", scriptPath,
                 TCL_GLOBAL_ONLY|TCL_LIST_ELEMENT|TCL_APPEND_VALUE);
     }
-    
+
 #ifdef TK_TEST
     if (Tktest_Init(interp) == TCL_ERROR) {
         return TCL_ERROR;
@@ -209,7 +211,7 @@ Tcl_AppInit(interp)
 	    }
 	}
     }
-    
+
     /*
      * Call the init procedures for included packages.  Each call should
      * look like this:
@@ -226,14 +228,14 @@ Tcl_AppInit(interp)
      * they weren't already created by the init procedures called above.
      */
 
-    
+
     /*
      * Specify a user-specific startup file to invoke if the application
      * is run interactively.  Typically the startup file is "~/.apprc"
      * where "app" is the name of the application.  If this line is deleted
      * then no user-specific startup file will be run under any conditions.
      */
-     
+
     Tcl_SetVar(interp, "tcl_rcFileName", "~/.wishrc", TCL_GLOBAL_ONLY);
 
     return TCL_OK;

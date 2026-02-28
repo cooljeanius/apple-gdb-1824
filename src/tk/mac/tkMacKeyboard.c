@@ -1,4 +1,4 @@
-/* 
+/*
  * tkMacKeyboard.c --
  *
  *	Routines to support keyboard events on the Macintosh.
@@ -91,12 +91,12 @@ static void	InitKeyMaps _ANSI_ARGS_((void));
  */
 
 static void
-InitKeyMaps()
+InitKeyMaps (void)
 {
     register Tcl_HashEntry *hPtr;
     register KeyInfo *kPtr;
     int dummy;
-		
+
     Tcl_InitHashTable(&keycodeTable, TCL_ONE_WORD_KEYS);
     for (kPtr = keyArray; kPtr->keycode != 0; kPtr++) {
 	hPtr = Tcl_CreateHashEntry(&keycodeTable, (char *) kPtr->keycode,
@@ -130,7 +130,7 @@ InitKeyMaps()
  *----------------------------------------------------------------------
  */
 
-KeySym 
+KeySym
 XKeycodeToKeysym(
     Display* display,
     KeyCode keycode,
@@ -145,8 +145,8 @@ XKeycodeToKeysym(
     if (!initialized) {
 	InitKeyMaps();
     }
-	
-    virtualKey = (char) (keycode >> 16);    
+
+    virtualKey = (char) (keycode >> 16);
     c = (keycode) & 0xffff;
     if (c > 255) {
         return NoSymbol;
@@ -169,7 +169,7 @@ XKeycodeToKeysym(
 	return (KeySym) Tcl_GetHashValue(hPtr);
     }
 
-    /* 
+    /*
      * Recompute the character based on the Shift key only.
      * TODO: The index may also specify the NUM_LOCK.
      */
@@ -180,12 +180,12 @@ XKeycodeToKeysym(
     dummy = 0;
     newChar = KeyTranslate(KCHRPtr, (short) newKeycode, &dummy);
     c = newChar & charCodeMask;
-    
+
     if (c >= XK_space && c < XK_asciitilde) {
 	return c;
     }
 
-    return NoSymbol; 
+    return NoSymbol;
 }
 
 /*
@@ -220,12 +220,12 @@ TkpGetString(
     if (!initialized) {
 	InitKeyMaps();
     }
-    
+
     Tcl_DStringInit(dsPtr);
-    
-    virtualKey = (char) (eventPtr->xkey.keycode >> 16);    
+
+    virtualKey = (char) (eventPtr->xkey.keycode >> 16);
     c = (eventPtr->xkey.keycode) & 0xffff;
-    
+
     if (c < 256) {
         string[0] = (char) c;
         len = 1;
@@ -234,7 +234,7 @@ TkpGetString(
         string[1] = (char) c;
         len = 2;
     }
-    
+
     /*
      * Just return NULL if the character is a function key or another
      * non-printing key.
@@ -266,10 +266,10 @@ TkpGetString(
  *----------------------------------------------------------------------
  */
 
-XModifierKeymap * 
+XModifierKeymap *
 XGetModifierMapping(
     Display* display)
-{ 
+{
     XModifierKeymap * modmap;
 
     modmap = (XModifierKeymap *) ckalloc(sizeof(XModifierKeymap));
@@ -295,7 +295,7 @@ XGetModifierMapping(
  *----------------------------------------------------------------------
  */
 
-void 
+void
 XFreeModifiermap(
     XModifierKeymap *modmap)
 {
@@ -310,9 +310,9 @@ XFreeModifiermap(
  *
  * XKeysymToString, XStringToKeysym --
  *
- *	These X window functions map Keysyms to strings & strings to 
- * 	keysyms.  However, Tk already does this for the most common keysyms.  
- *  	Therefor, these functions only need to support keysyms that will be 
+ *	These X window functions map Keysyms to strings & strings to
+ * 	keysyms.  However, Tk already does this for the most common keysyms.
+ *  	Therefor, these functions only need to support keysyms that will be
  *  	specific to the Macintosh.  Currently, there are none.
  *
  * Results:
@@ -324,17 +324,17 @@ XFreeModifiermap(
  *----------------------------------------------------------------------
  */
 
-char * 
+char *
 XKeysymToString(
     KeySym keysym)
 {
-    return NULL; 
+    return NULL;
 }
 
-KeySym 
+KeySym
 XStringToKeysym(
     const char*	string)
-{ 
+{
     return NoSymbol;
 }
 
@@ -365,7 +365,7 @@ XKeysymToKeycode(
 {
     KeyCode keycode = 0;
     char virtualKeyCode = 0;
-    
+
     if ((keysym >= XK_space) && (XK_asciitilde)) {
         if (keysym == 'a') {
             virtualKeyCode = 0x00;
@@ -406,9 +406,9 @@ TkpSetKeycodeAndState(tkwin, keySym, eventPtr)
     Display *display;
     int state;
     KeyCode keycode;
-    
+
     display = Tk_Display(tkwin);
-    
+
     if (keySym == NoSymbol) {
 	keycode = 0;
     } else {
@@ -423,7 +423,7 @@ TkpSetKeycodeAndState(tkwin, keySym, eventPtr)
 		if (state & 2) {
 		    TkDisplay *dispPtr;
 
-		    dispPtr = ((TkWindow *) tkwin)->dispPtr; 
+		    dispPtr = ((TkWindow *) tkwin)->dispPtr;
 		    eventPtr->xkey.state |= dispPtr->modeModMask;
 		}
 		break;
@@ -619,7 +619,6 @@ TkpInitKeymapInfo(dispPtr)
 	/*
 	 * Make sure that the keycode isn't already in the array.
 	 */
-
 	for (j = 0; j < dispPtr->numModKeyCodes; j++) {
 	    if (dispPtr->modKeyCodes[j] == *codePtr) {
 		goto nextModCode;

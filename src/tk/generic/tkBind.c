@@ -1,4 +1,4 @@
-/* 
+/*
  * tkBind.c --
  *
  *	This file provides procedures that associate Tcl commands
@@ -80,7 +80,7 @@ typedef union {
  * this), for a total of 20 events to cover the three button presses
  * and two intervening releases.  If you reduce EVENT_BUFFER_SIZE too
  * much, shift multi-clicks will be lost.
- * 
+ *
  */
 
 #define EVENT_BUFFER_SIZE 30
@@ -132,7 +132,7 @@ typedef struct VirtualEventTable {
 } VirtualEventTable;
 
 /*
- * The following structure is used as a key in a patternTable for both 
+ * The following structure is used as a key in a patternTable for both
  * binding tables and a virtual event tables.
  *
  * In a binding table, the object field corresponds to the binding tag
@@ -142,7 +142,7 @@ typedef struct VirtualEventTable {
  * events are a global definiton and are not tied to a particular
  * binding tag.
  *
- * The same key is used for both types of pattern tables so that the 
+ * The same key is used for both types of pattern tables so that the
  * helper functions that traverse and match patterns will work for both
  * binding tables and virtual event tables.
  */
@@ -190,11 +190,11 @@ typedef struct Pattern {
  *
  * In a binding table, it is the sequence of physical events that make up
  * a binding for an object.
- * 
+ *
  * In a virtual event table, it is the sequence of physical events that
  * define a virtual event.
  *
- * The same structure is used for both types of pattern tables so that the 
+ * The same structure is used for both types of pattern tables so that the
  * helper functions that traverse and match patterns will work for both
  * binding tables and virtual event tables.
  */
@@ -315,7 +315,7 @@ typedef struct {
  * are awaiting invocation and whether the window they refer to has been
  * destroyed.  If the window is destroyed, then all pending callbacks for
  * that window will be cancelled.  The Tcl bindings will still all be
- * invoked, however.  
+ * invoked, however.
  */
 
 typedef struct PendingBinding {
@@ -352,7 +352,7 @@ typedef struct BindInfo {
     int deleted;		/* 1 the application has been deleted but
 				 * the structure has been preserved. */
 } BindInfo;
-    
+
 /*
  * In X11R4 and earlier versions, XStringToKeysym is ridiculously
  * slow.  The data structure and hash table below, along with the
@@ -586,7 +586,7 @@ static int flagArray[TK_LASTEVENT] = {
    /* ClientMessage */		0,
    /* MappingNotify */		0,
    /* VirtualEvent */		VIRTUAL,
-   /* Activate */		ACTIVATE,	    
+   /* Activate */		ACTIVATE,
    /* Deactivate */		ACTIVATE,
    /* MouseWheel */		KEY
 };
@@ -596,7 +596,7 @@ static int flagArray[TK_LASTEVENT] = {
  * generated event should be queued and the string used to specify the
  * location.
  */
- 
+
 static TkStateMap queuePosition[] = {
     {-1,			"now"},
     {TCL_QUEUE_HEAD,		"head"},
@@ -781,7 +781,7 @@ TkBindInit(mainPtr)
 	        hPtr = Tcl_CreateHashEntry(&modTable, modPtr->name, &dummy);
 		Tcl_SetHashValue(hPtr, modPtr);
 	    }
-    
+
 	    Tcl_InitHashTable(&eventTable, TCL_STRING_KEYS);
 	    for (eiPtr = eventArray; eiPtr->name != NULL; eiPtr++) {
 	        hPtr = Tcl_CreateHashEntry(&eventTable, eiPtr->name, &dummy);
@@ -828,7 +828,7 @@ TkBindFree(mainPtr)
     TkMainInfo *mainPtr;	/* The newly created application. */
 {
     BindInfo *bindInfoPtr;
-    
+
     Tk_DeleteBindingTable(mainPtr->bindingTable);
     mainPtr->bindingTable = NULL;
 
@@ -958,7 +958,7 @@ Tk_DeleteBindingTable(bindingTable)
  *
  * Side effects:
  *	An existing binding on the same event sequence may be
- *	replaced.  
+ *	replaced.
  *	The new binding may cause future calls to Tk_BindEvent to
  *	behave differently than they did previously.
  *
@@ -996,7 +996,7 @@ Tk_CreateBinding(interp, bindingTable, object, eventString, command, append)
     if (psPtr->eventProc == NULL) {
 	int new;
 	Tcl_HashEntry *hPtr;
-	
+
 	/*
 	 * This pattern sequence was just created.
 	 * Link the pattern into the list associated with the object, so
@@ -1063,7 +1063,7 @@ Tk_CreateBinding(interp, bindingTable, object, eventString, command, append)
  *
  * Side effects:
  *	Any existing binding on the same event sequence will be
- *	replaced.  
+ *	replaced.
  *
  *---------------------------------------------------------------------------
  */
@@ -1097,7 +1097,7 @@ TkCreateBindingProcedure(interp, bindingTable, object, eventString,
     if (psPtr->eventProc == NULL) {
 	int new;
 	Tcl_HashEntry *hPtr;
-	
+
 	/*
 	 * This pattern sequence was just created.
 	 * Link the pattern into the list associated with the object, so
@@ -1309,11 +1309,11 @@ Tk_GetAllBindings(interp, bindingTable, object)
     Tcl_DStringInit(&ds);
     for (psPtr = (PatSeq *) Tcl_GetHashValue(hPtr); psPtr != NULL;
 	    psPtr = psPtr->nextObjPtr) {
-	/* 
+	/*
 	 * For each binding, output information about each of the
 	 * patterns in its sequence.
 	 */
-	 
+
 	Tcl_DStringSetLength(&ds, 0);
 	GetPatternString(psPtr, &ds);
 	Tcl_AppendElement(interp, Tcl_DStringValue(&ds));
@@ -1422,7 +1422,7 @@ Tk_DeleteAllBindings(bindingTable, object)
  *	changed, then the new binding procedure will be called.  If the
  *	window itself is deleted, no further C binding procedures will be
  *	called for this window.  When both Tcl binding scripts and C binding
- *	procedures are interleaved, the above rules still apply. 
+ *	procedures are interleaved, the above rules still apply.
  *
  *---------------------------------------------------------------------------
  */
@@ -1602,9 +1602,9 @@ Tk_BindEvent(bindingTable, eventPtr, tkwin, numObjects, objectPtr)
      * callback for each one.  Append all of the binding scripts, with
      * %-sequences expanded, to "scripts", with null characters separating
      * the scripts for each object.  Append all the callbacks to the array
-     * of pending callbacks.  
+     * of pending callbacks.
      */
-	       
+
     pendingPtr = &staticPending;
     matchCount = 0;
     matchSpace = sizeof(staticPending.matchArray) / sizeof(PatSeq *);
@@ -1630,7 +1630,7 @@ Tk_BindEvent(bindingTable, eventPtr, tkwin, numObjects, objectPtr)
 	key.detail = detail;
 	hPtr = Tcl_FindHashEntry(&bindPtr->patternTable, (char *) &key);
 	if (hPtr != NULL) {
-	    matchPtr = MatchPatterns(dispPtr, bindPtr, 
+	    matchPtr = MatchPatterns(dispPtr, bindPtr,
 		    (PatSeq *) Tcl_GetHashValue(hPtr), matchPtr, NULL,
 		    &sourcePtr);
 	}
@@ -1660,7 +1660,7 @@ Tk_BindEvent(bindingTable, eventPtr, tkwin, numObjects, objectPtr)
 	    }
 
 	}
-    
+
 	if (matchPtr != NULL) {
 	    if (sourcePtr->eventProc == NULL) {
 		panic("Tk_BindEvent: missing command");
@@ -1672,7 +1672,7 @@ Tk_BindEvent(bindingTable, eventPtr, tkwin, numObjects, objectPtr)
 		if (matchCount >= matchSpace) {
 		    PendingBinding *new;
 		    unsigned int oldSize, newSize;
-		    
+
 		    oldSize = sizeof(staticPending)
 			    - sizeof(staticPending.matchArray)
 			    + matchSpace * sizeof(PatSeq*);
@@ -1753,7 +1753,7 @@ Tk_BindEvent(bindingTable, eventPtr, tkwin, numObjects, objectPtr)
 	pendingPtr->deleted = 0;
 	bindInfoPtr->pendingList = pendingPtr;
     }
-    
+
     /*
      * Save the current value of the TK_DEFER_MODAL flag so we can
      * restore it at the end of the loop.  Clear the flag so we can
@@ -1777,7 +1777,7 @@ Tk_BindEvent(bindingTable, eventPtr, tkwin, numObjects, objectPtr)
     Tcl_Preserve((ClientData) bindInfoPtr);
     while (p < end) {
 	int code;
-	
+
 	if (!bindInfoPtr->deleted) {
 	    screenPtr->bindingDepth++;
 	}
@@ -1785,7 +1785,7 @@ Tk_BindEvent(bindingTable, eventPtr, tkwin, numObjects, objectPtr)
 
 	if (*p == '\0') {
 	    PatSeq *psPtr;
-	    
+
 	    psPtr = pendingPtr->matchArray[i];
 	    i++;
 	    code = TCL_OK;
@@ -1832,7 +1832,7 @@ Tk_BindEvent(bindingTable, eventPtr, tkwin, numObjects, objectPtr)
 	 */
 
 	deferModal = winPtr->flags & TK_DEFER_MODAL;
-	winPtr->flags = (winPtr->flags & (unsigned int) ~TK_DEFER_MODAL) 
+	winPtr->flags = (winPtr->flags & (unsigned int) ~TK_DEFER_MODAL)
 	    | (flags & TK_DEFER_MODAL);
 	if (deferModal) {
 	    modalProc = Tk_GetClassProc(winPtr->classProcsPtr, modalProc);
@@ -1865,7 +1865,7 @@ Tk_BindEvent(bindingTable, eventPtr, tkwin, numObjects, objectPtr)
 	     * Delete the pending list from the list of pending scripts
 	     * for this window.
 	     */
-	     
+
 	    PendingBinding **curPtrPtr;
 
 	    for (curPtrPtr = &bindInfoPtr->pendingList; ; ) {
@@ -1899,7 +1899,7 @@ Tk_BindEvent(bindingTable, eventPtr, tkwin, numObjects, objectPtr)
  *
  *---------------------------------------------------------------------------
  */
- 
+
 void
 TkBindDeadWindow(winPtr)
     TkWindow *winPtr;		/* The window that is being deleted. */
@@ -2067,7 +2067,7 @@ MatchPatterns(dispPtr, bindPtr, psPtr, bestPtr, objectPtr, sourcePtrPtr)
 	    if (eventPtr->xany.type == CreateNotify
 		&& eventPtr->xcreatewindow.parent != window) {
 		goto nextSequence;
-	    } else 
+	    } else
 	    if (eventPtr->xany.window != window) {
 		goto nextSequence;
 	    }
@@ -2169,7 +2169,7 @@ MatchPatterns(dispPtr, bindPtr, psPtr, bestPtr, objectPtr, sourcePtrPtr)
 	    /*
 	     * The sequence matches the physical constraints.
 	     * Is this object interested in any of the virtual events
-	     * that correspond to this sequence?  
+	     * that correspond to this sequence?
 	     */
 
 	    voPtr = psPtr->voPtr;
@@ -2268,7 +2268,7 @@ MatchPatterns(dispPtr, bindPtr, psPtr, bestPtr, objectPtr, sourcePtrPtr)
 	     * the documentation.
 	     */
 
-	    goto nextSequence;	
+	    goto nextSequence;
 	}
 	newBest:
 	bestPtr = matchPtr;
@@ -2544,7 +2544,7 @@ ExpandPercents(winPtr, before, eventPtr, keySym, dsPtr)
 		/*
 		 * This is used only by the MouseWheel event.
 		 */
-		    
+
 		number = eventPtr->xkey.keycode;
 		goto doNumber;
 	    case 'E':
@@ -2742,7 +2742,7 @@ Tk_EventObjCmd(clientData, interp, objc, objv)
 	case EVENT_ADD: {
 	    int i;
 	    char *name, *event;
-	    
+
 	    if (objc < 4) {
 		Tcl_WrongNumArgs(interp, 2, objv,
 			"virtual sequence ?sequence ...?");
@@ -2760,7 +2760,7 @@ Tk_EventObjCmd(clientData, interp, objc, objv)
 	case EVENT_DELETE: {
 	    int i;
 	    char *name, *event;
-	    
+
 	    if (objc < 3) {
 		Tcl_WrongNumArgs(interp, 2, objv,
 			"virtual ?sequence sequence ...?");
@@ -2789,7 +2789,7 @@ Tk_EventObjCmd(clientData, interp, objc, objv)
 	    if (objc == 2) {
 		GetAllVirtualEvents(interp, vetPtr);
 		return TCL_OK;
-	    } else if (objc == 3) {	
+	    } else if (objc == 3) {
 		return GetVirtualEvent(interp, vetPtr,
 			Tcl_GetStringFromObj(objv[2], NULL));
 	    } else {
@@ -2819,9 +2819,10 @@ Tk_EventObjCmd(clientData, interp, objc, objv)
  */
 
 static void
-InitVirtualEventTable(vetPtr)
-    VirtualEventTable *vetPtr;	/* Pointer to virtual event table.  Memory
+InitVirtualEventTable (
+    VirtualEventTable *vetPtr	/* Pointer to virtual event table.  Memory
 				 * is supplied by the caller. */
+)
 {
     Tcl_InitHashTable(&vetPtr->patternTable,
 	    sizeof(PatternTableKey) / sizeof(int));
@@ -2846,8 +2847,9 @@ InitVirtualEventTable(vetPtr)
  */
 
 static void
-DeleteVirtualEventTable(vetPtr)
-    VirtualEventTable *vetPtr;	/* The virtual event table to delete. */
+DeleteVirtualEventTable (
+    VirtualEventTable *vetPtr	/* The virtual event table to delete. */
+)
 {
     Tcl_HashEntry *hPtr;
     Tcl_HashSearch search;
@@ -2908,7 +2910,7 @@ CreateVirtualEvent(interp, vetPtr, virtString, eventString)
     PhysicalsOwned *poPtr;
     VirtualOwners *voPtr;
     Tk_Uid virtUid;
-    
+
     virtUid = GetVirtualEventUid(interp, virtString);
     if (virtUid == NULL) {
         return TCL_ERROR;
@@ -2952,7 +2954,7 @@ CreateVirtualEvent(interp, vetPtr, virtString, eventString)
 	}
 	poPtr = (PhysicalsOwned *) ckrealloc((char *) poPtr,
 		sizeof(PhysicalsOwned) + poPtr->numOwned * sizeof(PatSeq *));
-    }	
+    }
     Tcl_SetHashValue(vhPtr, (ClientData) poPtr);
     poPtr->patSeqs[poPtr->numOwned] = psPtr;
     poPtr->numOwned++;
@@ -2982,7 +2984,7 @@ CreateVirtualEvent(interp, vetPtr, virtString, eventString)
  *
  * DeleteVirtualEvent --
  *
- *	Remove the definition of a given virtual event.  If the 
+ *	Remove the definition of a given virtual event.  If the
  *	event string is NULL, all definitions of the virtual event
  *	will be removed.  Otherwise, just the specified definition
  *	of the virtual event will be removed.
@@ -2995,7 +2997,7 @@ CreateVirtualEvent(interp, vetPtr, virtString, eventString)
  *
  * Side effects:
  *	The virtual event given by virtString may be removed from the
- *	virtual event table.  
+ *	virtual event table.
  *
  *--------------------------------------------------------------
  */
@@ -3020,7 +3022,7 @@ DeleteVirtualEvent(interp, vetPtr, virtString, eventString)
     if (virtUid == NULL) {
         return TCL_ERROR;
     }
-    
+
     vhPtr = Tcl_FindHashEntry(&vetPtr->nameTable, virtUid);
     if (vhPtr == NULL) {
         return TCL_OK;
@@ -3043,7 +3045,7 @@ DeleteVirtualEvent(interp, vetPtr, virtString, eventString)
 	if (eventPSPtr == NULL) {
 	    CONST char *string;
 
-	    string = Tcl_GetStringResult(interp); 
+	    string = Tcl_GetStringResult(interp);
 	    return (string[0] != '\0') ? TCL_ERROR : TCL_OK;
 	}
     }
@@ -3053,7 +3055,7 @@ DeleteVirtualEvent(interp, vetPtr, virtString, eventString)
 	if ((eventPSPtr == NULL) || (psPtr == eventPSPtr)) {
 	    int iVirt;
 	    VirtualOwners *voPtr;
-	    
+
 	    /*
 	     * Remove association between this physical event and the given
 	     * virtual event that it triggers.
@@ -3204,8 +3206,8 @@ GetVirtualEvent(interp, vetPtr, virtString)
  *
  * Results:
  *	There is no return value.  The interp's result is modified to
- *	hold a Tcl list with one entry for each virtual event in 
- *	nameTable.  
+ *	hold a Tcl list with one entry for each virtual event in
+ *	nameTable.
  *
  * Side effects:
  *	None.
@@ -3226,7 +3228,7 @@ GetAllVirtualEvents(interp, vetPtr)
 
     hPtr = Tcl_FirstHashEntry(&vetPtr->nameTable, &search);
     for ( ; hPtr != NULL; hPtr = Tcl_NextHashEntry(&search)) {
-	Tcl_DStringSetLength(&ds, 0);	
+	Tcl_DStringSetLength(&ds, 0);
 	Tcl_DStringAppend(&ds, "<<", 2);
 	Tcl_DStringAppend(&ds, Tcl_GetHashKey(hPtr->tablePtr, hPtr), -1);
 	Tcl_DStringAppend(&ds, ">>", 2);
@@ -3258,7 +3260,7 @@ GetAllVirtualEvents(interp, vetPtr)
  *	None.
  *
  * Side effects:
- *	When constructing the event, 
+ *	When constructing the event,
  *	 event.xany.serial is filled with the current X serial number.
  *	 event.xany.window is filled with the target window.
  *	 event.xany.display is filled with the target window's display.
@@ -3278,7 +3280,7 @@ HandleEventGenerate(interp, mainWin, objc, objv)
     int objc;			/* Number of arguments. */
     Tcl_Obj *CONST objv[];	/* Argument objects. */
 {
-    XEvent event;    
+    XEvent event;
     CONST char *p;
     char *name, *windowName;
     int count, flags, synch, i, number, warp;
@@ -3321,7 +3323,7 @@ HandleEventGenerate(interp, mainWin, objc, objv)
 	char *name;
 
 	name = Tcl_GetStringFromObj(objv[0], NULL);
-	Tcl_AppendResult(interp, "window id \"", name, 		
+	Tcl_AppendResult(interp, "window id \"", name,
 		"\" doesn't exist in this application", (char *) NULL);
 	return TCL_ERROR;
     }
@@ -3382,7 +3384,7 @@ HandleEventGenerate(interp, mainWin, objc, objv)
     for (i = 2; i < objc; i += 2) {
 	Tcl_Obj *optionPtr, *valuePtr;
 	int index;
-	
+
 	optionPtr = objv[i];
 	valuePtr = objv[i + 1];
 
@@ -3415,7 +3417,7 @@ HandleEventGenerate(interp, mainWin, objc, objv)
 		break;
 	    }
 	    case EVENT_WHEN: {
-		pos = (Tcl_QueuePosition) TkFindStateNumObj(interp, optionPtr, 
+		pos = (Tcl_QueuePosition) TkFindStateNumObj(interp, optionPtr,
 			queuePosition, valuePtr);
 		if ((int) pos < -1) {
 		    return TCL_ERROR;
@@ -3744,14 +3746,14 @@ HandleEventGenerate(interp, mainWin, objc, objv)
 		}
 		Tk_GetRootCoords(tkwin, &rootX, &rootY);
 		rootX += number;
-		if (flags & (KEY_BUTTON_MOTION_VIRTUAL|CROSSING)) {	
+		if (flags & (KEY_BUTTON_MOTION_VIRTUAL|CROSSING)) {
 		    event.xkey.x = number;
 		    event.xkey.x_root = rootX;
 		} else if (flags & EXPOSE) {
 		    event.xexpose.x = number;
-		} else if (flags & (CREATE|CONFIG|GRAVITY)) { 
+		} else if (flags & (CREATE|CONFIG|GRAVITY)) {
 		    event.xcreatewindow.x = number;
-		} else if (flags & REPARENT) {		
+		} else if (flags & REPARENT) {
 		    event.xreparent.x = number;
 		} else {
 		    goto badopt;
@@ -3783,7 +3785,7 @@ HandleEventGenerate(interp, mainWin, objc, objv)
 	    }
 	}
 	continue;
-	
+
 	badopt:
 	Tcl_AppendResult(interp, name, " event doesn't accept \"",
 		Tcl_GetStringFromObj(optionPtr, NULL), "\" option", NULL);
@@ -3810,7 +3812,7 @@ HandleEventGenerate(interp, mainWin, objc, objv)
     }
     Tcl_ResetResult(interp);
     return TCL_OK;
-		
+
 }
 static int
 NameToWindow(interp, mainWin, objPtr, tkwinPtr)
@@ -4007,7 +4009,7 @@ FindSequence(interp, patternTablePtr, object, eventString, create,
 
 	if (eventMask & VirtualEventMask) {
 	    if (allowVirtual == 0) {
-		Tcl_SetResult(interp, 
+		Tcl_SetResult(interp,
 			"virtual event not allowed in definition of another virtual event",
 			TCL_STATIC);
 		return NULL;
@@ -4043,7 +4045,7 @@ FindSequence(interp, patternTablePtr, object, eventString, create,
 		TCL_STATIC);
 	return NULL;
     }
-    
+
     patPtr = &pats[EVENT_BUFFER_SIZE-numPats];
     memset(&key, 0, sizeof(key));
     key.object = object;
@@ -4073,7 +4075,7 @@ FindSequence(interp, patternTablePtr, object, eventString, create,
 	 * backward compatibility for Tk_GetBinding but the various "bind"
 	 * commands silently ignore missing bindings.
 	 */
-	
+
 	return NULL;
     }
     psPtr = (PatSeq *) ckalloc((unsigned) (sizeof(PatSeq)
@@ -4129,7 +4131,7 @@ ParseEventDescription(interp, eventStringPtr, patPtr,
     Pattern *patPtr;		/* Filled with the pattern parsed from the
 				 * event string. */
     unsigned long *eventMaskPtr;/* Filled with event mask of matched event. */
-				 
+
 {
     char *p;
     unsigned long eventMask;
@@ -4148,7 +4150,7 @@ ParseEventDescription(interp, eventStringPtr, patPtr,
 
     eventMask = 0;
     count = 1;
-    
+
     /*
      * Handle simple ASCII characters.
      */
@@ -4166,7 +4168,7 @@ ParseEventDescription(interp, eventStringPtr, patPtr,
 		patPtr->detail.keySym = *p;
 	    } else {
 		char buf[64];
-		
+
 		sprintf(buf, "bad ASCII character 0x%x", (unsigned char) *p);
 		Tcl_SetResult(interp, buf, TCL_VOLATILE);
 		count = 0;
@@ -4206,14 +4208,14 @@ ParseEventDescription(interp, eventStringPtr, patPtr,
 	 * the next '>'.
 	 */
 
-	char *field = p + 1;	    
+	char *field = p + 1;
 	p = strchr(field, '>');
 	if (p == field) {
 	    Tcl_SetResult(interp, "virtual event \"<<>>\" is badly formed",
 		    TCL_STATIC);
 	    count = 0;
 	    goto done;
-	}	    
+	}
 	if ((p == NULL) || (p[1] != '>')) {
 	    Tcl_SetResult(interp, "missing \">\" in virtual binding",
 		    TCL_STATIC);
@@ -4363,11 +4365,12 @@ done:
  */
 
 static char *
-GetField(p, copy, size)
-    char *p;		/* Pointer to part of pattern. */
-    char *copy;	/* Place to copy field. */
-    int size;			/* Maximum number of characters to
+GetField (
+    char *p,		/* Pointer to part of pattern. */
+    char *copy,	/* Place to copy field. */
+    int size			/* Maximum number of characters to
 				 * copy. */
+)
 {
     while ((*p != '\0') && !isspace(UCHAR(*p)) && (*p != '>')
 	    && (*p != '-') && (size > 1)) {
@@ -4386,7 +4389,7 @@ GetField(p, copy, size)
  * GetPatternString --
  *
  *	Produce a string version of the given event, for displaying to
- *	the user.  
+ *	the user.
  *
  * Results:
  *	The string is left in dsPtr.
@@ -4421,7 +4424,7 @@ GetPatternString(psPtr, dsPtr)
 	 */
 
 	if ((patPtr->eventType == KeyPress)
-		&& ((psPtr->flags & PAT_NEARBY) == 0) 
+		&& ((psPtr->flags & PAT_NEARBY) == 0)
 		&& (patPtr->needMods == 0)
 		&& (patPtr->detail.keySym < 128)
 		&& isprint(UCHAR(patPtr->detail.keySym))
@@ -4514,7 +4517,7 @@ GetPatternString(psPtr, dsPtr)
  * EvalTclBinding --
  *
  *	The procedure that is invoked by Tk_BindEvent when a Tcl binding
- *	is fired.  
+ *	is fired.
  *
  * Results:
  *	A standard Tcl result code, the result of globally evaluating the
@@ -4640,5 +4643,4 @@ TkCopyAndGlobalEval(interp, script)
     Tcl_DStringFree(&buffer);
     return code;
 }
-
 

@@ -112,7 +112,7 @@ static int	StringReadGIF _ANSI_ARGS_((Tcl_Interp *interp, Tcl_Obj *dataObj,
 		    Tcl_Obj *format, Tk_PhotoHandle imageHandle,
 		    int destX, int destY, int width, int height,
 		    int srcX, int srcY));
-static int 	FileWriteGIF _ANSI_ARGS_((Tcl_Interp *interp,  
+static int 	FileWriteGIF _ANSI_ARGS_((Tcl_Interp *interp,
 		    CONST char *filename, Tcl_Obj *format,
 		    Tk_PhotoImageBlock *blockPtr));
 static int	CommonWriteGIF _ANSI_ARGS_((Tcl_Interp *interp,
@@ -433,7 +433,7 @@ FileReadGIF(interp, chan, fileName, format, imageHandle, destX, destY,
 	}
 	if (BitSet(buf[8], LOCALCOLORMAP)) {
 	    if (!ReadColorMap(chan, bitPixel, colorMap)) {
-		    Tcl_AppendResult(interp, "error reading color map", 
+		    Tcl_AppendResult(interp, "error reading color map",
 			    (char *) NULL);
 		    goto error;
 	    }
@@ -542,7 +542,7 @@ StringMatchGIF(dataObj, format, widthPtr, heightPtr, interp)
      * Check whether the data is Base64 encoded.
      */
 
-    if ((strncmp(GIF87a, (char *) data, 6) != 0) && 
+    if ((strncmp(GIF87a, (char *) data, 6) != 0) &&
 	    (strncmp(GIF89a, (char *) data, 6) != 0)) {
 	/*
 	 * Try interpreting the data as Base64 encoded
@@ -568,7 +568,7 @@ StringMatchGIF(dataObj, format, widthPtr, heightPtr, interp)
  * StringReadGif -- --
  *
  *	This procedure is called by the photo image type to read
- *	GIF format data from an object, optionally base64 encoded, 
+ *	GIF format data from an object, optionally base64 encoded,
  *	and give it to the photo image.
  *
  * Results:
@@ -596,7 +596,7 @@ StringReadGIF(interp, dataObj, format, imageHandle,
 {
     int result;
     MFile handle;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
 	    Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
     Tcl_Channel dataSrc;
     char *data;
@@ -848,7 +848,7 @@ ReadImage(interp, imagePtr, chan, len, rows, cmap,
     maxCode = clearCode + 2;
     oldCode = -1;
     firstCode = -1;
-    
+
     memset((void *)prefix, 0, (1 << MAX_LWZ_BITS) * sizeof(short));
     memset((void *)append, 0, (1 << MAX_LWZ_BITS) * sizeof(char));
     for (i = 0; i < clearCode; i++) {
@@ -894,7 +894,7 @@ ReadImage(interp, imagePtr, chan, len, rows, cmap,
 		    oldCode = -1;
 		    continue;
 		}
-		
+
 		if (oldCode == -1) {
 		    /*
 		     * Last pass reset the decoder, so the first code we
@@ -909,7 +909,7 @@ ReadImage(interp, imagePtr, chan, len, rows, cmap,
 		    firstCode = code;
 		    continue;
 		}
-		
+
 		inCode = code;
 
 		if (code == maxCode) {
@@ -973,9 +973,9 @@ ReadImage(interp, imagePtr, chan, len, rows, cmap,
 		return TCL_OK;
 	    }
 
-	    /* 
+	    /*
 	     * If pixelPtr is null, we're skipping this image (presumably
-	     * there are more in the file and we will be called to read 
+	     * there are more in the file and we will be called to read
 	     * one of them later)
 	     */
 	    *pixelPtr++ = cmap[v][CM_RED];
@@ -1051,7 +1051,7 @@ GetCode(chan, code_size, flag)
     static unsigned int window;
     static int bitsInWindow = 0;
     int ret;
-    
+
     if (flag) {
 	/*
 	 * Initialize the decoder.
@@ -1096,7 +1096,7 @@ GetCode(chan, code_size, flag)
      * The next code will always be the last code_size bits of the window.
      */
     ret = window & ((1 << code_size) - 1);
-    
+
     /*
      * Shift data in the window to put the next code at the end.
      */
@@ -1122,9 +1122,10 @@ GetCode(chan, code_size, flag)
  */
 
 static void
-mInit(string, handle)
-   unsigned char *string;	/* string containing initial mmencoded data */
-   MFile *handle;		/* mmdecode "file" handle */
+mInit (
+    unsigned char *string,	/* string containing initial mmencoded data */
+    MFile *handle		/* mmdecode "file" handle */
+)
 {
    handle->data = string;
    handle->state = 0;
@@ -1136,7 +1137,7 @@ mInit(string, handle)
  *
  * Mread --
  *
- *	This procedure is invoked by the GIF file reader as a 
+ *	This procedure is invoked by the GIF file reader as a
  *	temporary replacement for "fread", to get GIF data out
  *	of a string (using Mgetc).
  *
@@ -1150,11 +1151,12 @@ mInit(string, handle)
  */
 
 static int
-Mread(dst, chunkSize, numChunks, handle)  
-   unsigned char *dst;	/* where to put the result */
-   size_t chunkSize;	/* size of each transfer */
-   size_t numChunks;	/* number of chunks */
-   MFile *handle;	/* mmdecode "file" handle */
+Mread (
+    unsigned char *dst,	/* where to put the result */
+    size_t chunkSize,	/* size of each transfer */
+    size_t numChunks,	/* number of chunks */
+    MFile *handle	/* mmdecode "file" handle */
+)
 {
    register int i, c;
    int count = chunkSize * numChunks;
@@ -1188,8 +1190,9 @@ Mread(dst, chunkSize, numChunks, handle)
  */
 
 static int
-Mgetc(handle)
-   MFile *handle;		/* Handle containing decoder data and state */
+Mgetc (
+    MFile *handle		/* Handle containing decoder data and state */
+)
 {
     int c;
     int result = 0;		/* Initialization needed only to prevent
@@ -1248,8 +1251,7 @@ Mgetc(handle)
  */
 
 static int
-char64(c)
-int c;
+char64 (int c)
 {
     switch(c) {
     case 'A': return 0;  case 'B': return 1;  case 'C': return 2;
@@ -1305,7 +1307,7 @@ Fread(dst, hunk, count, chan)
     size_t hunk,count;		/* how many */
     Tcl_Channel chan;
 {
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
 	    Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
     MFile *handle;
 
@@ -1327,8 +1329,8 @@ Fread(dst, hunk, count, chan)
  * ChanWriteGIF - writes a image in GIF format.
  *-------------------------------------------------------------------------
  * Author:			Lolo
- *				Engeneering Projects Area 
- *				Department of Mining 
+ *				Engeneering Projects Area
+ *				Department of Mining
  *				University of Oviedo
  * e-mail			zz11425958@zeus.etsimo.uniovi.es
  *				lolo@pcsig22.etsimo.uniovi.es
@@ -1341,7 +1343,7 @@ Fread(dst, hunk, count, chan)
  * FileWriteGIF-
  *
  *    This procedure is called by the photo image type to write
- *    GIF format data from a photo image into a given file 
+ *    GIF format data from a photo image into a given file
  *
  * Results:
  *	A standard TCL completion code.  If TCL_ERROR is returned
@@ -1354,7 +1356,7 @@ Fread(dst, hunk, count, chan)
   *  Types, defines and variables needed to write and compress a GIF.
   */
 
-typedef int (* ifunptr) _ANSI_ARGS_((void));	
+typedef int (* ifunptr) _ANSI_ARGS_((void));
 
 #define LSB(a)			((unsigned char) (((short)(a)) & 0x00FF))
 #define MSB(a)			((unsigned char) (((short)(a)) >> 8))
@@ -1546,20 +1548,16 @@ CommonWriteGIF(interp, handle, format, blockPtr)
     csize = blockPtr->height;
     compress(resolution+1, handle, ReadValue);
 
-    c = 0; 
+    c = 0;
     Mputc(c,handle);
     c = GIF_TERMINATOR;
     Mputc(c,handle);
 
-    return TCL_OK;	
+    return TCL_OK;
 }
 
 static int
-color(red, green, blue, mapa)
-    int red;
-    int green;
-    int blue;
-    unsigned char mapa[MAXCOLORMAPSIZE][3];
+color (int red, int green, int blue, unsigned char mapa[MAXCOLORMAPSIZE][3])
 {
     int x;
     for (x=(alphaOffset != 0) ; x<=MAXCOLORMAPSIZE ; x++) {
@@ -1573,9 +1571,7 @@ color(red, green, blue, mapa)
 
 
 static int
-nuevo(red, green, blue, mapa)
-    int red,green,blue;
-    unsigned char mapa[MAXCOLORMAPSIZE][3];
+nuevo (int red, int green, int blue, unsigned char mapa[MAXCOLORMAPSIZE][3])
 {
     int x = (alphaOffset != 0);
     for (; x<=num ; x++) {
@@ -1630,7 +1626,7 @@ savemap(blockPtr,mapa)
 }
 
 static int
-ReadValue()
+ReadValue (void)
 {
     unsigned int col;
 
@@ -1675,7 +1671,7 @@ ReadValue()
  * not limited to implied warranties of merchantability and fitness
  * for a particular purpose, with respect to this code and
  * accompanying documentation.
- * 
+ *
  * The miGIF compression routines do not, strictly speaking, generate
  * files conforming to the GIF spec, since the image data is not
  * LZW-compressed (this is the point: in order to avoid transgression
@@ -1779,7 +1775,7 @@ binformat(v, nbits)
 #endif
 
 static void
-write_block()
+write_block (void)
 {
     int i;
     unsigned char c;
@@ -1798,8 +1794,7 @@ write_block()
 }
 
 static void
-block_out(c)
-    unsigned char c;
+block_out (int c)
 {
     DEBUGMSG(("block_out %s\n", binformat(c, 8)));
     oblock[oblen++] = c;
@@ -1809,7 +1804,7 @@ block_out(c)
 }
 
 static void
-block_flush()
+block_flush (void)
 {
     DEBUGMSG(("block_flush\n"));
     if (oblen > 0) {
@@ -1818,8 +1813,7 @@ block_flush()
 }
 
 static void
-output(val)
-    int val;
+output (int val)
 {
     DEBUGMSG(("output %s [%s %d %d]\n", binformat(val, out_bits),
 	    binformat(obuf, obits), obits, out_bits));
@@ -1834,7 +1828,7 @@ output(val)
 }
 
 static void
-output_flush()
+output_flush (void)
 {
     DEBUGMSG(("output_flush\n"));
     if (obits > 0) {
@@ -1844,7 +1838,7 @@ output_flush()
 }
 
 static void
-did_clear()
+did_clear (void)
 {
     DEBUGMSG(("did_clear\n"));
     out_bits = out_bits_init;
@@ -1856,8 +1850,7 @@ did_clear()
 }
 
 static void
-output_plain(c)
-    int c;
+output_plain (int c)
 {
     DEBUGMSG(("output_plain %s\n", binformat(c, out_bits)));
     just_cleared = 0;
@@ -1874,8 +1867,7 @@ output_plain(c)
 }
 
 static unsigned int
-isqrt(x)
-    unsigned int x;
+isqrt (unsigned int x)
 {
     unsigned int r;
     unsigned int v;
@@ -1894,9 +1886,7 @@ isqrt(x)
 }
 
 static unsigned int
-compute_triangle_count(count, nrepcodes)
-    unsigned int count;
-    unsigned int nrepcodes;
+compute_triangle_count (unsigned int count, unsigned int nrepcodes)
 {
     unsigned int perrep;
     unsigned int cost;
@@ -1922,13 +1912,13 @@ compute_triangle_count(count, nrepcodes)
 }
 
 static void
-max_out_clear()
+max_out_clear (void)
 {
     out_clear = max_ocodes;
 }
 
 static void
-reset_out_clear()
+reset_out_clear (void)
 {
     out_clear = out_clear_init;
     if (out_count >= out_clear) {
@@ -1938,8 +1928,7 @@ reset_out_clear()
 }
 
 static void
-rl_flush_fromclear(count)
-    int count;
+rl_flush_fromclear (int count)
 {
     int n;
 
@@ -1976,8 +1965,7 @@ rl_flush_fromclear(count)
 }
 
 static void
-rl_flush_clearorrep(count)
-    int count;
+rl_flush_clearorrep (int count)
 {
     int withclr;
 
@@ -1995,8 +1983,7 @@ rl_flush_clearorrep(count)
 }
 
 static void
-rl_flush_withtable(count)
-    int count;
+rl_flush_withtable (int count)
 {
     int repmax;
     int repleft;
@@ -2036,7 +2023,7 @@ rl_flush_withtable(count)
 }
 
 static void
-rl_flush()
+rl_flush (void)
 {
     DEBUGMSG(("rl_flush [ %d %d\n", rl_count, rl_pixel));
     if (rl_count == 1) {
@@ -2087,7 +2074,7 @@ compress(init_bits, handle, readValue)
 	    DEBUGMSG(("[overriding out_clear_init to %d]\n", out_clear_init));
 	}
     }
-#endif
+#endif /* MIGIF_DEBUGGING_ENVVARS */
     out_bits_init = init_bits;
     max_ocodes = (1 << GIFBITS) - ((1 << (out_bits_init - 1)) + 3);
     did_clear();

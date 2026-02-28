@@ -617,7 +617,6 @@ TkWmMapWindow(winPtr)
 	 * First create the wrapper window that provides space for a
 	 * menubar.
 	 */
-
 	if (wmPtr->wrapperPtr == NULL) {
 	    CreateWrapper(wmPtr);
 	}
@@ -626,7 +625,6 @@ TkWmMapWindow(winPtr)
 	 * Store all the window-manager-related information for the
 	 * window.
 	 */
-
 	string = (wmPtr->title != NULL) ? wmPtr->title : winPtr->nameUid;
 	Tcl_UtfToExternalDString(NULL, string, -1, &ds);
 	string = Tcl_DStringValue(&ds);
@@ -982,7 +980,7 @@ Tk_WmObjCmd(clientData, interp, objc, objv)
         WMOPT_POSITIONFROM, WMOPT_PROTOCOL, WMOPT_RESIZABLE, WMOPT_SIZEFROM,
         WMOPT_STACKORDER, WMOPT_STATE, WMOPT_TITLE, WMOPT_TRANSIENT,
 	WMOPT_WITHDRAW };
-    int index; 
+    int index;
     int length;
     char *argv1;
     TkWindow *winPtr;
@@ -3702,9 +3700,10 @@ ReparentEvent(wmPtr, reparentEventPtr)
  */
 
 static int
-ComputeReparentGeometry(wmPtr)
-    WmInfo *wmPtr;		/* Information about toplevel window
+ComputeReparentGeometry (
+    WmInfo *wmPtr		/* Information about toplevel window
 				 * whose reparent info is to be recomputed. */
+)
 {
     TkWindow *wrapperPtr = wmPtr->wrapperPtr;
     int width, height, bd;
@@ -5001,10 +5000,11 @@ Tk_CoordsToWindow(rootX, rootY, tkwin)
  */
 
 static void
-UpdateVRootGeometry(wmPtr)
-    WmInfo *wmPtr;		/* Window manager information to be
+UpdateVRootGeometry (
+    WmInfo *wmPtr		/* Window manager information to be
 				 * updated.  The wmPtr->vRoot field must
 				 * be valid. */
+)
 {
     TkWindow *winPtr = wmPtr->winPtr;
     int bd;
@@ -5195,8 +5195,9 @@ Tk_MoveToplevelWindow(tkwin, x, y)
  */
 
 static void
-UpdateWmProtocols(wmPtr)
-    register WmInfo *wmPtr;	/* Information about top-level window. */
+UpdateWmProtocols (
+    register WmInfo *wmPtr	/* Information about top-level window. */
+)
 {
     register ProtocolHandler *protPtr;
     Atom deleteWindowAtom;
@@ -5498,7 +5499,7 @@ TkWmRestackToplevel(winPtr, aboveBelow, otherPtr)
     /*
      * Reconfigure the window.  Note that we use XReconfigureWMWindow
      * instead of XConfigureWindow, in order to handle the case
-     * where the window is to be restacked with respect to another toplevel.  
+     * where the window is to be restacked with respect to another toplevel.
      * See [ICCCM] 4.1.5 "Configuring the Window" and XReconfigureWMWindow(3)
      * for details.
      */
@@ -5775,13 +5776,14 @@ TkGetPointerCoords(tkwin, xPtr, yPtr)
  */
 
 static void
-GetMaxSize(wmPtr, maxWidthPtr, maxHeightPtr)
-    WmInfo *wmPtr;		/* Window manager information for the
+GetMaxSize (
+    WmInfo *wmPtr,		/* Window manager information for the
 				 * window. */
-    int *maxWidthPtr;		/* Where to store the current maximum
+    int *maxWidthPtr,		/* Where to store the current maximum
 				 * width of the window. */
-    int *maxHeightPtr;		/* Where to store the current maximum
+    int *maxHeightPtr		/* Where to store the current maximum
 				 * height of the window. */
+)
 {
     int tmp;
 
@@ -5900,9 +5902,10 @@ TkpMakeMenuWindow(tkwin, transient)
  */
 
 static void
-CreateWrapper(wmPtr)
-    WmInfo *wmPtr;		/* Window manager information for the
+CreateWrapper (
+    WmInfo *wmPtr		/* Window manager information for the
 				 * window. */
+)
 {
     TkWindow *winPtr, *wrapperPtr;
     Window parent;

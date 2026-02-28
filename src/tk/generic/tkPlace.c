@@ -1,4 +1,4 @@
-/* 
+/*
  * tkPlace.c --
  *
  *	This file contains code to implement a simple geometry manager
@@ -15,7 +15,6 @@
 
 #include "tkPort.h"
 #include "tkInt.h"
-
 
 /*
  * Border modes for relative placement:
@@ -107,7 +106,7 @@ static Tk_OptionSpec optionSpecs[] = {
     {TK_OPTION_END, (char *) NULL, (char *) NULL, (char *) NULL,
 	 (char *) NULL, 0, -1, 0, 0, 0}
 };
-	
+
 /*
  * Flag definitions for Slave structures:
  *
@@ -214,8 +213,8 @@ Tk_PlaceObjCmd(clientData, interp, objc, objv)
     };
     enum options { PLACE_CONFIGURE, PLACE_FORGET, PLACE_INFO, PLACE_SLAVES };
     int index;
-    
-    
+
+
     if (objc < 3) {
 	Tcl_WrongNumArgs(interp, 1, objv, "option|pathName args");
 	return TCL_ERROR;
@@ -302,7 +301,7 @@ Tk_PlaceObjCmd(clientData, interp, objc, objv)
 			objv+3);
 	    }
 	}
-	
+
 	case PLACE_FORGET: {
 	    if (objc != 3) {
 		Tcl_WrongNumArgs(interp, 2, objv, "pathName");
@@ -328,7 +327,7 @@ Tk_PlaceObjCmd(clientData, interp, objc, objv)
 	    ckfree((char *) slavePtr);
 	    break;
 	}
-	
+
 	case PLACE_INFO: {
 	    if (objc != 3) {
 		Tcl_WrongNumArgs(interp, 2, objv, "pathName");
@@ -457,8 +456,9 @@ FindSlave(tkwin)
  */
 
 static void
-UnlinkSlave(slavePtr)
-    Slave *slavePtr;		/* Slave structure to be unlinked. */
+UnlinkSlave (
+    Slave *slavePtr		/* Slave structure to be unlinked. */
+)
 {
     register Master *masterPtr;
     register Slave *prevPtr;
@@ -592,7 +592,7 @@ ConfigureSlave(interp, tkwin, table, objc, objv)
     int mask;
     int result = TCL_OK;
     Slave *slavePtr;
-    
+
     if (Tk_TopWinHierarchy(tkwin)) {
 	Tcl_AppendResult(interp, "can't use placer on top-level window \"",
 		Tk_PathName(tkwin), "\"; use wm command instead",
@@ -601,7 +601,7 @@ ConfigureSlave(interp, tkwin, table, objc, objv)
     }
 
     slavePtr = CreateSlave(tkwin);
-    
+
     if (Tk_SetOptions(interp, (char *)slavePtr, table, objc, objv,
 	    slavePtr->tkwin, &savedOptions, &mask) != TCL_OK) {
 	Tk_RestoreSavedOptions(&savedOptions);
@@ -613,15 +613,15 @@ ConfigureSlave(interp, tkwin, table, objc, objv)
 	/* -in changed */
 	Tk_Window tkwin;
 	Tk_Window ancestor;
-	
+
 	tkwin = slavePtr->inTkwin;
-	
+
 	/*
 	 * Make sure that the new master is either the logical parent
 	 * of the slave or a descendant of that window, and that the
 	 * master and slave aren't the same.
 	 */
-	
+
 	for (ancestor = tkwin; ; ancestor = Tk_Parent(ancestor)) {
 	    if (ancestor == Tk_Parent(slavePtr->tkwin)) {
 		break;
@@ -730,7 +730,7 @@ PlaceInfoCommand(interp, tkwin)
 {
     char buffer[32 + TCL_INTEGER_SPACE];
     Slave *slavePtr;
-    
+
     slavePtr = FindSlave(tkwin);
     if (slavePtr == NULL) {
 	return TCL_OK;
@@ -767,7 +767,7 @@ PlaceInfoCommand(interp, tkwin)
     } else {
 	Tcl_AppendResult(interp, " -relheight {}", (char *) NULL);
     }
-    
+
     Tcl_AppendResult(interp, " -anchor ",
 	    Tk_NameOfAnchor(slavePtr->anchor),
 	    (char *) NULL);
@@ -880,7 +880,7 @@ RecomputePlacement(clientData)
 		height += slavePtr->height;
 	    }
 	    if (slavePtr->flags & CHILD_REL_HEIGHT) {
-		/* 
+		/*
 		 * See note above for rounding errors in width computation.
 		 */
 
@@ -1163,7 +1163,7 @@ PlaceLostSlaveProc(clientData, tkwin)
     }
     Tk_UnmapWindow(tkwin);
     UnlinkSlave(slavePtr);
-    Tcl_DeleteHashEntry(Tcl_FindHashEntry(&dispPtr->slaveTable, 
+    Tcl_DeleteHashEntry(Tcl_FindHashEntry(&dispPtr->slaveTable,
             (char *) tkwin));
     Tk_DeleteEventHandler(tkwin, StructureNotifyMask, SlaveStructureProc,
 	    (ClientData) slavePtr);

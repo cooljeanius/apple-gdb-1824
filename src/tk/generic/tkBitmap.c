@@ -611,8 +611,9 @@ Tk_SizeOfBitmap(display, bitmap, widthPtr, heightPtr)
  */
 
 static void
-FreeBitmap(bitmapPtr)
-    TkBitmap *bitmapPtr;			/* Bitmap to be released. */
+FreeBitmap (
+    TkBitmap *bitmapPtr			/* Bitmap to be released. */
+)
 {
     TkBitmap *prevPtr;
 
@@ -1181,7 +1182,7 @@ TkDebugBitmap(tkwin, name)
  *----------------------------------------------------------------------
  */
 Tcl_HashTable *
-TkGetBitmapPredefTable()
+TkGetBitmapPredefTable(void)
 {
     ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));

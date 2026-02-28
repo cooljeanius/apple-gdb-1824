@@ -1,4 +1,4 @@
-/* 
+/*
  * tkWinPointer.c --
  *
  *	Windows specific mouse tracking code.
@@ -52,7 +52,7 @@ static void		MouseTimerProc _ANSI_ARGS_((ClientData clientData));
  */
 
 int
-TkWinGetModifierState()
+TkWinGetModifierState (void)
 {
     int state = 0;
 
@@ -210,7 +210,7 @@ XUngrabKeyboard(display, time)
  *
  * MouseTimerProc --
  *
- *	Check the current mouse position and look for enter/leave 
+ *	Check the current mouse position and look for enter/leave
  *	events.
  *
  * Results:
@@ -256,7 +256,7 @@ MouseTimerProc(clientData)
  */
 
 void
-TkWinCancelMouseTimer()
+TkWinCancelMouseTimer (void)
 {
     if (mouseTimerSet) {
 	Tcl_DeleteTimerHandler(mouseTimer);
@@ -365,7 +365,7 @@ XWarpPointer(display, src_w, dest_w, src_x, src_y, src_width,
     RECT r;
 
     GetWindowRect(Tk_GetHWND(dest_w), &r);
-    SetCursorPos(r.left+dest_x, r.top+dest_y);    
+    SetCursorPos(r.left+dest_x, r.top+dest_y);
 }
 
 /*
@@ -471,7 +471,7 @@ TkpChangeFocus(winPtr, force)
     if (winPtr->window == None) {
 	panic("ChangeXFocus got null X window");
     }
- 
+
     /*
      * Change the foreground window so the focus window is raised to the top of
      * the system stacking order and gets the keyboard focus.
@@ -503,7 +503,7 @@ TkpChangeFocus(winPtr, force)
  *	This function captures the mouse so that all future events
  *	will be reported to this window, even if the mouse is outside
  *	the window.  If the specified window is NULL, then the mouse
- *	is released. 
+ *	is released.
  *
  * Results:
  *	None.
@@ -526,3 +526,5 @@ TkpSetCapture(winPtr)
 	ReleaseCapture();
     }
 }
+
+/* EOF */

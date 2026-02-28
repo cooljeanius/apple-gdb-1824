@@ -301,7 +301,7 @@ GenerateEditEvent(
  */
 
 static void 
-SourceDialog()
+SourceDialog (void)
 {
     int result;
     CONST char *path;

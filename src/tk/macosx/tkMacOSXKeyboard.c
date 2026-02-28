@@ -1,4 +1,4 @@
-/* 
+/*
  * tkMacOSXKeyboard.c --
  *
  *	Routines to support keyboard events on the Macintosh.
@@ -91,12 +91,12 @@ static void	InitKeyMaps _ANSI_ARGS_((void));
  */
 
 static void
-InitKeyMaps()
+InitKeyMaps (void)
 {
     Tcl_HashEntry *hPtr;
     KeyInfo *kPtr;
     int dummy;
-		
+
     Tcl_InitHashTable(&keycodeTable, TCL_ONE_WORD_KEYS);
     for (kPtr = keyArray; kPtr->keycode != 0; kPtr++) {
 	hPtr = Tcl_CreateHashEntry(&keycodeTable, (char *) kPtr->keycode,
@@ -133,7 +133,7 @@ InitKeyMaps()
  *----------------------------------------------------------------------
  */
 
-KeySym 
+KeySym
 XKeycodeToKeysym(
     Display* display,
     KeyCode keycode,
@@ -149,13 +149,13 @@ XKeycodeToKeysym(
 	InitKeyMaps();
     }
     if (keycode == 0) {
-        /* 
+        /*
          * This means we had a pure modifier keypress or
          * something similar which is a TO DO.
          */
         return NoSymbol;
     }
-    
+
     virtualKey = keycode >> 16;
     c = (keycode) & 0xffff;
     if (c > 255) {
@@ -179,7 +179,7 @@ XKeycodeToKeysym(
  	return (KeySym) Tcl_GetHashValue(hPtr);
     }
 
-    /* 
+    /*
      * Recompute the character based on the Shift key only.
      * TODO: The index may also specify the NUM_LOCK.
      */
@@ -195,7 +195,7 @@ XKeycodeToKeysym(
   	return c;
     }
 
-    return NoSymbol; 
+    return NoSymbol;
 }
 
 /*
@@ -243,10 +243,10 @@ TkpGetString(
  *----------------------------------------------------------------------
  */
 
-XModifierKeymap * 
+XModifierKeymap *
 XGetModifierMapping(
     Display* display)
-{ 
+{
     XModifierKeymap * modmap;
 
     modmap = (XModifierKeymap *) ckalloc(sizeof(XModifierKeymap));
@@ -272,7 +272,7 @@ XGetModifierMapping(
  *----------------------------------------------------------------------
  */
 
-void 
+void
 XFreeModifiermap(
     XModifierKeymap *modmap)
 {
@@ -287,9 +287,9 @@ XFreeModifiermap(
  *
  * XKeysymToString, XStringToKeysym --
  *
- *	These X window functions map Keysyms to strings & strings to 
- * 	keysyms.  However, Tk already does this for the most common keysyms.  
- *  	Therefor, these functions only need to support keysyms that will be 
+ *	These X window functions map Keysyms to strings & strings to
+ * 	keysyms.  However, Tk already does this for the most common keysyms.
+ *  	Therefor, these functions only need to support keysyms that will be
  *  	specific to the Macintosh.  Currently, there are none.
  *
  * Results:
@@ -301,17 +301,17 @@ XFreeModifiermap(
  *----------------------------------------------------------------------
  */
 
-char * 
+char *
 XKeysymToString(
     KeySym keysym)
 {
-    return NULL; 
+    return NULL;
 }
 
-KeySym 
+KeySym
 XStringToKeysym(
     const char*	string)
-{ 
+{
     return NoSymbol;
 }
 
@@ -342,7 +342,7 @@ XKeysymToKeycode(
 {
     KeyCode keycode = 0;
     char virtualKeyCode = 0;
-    
+
     if ((keysym >= XK_space) && (XK_asciitilde)) {
         if (keysym == 'a') {
             virtualKeyCode = 0x00;
@@ -383,9 +383,9 @@ TkpSetKeycodeAndState(tkwin, keySym, eventPtr)
     Display *display;
     int state;
     KeyCode keycode;
-    
+
     display = Tk_Display(tkwin);
-    
+
     if (keySym == NoSymbol) {
 	keycode = 0;
     } else {
@@ -400,7 +400,7 @@ TkpSetKeycodeAndState(tkwin, keySym, eventPtr)
 		if (state & 2) {
 		    TkDisplay *dispPtr;
 
-		    dispPtr = ((TkWindow *) tkwin)->dispPtr; 
+		    dispPtr = ((TkWindow *) tkwin)->dispPtr;
 		    eventPtr->xkey.state |= dispPtr->modeModMask;
 		}
 		break;
@@ -484,7 +484,7 @@ TkpGetKeySym(dispPtr, eventPtr)
 	} else {
 	    /* If we get here, we probably need to implement something new */
 	    return NoSymbol;
-	} 
+	}
     }
     sym = XKeycodeToKeysym(dispPtr->display, eventPtr->xkey.keycode, index);
 
@@ -632,7 +632,6 @@ TkpInitKeymapInfo(dispPtr)
 	    /*
 	     * Ran out of space in the array;  grow it.
 	     */
-
 	    arraySize *= 2;
 	    new = (KeyCode *) ckalloc((unsigned)
 		    (arraySize * sizeof(KeyCode)));

@@ -1,4 +1,4 @@
-/* 
+/*
  * tkPanedWindow.c --
  *
  *	This module implements "paned window" widgets that are object
@@ -54,7 +54,7 @@ typedef struct {
 
 typedef struct Slave {
     Tk_Window tkwin;			/* Window being managed. */
-    
+
     int minSize;			/* Minimum size of this pane, on the
 					 * relevant axis, in pixels. */
     int padx;				/* Additional padding requested for
@@ -103,7 +103,7 @@ typedef struct PanedWindow {
     Tk_Cursor cursor;		/* Current cursor for window, or None. */
     int resizeOpaque;		/* Boolean indicating whether resize should be
 				 * opaque or rubberband style. */
-    
+
     int sashRelief;		/* Relief used to draw sash. */
     int sashWidth;		/* Width of each sash, in pixels. */
     Tcl_Obj *sashWidthPtr;	/* Tcl_Obj rep for sash width. */
@@ -259,7 +259,7 @@ static Tk_OptionSpec optionSpecs[] = {
 	 DEF_PANEDWINDOW_OPAQUERESIZE, -1,
          Tk_Offset(PanedWindow, resizeOpaque), 0, 0, 0},
     {TK_OPTION_STRING_TABLE, "-orient", "orient", "Orient",
-	 DEF_PANEDWINDOW_ORIENT, -1, Tk_Offset(PanedWindow, orient), 
+	 DEF_PANEDWINDOW_ORIENT, -1, Tk_Offset(PanedWindow, orient),
 	 0, (ClientData) orientStrings, GEOMETRY},
     {TK_OPTION_RELIEF, "-relief", "relief", "Relief",
 	 DEF_PANEDWINDOW_RELIEF, -1, Tk_Offset(PanedWindow, relief), 0, 0, 0},
@@ -308,7 +308,7 @@ static Tk_OptionSpec slaveOptionSpecs[] = {
          Tk_Offset(Slave, width), TK_OPTION_NULL_OK, 0, 0},
     {TK_OPTION_END}
 };
-    
+
 
 /*
  *--------------------------------------------------------------
@@ -343,7 +343,7 @@ Tk_PanedWindowObjCmd(clientData, interp, objc, objv)
 	return TCL_ERROR;
     }
 
-    tkwin = Tk_CreateWindowFromPath(interp, Tk_MainWindow(interp), 
+    tkwin = Tk_CreateWindowFromPath(interp, Tk_MainWindow(interp),
 	    Tcl_GetStringFromObj(objv[1], NULL), (char *) NULL);
     if (tkwin == NULL) {
 	return TCL_ERROR;
@@ -471,7 +471,7 @@ PanedWindowWidgetObjCmd(clientData, interp, objc, objv)
     int index, count, i, x, y;
     Tk_Window tkwin;
     Slave *slavePtr;
-    
+
     if (objc < 2) {
 	Tcl_WrongNumArgs(interp, 1, objv, "option ?arg arg...?");
 	return TCL_ERROR;
@@ -483,7 +483,7 @@ PanedWindowWidgetObjCmd(clientData, interp, objc, objv)
     }
 
     Tcl_Preserve((ClientData) pwPtr);
-    
+
     switch ((enum options) index) {
 	case PW_ADD: {
 	    if (objc < 3) {
@@ -491,11 +491,11 @@ PanedWindowWidgetObjCmd(clientData, interp, objc, objv)
 		result = TCL_ERROR;
 		break;
 	    }
-	    
+
 	    result = ConfigureSlaves(pwPtr, interp, objc, objv);
 	    break;
 	}
-	
+
 	case PW_CGET: {
 	    if (objc != 3) {
 		Tcl_WrongNumArgs(interp, 2, objv, "option");
@@ -511,7 +511,7 @@ PanedWindowWidgetObjCmd(clientData, interp, objc, objv)
 	    }
 	    break;
 	}
-	
+
 	case PW_CONFIGURE: {
 	    resultObj = NULL;
 	    if (objc <= 3) {
@@ -530,11 +530,11 @@ PanedWindowWidgetObjCmd(clientData, interp, objc, objv)
 	    }
 	    break;
 	}
-	
+
 	case PW_FORGET: {
 	    Tk_Window slave;
 	    int i;
-	    
+
 	    if (objc < 3) {
 		Tcl_WrongNumArgs(interp, 2, objv, "widget ?widget ...?");
 		result = TCL_ERROR;
@@ -580,7 +580,7 @@ PanedWindowWidgetObjCmd(clientData, interp, objc, objv)
 		result = TCL_ERROR;
 		break;
 	    }
-	    
+
 	    result = PanedWindowIdentifyCoords(pwPtr, interp, x, y);
 	    break;
 	}
@@ -648,7 +648,7 @@ PanedWindowWidgetObjCmd(clientData, interp, objc, objv)
 	    }
 	    break;
 	}
-	    
+
 	case PW_PANES: {
 	    resultObj = Tcl_NewObj();
 
@@ -709,7 +709,7 @@ ConfigureSlaves(pwPtr, interp, objc, objv)
     Slave *slavePtr, **inserts, **new;
     Slave options;
     char *arg;
-   
+
     /*
      * Find the non-window name arguments; these are the configure options
      * for the slaves.  Also validate that the window names given are
@@ -828,7 +828,7 @@ ConfigureSlaves(pwPtr, interp, objc, objv)
      */
     inserts = (Slave **)ckalloc(sizeof(Slave *) * (firstOptionArg - 2));
     insertIndex = 0;
-    
+
     /*
      * Populate the inserts array, creating new slave structures as necessary,
      * applying the options to each structure as we go, and, if necessary,
@@ -882,12 +882,12 @@ ConfigureSlaves(pwPtr, interp, objc, objv)
 	if (found) {
 	    continue;
 	}
-	
+
 	/*
 	 * Create a new slave structure and initialize it.  All slaves
 	 * start out with their "natural" dimensions.
 	 */
-	
+
 	slavePtr = (Slave *) ckalloc(sizeof(Slave));
 	memset(slavePtr, 0, sizeof(Slave));
 	Tk_InitOptions(interp, (char *)slavePtr, pwPtr->slaveOpts,
@@ -912,7 +912,7 @@ ConfigureSlaves(pwPtr, interp, objc, objv)
 	/*
 	 * Set up the geometry management callbacks for this slave.
 	 */
-	
+
 	Tk_CreateEventHandler(slavePtr->tkwin, StructureNotifyMask,
 		SlaveStructureProc, (ClientData) slavePtr);
 	Tk_ManageGeometry(slavePtr->tkwin, &panedWindowMgrType,
@@ -952,10 +952,10 @@ ConfigureSlaves(pwPtr, interp, objc, objv)
 		j++;
 	    }
 	}
-	
+
 	memcpy((void *)&(new[j]), inserts, sizeof(Slave *) * (insertIndex));
 	j += firstOptionArg - 2;
-	
+
 	for (i = index; i < pwPtr->numSlaves; i++) {
 	    if (pwPtr->slaves[i] != NULL) {
 		new[j] = pwPtr->slaves[i];
@@ -977,7 +977,7 @@ ConfigureSlaves(pwPtr, interp, objc, objv)
     pwPtr->numSlaves += numNewSlaves;
 
     Tk_FreeConfigOptions((char *) &options, pwPtr->slaveOpts, pwPtr->tkwin);
-    
+
     ComputeGeometry(pwPtr);
     return TCL_OK;
 }
@@ -1012,7 +1012,7 @@ PanedWindowSashCommand(pwPtr, interp, objc, objv)
     int index, sash, x, y, diff;
     Tcl_Obj *coords[2];
     Slave *slavePtr;
-    
+
     if (objc < 3) {
 	Tcl_WrongNumArgs(interp, 2, objv, "option ?arg ...?");
 	return TCL_ERROR;
@@ -1041,7 +1041,7 @@ PanedWindowSashCommand(pwPtr, interp, objc, objv)
 		return TCL_ERROR;
 	    }
 	    slavePtr = pwPtr->slaves[sash];
-	    
+
 	    coords[0] = Tcl_NewIntObj(slavePtr->sashx);
 	    coords[1] = Tcl_NewIntObj(slavePtr->sashy);
 	    Tcl_SetListObj(Tcl_GetObjResult(interp), 2, coords);
@@ -1053,7 +1053,7 @@ PanedWindowSashCommand(pwPtr, interp, objc, objv)
 		Tcl_WrongNumArgs(interp, 3, objv, "index ?x y?");
 		return TCL_ERROR;
 	    }
-	    
+
 	    if (Tcl_GetIntFromObj(interp, objv[3], &sash) != TCL_OK) {
 		return TCL_ERROR;
 	    }
@@ -1068,7 +1068,7 @@ PanedWindowSashCommand(pwPtr, interp, objc, objv)
 		if (Tcl_GetIntFromObj(interp, objv[4], &x) != TCL_OK) {
 		    return TCL_ERROR;
 		}
-		
+
 		if (Tcl_GetIntFromObj(interp, objv[5], &y) != TCL_OK) {
 		    return TCL_ERROR;
 		}
@@ -1083,14 +1083,14 @@ PanedWindowSashCommand(pwPtr, interp, objc, objv)
 
 	    break;
 	}
-	
+
 	case SASH_DRAGTO:
 	case SASH_PLACE: {
 	    if (objc != 6) {
 		Tcl_WrongNumArgs(interp, 3, objv, "index x y");
 		return TCL_ERROR;
 	    }
-	    
+
 	    if (Tcl_GetIntFromObj(interp, objv[3], &sash) != TCL_OK) {
 		return TCL_ERROR;
 	    }
@@ -1108,7 +1108,7 @@ PanedWindowSashCommand(pwPtr, interp, objc, objv)
 	    if (Tcl_GetIntFromObj(interp, objv[5], &y) != TCL_OK) {
 		return TCL_ERROR;
 	    }
-	    
+
 	    slavePtr = pwPtr->slaves[sash];
 	    if (pwPtr->orient == ORIENT_HORIZONTAL) {
 		if (index == SASH_PLACE) {
@@ -1161,7 +1161,7 @@ ConfigurePanedWindow(interp, pwPtr, objc, objv)
 {
     Tk_SavedOptions savedOptions;
     int typemask = 0;
-    
+
     if (Tk_SetOptions(interp, (char *) pwPtr, pwPtr->optionTable, objc, objv,
 	    pwPtr->tkwin, &savedOptions, &typemask) != TCL_OK) {
 	Tk_RestoreSavedOptions(&savedOptions);
@@ -1180,7 +1180,7 @@ ConfigurePanedWindow(interp, pwPtr, objc, objv)
     if (typemask & GEOMETRY) {
 	ComputeGeometry(pwPtr);
     }
-    
+
     return TCL_OK;
 }
 
@@ -1214,7 +1214,7 @@ PanedWindowWorldChanged(instanceData)
      * Allocated a graphics context for drawing the paned window widget
      * elements (background, sashes, etc.).
      */
-    
+
     gcValues.background = Tk_3DBorderColor(pwPtr->background)->pixel;
     newGC = Tk_GetGC(pwPtr->tkwin, GCBackground, &gcValues);
     if (pwPtr->gc != None) {
@@ -1225,7 +1225,7 @@ PanedWindowWorldChanged(instanceData)
     /*
      * Issue geometry size requests to Tk.
      */
-    
+
     Tk_SetInternalBorder(pwPtr->tkwin, pwPtr->borderWidth);
     if (pwPtr->width > 0 || pwPtr->height > 0) {
 	Tk_GeometryRequest(pwPtr->tkwin, pwPtr->width, pwPtr->height);
@@ -1345,12 +1345,12 @@ DisplayPanedWindow(clientData)
     Pixmap pixmap;
     Tk_Window tkwin = pwPtr->tkwin;
     int i, sashWidth, sashHeight;
-    
+
     pwPtr->flags &= ~REDRAW_PENDING;
     if ((pwPtr->tkwin == NULL) || !Tk_IsMapped(tkwin)) {
 	return;
     }
-    
+
     if (pwPtr->flags & REQUESTED_RELAYOUT) {
 	ArrangePanes(clientData);
     }
@@ -1369,7 +1369,7 @@ DisplayPanedWindow(clientData)
     Tk_Fill3DRectangle(tkwin, pixmap, pwPtr->background, 0, 0,
 	    Tk_Width(tkwin), Tk_Height(tkwin), pwPtr->borderWidth,
 	    pwPtr->relief);
-    
+
     /*
      * Set up boilerplate geometry values for sashes (width, height, common
      * coordinates).
@@ -1398,12 +1398,12 @@ DisplayPanedWindow(clientData)
 		    TK_RELIEF_RAISED);
 	}
     }
-    
+
     /*
      * Copy the information from the off-screen pixmap onto the screen,
      * then delete the pixmap.
      */
-    
+
     XCopyArea(Tk_Display(tkwin), pixmap, Tk_WindowId(tkwin), pwPtr->gc,
 	    0, 0, (unsigned) Tk_Width(tkwin), (unsigned) Tk_Height(tkwin),
 	    0, 0);
@@ -1428,11 +1428,12 @@ DisplayPanedWindow(clientData)
  */
 
 static void
-DestroyPanedWindow(pwPtr)
-    PanedWindow *pwPtr;		/* Info about paned window widget. */
+DestroyPanedWindow (
+    PanedWindow *pwPtr		/* Info about paned window widget. */
+)
 {
     int i;
-    
+
     /*
      * First mark the widget as in the process of being deleted,
      * so that any code that causes calls to other paned window procedures
@@ -1458,7 +1459,7 @@ DestroyPanedWindow(pwPtr)
      *  o  Cancel geometry management for the slave.
      *  o  Free memory for the slave
      */
-    
+
     for (i = 0; i < pwPtr->numSlaves; i++) {
 	Tk_DeleteEventHandler(pwPtr->slaves[i]->tkwin, StructureNotifyMask,
 		SlaveStructureProc, (ClientData) pwPtr->slaves[i]);
@@ -1591,10 +1592,10 @@ ArrangePanes(clientData)
 				 * are to be re-layed out. */
 {
     register PanedWindow *pwPtr = (PanedWindow *) clientData;
-    register Slave *slavePtr;	
+    register Slave *slavePtr;
     int i, slaveWidth, slaveHeight, slaveX, slaveY, paneWidth, paneHeight;
     int doubleBw;
-    
+
     pwPtr->flags &= ~(REQUESTED_RELAYOUT|RESIZE_PENDING);
 
     /*
@@ -1623,7 +1624,7 @@ ArrangePanes(clientData)
 	 *	determine the x and y, and actual width and height of the
 	 *	widget.
 	 */
-	
+
 	doubleBw = 2 * Tk_Changes(slavePtr->tkwin)->border_width;
 	slaveWidth = (slavePtr->width > 0 ? slavePtr->width :
 		Tk_ReqWidth(slavePtr->tkwin) + doubleBw);
@@ -1653,7 +1654,7 @@ ArrangePanes(clientData)
 	    paneWidth = Tk_Width(pwPtr->tkwin) - (2 * slavePtr->padx) -
 		(2 * Tk_InternalBorderWidth(pwPtr->tkwin));
 	}
-	
+
 	if (slaveWidth > paneWidth) {
 	    slaveWidth = paneWidth;
 	}
@@ -1700,12 +1701,13 @@ ArrangePanes(clientData)
  */
 
 static void
-Unlink(slavePtr)
-    register Slave *slavePtr;		/* Window to unlink. */
+Unlink (
+    register Slave *slavePtr		/* Window to unlink. */
+)
 {
     register PanedWindow *masterPtr;
     int i, j;
-    
+
     masterPtr = slavePtr->masterPtr;
     if (masterPtr == NULL) {
 	return;
@@ -1800,7 +1802,7 @@ SlaveStructureProc(clientData, eventPtr)
 {
     Slave *slavePtr = (Slave *) clientData;
     PanedWindow *pwPtr = slavePtr->masterPtr;
-    
+
     if (eventPtr->type == DestroyNotify) {
 	Unlink(slavePtr);
 	slavePtr->tkwin = NULL;
@@ -1827,8 +1829,9 @@ SlaveStructureProc(clientData, eventPtr)
  */
 
 static void
-ComputeGeometry(pwPtr)
-    PanedWindow *pwPtr;		/* Pointer to the Paned Window structure. */
+ComputeGeometry (
+    PanedWindow *pwPtr		/* Pointer to the Paned Window structure. */
+)
 {
     int i, x, y, doubleBw, internalBw;
     int reqWidth, reqHeight, sashWidth, sxOff, syOff, hxOff, hyOff, dim;
@@ -1838,7 +1841,7 @@ ComputeGeometry(pwPtr)
 
     x = y = internalBw = Tk_InternalBorderWidth(pwPtr->tkwin);
     reqWidth = reqHeight = 0;
-    
+
     /*
      * Sashes and handles share space on the display.  To simplify
      * processing below, precompute the x and y offsets of the handles and
@@ -1865,7 +1868,7 @@ ComputeGeometry(pwPtr)
 	    hxOff = pwPtr->handlePad;
 	}
     }
-    
+
     for (i = 0; i < pwPtr->numSlaves; i++) {
 	slavePtr = pwPtr->slaves[i];
 	/*
@@ -1889,7 +1892,7 @@ ComputeGeometry(pwPtr)
 		slavePtr->paneHeight = slavePtr->minSize;
 	    }
 	}
-	
+
 	/*
 	 * Compute the location of the sash at the right or bottom of the
 	 * parcel.
@@ -1913,7 +1916,7 @@ ComputeGeometry(pwPtr)
 	} else {
 	    y += sashWidth + pwPtr->sashPad;
 	}
-	
+
 	/*
 	 * Find the maximum height/width of the slaves, for computing the
 	 * requested height/width of the paned window.
@@ -2092,16 +2095,16 @@ SetSticky(clientData, interp, tkwin, value, recordPtr, internalOffset,
     char c, *string, *internalPtr;
 
     internalPtr = ComputeSlotAddress(recordPtr, internalOffset);
-    
+
     if (flags & TK_OPTION_NULL_OK && ObjectIsEmpty(*value)) {
 	*value = NULL;
     } else {
 	/*
 	 * Convert the sticky specifier into an integer value.
 	 */
-	
+
 	string = Tcl_GetString(*value);
-    
+
 	while ((c = *string++) != '\0') {
 	    switch (c) {
 		case 'n': case 'N': sticky |= STICK_NORTH; break;
@@ -2126,7 +2129,7 @@ SetSticky(clientData, interp, tkwin, value, recordPtr, internalOffset,
 	*((int *) internalPtr) = sticky;
     }
     return TCL_OK;
-}		
+}
 
 /*
  *----------------------------------------------------------------------
@@ -2175,16 +2178,17 @@ RestoreSticky(clientData, tkwin, internalPtr, oldInternalPtr)
  */
 
 static void
-AdjustForSticky(sticky, cavityWidth, cavityHeight, xPtr, yPtr,
-	slaveWidthPtr, slaveHeightPtr)
-    int sticky;		/* Sticky value; see top of file for definition. */
-    int cavityWidth;	/* Width of the cavity. */
-    int cavityHeight;	/* Height of the cavity. */
-    int *xPtr, *yPtr;		/* Initially, coordinates of the top-left
+AdjustForSticky (
+    int sticky,		/* Sticky value; see top of file for definition. */
+    int cavityWidth,	/* Width of the cavity. */
+    int cavityHeight,	/* Height of the cavity. */
+    int *xPtr,
+    int *yPtr,		/* Initially, coordinates of the top-left
 				 * corner of cavity; also return values for
 				 * actual x, y coords of slave. */
-    int *slaveWidthPtr;		/* Slave width. */
-    int *slaveHeightPtr;	/* Slave height. */
+    int *slaveWidthPtr,		/* Slave width. */
+    int *slaveHeightPtr	/* Slave height. */
+)
 {
     int diffx=0;	/* Cavity width - slave width. */
     int diffy=0;	/* Cavity hight - slave height. */
@@ -2228,15 +2232,12 @@ AdjustForSticky(sticky, cavityWidth, cavityHeight, xPtr, yPtr,
  */
 
 static void
-MoveSash(pwPtr, sash, diff)
-    PanedWindow *pwPtr;
-    int sash;
-    int diff;
+MoveSash (PanedWindow *pwPtr, int sash, int diff)
 {
     int diffConsumed = 0, i, extra, maxCoord, currCoord;
     int *lengthPtr, newLength;
     Slave *slave;
-    
+
     if (diff > 0) {
 	/*
 	 * Growing the pane, at the expense of panes to the right.
@@ -2345,7 +2346,7 @@ MoveSash(pwPtr, sash, diff)
 	    } else {
 		lengthPtr	= &(slave->paneHeight);
 	    }
-	    
+
 	    newLength = *lengthPtr + (diff - diffConsumed);
 	    if (newLength < slave->minSize) {
 		newLength = slave->minSize;
@@ -2362,7 +2363,7 @@ MoveSash(pwPtr, sash, diff)
 	    pwPtr->slaves[sash + 1]->paneHeight -= diffConsumed;
 	}
     }
-    
+
 }
 
 /*
@@ -2441,7 +2442,7 @@ DisplayProxyWindow(clientData)
      */
     Tk_Fill3DRectangle(tkwin, pixmap, pwPtr->background, 0, 0,
 	    Tk_Width(tkwin), Tk_Height(tkwin), 2, pwPtr->sashRelief);
-    
+
     /*
      * Copy the pixmap to the display.
      */
@@ -2480,7 +2481,7 @@ PanedWindowProxyCommand(pwPtr, interp, objc, objv)
     enum options { PROXY_COORD, PROXY_FORGET, PROXY_PLACE };
     int index, x, y, sashWidth, sashHeight;
     Tcl_Obj *coords[2];
-    
+
     if (objc < 3) {
 	Tcl_WrongNumArgs(interp, 2, objv, "option ?arg ...?");
 	return TCL_ERROR;
@@ -2552,7 +2553,7 @@ PanedWindowProxyCommand(pwPtr, interp, objc, objv)
 
 	    pwPtr->proxyx = x;
 	    pwPtr->proxyy = y;
-	    
+
 	    /*
 	     * Make sure the proxy window is higher in the stacking order
 	     * than the slaves, so that it will be visible when drawn.
@@ -2560,9 +2561,9 @@ PanedWindowProxyCommand(pwPtr, interp, objc, objv)
 	     * enough to appear above the highest slave, but it's much easier
 	     * to just force it all the way to the top of the stacking order.
 	     */
-	    
+
 	    Tk_RestackWindow(pwPtr->proxywin, Above, NULL);
-	    
+
 	    /*
 	     * Let Tk_MaintainGeometry take care of placing the window at
 	     * the right coordinates.
@@ -2630,9 +2631,10 @@ ObjectIsEmpty(objPtr)
  */
 
 static char *
-ComputeSlotAddress(recordPtr, offset)
-    char *recordPtr;	/* Pointer to the start of a record. */
-    int offset;		/* Offset of a slot within that record; may be < 0. */
+ComputeSlotAddress (
+    char *recordPtr,	/* Pointer to the start of a record. */
+    int offset		/* Offset of a slot within that record; may be < 0. */
+)
 {
     if (offset >= 0) {
 	return recordPtr + offset;
@@ -2708,7 +2710,7 @@ PanedWindowIdentifyCoords(pwPtr, interp, x, y)
 	sashWidth	-= 2 * Tk_InternalBorderWidth(pwPtr->tkwin);
 	lpad = rpad	= 0;
     }
-    
+
     isHandle = 0;
     found = -1;
     for (i = 0; i < pwPtr->numSlaves - 1; i++) {
@@ -2752,7 +2754,9 @@ PanedWindowIdentifyCoords(pwPtr, interp, x, y)
 		    Tcl_NewStringObj("sash", -1));
 	}
     }
-    
+
     Tcl_SetObjResult(interp, list);
     return TCL_OK;
 }
+
+/* EOF */

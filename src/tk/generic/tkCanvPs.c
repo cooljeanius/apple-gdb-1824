@@ -1139,10 +1139,13 @@ GetPostscriptPoints(interp, string, doublePtr)
 */
 
 static void
-TkImageGetColor(cdata, pixel, red, green, blue)
-    TkColormapData *cdata;              /* Colormap data */
-    unsigned long pixel;                /* Pixel value to look up */
-    double *red, *green, *blue;         /* Color data to return */
+TkImageGetColor (
+    TkColormapData *cdata,              /* Colormap data */
+    unsigned long pixel,                /* Pixel value to look up */
+    double *red,
+    double *green,
+    double *blue                        /* Color data to return */
+)
 {
     *red   = (double) GetRValue(pixel) / 255.0;
     *green = (double) GetGValue(pixel) / 255.0;
@@ -1150,10 +1153,13 @@ TkImageGetColor(cdata, pixel, red, green, blue)
 }
 #else
 static void
-TkImageGetColor(cdata, pixel, red, green, blue)
-    TkColormapData *cdata;              /* Colormap data */
-    unsigned long pixel;                /* Pixel value to look up */
-    double *red, *green, *blue;         /* Color data to return */
+TkImageGetColor (
+    TkColormapData *cdata,              /* Colormap data */
+    unsigned long pixel,                /* Pixel value to look up */
+    double *red,
+    double *green,
+    double *blue                        /* Color data to return */
+)
 {
     if (cdata->separated) {
 	int r = (pixel & cdata->red_mask) >> cdata->red_shift;

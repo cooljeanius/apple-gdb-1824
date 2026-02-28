@@ -105,8 +105,8 @@ static Tcl_ChannelType consoleChannelType = {
  *
  *----------------------------------------------------------------------
  */
-static int ShouldUseConsoleChannel(type)
-    int type;
+static int 
+ShouldUseConsoleChannel (int type)
 {
     DWORD handleId;		/* Standard handle to retrieve. */
     DCB dcb;
