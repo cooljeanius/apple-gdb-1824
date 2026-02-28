@@ -198,6 +198,7 @@ BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
 BUILD_DIR = @BUILD_DIR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
+CCLD_ARCHFLAGS = @CCLD_ARCHFLAGS@
 CC_FOR_BUILD = @CC_FOR_BUILD@
 CFLAGS = @CFLAGS@
 CHANGELOG_CMD = @CHANGELOG_CMD@
@@ -462,10 +463,14 @@ AUTOMAKE_OPTIONS = dejagnu gnits no-dist
 RL_LIBRARY_VERSION = @LIBVERSION@
 RL_LIBRARY_NAME = readline
 topdir = @top_srcdir@
-RM = rm -rf
-CP = cp
-MV = mv
-LN = ln
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 = 
+am__v_v_1 = -v
+RM = rm -rf $(AM_V_v)
+CP = cp $(AM_V_v)
+MV = mv $(AM_V_v)
+LN = ln $(AM_V_v)
 
 # Support an alternate destination root directory for package building
 DESTDIR = 

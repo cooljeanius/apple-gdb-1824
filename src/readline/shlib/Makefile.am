@@ -36,10 +36,17 @@ CC = @CC@
 RANLIB = @RANLIB@
 AR = @AR@
 ARFLAGS = @ARFLAGS@
-RM = rm -rf
-CP = cp
-MV = mv
-LN = ln
+
+## extend the automake verbosity control:
+AM_V_v = $(am__v_v_@AM_V@)
+am__v_v_ = $(am__v_v_@AM_DEFAULT_V@)
+am__v_v_0 =
+am__v_v_1 = -v
+
+RM = rm -rf $(AM_V_v)
+CP = cp $(AM_V_v)
+MV = mv $(AM_V_v)
+LN = ln $(AM_V_v)
 
 SHELL = @MAKE_SHELL@
 
@@ -60,6 +67,7 @@ LDFLAGS = @LDFLAGS@ @LOCAL_LDFLAGS@ @CFLAGS@
 
 ## architecture flags:
 C_ARCHFLAGS = @C_ARCHFLAGS@
+CCLD_ARCHFLAGS = @CCLD_ARCHFLAGS@
 
 DEFS = @DEFS@
 LOCAL_DEFS = @LOCAL_DEFS@

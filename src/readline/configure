@@ -860,6 +860,7 @@ RAWCPPFLAGS
 RAWCPP
 CPP
 SET_MAKE
+CCLD_ARCHFLAGS
 C_ARCHFLAGS
 WARN_CFLAGS
 OBJEXT
@@ -5130,7 +5131,14 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
   test -n "${C_ARCHFLAGS}" && export C_ARCHFLAGS
-
+    ## TODO: find a way to test what archflags ${SHOBJ_LD} accepts;
+  ## it chokes on aarch64, for instance:
+  if test "x${C_ARCHFLAGS}" = "xaarch64"; then
+    export CCLD_ARCHFLAGS=""
+  else
+    export CCLD_ARCHFLAGS="${C_ARCHFLAGS}"
+  fi
+    ## dummy comment
 fi
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ${MAKE-make} sets \$(MAKE)" >&5

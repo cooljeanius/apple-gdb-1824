@@ -146,12 +146,15 @@ darwin*|macosx*)
 	SHLIB_LIBSUFF='dylib'
 
 	SHOBJ_LDFLAGS='-dynamiclib'
-    if test "x${HOST_ARCHITECTURE}" != "x"; then
-        test -n "${HOST_ARCHITECTURE}"
+    if test "x${HOST_ARCHITECTURE}" != "x" && test "x${HOST_ARCHITECTURE}" != "xaarch64"; then
+        test -n "${HOST_ARCHITECTURE}" && export HOST_ARCHITECTURE
         SHLIB_XLDFLAGS='-arch ${HOST_ARCHITECTURE} -install_name $(libdir)/$@ -current_version $(SHLIB_MAJOR)$(SHLIB_MINOR) -compatibility_version $(SHLIB_MAJOR)$(SHLIB_MINOR)'
-    else
-        test -z "${HOST_ARCHITECTURE}"
+    elif test -x /usr/bin/arch; then
+        test -z "${HOST_ARCHITECTURE}" && echo "/usr/bin/arch says: `/usr/bin/arch`"
         SHLIB_XLDFLAGS='-arch_only `/usr/bin/arch` -install_name $(libdir)/$@ -current_version $(SHLIB_MAJOR)$(SHLIB_MINOR) -compatibility_version $(SHLIB_MAJOR)$(SHLIB_MINOR)'
+    else
+    	test -z "${HOST_ARCHITECTURE}" && echo "unknown HOST_ARCHITECTURE!"
+	SHLIB_XLDFLAGS='-install_name $(libdir)/$@ -current_version $(SHLIB_MAJOR)$(SHLIB_MINOR) -compatibility_version $(SHLIB_MAJOR)$(SHLIB_MINOR)'
     fi
 	SHLIB_EXTRA_XLDFLAGS='-v'
 

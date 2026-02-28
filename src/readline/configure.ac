@@ -70,7 +70,16 @@ AC_USE_SYSTEM_EXTENSIONS
 if test -n "${HOST_ARCHITECTURE}"; then
   ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],[C_ARCHFLAGS])
   test -n "${C_ARCHFLAGS}" && export C_ARCHFLAGS
-  AC_SUBST([C_ARCHFLAGS])
+  AC_SUBST([C_ARCHFLAGS])dnl
+  ## TODO: find a way to test what archflags ${SHOBJ_LD} accepts;
+  ## it chokes on aarch64, for instance:
+  if test "x${C_ARCHFLAGS}" = "xaarch64"; then
+    export CCLD_ARCHFLAGS=""
+  else
+    export CCLD_ARCHFLAGS="${C_ARCHFLAGS}"
+  fi
+  AC_SUBST([CCLD_ARCHFLAGS])dnl
+  ## dummy comment
 fi
 
 AC_PROG_MAKE_SET
