@@ -808,7 +808,7 @@ jobs:
         fi
 
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       if: matrix.language == 'c-cpp' && success()
       with:
         # Artifact name:
