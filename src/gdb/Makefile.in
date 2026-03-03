@@ -1159,7 +1159,7 @@ ppcobsd_tdep_h = ppcobsd-tdep.h
 ppc_tdep_h = ppc-tdep.h
 printcmd_h = printcmd.h
 proc_utils_h = proc-utils.h
-regcache_h = regcache.h $(ansidecl_h)
+regcache_h = regcache.h $(ansidecl_h) $(common_common_regcache_h)
 reggroups_h = reggroups.h
 regset_h = regset.h
 remote_fileio_h = remote-fileio.h
@@ -1237,6 +1237,7 @@ cli_utils_h = $(cli_srcdir)/cli-utils.h
 #
 
 common_srcdir = $(srcdir)/common
+common_common_regcache_h = $(common_srcdir)/common-regcache.h
 common_print_utils_h = $(common_srcdir)/print-utils.h
 
 ###

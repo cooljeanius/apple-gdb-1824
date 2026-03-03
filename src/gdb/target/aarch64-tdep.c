@@ -48,6 +48,8 @@
 #include "user-regs.h"
 #include "language.h"
 #include "infcall.h"
+#include "ax.h"
+#include "ax-gdb.h"
 
 #include "aarch64-tdep.h"
 
@@ -56,6 +58,9 @@
 
 #include "gdb_assert.h"
 #include "vec.h"
+
+#include "record.h"
+#include "record-full.h"
 
 #include "features/aarch64.c"
 
@@ -996,6 +1001,7 @@ aarch64_prologue_this_id (struct frame_info *this_frame,
 # pragma clang diagnostic ignored "-Wincompatible-pointer-types"
 # pragma clang diagnostic ignored "-Wint-conversion"
 # pragma clang diagnostic ignored "-Wunused-variable"
+# pragma clang diagnostic ignored "-Wshorten-64-to-32"
 #endif /* (GCC > 5) || clang */
 
 /* Implement the "prev_register" frame_unwind method: */
@@ -1954,9 +1960,16 @@ aarch64_extract_return_value (struct type *type, struct regcache *regs,
 	  /* By using store_unsigned_integer we avoid having to do
 	     anything special for small big-endian values.  */
 	  regcache_cooked_read_unsigned (regs, regno++, &tmp);
-	  store_unsigned_integer (valbuf,
-				  (len > X_REGISTER_SIZE
-				   ? X_REGISTER_SIZE : len), byte_order, tmp);
+#ifdef S_U_I_TAKES_FOUR_ARGS
+	  store_unsigned_integer(valbuf,
+				 ((len > X_REGISTER_SIZE)
+				  ? X_REGISTER_SIZE : len), byte_order, tmp);
+#else
+	  store_unsigned_integer(valbuf,
+				 ((len > X_REGISTER_SIZE)
+				  ? X_REGISTER_SIZE : len), tmp);
+	  (void)byte_order;
+#endif /* S_U_I_TAKES_FOUR_ARGS */
 	  len -= X_REGISTER_SIZE;
 	  valbuf += X_REGISTER_SIZE;
 	}
@@ -2084,7 +2097,12 @@ aarch64_store_return_value (struct type *type, struct regcache *regs,
 	  bfd_byte tmpbuf[X_REGISTER_SIZE];
 	  LONGEST val = unpack_long (type, valbuf);
 
-	  store_signed_integer (tmpbuf, X_REGISTER_SIZE, byte_order, val);
+#ifdef S_S_I_TAKES_FOUR_ARGS
+	  store_signed_integer(tmpbuf, X_REGISTER_SIZE, byte_order, val);
+#else
+	  store_signed_integer(tmpbuf, X_REGISTER_SIZE, val);
+	  (void)byte_order;
+#endif /* S_S_I_TAKES_FOUR_ARGS */
 	  regcache_cooked_write (regs, AARCH64_X0_REGNUM, tmpbuf);
 	}
       else
@@ -2196,7 +2214,12 @@ aarch64_get_longjmp_target (struct frame_info *frame, CORE_ADDR *pc)
 			  X_REGISTER_SIZE))
     return 0;
 
-  *pc = extract_unsigned_integer (buf, X_REGISTER_SIZE, byte_order);
+#ifdef E_U_I_TAKES_THREE_ARGS
+  *pc = extract_unsigned_integer(buf, X_REGISTER_SIZE, byte_order);
+#else
+  *pc = extract_unsigned_integer(buf, X_REGISTER_SIZE);
+  (void)byte_order;
+#endif /* E_U_I_TAKES_THREE_ARGS */
   return 1;
 }
 
@@ -2352,7 +2375,7 @@ aarch64_pseudo_read_value (struct gdbarch *gdbarch,
 
   result_value = allocate_value (register_type (gdbarch, regnum));
   VALUE_LVAL (result_value) = lval_register;
-  VALUE_REGNUM (result_value) = regnum;
+  VALUE_REGNUM(result_value) = (short)regnum;
   buf = value_contents_raw (result_value);
 
   regnum -= gdbarch_num_regs (gdbarch);
@@ -2695,10 +2718,16 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   tdesc_use_registers (gdbarch, tdesc, tdesc_data);
 
   /* Add standard register aliases.  */
-  for (i = 0UL; i < ARRAY_SIZE(aarch64_register_aliases); i++)
-    user_reg_add (gdbarch, aarch64_register_aliases[i].name,
-		  value_of_aarch64_user_reg,
-		  &aarch64_register_aliases[i].regnum);
+  for (i = 0UL; i < ARRAY_SIZE(aarch64_register_aliases); i++) {
+#ifdef U_R_A_TAKES_FOUR_ARGS
+    user_reg_add(gdbarch, aarch64_register_aliases[i].name,
+		 value_of_aarch64_user_reg,
+		 &aarch64_register_aliases[i].regnum);
+#else
+    user_reg_add(gdbarch, aarch64_register_aliases[i].name,
+		 value_of_aarch64_user_reg);
+#endif /* U_R_A_TAKES_FOUR_ARGS */
+  }
 
   (void)have_fpa_registers;
   return gdbarch;

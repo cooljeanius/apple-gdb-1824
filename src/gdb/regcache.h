@@ -25,6 +25,8 @@
 
 #include "ansidecl.h"
 
+#include "common/common-regcache.h"
+
 struct regcache;
 struct gdbarch;
 
