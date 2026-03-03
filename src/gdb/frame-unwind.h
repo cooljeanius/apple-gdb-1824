@@ -52,6 +52,23 @@ typedef int (frame_sniffer_ftype) (const struct frame_unwind *self,
 				   struct frame_info *next_frame,
 				   void **this_prologue_cache);
 
+typedef enum unwind_stop_reason (frame_unwind_stop_reason_ftype)
+  (struct frame_info *this_frame, void **this_prologue_cache);
+
+/* A default frame sniffer which always accepts the frame.  Used by
+   fallback prologue unwinders.  */
+
+int default_frame_sniffer (const struct frame_unwind *self,
+			   struct frame_info *this_frame,
+			   void **this_prologue_cache);
+
+/* A default stop_reason callback which always claims the frame is
+   unwindable.  */
+
+enum unwind_stop_reason
+  default_frame_unwind_stop_reason (struct frame_info *this_frame,
+				    void **this_cache);
+
 /* Assuming the frame chain: (outer) prev <-> this <-> next (inner);
    use the NEXT frame, and its register unwind method, to determine
    the frame ID of THIS frame.

@@ -1516,6 +1516,13 @@
 /* Define to 1 if 'sdt_note_head' is a member of 'struct elf_obj_tdata'. */
 #undef HAVE_STRUCT_ELF_OBJ_TDATA_SDT_NOTE_HEAD
 
+/* Define to 1 if 'byte_order_for_code' is a member of 'struct gdbarch_info'.
+   */
+#undef HAVE_STRUCT_GDBARCH_INFO_BYTE_ORDER_FOR_CODE
+
+/* Define to 1 if 'target_desc' is a member of 'struct gdbarch_info'. */
+#undef HAVE_STRUCT_GDBARCH_INFO_TARGET_DESC
+
 /* Define if <sys/link.h> has struct link_map32 */
 #undef HAVE_STRUCT_LINK_MAP32
 

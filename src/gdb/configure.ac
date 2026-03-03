@@ -2015,6 +2015,14 @@ AC_CHECK_MEMBERS([struct user.u_sa],[],[],[
 #endif /* __USLC__ || HAVE_SYS_USER_H */
 ])dnl
 
+AC_CHECK_MEMBERS([struct gdbarch_info.byte_order_for_code],[],[],[
+#include "gdbarch.h"
+])dnl
+
+AC_CHECK_MEMBERS([struct gdbarch_info.target_desc],[],[],[
+#include "gdbarch.h"
+])dnl
+
 # ------------------ #
 # Checks for types.  #
 # ------------------ #

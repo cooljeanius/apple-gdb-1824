@@ -1267,6 +1267,19 @@ extern struct type *builtin_type_ia64_quad[BFD_ENDIAN_UNKNOWN];
 extern struct type *builtin_type_ia64_quad_big;
 extern struct type *builtin_type_ia64_quad_little;
 
+extern const struct floatformat *floatformats_ieee_half[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_ieee_single[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_ieee_double[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_ieee_double_littlebyte_bigword[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_i387_ext[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_m68881_ext[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_arm_ext[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_ia64_spill[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_ia64_quad[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_vax_f[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_vax_d[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_ibm_long_double[BFD_ENDIAN_UNKNOWN];
+
 /* We use this for the '/c' print format, because builtin_type_char is
    just a one-byte integral type, which languages less laid back than
    C will print as ... well, a one-byte integral type.  */

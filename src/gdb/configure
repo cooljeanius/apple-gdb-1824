@@ -48079,6 +48079,30 @@ printf "%s\n" "#define HAVE_STRUCT_USER_U_SA 1" >>confdefs.h
 
 fi
 
+ac_fn_c_check_member "$LINENO" "struct gdbarch_info" "byte_order_for_code" "ac_cv_member_struct_gdbarch_info_byte_order_for_code" "
+#include \"gdbarch.h\"
+
+"
+if test "x$ac_cv_member_struct_gdbarch_info_byte_order_for_code" = xyes
+then :
+
+printf "%s\n" "#define HAVE_STRUCT_GDBARCH_INFO_BYTE_ORDER_FOR_CODE 1" >>confdefs.h
+
+
+fi
+
+ac_fn_c_check_member "$LINENO" "struct gdbarch_info" "target_desc" "ac_cv_member_struct_gdbarch_info_target_desc" "
+#include \"gdbarch.h\"
+
+"
+if test "x$ac_cv_member_struct_gdbarch_info_target_desc" = xyes
+then :
+
+printf "%s\n" "#define HAVE_STRUCT_GDBARCH_INFO_TARGET_DESC 1" >>confdefs.h
+
+
+fi
+
 # ------------------ #
 # Checks for types.  #
 # ------------------ #

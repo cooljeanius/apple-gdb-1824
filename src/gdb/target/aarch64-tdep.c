@@ -1000,8 +1000,9 @@ aarch64_prologue_this_id (struct frame_info *this_frame,
 # pragma clang diagnostic ignored "-Wimplicit-function-declaration"
 # pragma clang diagnostic ignored "-Wincompatible-pointer-types"
 # pragma clang diagnostic ignored "-Wint-conversion"
-# pragma clang diagnostic ignored "-Wunused-variable"
-# pragma clang diagnostic ignored "-Wshorten-64-to-32"
+# ifdef DEF_VEC_O
+#  pragma clang diagnostic ignored "-Wshorten-64-to-32"
+# endif /* DEF_VEC_O */
 #endif /* (GCC > 5) || clang */
 
 /* Implement the "prev_register" frame_unwind method: */
@@ -1009,7 +1010,6 @@ static struct value *
 aarch64_prologue_prev_register(struct frame_info *this_frame,
 			       void **this_cache, int prev_regnum)
 {
-  struct gdbarch *gdbarch = get_frame_arch (this_frame);
   struct aarch64_prologue_cache *cache;
 
   if (*this_cache == NULL)
@@ -1068,9 +1068,7 @@ struct frame_unwind aarch64_prologue_unwind =
 static struct aarch64_prologue_cache *
 aarch64_make_stub_cache (struct frame_info *this_frame)
 {
-  int reg;
   struct aarch64_prologue_cache *cache;
-  CORE_ADDR unwound_fp;
 
   cache = FRAME_OBSTACK_ZALLOC (struct aarch64_prologue_cache);
   cache->saved_regs = trad_frame_alloc_saved_regs (this_frame);
@@ -1190,7 +1188,6 @@ static struct value *
 aarch64_dwarf2_prev_register (struct frame_info *this_frame,
 			      void **this_cache, int regnum)
 {
-  struct gdbarch *gdbarch = get_frame_arch (this_frame);
   CORE_ADDR lr;
 
   switch (regnum)
@@ -1519,10 +1516,7 @@ aarch64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 			 struct value **args, CORE_ADDR sp, int struct_return,
 			 CORE_ADDR struct_addr)
 {
-  int nstack = 0;
   int argnum;
-  int x_argreg;
-  int v_argreg;
   struct aarch64_call_info info;
   struct type *func_type;
   struct type *return_type;
@@ -1918,7 +1912,10 @@ aarch64_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR *pcptr,
 {
   struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
-  *lenptr = sizeof (aarch64_default_breakpoint);
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
+  *lenptr = sizeof(aarch64_default_breakpoint);
   return aarch64_default_breakpoint;
 }
 
@@ -2038,9 +2035,6 @@ aarch64_extract_return_value (struct type *type, struct regcache *regs,
 static int
 aarch64_return_in_memory (struct gdbarch *gdbarch, struct type *type)
 {
-  int nRc;
-  enum type_code code;
-
   CHECK_TYPEDEF (type);
 
   /* In the AArch64 ABI, "integer" like aggregate types are returned
@@ -2171,8 +2165,6 @@ aarch64_return_value (struct gdbarch *gdbarch, struct value *func_value,
 		      struct type *valtype, struct regcache *regcache,
 		      gdb_byte *readbuf, const gdb_byte *writebuf)
 {
-  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
-
   if (TYPE_CODE (valtype) == TYPE_CODE_STRUCT
       || TYPE_CODE (valtype) == TYPE_CODE_UNION
       || TYPE_CODE (valtype) == TYPE_CODE_ARRAY)
@@ -2554,12 +2546,16 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   struct gdbarch *gdbarch;
   struct gdbarch_list *best_arch;
   struct tdesc_arch_data *tdesc_data = NULL;
+#ifdef HAVE_STRUCT_GDBARCH_INFO_TARGET_DESC
   const struct target_desc *tdesc = info.target_desc;
+#else
+  const struct target_desc *tdesc = NULL;
+#endif /* HAVE_STRUCT_GDBARCH_INFO_TARGET_DESC */
   size_t i;
   int have_fpa_registers = 1;
   int valid_p = 1;
   const struct tdesc_feature *feature;
-  int num_regs = 0;
+  size_t num_regs = 0UL;
   int num_pseudo_regs = 0;
 
   /* Ensure we always have a target descriptor.  */
@@ -2579,10 +2575,10 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
      and allocate their numbers.  */
   for (i = 0UL; i < ARRAY_SIZE(aarch64_r_register_names); i++)
     valid_p &=
-      tdesc_numbered_register (feature, tdesc_data, AARCH64_X0_REGNUM + i,
-			       aarch64_r_register_names[i]);
+      tdesc_numbered_register(feature, tdesc_data, (int)(AARCH64_X0_REGNUM + i),
+			      aarch64_r_register_names[i]);
 
-  num_regs = AARCH64_X0_REGNUM + i;
+  num_regs = (AARCH64_X0_REGNUM + i);
 
   /* Look for the V registers.  */
   feature = tdesc_find_feature (tdesc, "org.gnu.gdb.aarch64.fpu");
@@ -2592,10 +2588,11 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
          and allocate their numbers.  */
       for (i = 0UL; i < ARRAY_SIZE(aarch64_v_register_names); i++)
 	valid_p &=
-	  tdesc_numbered_register (feature, tdesc_data, AARCH64_V0_REGNUM + i,
-				   aarch64_v_register_names[i]);
+	  tdesc_numbered_register(feature, tdesc_data,
+	  			  (int)(AARCH64_V0_REGNUM + i),
+				  aarch64_v_register_names[i]);
 
-      num_regs = AARCH64_V0_REGNUM + i;
+      num_regs = (AARCH64_V0_REGNUM + i);
 
       num_pseudo_regs += 32;	/* add the Qn scalar register pseudos */
       num_pseudo_regs += 32;	/* add the Dn scalar register pseudos */
@@ -2610,8 +2607,10 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
       return NULL;
     }
 
+#ifdef HAVE_STRUCT_GDBARCH_INFO_BYTE_ORDER_FOR_CODE
   /* AArch64 code is always little-endian.  */
   info.byte_order_for_code = BFD_ENDIAN_LITTLE;
+#endif /* HAVE_STRUCT_GDBARCH_INFO_BYTE_ORDER_FOR_CODE */
 
   /* If there is already a candidate, use it.  */
   for (best_arch = gdbarch_list_lookup_by_info (arches, &info);
@@ -2659,7 +2658,7 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   /* Information about registers, etc.  */
   set_gdbarch_sp_regnum (gdbarch, AARCH64_SP_REGNUM);
   set_gdbarch_pc_regnum (gdbarch, AARCH64_PC_REGNUM);
-  set_gdbarch_num_regs (gdbarch, num_regs);
+  set_gdbarch_num_regs(gdbarch, (int)num_regs);
 
   set_gdbarch_num_pseudo_regs (gdbarch, num_pseudo_regs);
   set_gdbarch_pseudo_register_read_value (gdbarch, aarch64_pseudo_read_value);
@@ -2696,7 +2695,9 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_vbit_in_delta (gdbarch, 1);
 
   /* Hook in the ABI-specific overrides, if they have been registered.  */
+#ifdef HAVE_STRUCT_GDBARCH_INFO_TARGET_DESC
   info.target_desc = tdesc;
+#endif /* HAVE_STRUCT_GDBARCH_INFO_TARGET_DESC */
   info.tdep_info = (struct gdbarch_tdep_info *)tdesc_data;
   gdbarch_init_osabi (info, gdbarch);
 
