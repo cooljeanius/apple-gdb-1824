@@ -463,6 +463,10 @@ extern char lang_frame_mismatch_warn[];
 extern const struct language_defn auto_language_defn;
 extern const struct language_defn local_language_defn;
 
+/* Return non-zero if TYPE should be passed (and returned) by
+   reference at the language level.  */
+int language_pass_by_reference(struct type *type);
+
 #endif /* defined(LANGUAGE_H) */
 
 /* EOF */

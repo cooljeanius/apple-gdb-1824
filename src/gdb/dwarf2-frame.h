@@ -105,6 +105,9 @@ extern void
 				  int (*signal_frame_p)(struct gdbarch *,
 							struct frame_info *));
 
+/* Append the DWARF-2 frame unwinders to GDBARCH's list.  */
+void dwarf2_append_unwinders(struct gdbarch *gdbarch);
+
 /* Return the frame unwind methods for the function that contains PC,
    or NULL if it cannot be handled by DWARF CFI frame unwinder.  */
 extern const struct frame_unwind *

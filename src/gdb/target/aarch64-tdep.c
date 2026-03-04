@@ -997,7 +997,10 @@ aarch64_prologue_this_id (struct frame_info *this_frame,
 # pragma GCC diagnostic ignored "-Wint-conversion"
 # pragma GCC diagnostic ignored "-Wunused-variable"
 #elif defined(__clang__) && (__clang__ >= 1)
-# pragma clang diagnostic ignored "-Wimplicit-function-declaration"
+# if (defined(__STDC_VERSION__) && (__STDC_VERSION__ != 199901L)) || \
+     (defined(__STDC__) && (__STDC__ > 1))
+#  pragma clang diagnostic ignored "-Wimplicit-function-declaration"
+# endif /* !C99 */
 # pragma clang diagnostic ignored "-Wincompatible-pointer-types"
 # pragma clang diagnostic ignored "-Wint-conversion"
 # ifdef DEF_VEC_O

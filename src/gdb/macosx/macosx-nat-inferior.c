@@ -22,7 +22,8 @@
    Boston, MA 02111-1307, USA.  */
 
 /* define this because of a libxml header out of our control: */
-#if !defined(NO_POISON) && defined(HAVE_LIBXML2)
+#if !defined(NO_POISON) && \
+    (defined(HAVE_LIBXML2) || (defined(LIBXML2_IS_USABLE) && LIBXML2_IS_USABLE))
 # define NO_POISON 1
 #endif /* !NO_POISON && HAVE_LIBXML2 */
 #include "defs.h"

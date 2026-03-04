@@ -55,4 +55,15 @@
 		  assertion)
 #endif
 
+/* The canonical form of gdb_assert (0).
+   MESSAGE is a string to include in the error message.  */
+
+#if defined (ASSERT_FUNCTION)
+#define gdb_assert_not_reached(message) \
+  internal_error (__FILE__, __LINE__, "%s: %s", ASSERT_FUNCTION, _(message))
+#else
+#define gdb_assert_not_reached(message) \
+  internal_error (__FILE__, __LINE__, _(message))
+#endif
+
 #endif /* gdb_assert.h */

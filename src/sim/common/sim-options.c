@@ -20,15 +20,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "sim-main.h"
 #ifdef HAVE_STRING_H
-#include <string.h>
+# include <string.h>
 #else
-#ifdef HAVE_STRINGS_H
-#include <strings.h>
-#endif
-#endif
+# ifdef HAVE_STRINGS_H
+#  include <strings.h>
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 #include <ctype.h>
 #include "libiberty.h"
 #include "sim-options.h"
@@ -460,8 +460,7 @@ standard_install (SIM_DESC sd)
 #define ARG_HASH(a) ((256 * (unsigned char) a[0] + (unsigned char) a[1]) % ARG_HASH_SIZE)
 
 static int
-dup_arg_p (arg)
-     char *arg;
+dup_arg_p (char *arg)
 {
   int hash;
   static char **arg_table = NULL;
@@ -487,7 +486,7 @@ dup_arg_p (arg)
   arg_table[hash] = arg;
   return 0;
 }
-     
+
 /* Called by sim_open to parse the arguments.  */
 
 SIM_RC
@@ -606,7 +605,7 @@ sim_parse_args (sd, argv)
 	      }
 	  }
     }
-	    
+
   /* Terminate the short and long option lists.  */
   *p = 0;
   lp->name = NULL;
@@ -703,7 +702,7 @@ print_help (SIM_DESC sd, sim_cpu *cpu, const struct option_list *ol, int is_comm
 	      }
 	    while (OPTION_VALID_P (o) && o->doc == NULL);
 	  }
-	
+
 	/* list any long options (aliases) for the current OPT */
 	o = opt;
 	do
@@ -889,7 +888,7 @@ sim_args_command (SIM_DESC sd, char *cmd)
   /* something to do? */
   if (cmd == NULL)
     return SIM_RC_OK; /* FIXME - perhaphs help would be better */
-  
+
   if (cmd [0] == '-')
     {
       /* user specified -<opt> ... form? */
@@ -980,7 +979,7 @@ sim_args_command (SIM_DESC sd, char *cmd)
 
       freeargv (argv);
     }
-      
+
   /* didn't find anything that remotly matched */
   return SIM_RC_FAIL;
 }
