@@ -931,10 +931,17 @@ if test "x${AR}" = "x"; then
   if test "x${ac_cv_prog_AR}" = "x"; then
     test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
     AC_PROG_AR
+  else
+    test -n "${ac_cv_prog_AR}" && echo "ac_cv_prog_AR already cached to '${ac_cv_prog_AR}'"
   fi
 else
-  test -n "${AR}" && export AR
+  test -n "${AR}" && export AR && echo "AR set to '${AR}'"
 fi
+if test "x${ARFLAGS}" = "x"; then
+  test -z "${ARFLAGS}" && export ARFLAGS="cru"
+else
+  test -n "${ARFLAGS}" && echo "ARFLAGS are '${ARFLAGS}'"
+fi  ## just in case
 ])dnl
   ## WIP: replacing "." with "`pwd`" in an attempt to ensure portability of sed
   ## commands:
@@ -1182,9 +1189,6 @@ AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
   AM_MISSING_PROG([AUTOHEADER],[autoheader])dnl
   AM_MISSING_PROG([MAKEINFO],[makeinfo])dnl
   AC_REQUIRE([AM_PROG_INSTALL_SH])dnl
-  dnl# For better backward compatibility. To be removed once Automake 1.9.x
-  dnl# dies out for good.
-  AC_SUBST([mkdir_p],['$(MKDIR_P)'])dnl
   dnl# We need awk for the "check" target. The system "awk" is bad on
   dnl# some platforms.
   AC_REQUIRE([AC_PROG_AWK])dnl
@@ -1198,39 +1202,23 @@ AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
   AC_REQUIRE([AM_DEP_TRACK])dnl
 
   dnl######################################################################
-  dnl# Port to Automake 1.11.
-  dnl# This section can be removed once we assume Automake 1.14 or later.
+  dnl# Better control over Makefile verbosity
+  dnl# Started as compatibility code for Automake 1.11, but changed a bit
   #### check arg val for silent rules:
   if test "x${enable_silent_rules}" = "xno"; then
     : ${V=1}
-    : ${AM_DEFAULT_VERBOSITY=1}
-  elif test "x${enable_silent_rules}" = "xyes"; then
-    : ${V=0}
-    : ${AM_DEFAULT_VERBOSITY=0}
   else
     : ${V=0}
-    : ${AM_DEFAULT_VERBOSITY=1}
   fi
-  : ${AM_DEFAULT_VERBOSITY=1}
-  : ${AM_V=${AM_DEFAULT_VERBOSITY}}
-  : ${AM_DEFAULT_V=${AM_DEFAULT_VERBOSITY}}
   dnl# now subst:
   AC_SUBST([V])dnl
   AM_SUBST_NOTMAKE([V])dnl
-  AC_SUBST([AM_V])dnl
-  AM_SUBST_NOTMAKE([AM_V])dnl
-  AC_SUBST([AM_DEFAULT_V])dnl
-  AM_SUBST_NOTMAKE([AM_DEFAULT_V])dnl
-  AC_SUBST([AM_DEFAULT_VERBOSITY])dnl
 
   dnl## from configmake prep:
   dnl# Added in autoconf 2.70:
   if test "x${runstatedir}" = "x"; then
     AC_SUBST([runstatedir],['${localstatedir}/run'])
   fi
-  dnl# Automake 1.9.6 only lacks pkglibexecdir; and since 1.11 merely
-  dnl# provides it without AC_SUBST, this blind use of AC_SUBST is safe.
-  AC_SUBST([pkglibexecdir],['${libexecdir}/${PACKAGE}'])dnl
 ])dnl
 AM_INIT_MY_AUTOMAKE_LITE
 
@@ -3510,7 +3498,7 @@ case "${host}" in
 -Wnonportable-cfstrings -Wfour-char-constants \
 -Wno-unused-const-variable ${stdflag}"
     case "${host}" in
-      *64*-apple-darwin9* | *64*-apple-darwin1[[0123456789]].*.*)
+      *64*-apple-darwin9.*.* | *64*-apple-darwin1[[0123456789]].*.*)
         build_warnings="${build_warnings} -Wshorten-64-to-32"
       ;;
     esac
@@ -3574,7 +3562,7 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
 -Wgnu-flexible-array-initializer -Wgnu-flexible-array-union-member \
 -Wgnu-imaginary-constant -Wgnu-include-next -Wgnu-label-as-value \
 -Wgnu-statement-expression -Wgnu-union-cast -Wgnu-zero-line-directive \
--Wgnu-zero-variadic-macro-arguments"
+-Wgnu-zero-variadic-macro-arguments -Wno-incompatible-sysroot"
   # Up for debate (i.e. for debating adding to existing flags here):
   # * -Wunreachable-code and its suboptions for returns and breaks
   # * -Wgnu-redeclared-enum
@@ -4667,6 +4655,13 @@ if test "x${gl_LIBOBJS}" = "x"; then
   fi
 fi
 AC_SUBST([gl_LIBOBJS])dnl
+
+if test "x${lt_ar_flags}" = "x"; then
+  test -z "${lt_ar_flags}" && echo "lt_ar_flags are empty; setting them" && export lt_ar_flags="cru"
+else
+  test -n "${lt_ar_flags}" && echo "lt_ar_flags are '${lt_ar_flags}'"
+fi
+AC_SUBST([lt_ar_flags])dnl
 
 AC_CONFIG_FILES([Makefile \
                  data-directory/Makefile \

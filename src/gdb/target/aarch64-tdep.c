@@ -1002,6 +1002,7 @@ aarch64_prologue_this_id (struct frame_info *this_frame,
 # pragma clang diagnostic ignored "-Wint-conversion"
 # ifdef DEF_VEC_O
 #  pragma clang diagnostic ignored "-Wshorten-64-to-32"
+#  pragma clang diagnostic ignored "-Wunused-function"
 # endif /* DEF_VEC_O */
 #endif /* (GCC > 5) || clang */
 
@@ -2365,81 +2366,60 @@ aarch64_pseudo_read_value (struct gdbarch *gdbarch,
   struct value *result_value;
   gdb_byte *buf;
 
-  result_value = allocate_value (register_type (gdbarch, regnum));
-  VALUE_LVAL (result_value) = lval_register;
+  result_value = allocate_value(register_type(gdbarch, regnum));
+  VALUE_LVAL(result_value) = lval_register;
   VALUE_REGNUM(result_value) = (short)regnum;
   buf = value_contents_raw (result_value);
 
-  regnum -= gdbarch_num_regs (gdbarch);
+  regnum -= gdbarch_num_regs(gdbarch);
 
-  if (regnum >= AARCH64_Q0_REGNUM && regnum < AARCH64_Q0_REGNUM + 32)
+  if ((regnum >= AARCH64_Q0_REGNUM) && (regnum < (AARCH64_Q0_REGNUM + 32)))
     {
-      enum register_status status;
       unsigned int v_regnum;
 
-      v_regnum = AARCH64_V0_REGNUM + regnum - AARCH64_Q0_REGNUM;
-      status = regcache_raw_read (regcache, v_regnum, reg_buf);
-      if (status != REG_VALID)
-	mark_value_bytes_unavailable (result_value, 0,
-				      TYPE_LENGTH (value_type (result_value)));
-      else
-	memcpy (buf, reg_buf, Q_REGISTER_SIZE);
+      v_regnum = (AARCH64_V0_REGNUM + regnum - AARCH64_Q0_REGNUM);
+      regcache_raw_read(regcache, v_regnum, reg_buf);
+      memcpy(buf, reg_buf, Q_REGISTER_SIZE);
       return result_value;
     }
 
-  if (regnum >= AARCH64_D0_REGNUM && regnum < AARCH64_D0_REGNUM + 32)
+  if ((regnum >= AARCH64_D0_REGNUM) && (regnum < (AARCH64_D0_REGNUM + 32)))
     {
-      enum register_status status;
       unsigned int v_regnum;
 
-      v_regnum = AARCH64_V0_REGNUM + regnum - AARCH64_D0_REGNUM;
-      status = regcache_raw_read (regcache, v_regnum, reg_buf);
-      if (status != REG_VALID)
-	mark_value_bytes_unavailable (result_value, 0,
-				      TYPE_LENGTH (value_type (result_value)));
-      else
-	memcpy (buf, reg_buf, D_REGISTER_SIZE);
+      v_regnum = (AARCH64_V0_REGNUM + regnum - AARCH64_D0_REGNUM);
+      regcache_raw_read(regcache, v_regnum, reg_buf);
+      memcpy(buf, reg_buf, D_REGISTER_SIZE);
       return result_value;
     }
 
-  if (regnum >= AARCH64_S0_REGNUM && regnum < AARCH64_S0_REGNUM + 32)
+  if ((regnum >= AARCH64_S0_REGNUM) && (regnum < (AARCH64_S0_REGNUM + 32)))
     {
-      enum register_status status;
       unsigned int v_regnum;
 
-      v_regnum = AARCH64_V0_REGNUM + regnum - AARCH64_S0_REGNUM;
-      status = regcache_raw_read (regcache, v_regnum, reg_buf);
-      memcpy (buf, reg_buf, S_REGISTER_SIZE);
+      v_regnum = (AARCH64_V0_REGNUM + regnum - AARCH64_S0_REGNUM);
+      regcache_raw_read(regcache, v_regnum, reg_buf);
+      memcpy(buf, reg_buf, S_REGISTER_SIZE);
       return result_value;
     }
 
-  if (regnum >= AARCH64_H0_REGNUM && regnum < AARCH64_H0_REGNUM + 32)
+  if ((regnum >= AARCH64_H0_REGNUM) && (regnum < (AARCH64_H0_REGNUM + 32)))
     {
-      enum register_status status;
       unsigned int v_regnum;
 
-      v_regnum = AARCH64_V0_REGNUM + regnum - AARCH64_H0_REGNUM;
-      status = regcache_raw_read (regcache, v_regnum, reg_buf);
-      if (status != REG_VALID)
-	mark_value_bytes_unavailable (result_value, 0,
-				      TYPE_LENGTH (value_type (result_value)));
-      else
-	memcpy (buf, reg_buf, H_REGISTER_SIZE);
+      v_regnum = (AARCH64_V0_REGNUM + regnum - AARCH64_H0_REGNUM);
+      regcache_raw_read(regcache, v_regnum, reg_buf);
+      memcpy(buf, reg_buf, H_REGISTER_SIZE);
       return result_value;
     }
 
-  if (regnum >= AARCH64_B0_REGNUM && regnum < AARCH64_B0_REGNUM + 32)
+  if ((regnum >= AARCH64_B0_REGNUM) && (regnum < (AARCH64_B0_REGNUM + 32)))
     {
-      enum register_status status;
       unsigned int v_regnum;
 
-      v_regnum = AARCH64_V0_REGNUM + regnum - AARCH64_B0_REGNUM;
-      status = regcache_raw_read (regcache, v_regnum, reg_buf);
-      if (status != REG_VALID)
-	mark_value_bytes_unavailable (result_value, 0,
-				      TYPE_LENGTH (value_type (result_value)));
-      else
-	memcpy (buf, reg_buf, B_REGISTER_SIZE);
+      v_regnum = (AARCH64_V0_REGNUM + regnum - AARCH64_B0_REGNUM);
+      regcache_raw_read(regcache, v_regnum, reg_buf);
+      memcpy(buf, reg_buf, B_REGISTER_SIZE);
       return result_value;
     }
 

@@ -718,6 +718,7 @@ enable_year2038=no
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
+lt_ar_flags
 gl_LIBOBJS
 GDB_DATADIR
 GCORE_TRANSFORM_NAME
@@ -958,7 +959,6 @@ LIBXML2_INCLUDES
 LIBXML2_CONFIG
 acl_cv_wp
 LIBM
-pkglibexecdir
 V
 CXREF
 ROFF
@@ -12679,10 +12679,17 @@ else
   AR="$ac_cv_prog_AR"
 fi
 
+  else
+    test -n "${ac_cv_prog_AR}" && echo "ac_cv_prog_AR already cached to '${ac_cv_prog_AR}'"
   fi
 else
-  test -n "${AR}" && export AR
+  test -n "${AR}" && export AR && echo "AR set to '${AR}'"
 fi
+if test "x${ARFLAGS}" = "x"; then
+  test -z "${ARFLAGS}" && export ARFLAGS="cru"
+else
+  test -n "${ARFLAGS}" && echo "ARFLAGS are '${ARFLAGS}'"
+fi  ## just in case
   ## WIP: replacing "." with "`pwd`" in an attempt to ensure portability of sed
   ## commands:
 if test -e `pwd`/config.cache; then
@@ -41874,28 +41881,18 @@ AUTOCONF=${AUTOCONF-"${am_missing_run}autoconf"}
 AUTOHEADER=${AUTOHEADER-"${am_missing_run}autoheader"}
 
 MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
-        mkdir_p='$(MKDIR_P)'
 
         #### check arg val for silent rules:
   if test "x${enable_silent_rules}" = "xno"; then
     : ${V=1}
-    : ${AM_DEFAULT_VERBOSITY=1}
-  elif test "x${enable_silent_rules}" = "xyes"; then
-    : ${V=0}
-    : ${AM_DEFAULT_VERBOSITY=0}
   else
     : ${V=0}
-    : ${AM_DEFAULT_VERBOSITY=1}
   fi
-  : ${AM_DEFAULT_VERBOSITY=1}
-  : ${AM_V=${AM_DEFAULT_VERBOSITY}}
-  : ${AM_DEFAULT_V=${AM_DEFAULT_VERBOSITY}}
 
       if test "x${runstatedir}" = "x"; then
     runstatedir='${localstatedir}/run'
 
   fi
-      pkglibexecdir='${libexecdir}/${PACKAGE}'
 
 
 # ---------------------- #
@@ -55196,7 +55193,7 @@ case "${host}" in
 -Wnonportable-cfstrings -Wfour-char-constants \
 -Wno-unused-const-variable ${stdflag}"
     case "${host}" in
-      *64*-apple-darwin9* | *64*-apple-darwin1[0123456789].*.*)
+      *64*-apple-darwin9.*.* | *64*-apple-darwin1[0123456789].*.*)
         build_warnings="${build_warnings} -Wshorten-64-to-32"
       ;;
     esac
@@ -55260,7 +55257,7 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
 -Wgnu-flexible-array-initializer -Wgnu-flexible-array-union-member \
 -Wgnu-imaginary-constant -Wgnu-include-next -Wgnu-label-as-value \
 -Wgnu-statement-expression -Wgnu-union-cast -Wgnu-zero-line-directive \
--Wgnu-zero-variadic-macro-arguments"
+-Wgnu-zero-variadic-macro-arguments -Wno-incompatible-sysroot"
   # Up for debate (i.e. for debating adding to existing flags here):
   # * -Wunreachable-code and its suboptions for returns and breaks
   # * -Wgnu-redeclared-enum
@@ -59983,6 +59980,12 @@ if test "x${gl_LIBOBJS}" = "x"; then
   if test "x${LIBOBJS}" != "x"; then
     test -z "${gl_LIBOBJS}" && test -n "${LIBOBJS}" && export gl_LIBOBJS="${LIBOBJS}"
   fi
+fi
+
+if test "x${lt_ar_flags}" = "x"; then
+  test -z "${lt_ar_flags}" && echo "lt_ar_flags are empty; setting them" && export lt_ar_flags="cru"
+else
+  test -n "${lt_ar_flags}" && echo "lt_ar_flags are '${lt_ar_flags}'"
 fi
 
 ac_config_files="$ac_config_files Makefile data-directory/Makefile .gdbinit:gdbinit.in gnulib/Makefile gdb-gdb.gdb tui/Makefile"
