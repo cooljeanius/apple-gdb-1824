@@ -997,12 +997,13 @@ aarch64_prologue_this_id (struct frame_info *this_frame,
 # pragma GCC diagnostic ignored "-Wint-conversion"
 # pragma GCC diagnostic ignored "-Wunused-variable"
 #elif defined(__clang__) && (__clang__ >= 1)
-# if (defined(__STDC_VERSION__) && (__STDC_VERSION__ != 199901L)) || \
-     (defined(__STDC__) && (__STDC__ > 1))
+# if (defined(__STDC_VERSION__) && (__STDC_VERSION__ < 199901L)) || \
+     (defined(__STDC__) && (__STDC__ < 1) && defined(ALMOST_STDC))
 #  pragma clang diagnostic ignored "-Wimplicit-function-declaration"
+#  pragma clang diagnostic ignored "-Wincompatible-pointer-types"
+#  pragma clang diagnostic ignored "-Wint-conversion"
 # endif /* !C99 */
-# pragma clang diagnostic ignored "-Wincompatible-pointer-types"
-# pragma clang diagnostic ignored "-Wint-conversion"
+# pragma clang diagnostic ignored "-Wincompatible-function-pointer-types"
 # ifdef DEF_VEC_O
 #  pragma clang diagnostic ignored "-Wshorten-64-to-32"
 #  pragma clang diagnostic ignored "-Wunused-function"
@@ -1061,7 +1062,7 @@ struct frame_unwind aarch64_prologue_unwind =
   NORMAL_FRAME,
   default_frame_unwind_stop_reason,
   aarch64_prologue_this_id,
-  aarch64_prologue_prev_register,
+  (const struct frame_data *)aarch64_prologue_prev_register,
   NULL,
   default_frame_sniffer
 };
@@ -1124,7 +1125,7 @@ struct frame_unwind aarch64_stub_unwind =
   NORMAL_FRAME,
   default_frame_unwind_stop_reason,
   aarch64_stub_this_id,
-  aarch64_prologue_prev_register,
+  (const struct frame_data *)aarch64_prologue_prev_register,
   NULL,
   aarch64_stub_unwind_sniffer
 };
@@ -2515,6 +2516,8 @@ value_of_aarch64_user_reg (struct frame_info *frame, const void *baton)
 }
 
 
+typedef const struct floatformat *cssf_t;
+
 /* Initialize the current architecture based on INFO.  If possible,
    re-use an architecture from ARCHES, which is a list of
    architectures already created during this debugging session.
@@ -2601,7 +2604,7 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
        best_arch = gdbarch_list_lookup_by_info (best_arch->next, &info))
     {
       /* Found a match.  */
-      break;
+      break; /* FIXME: too early; see -Wunreachable-code-loop-increment */
     }
 
   if (best_arch != NULL)
@@ -2623,7 +2626,9 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_frame_align (gdbarch, aarch64_frame_align);
 
   /* Frame handling.  */
+#ifdef HAVE_GDBARCH_DUMMY_ID
   set_gdbarch_dummy_id (gdbarch, aarch64_dummy_id);
+#endif /* HAVE_GDBARCH_DUMMY_ID */
   set_gdbarch_unwind_pc (gdbarch, aarch64_unwind_pc);
   set_gdbarch_unwind_sp (gdbarch, aarch64_unwind_sp);
 
@@ -2644,7 +2649,9 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_num_regs(gdbarch, (int)num_regs);
 
   set_gdbarch_num_pseudo_regs (gdbarch, num_pseudo_regs);
+#ifdef HAVE_SET_GDBARCH_PSEUDO_REGISTER_READ_VALUE
   set_gdbarch_pseudo_register_read_value (gdbarch, aarch64_pseudo_read_value);
+#endif /* HAVE_SET_GDBARCH_PSEUDO_REGISTER_READ_VALUE */
   set_gdbarch_pseudo_register_write (gdbarch, aarch64_pseudo_write);
   set_tdesc_pseudo_register_name (gdbarch, aarch64_pseudo_register_name);
   set_tdesc_pseudo_register_type (gdbarch, aarch64_pseudo_register_type);
@@ -2652,18 +2659,18 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 					aarch64_pseudo_register_reggroup_p);
 
   /* ABI */
-  set_gdbarch_short_bit (gdbarch, 16);
-  set_gdbarch_int_bit (gdbarch, 32);
-  set_gdbarch_float_bit (gdbarch, 32);
-  set_gdbarch_double_bit (gdbarch, 64);
-  set_gdbarch_long_double_bit (gdbarch, 128);
-  set_gdbarch_long_bit (gdbarch, 64);
-  set_gdbarch_long_long_bit (gdbarch, 64);
-  set_gdbarch_ptr_bit (gdbarch, 64);
-  set_gdbarch_char_signed (gdbarch, 0);
-  set_gdbarch_float_format (gdbarch, floatformats_ieee_single);
-  set_gdbarch_double_format (gdbarch, floatformats_ieee_double);
-  set_gdbarch_long_double_format (gdbarch, floatformats_ia64_quad);
+  set_gdbarch_short_bit(gdbarch, 16);
+  set_gdbarch_int_bit(gdbarch, 32);
+  set_gdbarch_float_bit(gdbarch, 32);
+  set_gdbarch_double_bit(gdbarch, 64);
+  set_gdbarch_long_double_bit(gdbarch, 128);
+  set_gdbarch_long_bit(gdbarch, 64);
+  set_gdbarch_long_long_bit(gdbarch, 64);
+  set_gdbarch_ptr_bit(gdbarch, 64);
+  set_gdbarch_char_signed(gdbarch, 0);
+  set_gdbarch_float_format(gdbarch, (cssf_t)floatformats_ieee_single);
+  set_gdbarch_double_format(gdbarch, (cssf_t)floatformats_ieee_double);
+  set_gdbarch_long_double_format(gdbarch, (cssf_t)floatformats_ia64_quad);
 
   /* Internal <-> external register number maps.  */
   set_gdbarch_dwarf2_reg_to_regnum (gdbarch, aarch64_dwarf_reg_to_regnum);
@@ -2675,7 +2682,9 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_print_insn (gdbarch, aarch64_gdb_print_insn);
 
   /* Virtual tables.  */
+#ifdef HAVE_SET_GDBARCH_VBIT_IN_DELTA
   set_gdbarch_vbit_in_delta (gdbarch, 1);
+#endif /* HAVE_SET_GDBARCH_VBIT_IN_DELTA */
 
   /* Hook in the ABI-specific overrides, if they have been registered.  */
 #ifdef HAVE_STRUCT_GDBARCH_INFO_TARGET_DESC
