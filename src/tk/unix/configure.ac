@@ -6,7 +6,7 @@ dnl#	to configure the system for the local environment.
 # RCS: @(#) $Id: configure.ac,v 1.82 2002/09/27 18:09:53 dgp Exp $
 
 m4_include([../../config/warnings.m4])
-AC_INIT([tcl-unix],[8.4.1],[BUG-REPORT-ADDRESS])
+AC_INIT([tk-unix],[8.4.1],[BUG-REPORT-ADDRESS])
 AC_CONFIG_SRCDIR([../generic/tk.h])
 AC_PREREQ([2.13])
 

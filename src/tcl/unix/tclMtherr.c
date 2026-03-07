@@ -1,4 +1,4 @@
-/* 
+/*
  * tclMatherr.c --
  *
  *	This function provides a default implementation of the
@@ -62,8 +62,9 @@ struct exception {
  */
 
 int
-matherr(xPtr)
-    struct exception *xPtr;	/* Describes error that occurred. */
+matherr (
+    struct exception *xPtr	/* Describes error that occurred. */
+)
 {
     if (TclMathInProgress()) {
 	return 0;
@@ -76,3 +77,4 @@ matherr(xPtr)
     return 1;
 }
 
+/* EOF */

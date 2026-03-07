@@ -12433,11 +12433,16 @@ else case e in #(
 /* end confdefs.h.  */
 
 #include <signal.h>
+#include <stdlib.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif /* HAVE_UNISTD_H */
 
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+typedef RETSIGTYPE sigfunc(int);
+#else
 typedef RETSIGTYPE sigfunc();
+#endif /* C99 */
 
 int nsigint;
 
@@ -12516,6 +12521,7 @@ else case e in #(
   e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
+#include <stdlib.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif /* HAVE_UNINSTD_H */
@@ -12641,6 +12647,8 @@ else case e in #(
 /* end confdefs.h.  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #if defined (HAVE_LOCALE_H)
 # include <locale.h>
 #endif /* HAVE_LOCALE_H */
@@ -13299,9 +13307,9 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $bash_cv_void_sighandler" >&5
-printf "%s\n" "$bash_cv_void_sighandler" >&6; }
-if test $bash_cv_void_sighandler = yes; then
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${bash_cv_void_sighandler}" >&5
+printf "%s\n" "${bash_cv_void_sighandler}" >&6; }
+if test "x${bash_cv_void_sighandler}" = "xyes"; then
 
 printf "%s\n" "#define VOID_SIGHANDLER 1" >>confdefs.h
 

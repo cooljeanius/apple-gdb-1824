@@ -3373,7 +3373,7 @@ EntryValidate (
 )
 {
     register Tcl_Interp *interp = entryPtr->interp;
-    int code, bool;
+    int code, boolarg;
 
     code = Tcl_EvalEx(interp, cmd, -1, TCL_EVAL_GLOBAL | TCL_EVAL_DIRECT);
 
@@ -3393,7 +3393,7 @@ EntryValidate (
      * The command callback should return an acceptable Tcl boolean.
      */
     if (Tcl_GetBooleanFromObj(interp, Tcl_GetObjResult(interp),
-			      &bool) != TCL_OK) {
+			      &boolarg) != TCL_OK) {
 	Tcl_AddErrorInfo(interp,
 		 "\nvalid boolean not returned by validation command");
 	Tcl_BackgroundError(interp);
@@ -3402,7 +3402,7 @@ EntryValidate (
     }
 
     Tcl_SetResult(interp, NULL, 0);
-    return (bool ? TCL_OK : TCL_BREAK);
+    return (boolarg ? TCL_OK : TCL_BREAK);
 }
 
 /*

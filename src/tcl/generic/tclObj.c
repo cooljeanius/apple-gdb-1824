@@ -39,7 +39,7 @@ Tcl_Obj *tclFreeObjList = NULL;
 
 #ifdef TCL_THREADS
 Tcl_Mutex tclObjMutex;
-#endif
+#endif /* TCL_THREADS */
 
 /*
  * Pointer to a heap-allocated string of length zero that the Tcl core uses
@@ -221,7 +221,7 @@ typedef struct ResolvedCmdName {
  */
 
 void
-TclInitObjSubsystem()
+TclInitObjSubsystem (void)
 {
     Tcl_MutexLock(&tableMutex);
     typeTableInitialized = 1;
@@ -278,7 +278,7 @@ TclInitObjSubsystem()
  */
 
 void
-TclFinalizeCompExecEnv()
+TclFinalizeCompExecEnv (void)
 {
     Tcl_MutexLock(&tableMutex);
     if (typeTableInitialized) {
@@ -608,7 +608,7 @@ Tcl_DbNewObj(file, line)
 #define OBJS_TO_ALLOC_EACH_TIME 100
 
 void
-TclAllocateFreeObjects()
+TclAllocateFreeObjects (void)
 {
     size_t bytesToAlloc = (OBJS_TO_ALLOC_EACH_TIME * sizeof(Tcl_Obj));
     char *basePtr;

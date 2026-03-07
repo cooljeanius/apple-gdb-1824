@@ -1,9 +1,9 @@
-/* 
+/*
  * tclMacInterupt.c --
  *
  *	This file contains routines that deal with the Macintosh's low level
  *	time manager.  This code provides a better resolution timer than what
- *	can be provided by WaitNextEvent.  
+ *	can be provided by WaitNextEvent.
  *
  * Copyright (c) 1996 Sun Microsystems, Inc.
  *
@@ -35,7 +35,7 @@ typedef struct TMInfo {
 /*
  * Globals used within this file.
  */
- 
+
 static TimerUPP sleepTimerProc = NULL;
 static int interuptsInited = false;
 static ProcessSerialNumber applicationPSN;
@@ -59,7 +59,7 @@ static void		InitInteruptSystem _ANSI_ARGS_((void));
  *
  * InitInteruptSystem --
  *
- *	Does various initialization for the functions used in this 
+ *	Does various initialization for the functions used in this
  *	file.  Sets up Universial Pricedure Pointers, installs a trap
  *	patch for ExitToShell, etc.
  *
@@ -73,16 +73,16 @@ static void		InitInteruptSystem _ANSI_ARGS_((void));
  */
 
 void
-InitInteruptSystem()
+InitInteruptSystem (void)
 {
     int i;
-    
+
     sleepTimerProc = NewTimerProc(SleepTimerProc);
     GetCurrentProcess(&applicationPSN);
     for (i = 0; i < MAX_TIMER_ARRAY_SIZE; i++) {
 	timerInfoArray[i].installed = false;
     }
-    
+
     /*
      * Install the ExitToShell patch.  We use this patch instead
      * of the Tcl exit mechanism because we need to ensure that
@@ -90,7 +90,7 @@ InitInteruptSystem()
      * to quit.  There are some circumstances when the Tcl exit
      * handlers may not fire.
      */
-     
+
     TclMacInstallExitToShellPatch(CleanUpExitProc);
     interuptsInited = true;
 }
@@ -101,7 +101,7 @@ InitInteruptSystem()
  * TclMacStartTimer --
  *
  *	Install a Time Manager task to wake our process up in the
- *	future.  The process should get a NULL event after ms 
+ *	future.  The process should get a NULL event after ms
  *	milliseconds.
  *
  * Results:
@@ -118,11 +118,11 @@ TclMacStartTimer(
     long ms)		/* Milliseconds. */
 {
     TMInfo *timerInfoPtr;
-    
+
     if (!interuptsInited) {
 	InitInteruptSystem();
     }
-    
+
     /*
      * Obtain a pointer for the timer.  We only allocate up
      * to MAX_TIMER_ARRAY_SIZE timers.  If we are past that
@@ -134,7 +134,7 @@ TclMacStartTimer(
     } else {
 	return NULL;
     }
-    
+
     /*
      * Install timer to wake process in ms milliseconds.
      */
@@ -171,11 +171,11 @@ TclMacRemoveTimer(
     void * timerToken)		/* Token got from start timer. */
 {
     TMInfo *timerInfoPtr = (TMInfo *) timerToken;
-    
+
     if (timerInfoPtr == NULL) {
 	return;
     }
-    
+
     RmvTime((QElemPtr) timerInfoPtr);
     timerInfoPtr->installed = false;
     topTimerElement--;
@@ -202,8 +202,8 @@ TclMacTimerExpired(
     void * timerToken)		/* Our token again. */
 {
     TMInfo *timerInfoPtr = (TMInfo *) timerToken;
-    
-    if ((timerInfoPtr == NULL) || 
+
+    if ((timerInfoPtr == NULL) ||
 	!(timerInfoPtr->tmTask.qType & kTMTaskActive)) {
 	return true;
     } else {
@@ -216,7 +216,7 @@ TclMacTimerExpired(
  *
  * SleepTimerProc --
  *
- *	Time proc is called by the is a callback routine placed in the 
+ *	Time proc is called by the is a callback routine placed in the
  *	system by Tcl_Sleep.  The routine is called at interupt time
  *	and threrfor can not move or allocate memory.  This call will
  *	schedule our process to wake up the next time the process gets
@@ -232,25 +232,25 @@ TclMacTimerExpired(
  */
 
 static void
-SleepTimerProc()
+SleepTimerProc (void)
 {
     /*
      * In CFM code we can access our code directly.  In 68k code that
-     * isn't based on CFM we must do a glorious hack.  The function 
-     * GetTMInfo is an inline assembler call that moves the pointer 
+     * isn't based on CFM we must do a glorious hack.  The function
+     * GetTMInfo is an inline assembler call that moves the pointer
      * at A1 to the top of the stack.  The Time Manager keeps the TMTask
      * info record there before calling this call back.  In order for
      * this to work the infoPtr argument must be the *last* item on the
-     * stack.  If we "piggyback" our data to the TMTask info record we 
-     * can get access to the information we need.  While this is really 
+     * stack.  If we "piggyback" our data to the TMTask info record we
+     * can get access to the information we need.  While this is really
      * ugly - it's the way Apple recomends it be done - go figure...
      */
-    
+
 #if GENERATINGCFM
     WakeUpProcess(&applicationPSN);
 #else
     TMInfo * infoPtr;
-    
+
     infoPtr = GetTMInfo();
     WakeUpProcess(&infoPtr->psn);
 #endif
@@ -262,8 +262,8 @@ SleepTimerProc()
  * CleanUpExitProc --
  *
  *	This procedure is invoked as an exit handler when ExitToShell
- *	is called.  It removes the system level timer handler if it 
- *	is installed.  This must be called or the Mac OS will more than 
+ *	is called.  It removes the system level timer handler if it
+ *	is installed.  This must be called or the Mac OS will more than
  *	likely crash.
  *
  * Results:
@@ -276,10 +276,10 @@ SleepTimerProc()
  */
 
 static pascal void
-CleanUpExitProc()
+CleanUpExitProc(void)
 {
     int i;
-    
+
     for (i = 0; i < MAX_TIMER_ARRAY_SIZE; i++) {
 	if (timerInfoArray[i].installed) {
 	    RmvTime((QElemPtr) &timerInfoArray[i]);

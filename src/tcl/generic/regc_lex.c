@@ -3,20 +3,20 @@
  * This file is #included by regcomp.c.
  *
  * Copyright (c) 1998, 1999 Henry Spencer.  All rights reserved.
- * 
+ *
  * Development of this software was funded, in part, by Cray Research Inc.,
  * UUNET Communications Services Inc., Sun Microsystems Inc., and Scriptics
  * Corporation, none of whom are responsible for the results.  The author
- * thanks all of them. 
- * 
+ * thanks all of them.
+ *
  * Redistribution and use in source and binary forms -- with or without
  * modification -- are permitted for any purpose, provided that
  * redistributions in source form retain this entire copyright notice and
  * indicate the origin and nature of any modifications.
- * 
+ *
  * I'd appreciate being given credit for this package in the documentation
  * of software which uses it, but that is not a requirement.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
  * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
  * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL
@@ -99,7 +99,7 @@ struct vars *v;
 	if (v->cflags&REG_QUOTE)
 		return;
 
-	/* initial "***" gets special things */	
+	/* initial "***" gets special things */
 	if (HAVE(4) && NEXT3('*', '*', '*'))
 		switch (*(v->now + 3)) {
 		case CHR('?'):		/* "***?" error, msg shows version */
@@ -271,8 +271,7 @@ struct vars *v;
  ^ static int next(struct vars *);
  */
 static int			/* 1 normal, 0 failure */
-next(v)
-struct vars *v;
+next (struct vars *v)
 {
 	chr c;
 
@@ -656,8 +655,7 @@ struct vars *v;
  ^ static int lexescape(struct vars *);
  */
 static int			/* not actually used, but convenient for RETV */
-lexescape(v)
-struct vars *v;
+lexescape (struct vars *v)
 {
 	chr c;
 	static chr alert[] = {
@@ -1025,7 +1023,7 @@ ch()
 
 	return chstr;
 }
-#endif
+#endif /* REG_DEBUG */
 
 /*
  - chrnamed - return the chr known by a given (chr string) name

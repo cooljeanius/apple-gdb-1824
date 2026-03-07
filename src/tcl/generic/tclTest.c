@@ -1217,8 +1217,9 @@ CreatedCommandProc(clientData, interp, argc, argv)
     found = Tcl_GetCommandInfo(interp, "test_ns_basic::createdcommand",
 	    &info);
     if (!found) {
-	Tcl_AppendResult(interp, "CreatedCommandProc could not get command info for test_ns_basic::createdcommand",
-	        (char *) NULL);
+	Tcl_AppendResult(interp,
+			 "CreatedCommandProc could not get command info for test_ns_basic::createdcommand",
+	        	 (char *)NULL);
 	return TCL_ERROR;
     }
     Tcl_AppendResult(interp, "CreatedCommandProc in ",
@@ -1238,8 +1239,9 @@ CreatedCommandProc2(clientData, interp, argc, argv)
 
     found = Tcl_GetCommandInfo(interp, "value:at:", &info);
     if (!found) {
-	Tcl_AppendResult(interp, "CreatedCommandProc2 could not get command info for test_ns_basic::createdcommand",
-	        (char *) NULL);
+	Tcl_AppendResult(interp,
+			 "CreatedCommandProc2 could not get command info for test_ns_basic::createdcommand",
+	        	 (char *)NULL);
 	return TCL_ERROR;
     }
     Tcl_AppendResult(interp, "CreatedCommandProc2 in ",
@@ -1489,7 +1491,9 @@ TestdstringCmd(dummy, interp, argc, argv)
 	if (strcmp(argv[2], "staticsmall") == 0) {
 	    Tcl_SetResult(interp, "short", TCL_STATIC);
 	} else if (strcmp(argv[2], "staticlarge") == 0) {
-	    Tcl_SetResult(interp, "first0 first1 first2 first3 first4 first5 first6 first7 first8 first9\nsecond0 second1 second2 second3 second4 second5 second6 second7 second8 second9\nthird0 third1 third2 third3 third4 third5 third6 third7 third8 third9\nfourth0 fourth1 fourth2 fourth3 fourth4 fourth5 fourth6 fourth7 fourth8 fourth9\nfifth0 fifth1 fifth2 fifth3 fifth4 fifth5 fifth6 fifth7 fifth8 fifth9\nsixth0 sixth1 sixth2 sixth3 sixth4 sixth5 sixth6 sixth7 sixth8 sixth9\nseventh0 seventh1 seventh2 seventh3 seventh4 seventh5 seventh6 seventh7 seventh8 seventh9\n", TCL_STATIC);
+	    Tcl_SetResult(interp,
+"first0 first1 first2 first3 first4 first5 first6 first7 first8 first9\nsecond0 second1 second2 second3 second4 second5 second6 second7 second8 second9\nthird0 third1 third2 third3 third4 third5 third6 third7 third8 third9\nfourth0 fourth1 fourth2 fourth3 fourth4 fourth5 fourth6 fourth7 fourth8 fourth9\nfifth0 fifth1 fifth2 fifth3 fifth4 fifth5 fifth6 fifth7 fifth8 fifth9\nsixth0 sixth1 sixth2 sixth3 sixth4 sixth5 sixth6 sixth7 sixth8 sixth9\nseventh0 seventh1 seventh2 seventh3 seventh4 seventh5 seventh6 seventh7 seventh8 seventh9\n",
+			  TCL_STATIC);
 	} else if (strcmp(argv[2], "free") == 0) {
 	    Tcl_SetResult(interp, (char *) ckalloc(100), TCL_DYNAMIC);
 	    strcpy(interp->result, "This is a malloc-ed string");
@@ -1545,8 +1549,10 @@ TestdstringCmd(dummy, interp, argc, argv)
  * Tcl_DStringGetResult handles freeProc's other than free.
  */
 
-static void SpecialFree(blockPtr)
-    char *blockPtr;			/* Block to free. */
+static void
+SpecialFree (
+    char *blockPtr			/* Block to free. */
+)
 {
     ckfree(blockPtr - 4);
 }
@@ -3157,11 +3163,12 @@ TestregexpObjCmd(dummy, interp, objc, objv)
  */
 
 static void
-TestregexpXflags(string, length, cflagsPtr, eflagsPtr)
-    char *string;		/* The string of flags. */
-    int length;			/* The length of the string in bytes. */
-    int *cflagsPtr;		/* compile flags word */
-    int *eflagsPtr;		/* exec flags word */
+TestregexpXflags (
+    char *string,		/* The string of flags. */
+    int length,			/* The length of the string in bytes. */
+    int *cflagsPtr,		/* compile flags word */
+    int *eflagsPtr		/* exec flags word */
+)
 {
     int i;
     int cflags;
@@ -4260,8 +4267,7 @@ TestsaveresultCmd(dummy, interp, objc, objv)
  */
 
 static void
-TestsaveresultFree(blockPtr)
-    char *blockPtr;
+TestsaveresultFree (char *blockPtr)
 {
     freeCount++;
 }

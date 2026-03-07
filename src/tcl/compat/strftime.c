@@ -1,4 +1,4 @@
-/* 
+/*
  * strftime.c --
  *
  *	This file contains a modified version of the BSD 4.4 strftime
@@ -77,7 +77,7 @@ typedef struct {
  * It may be acceptable to do localization of month/day names, as the
  * numerical values would be considered the locale-independent versions.
  */
-static const _TimeLocale _DefaultTimeLocale = 
+static const _TimeLocale _DefaultTimeLocale =
 {
     {
 	"Sun","Mon","Tue","Wed","Thu","Fri","Sat",
@@ -115,12 +115,7 @@ static size_t		_fmt _ANSI_ARGS_((const char *format,
 			    const struct tm *t));
 
 size_t
-TclpStrftime(s, maxsize, format, t, useGMT)
-    char *s;
-    size_t maxsize;
-    const char *format;
-    const struct tm *t;
-    int useGMT;
+TclpStrftime (char *s, size_t maxsize, const char *format, const struct tm *t, int useGMT)
 {
     if (format[0] == '%' && format[1] == 'Q') {
 	/* Format as a stardate */
@@ -155,9 +150,7 @@ TclpStrftime(s, maxsize, format, t, useGMT)
 				((t)->tm_wday ? (t)->tm_wday - 1 : 6)) / 7)
 
 static size_t
-_fmt(format, t)
-    const char *format;
-    const struct tm *t;
+_fmt (const char *format, const struct tm *t)
 {
 #ifdef WIN32
 #define BUF_SIZ 256
@@ -303,11 +296,11 @@ _fmt(format, t)
 		{
 				/* ISO 8601 Week Of Year:
 				   If the week (Monday - Sunday) containing
-				   January 1 has four or more days in the new 
-				   year, then it is week 1; otherwise it is 
+				   January 1 has four or more days in the new
+				   year, then it is week 1; otherwise it is
 				   week 53 of the previous year and the next
 				   week is week one. */
-				 
+
 		    int week = MON_WEEK(t);
 
 		    int days = (((t)->tm_yday + 7 - \
@@ -372,7 +365,7 @@ _fmt(format, t)
 		    if (!_fmt(_CurrentTimeLocale->t_fmt, t))
 			return(0);
 		    continue;
-#endif
+#endif /* WIN32 || not */
 		case 'y':
 		    if (!_conv((t->tm_year + TM_YEAR_BASE) % 100,
 			    2, '0'))
@@ -407,8 +400,7 @@ _fmt(format, t)
 }
 
 static int
-_secs(t)
-    const struct tm *t;
+_secs (const struct tm *t)
 {
     static char buf[15];
     register time_t s;
@@ -424,9 +416,7 @@ _secs(t)
 }
 
 static int
-_conv(n, digits, pad)
-    int n, digits;
-    int pad;
+_conv (int n, int digits, int pad)
 {
     static char buf[10];
     register char *p;
@@ -439,8 +429,7 @@ _conv(n, digits, pad)
 }
 
 static int
-_add(str)
-    const char *str;
+_add (const char *str)
 {
     for (;; ++pt, --gsize) {
 	if (!gsize)

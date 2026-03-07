@@ -2037,10 +2037,11 @@ TclNeedSpace(start, end)
  */
 
 int
-TclFormatInt(buffer, n)
-    char *buffer;		/* Points to the storage into which the
+TclFormatInt (
+    char *buffer,		/* Points to the storage into which the
 				 * formatted characters are written. */
-    long n;			/* The integer to format. */
+    long n 			/* The integer to format. */
+)
 {
     long intVal;
     int i;

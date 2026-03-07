@@ -1,4 +1,4 @@
-/* 
+/*
  * getcwd.c --
  *
  *	This file provides an implementation of the getcwd procedure
@@ -19,9 +19,10 @@
 extern char *getwd _ANSI_ARGS_((char *pathname));
 
 char *
-getcwd(buf, size)
-    char *buf;			/* Where to put path for current directory. */
-    size_t size;		/* Number of bytes at buf. */
+getcwd (
+    char *buf,			/* Where to put path for current directory. */
+    size_t size 		/* Number of bytes at buf. */
+)
 {
     char realBuffer[MAXPATHLEN+1];
     int length;

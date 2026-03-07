@@ -1,4 +1,4 @@
-/* 
+/*
  * tclLoadAout.c --
  *
  *	This procedure provides a version of the TclLoadFile that
@@ -109,7 +109,7 @@ static void UnlinkSymbolTable _ANSI_ARGS_((void));
  *
  * Results:
  *	A standard Tcl completion code.  If an error occurs, an error
- *	message is left in the interp's result. 
+ *	message is left in the interp's result.
  *
  * Side effects:
  *	New code suddenly appears in memory.
@@ -143,14 +143,14 @@ TclpDlopen(interp, pathPtr, loadHandle, unloadProcPtr)
     Tcl_Obj *pathPtr;		/* Name of the file containing the desired
 				 * code (UTF-8). */
     Tcl_LoadHandle *loadHandle;	/* Filled with token for dynamically loaded
-				 * file which will be passed back to 
+				 * file which will be passed back to
 				 * (*unloadProcPtr)() to unload the file. */
-    Tcl_FSUnloadFileProc **unloadProcPtr;	
+    Tcl_FSUnloadFileProc **unloadProcPtr;
 				/* Filled with address of Tcl_FSUnloadFileProc
 				 * function which should be used for
 				 * this file. */
 {
-    char * inputSymbolTable;	/* Name of the file containing the 
+    char * inputSymbolTable;	/* Name of the file containing the
 				 * symbol table from the last link. */
     Tcl_DString linkCommandBuf;	/* Command to do the run-time relocation
 				 * of the module.*/
@@ -167,7 +167,7 @@ TclpDlopen(interp, pathPtr, loadHandle, unloadProcPtr)
     char * p;
 
     /* Find the file that contains the symbols for the run-time link. */
-    
+
     if (SymbolTableFile != NULL) {
 	inputSymbolTable = SymbolTableFile;
     } else if (tclExecutableName == NULL) {
@@ -176,9 +176,9 @@ TclpDlopen(interp, pathPtr, loadHandle, unloadProcPtr)
     } else {
 	inputSymbolTable = tclExecutableName;
     }
-    
+
     /* Construct the `ld' command that builds the relocated module */
-    
+
     tmpnam (relocatedFileName);
     Tcl_DStringInit (&linkCommandBuf);
     Tcl_DStringAppend (&linkCommandBuf, "exec ld -o ", -1);
@@ -193,33 +193,33 @@ TclpDlopen(interp, pathPtr, loadHandle, unloadProcPtr)
     Tcl_DStringAppend (&linkCommandBuf, " -N -T XXXXXXXX ", -1);
     Tcl_DStringAppend (&linkCommandBuf, Tcl_GetString(pathPtr), -1);
     Tcl_DStringAppend (&linkCommandBuf, " ", -1);
-    
+
     if (FindLibraries (interp, pathPtr, &linkCommandBuf) != TCL_OK) {
 	Tcl_DStringFree (&linkCommandBuf);
 	return TCL_ERROR;
     }
-    
+
     linkCommand = Tcl_DStringValue (&linkCommandBuf);
-    
+
     /* Determine the starting address, and plug it into the command */
-    
+
     startAddress = (char *) (((unsigned long) sbrk (0)
 			      + TCL_LOADSHIM + TCL_LOADALIGN - 1)
 			     & (- TCL_LOADALIGN));
     p = strstr (linkCommand, "-T") + 3;
     sprintf (p, "%08lx", (long) startAddress);
     p [8] = ' ';
-    
+
     /* Run the linker */
-    
+
     status = Tcl_Eval (interp, linkCommand);
     Tcl_DStringFree (&linkCommandBuf);
     if (status != 0) {
 	return TCL_ERROR;
     }
-    
+
     /* Open the linker's result file and read the header */
-    
+
     relocatedFd = open (relocatedFileName, O_RDONLY);
     if (relocatedFd < 0) {
 	goto ioError;
@@ -228,36 +228,36 @@ TclpDlopen(interp, pathPtr, loadHandle, unloadProcPtr)
     if (status < sizeof relocatedHead) {
 	goto ioError;
     }
-    
+
     /* Check the magic number */
-    
+
     if (relocatedHead.a_magic != OMAGIC) {
 	Tcl_AppendResult (interp, "bad magic number in intermediate file \"",
 			  relocatedFileName, "\"", (char *) NULL);
 	goto failure;
     }
-    
+
     /* Make sure that memory allocation is still consistent */
-    
+
     if ((unsigned long) sbrk (0) > (unsigned long) startAddress) {
 	Tcl_SetResult (interp, "can't load, memory allocation is inconsistent.",
 		       TCL_STATIC);
 	goto failure;
     }
-    
+
     /* Make sure that the relocated module's size is reasonable */
-    
+
     relocatedSize = relocatedHead.a_text + relocatedHead.a_data
       + relocatedHead.a_bss;
     if (relocatedSize > TCL_LOADMAX) {
 	Tcl_SetResult (interp, "module too big to load", TCL_STATIC);
 	goto failure;
     }
-    
+
     /* Advance the break to protect the loaded module */
-    
+
     (void) brk (startAddress + relocatedSize);
-    
+
     /*
      * Seek to the start of the module's text.
      *
@@ -266,7 +266,7 @@ TclpDlopen(interp, pathPtr, loadHandle, unloadProcPtr)
      * dynamically load a binary that is larger than what can fit in
      * addressable memory is in trouble anyway...
      */
-    
+
 #if defined(__mips) || defined(mips)
     status = lseek (relocatedFd,
 		    (off_t) N_TXTOFF (relocatedHead.ex_f, relocatedHead.ex_o),
@@ -277,9 +277,9 @@ TclpDlopen(interp, pathPtr, loadHandle, unloadProcPtr)
     if (status < 0) {
 	goto ioError;
     }
-    
+
     /* Read in the module's text and data */
-    
+
     relocatedSize = relocatedHead.a_text + relocatedHead.a_data;
     if (read (relocatedFd, startAddress, relocatedSize) < relocatedSize) {
 	brk (startAddress);
@@ -291,14 +291,14 @@ TclpDlopen(interp, pathPtr, loadHandle, unloadProcPtr)
 	(void) unlink (relocatedFileName);
 	return TCL_ERROR;
     }
-    
+
     /* Close the intermediate file. */
-    
+
     (void) close (relocatedFd);
-    
+
     /* Arrange things so that intermediate symbol tables eventually get
     * deleted. */
-    
+
     if (SymbolTableFile != NULL) {
 	UnlinkSymbolTable ();
     } else {
@@ -306,7 +306,7 @@ TclpDlopen(interp, pathPtr, loadHandle, unloadProcPtr)
     }
     SymbolTableFile = ckalloc (strlen (relocatedFileName) + 1);
     strcpy (SymbolTableFile, relocatedFileName);
-    
+
     *loadHandle = startAddress;
     return TCL_OK;
 }
@@ -327,7 +327,7 @@ TclpDlopen(interp, pathPtr, loadHandle, unloadProcPtr)
  *----------------------------------------------------------------------
  */
 Tcl_PackageInitProc*
-TclpFindSymbol(interp, loadHandle, symbol) 
+TclpFindSymbol(interp, loadHandle, symbol)
     Tcl_Interp *interp;
     Tcl_LoadHandle loadHandle;
     CONST char *symbol;
@@ -365,20 +365,20 @@ FindLibraries (interp, pathPtr, buf)
     CONST char *native;
 
     char *fileName = Tcl_GetString(pathPtr);
-  
+
     /* Open the load module */
-    
+
     native = Tcl_FSGetNativePath(pathPtr);
     f = fopen(native, "rb");				/* INTL: Native. */
-    
+
     if (f == NULL) {
 	Tcl_AppendResult (interp, "couldn't open \"", fileName, "\": ",
 			  Tcl_PosixError (interp), (char *) NULL);
 	return TCL_ERROR;
     }
-    
+
     /* Search for the library list in the load module */
-    
+
     p = "@LIBS: ";
     while (*p != '\0' && (c = getc (f)) != EOF) {
 	if (c == *p) {
@@ -391,24 +391,24 @@ FindLibraries (interp, pathPtr, buf)
 	    }
 	}
     }
-    
+
     /* No library list -- this must be an ill-formed module */
-    
+
     if (c == EOF) {
 	Tcl_AppendResult (interp, "File \"", fileName,
 			  "\" is not a Tcl load module.", (char *) NULL);
 	(void) fclose (f);
 	return TCL_ERROR;
     }
-    
+
     /* Accumulate the library list */
-    
+
     while ((c = getc (f)) != '\0' && c != EOF) {
 	char cc = c;
 	Tcl_DStringAppend (buf, &cc, 1);
     }
     (void) fclose (f);
-    
+
     if (c == EOF) {
 	Tcl_AppendResult (interp, "Library directory in \"", fileName,
 			  "\" ends prematurely.", (char *) NULL);
@@ -437,7 +437,7 @@ FindLibraries (interp, pathPtr, buf)
  */
 
 static void
-UnlinkSymbolTable ()
+UnlinkSymbolTable (void)
 {
     (void) unlink (SymbolTableFile);
     ckfree (SymbolTableFile);
@@ -465,8 +465,8 @@ UnlinkSymbolTable ()
 void
 TclpUnloadFile(loadHandle)
     Tcl_LoadHandle loadHandle;	/* loadHandle returned by a previous call
-				 * to TclpDlopen().  The loadHandle is 
-				 * a token that represents the loaded 
+				 * to TclpDlopen().  The loadHandle is
+				 * a token that represents the loaded
 				 * file. */
 {
 }
@@ -534,3 +534,5 @@ TclGuessPackageName(fileName, bufPtr)
 
     return 1;
 }
+
+/* EOF */

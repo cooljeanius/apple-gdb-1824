@@ -1,4 +1,4 @@
-/* 
+/*
  * tclGetDate.y --
  *
  *	Contains yacc grammar for parsing date and time strings.
@@ -15,11 +15,17 @@
  */
 
 %{
-/* 
+/*
  * tclDate.c --
  *
  *	This file is generated from a yacc grammar defined in
  *	the file tclGetDate.y.  It should not be edited directly.
+ *	Note from the Makefile's "gendate" target:
+ *	# This is only run by hand as yacc is not available in all environments.
+ *	# Furthermore, using the wrong yacc can lead to compile errors in the resulting
+ *	# .c file (e.g. "error: label used but not defined"). The name of the .c file is
+ *	# different than the name of the .y file so that make does NOT try to
+ *	# automatically regenerate the .c file.
  *
  * Copyright (c) 1992-1995 Karl Lehenbauer and Mark Diekhans.
  * Copyright (c) 1995-1997 Sun Microsystems, Inc.
@@ -605,18 +611,14 @@ static TABLE    MilitaryTable[] = {
  * Dump error messages in the bit bucket.
  */
 static void
-yyerror(s)
-    char  *s;
+yyerror (char *s)
 {
+  (void)s;
 }
 
 
 static time_t
-ToSeconds(Hours, Minutes, Seconds, Meridian)
-    time_t      Hours;
-    time_t      Minutes;
-    time_t      Seconds;
-    MERIDIAN    Meridian;
+ToSeconds (time_t Hours, time_t Minutes, time_t Seconds, MERIDIAN Meridian)
 {
     if (Minutes < 0 || Minutes > 59 || Seconds < 0 || Seconds > 59)
         return -1;
@@ -654,16 +656,8 @@ ToSeconds(Hours, Minutes, Seconds, Meridian)
  *-----------------------------------------------------------------------------
  */
 static int
-Convert(Month, Day, Year, Hours, Minutes, Seconds, Meridian, DSTmode, TimePtr)
-    time_t      Month;
-    time_t      Day;
-    time_t      Year;
-    time_t      Hours;
-    time_t      Minutes;
-    time_t      Seconds;
-    MERIDIAN    Meridian;
-    DSTMODE     DSTmode;
-    time_t     *TimePtr;
+Convert (time_t Month, time_t Day, time_t Year, time_t Hours, time_t Minutes,
+time_t Seconds, MERIDIAN Meridian, DSTMODE DSTmode, time_t *TimePtr)
 {
     static int  DaysInMonth[12] = {
         31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
@@ -717,9 +711,7 @@ Convert(Month, Day, Year, Hours, Minutes, Seconds, Meridian, DSTmode, TimePtr)
 
 
 static time_t
-DSTcorrect(Start, Future)
-    time_t      Start;
-    time_t      Future;
+DSTcorrect (time_t Start, time_t Future)
 {
     time_t      StartDay;
     time_t      FutureDay;
@@ -730,10 +722,7 @@ DSTcorrect(Start, Future)
 
 
 static time_t
-NamedDay(Start, DayOrdinal, DayNumber)
-    time_t      Start;
-    time_t      DayOrdinal;
-    time_t      DayNumber;
+NamedDay (time_t Start, time_t DayOrdinal, time_t DayNumber)
 {
     struct tm   *tm;
     time_t      now;
@@ -746,15 +735,12 @@ NamedDay(Start, DayOrdinal, DayNumber)
 }
 
 static time_t
-NamedMonth(Start, MonthOrdinal, MonthNumber)
-    time_t Start;
-    time_t MonthOrdinal;
-    time_t MonthNumber;
+NamedMonth (time_t Start, time_t MonthOrdinal, time_t MonthNumber)
 {
     struct tm *tm;
     time_t now;
     int result;
-    
+
     now = Start;
     tm = TclpGetDate((TclpTime_t)&now, 0);
     /* To compute the next n'th month, we use this alg:
@@ -776,10 +762,7 @@ NamedMonth(Start, MonthOrdinal, MonthNumber)
 }
 
 static int
-RelativeMonth(Start, RelMonth, TimePtr)
-    time_t Start;
-    time_t RelMonth;
-    time_t *TimePtr;
+RelativeMonth (time_t Start, time_t RelMonth, time_t *TimePtr)
 {
     struct tm *tm;
     time_t Month;
@@ -800,7 +783,7 @@ RelativeMonth(Start, RelMonth, TimePtr)
 	    MER24, DSTmaybe, &Julian);
 
     /*
-     * The Julian time returned above is behind by one day, if "month" 
+     * The Julian time returned above is behind by one day, if "month"
      * or "year" is used to specify relative time and the GMT flag is true.
      * This problem occurs only when the current time is closer to
      * midnight, the difference being not more than its time difference
@@ -855,10 +838,7 @@ RelativeMonth(Start, RelMonth, TimePtr)
  */
 
 static int
-RelativeDay(Start, RelDay, TimePtr)
-    time_t Start;
-    time_t RelDay;
-    time_t *TimePtr;
+RelativeDay (time_t Start, time_t RelDay, time_t *TimePtr)
 {
     time_t new;
 
@@ -868,8 +848,7 @@ RelativeDay(Start, RelDay, TimePtr)
 }
 
 static int
-LookupWord(buff)
-    char                *buff;
+LookupWord (char *buff)
 {
     register char *p;
     register char *q;
@@ -982,13 +961,13 @@ LookupWord(buff)
             }
 	}
     }
-    
+
     return tID;
 }
 
 
 static int
-yylex()
+yylex (void)
 {
     register char       c;
     register char       *p;
@@ -1049,11 +1028,7 @@ yylex()
  */
 
 int
-TclGetDate(p, now, zone, timePtr)
-    char *p;
-    unsigned long now;
-    long zone;
-    unsigned long *timePtr;
+TclGetDate (char *p, unsigned long now, long zone, unsigned long *timePtr)
 {
     struct tm *tm;
     time_t Start;
@@ -1096,7 +1071,7 @@ TclGetDate(p, now, zone, timePtr)
 	    yyHaveDay > 1 || yyHaveOrdinalMonth > 1) {
         return -1;
     }
-    
+
     if (yyHaveDate || yyHaveTime || yyHaveDay) {
 	if (TclDateYear < 0) {
 	    TclDateYear = -TclDateYear;
@@ -1140,7 +1115,7 @@ TclGetDate(p, now, zone, timePtr)
 	return -1;
     }
     Start += Time;
-    
+
     if (yyHaveDay && !yyHaveDate) {
         tod = NamedDay(Start, yyDayOrdinal, yyDayNumber);
         Start += tod;
@@ -1150,7 +1125,7 @@ TclGetDate(p, now, zone, timePtr)
 	tod = NamedMonth(Start, yyMonthOrdinal, yyMonth);
 	Start += tod;
     }
-    
+
     *timePtr = Start;
     return 0;
 }

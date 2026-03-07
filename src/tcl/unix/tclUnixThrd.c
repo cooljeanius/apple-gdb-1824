@@ -1,4 +1,4 @@
-/* 
+/*
  * tclUnixThrd.c --
  *
  *	This file implements the UNIX-specific thread support.
@@ -195,8 +195,7 @@ Tcl_JoinThread(id, state)
  */
 
 void
-TclpThreadExit(status)
-    int status;
+TclpThreadExit (int status)
 {
     pthread_exit((VOID *)status);
 }
@@ -249,7 +248,7 @@ Tcl_GetCurrentThread()
  */
 
 void
-TclpInitLock()
+TclpInitLock (void)
 {
 #ifdef TCL_THREADS
     pthread_mutex_lock(&initLock);
@@ -275,7 +274,7 @@ TclpInitLock()
  */
 
 void
-TclpInitUnlock()
+TclpInitUnlock (void)
 {
 #ifdef TCL_THREADS
     pthread_mutex_unlock(&initLock);
@@ -305,7 +304,7 @@ TclpInitUnlock()
  */
 
 void
-TclpMasterLock()
+TclpMasterLock (void)
 {
 #ifdef TCL_THREADS
     pthread_mutex_lock(&masterLock);
@@ -331,7 +330,7 @@ TclpMasterLock()
  */
 
 void
-TclpMasterUnlock()
+TclpMasterUnlock (void)
 {
 #ifdef TCL_THREADS
     pthread_mutex_unlock(&masterLock);
@@ -399,10 +398,10 @@ Tcl_MutexLock(mutexPtr)
     if (*mutexPtr == NULL) {
 	MASTER_LOCK;
 	if (*mutexPtr == NULL) {
-	    /* 
+	    /*
 	     * Double inside master lock check to avoid a race condition.
 	     */
-    
+
 	    pmutexPtr = (pthread_mutex_t *)ckalloc(sizeof(pthread_mutex_t));
 	    pthread_mutex_init(pmutexPtr, NULL);
 	    *mutexPtr = (Tcl_Mutex)pmutexPtr;
@@ -675,7 +674,7 @@ Tcl_ConditionWait(condPtr, mutexPtr, timePtr)
     if (*condPtr == NULL) {
 	MASTER_LOCK;
 
-	/* 
+	/*
 	 * Double check inside mutex to avoid race,
 	 * then initialize condition variable if necessary.
 	 */
@@ -804,7 +803,7 @@ TclpReaddir(DIR * dir)
     ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
 
 #ifdef HAVE_READDIR_R
-    ent = &tsdPtr->rdbuf.ent; 
+    ent = &tsdPtr->rdbuf.ent;
     if (TclOSreaddir_r(dir, ent, &ent) != 0) {
 	ent = NULL;
     }
@@ -854,7 +853,7 @@ TclpLocaltime(time_t * clock)
     memcpy( (VOID *) &tsdPtr->ltbuf, (VOID *) localtime( clock ), sizeof (struct tm) );
     Tcl_MutexUnlock( &tmMutex );
     return &tsdPtr->ltbuf;
-#endif    
+#endif
 #else
     return localtime(clock);
 #endif
@@ -873,7 +872,7 @@ TclpGmtime(time_t * clock)
     memcpy( (VOID *) &tsdPtr->gtbuf, (VOID *) gmtime( clock ), sizeof (struct tm) );
     Tcl_MutexUnlock( &tmMutex );
     return &tsdPtr->gtbuf;
-#endif    
+#endif
 #else
     return gmtime(clock);
 #endif
@@ -888,7 +887,7 @@ TclpInetNtoa(struct in_addr addr)
     	unsigned long l;
     	unsigned char b[4];
     } u;
-    
+
     u.l = (unsigned long) addr.s_addr;
     sprintf(tsdPtr->nabuf, "%u.%u.%u.%u", u.b[0], u.b[1], u.b[2], u.b[3]);
     return tsdPtr->nabuf;
@@ -949,3 +948,5 @@ TclpSetAllocCache(void *arg)
 
 #endif /* USE_THREAD_ALLOC */
 #endif /* TCL_THREADS */
+
+/* EOF */

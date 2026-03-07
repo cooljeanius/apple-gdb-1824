@@ -557,9 +557,10 @@ Tcl_DeleteThreadExitHandler(proc, clientData)
  */
 
 void
-Tcl_Exit(status)
-    int status;			/* Exit status for application;  typically
+Tcl_Exit (
+    int status			/* Exit status for application;  typically
 				 * 0 for normal return, 1 for error return. */
+)
 {
     Tcl_Finalize();
     TclpExit(status);
@@ -760,7 +761,7 @@ TclInitSubsystems(argv0)
  */
 
 void
-Tcl_Finalize()
+Tcl_Finalize (void)
 {
     ExitHandler *exitPtr;
     ThreadSpecificData *tsdPtr;
@@ -874,7 +875,7 @@ Tcl_Finalize()
  */
 
 void
-Tcl_FinalizeThread()
+Tcl_FinalizeThread (void)
 {
     ExitHandler *exitPtr;
     ThreadSpecificData *tsdPtr =
@@ -938,7 +939,7 @@ Tcl_FinalizeThread()
  */
 
 int
-TclInExit()
+TclInExit (void)
 {
     ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
 	    TclThreadDataKeyGet(&dataKey);
@@ -1088,3 +1089,5 @@ Tcl_UpdateObjCmd(clientData, interp, objc, objv)
     Tcl_ResetResult(interp);
     return TCL_OK;
 }
+
+/* EOF */

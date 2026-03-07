@@ -545,7 +545,7 @@ topDirName:
 # from the yacc grammar found in generic/tclGetDate.y. This is
 # only run by hand as yacc is not available in all environments.
 # Furthermore, using the wrong yacc can lead to compile errors in the
-# resulting .c file.
+# resulting .c file (e.g. "error: label used but not defined")
 # The name of the .c file is different than the name of the .y file
 # so that make does NOT try to automatically regenerate the .c file.
 

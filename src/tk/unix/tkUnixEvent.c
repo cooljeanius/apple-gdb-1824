@@ -381,9 +381,9 @@ DisplayFileProc(clientData, flags)
 	 * message.
 	 */
 
-	void (*oldHandler)();
+	void (*oldHandler)(int);
 
-	oldHandler = (void (*)()) signal(SIGPIPE, SIG_IGN);
+	oldHandler = (void (*)(int))signal(SIGPIPE, SIG_IGN);
 	XNoOp(display);
 	XFlush(display);
 	(void) signal(SIGPIPE, oldHandler);

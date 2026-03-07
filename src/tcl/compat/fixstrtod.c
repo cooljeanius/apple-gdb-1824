@@ -1,4 +1,4 @@
-/* 
+/*
  * fixstrtod.c --
  *
  *	Source code for the "fixstrtod" procedure.  This procedure is
@@ -22,12 +22,15 @@
  * somes systems (e.g. SunOS 4.1.4) stdlib.h doesn't declare strtod.
  */
 
+# if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+/* we can assume a proper prototype for C99+: */
+extern double strtod(const char *restrict nptr, char **restrict endptr);
+# else
 extern double strtod();
+# endif /* C99 */
 
 double
-fixstrtod(string, endPtr)
-    char *string;
-    char **endPtr;
+fixstrtod (char *string, char **endPtr)
 {
     double d;
     d = strtod(string, endPtr);

@@ -1,4 +1,4 @@
-/* 
+/*
  * tclIOSock.c --
  *
  *	Common routines used by all socket based channel types.
@@ -49,7 +49,7 @@ TclSockGetPort(interp, string, proto, portPtr)
 	/*
 	 * Don't bother translating 'proto' to native.
 	 */
-	 
+
 	native = Tcl_UtfToExternalDString(NULL, string, -1, &ds);
 	sp = getservbyname(native, proto);		/* INTL: Native. */
 	Tcl_DStringFree(&ds);
@@ -86,9 +86,10 @@ TclSockGetPort(interp, string, proto, portPtr)
  */
 
 int
-TclSockMinimumBuffers(sock, size)
-    int sock;			/* Socket file descriptor */
-    int size;			/* Minimum buffer size */
+TclSockMinimumBuffers (
+    int sock,			/* Socket file descriptor */
+    int size			/* Minimum buffer size */
+)
 {
     int current;
     socklen_t len;
@@ -107,3 +108,5 @@ TclSockMinimumBuffers(sock, size)
     }
     return TCL_OK;
 }
+
+/* EOF */

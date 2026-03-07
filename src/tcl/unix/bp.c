@@ -34,9 +34,10 @@ extern int errno;
 char buffer[BUFFER_SIZE];
 
 int
-main(argc, argv)
-    int argc;			/* Number of command-line arguments. */
-    char **argv;		/* Values of command-line arguments. */
+main (
+    int argc,			/* Number of command-line arguments. */
+    char **argv 		/* Values of command-line arguments. */
+)
 {
     int length, matchChar, fileChar, cur, fileIndex, stringIndex;
     char *s;

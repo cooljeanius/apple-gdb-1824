@@ -3,20 +3,20 @@
  * This file is #included by regcomp.c.
  *
  * Copyright (c) 1998, 1999 Henry Spencer.  All rights reserved.
- * 
+ *
  * Development of this software was funded, in part, by Cray Research Inc.,
  * UUNET Communications Services Inc., Sun Microsystems Inc., and Scriptics
  * Corporation, none of whom are responsible for the results.  The author
- * thanks all of them. 
- * 
+ * thanks all of them.
+ *
  * Redistribution and use in source and binary forms -- with or without
  * modification -- are permitted for any purpose, provided that
  * redistributions in source form retain this entire copyright notice and
  * indicate the origin and nature of any modifications.
- * 
+ *
  * I'd appreciate being given credit for this package in the documentation
  * of software which uses it, but that is not a requirement.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
  * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
  * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL
@@ -44,10 +44,11 @@
  ^ static struct nfa *newnfa(struct vars *, struct colormap *, struct nfa *);
  */
 static struct nfa *		/* the NFA, or NULL */
-newnfa(v, cm, parent)
-struct vars *v;
-struct colormap *cm;
-struct nfa *parent;		/* NULL if primary NFA */
+newnfa (
+    struct vars *v,
+    struct colormap *cm,
+    struct nfa *parent 		/* NULL if primary NFA */
+)
 {
 	struct nfa *nfa;
 
@@ -118,8 +119,7 @@ struct nfa *nfa;
  ^ static struct state *newstate(struct nfa *);
  */
 static struct state *		/* NULL on error */
-newstate(nfa)
-struct nfa *nfa;
+newstate (struct nfa *nfa)
 {
 	struct state *s;
 
@@ -162,9 +162,7 @@ struct nfa *nfa;
  ^ static struct state *newfstate(struct nfa *, int flag);
  */
 static struct state *		/* NULL on error */
-newfstate(nfa, flag)
-struct nfa *nfa;
-int flag;
+newfstate (struct nfa *nfa, int flag)
 {
 	struct state *s;
 
@@ -248,7 +246,7 @@ struct state *s;
 
 /*
  - newarc - set up a new arc within an NFA
- ^ static VOID newarc(struct nfa *, int, pcolor, struct state *, 
+ ^ static VOID newarc(struct nfa *, int, pcolor, struct state *,
  ^	struct state *);
  */
 static VOID
@@ -280,7 +278,7 @@ struct state *to;
 
 	/*
 	 * Put the new arc on the beginning, not the end, of the chains.
-	 * Not only is this easier, it has the very useful side effect that 
+	 * Not only is this easier, it has the very useful side effect that
 	 * deleting the most-recently-added arc is the cheapest case rather
 	 * than the most expensive one.
 	 */
@@ -303,9 +301,7 @@ struct state *to;
  ^ static struct arc *allocarc(struct nfa *, struct state *);
  */
 static struct arc *		/* NULL for failure */
-allocarc(nfa, s)
-struct nfa *nfa;
-struct state *s;
+allocarc (struct nfa *nfa, struct state *s)
 {
 	struct arc *a;
 	struct arcbatch *new;
@@ -420,7 +416,7 @@ pcolor co;
 
 /*
  - cparc - allocate a new arc within an NFA, copying details from old one
- ^ static VOID cparc(struct nfa *, struct arc *, struct state *, 
+ ^ static VOID cparc(struct nfa *, struct arc *, struct state *,
  ^ 	struct state *);
  */
 static VOID
@@ -604,7 +600,7 @@ struct state *s;
  * Another recursive traversal, this time using tmp to point to duplicates
  * as well as mark already-seen states.  (You knew there was a reason why
  * it's a state pointer, didn't you? :-))
- ^ static VOID dupnfa(struct nfa *, struct state *, struct state *, 
+ ^ static VOID dupnfa(struct nfa *, struct state *, struct state *,
  ^ 	struct state *, struct state *);
  */
 static VOID
@@ -782,9 +778,7 @@ FILE *f;			/* for debug output; NULL none */
  ^ static int pull(struct nfa *, struct arc *);
  */
 static int			/* 0 couldn't, 1 could */
-pull(nfa, con)
-struct nfa *nfa;
-struct arc *con;
+pull (struct nfa *nfa, struct arc *con)
 {
 	struct state *from = con->from;
 	struct state *to = con->to;
@@ -900,9 +894,7 @@ FILE *f;			/* for debug output; NULL none */
  ^ static int push(struct nfa *, struct arc *);
  */
 static int			/* 0 couldn't, 1 could */
-push(nfa, con)
-struct nfa *nfa;
-struct arc *con;
+push (struct nfa *nfa, struct arc *con)
 {
 	struct state *from = con->from;
 	struct state *to = con->to;
@@ -973,9 +965,7 @@ struct arc *con;
  ^ static int combine(struct arc *, struct arc *);
  */
 static int
-combine(con, a)
-struct arc *con;
-struct arc *a;
+combine (struct arc *con, struct arc *a)
 {
 #	define	CA(ct,at)	(((ct)<<CHAR_BIT) | (at))
 
@@ -1062,9 +1052,7 @@ FILE *f;			/* for debug output; NULL none */
  ^ static int unempty(struct nfa *, struct arc *);
  */
 static int			/* 0 couldn't, 1 could */
-unempty(nfa, a)
-struct nfa *nfa;
-struct arc *a;
+unempty (struct nfa *nfa, struct arc *a)
 {
 	struct state *from = a->from;
 	struct state *to = a->to;
@@ -1087,7 +1075,7 @@ struct arc *a;
 		if (from->nins > to->nouts)
 			usefrom = 0;
 	}
-		
+
 	freearc(nfa, a);
 	if (usefrom) {
 		if (from->nouts == 0) {
@@ -1190,8 +1178,7 @@ struct state *mark;		/* the value to mark with */
  ^ static long analyze(struct nfa *);
  */
 static long			/* re_info bits to be ORed in */
-analyze(nfa)
-struct nfa *nfa;
+analyze (struct nfa *nfa)
 {
 	struct arc *a;
 	struct arc *aa;

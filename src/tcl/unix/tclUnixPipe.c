@@ -535,7 +535,7 @@ TclpCreateProcess(interp, argc, argv, inputFile, outputFile, errorFile,
  */
 
 static void
-RestoreSignals()
+RestoreSignals (void)
 {
 #ifdef SIGABRT
     signal(SIGABRT, SIG_DFL);
@@ -1247,3 +1247,5 @@ Tcl_PidObjCmd(dummy, interp, objc, objv)
     }
     return TCL_OK;
 }
+
+/* EOF */

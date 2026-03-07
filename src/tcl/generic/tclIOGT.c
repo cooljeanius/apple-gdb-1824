@@ -718,7 +718,7 @@ TransformInputProc (instanceData, buf, toRead, errorCodePtr)
 	    }
 
 	    *errorCodePtr = Tcl_GetErrno();
-	    return -1;      
+	    return -1;
 	}
 
 	if (read == 0) {
@@ -1158,7 +1158,7 @@ TransformWatchProc (instanceData, mask)
  *
  *	Result:
  *		The appropriate Tcl_File or NULL if not
- *		present. 
+ *		present.
  *
  *------------------------------------------------------*
  */
@@ -1282,8 +1282,9 @@ TransformChannelHandlerTimer (clientData)
  */
 
 static void
-ResultClear (r)
-    ResultBuffer* r; /* Reference to the buffer to clear out */
+ResultClear (
+    ResultBuffer *r  /* Reference to the buffer to clear out */
+)
 {
     r->used = 0;
 
@@ -1313,8 +1314,9 @@ ResultClear (r)
  */
 
 static void
-ResultInit (r)
-    ResultBuffer* r; /* Reference to the structure to initialize */
+ResultInit (
+    ResultBuffer *r  /* Reference to the structure to initialize */
+)
 {
     r->used      = 0;
     r->allocated = 0;
@@ -1338,8 +1340,9 @@ ResultInit (r)
  */
 
 static int
-ResultLength (r)
-    ResultBuffer* r; /* The structure to query */
+ResultLength (
+    ResultBuffer *r  /* The structure to query */
+)
 {
     return r->used;
 }
@@ -1365,10 +1368,11 @@ ResultLength (r)
  */
 
 static int
-ResultCopy (r, buf, toRead)
-    ResultBuffer*  r;      /* The buffer to read from */
-    unsigned char* buf;    /* The buffer to copy into */
-    int		   toRead; /* Number of requested bytes */
+ResultCopy (
+    ResultBuffer *r,      /* The buffer to read from */
+    unsigned char *buf,   /* The buffer to copy into */
+    int toRead            /* Number of requested bytes */
+)
 {
     if (r->used == 0) {
         /* Nothing to copy in the case of an empty buffer.
@@ -1428,10 +1432,11 @@ ResultCopy (r, buf, toRead)
  */
 
 static void
-ResultAdd (r, buf, toWrite)
-    ResultBuffer*  r;       /* The buffer to extend */
-    unsigned char* buf;     /* The buffer to read from */
-    int		   toWrite; /* The number of bytes in 'buf' */
+ResultAdd (
+    ResultBuffer *r,       /* The buffer to extend */
+    unsigned char *buf,    /* The buffer to read from */
+    int toWrite            /* The number of bytes in 'buf' */
+)
 {
     if ((r->used + toWrite) > r->allocated) {
         /* Extension of the internal buffer is required.

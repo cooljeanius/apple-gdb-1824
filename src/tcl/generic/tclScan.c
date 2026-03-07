@@ -80,9 +80,10 @@ static int	ValidateFormat _ANSI_ARGS_((Tcl_Interp *interp, char *format,
  */
 
 static char *
-BuildCharSet(cset, format)
-    CharSet *cset;
-    char *format;		/* Points to first char of set. */
+BuildCharSet (
+    CharSet *cset,
+    char *format 		/* Points to first char of set. */
+)
 {
     Tcl_UniChar ch, start;
     int offset, nranges;
@@ -191,10 +192,11 @@ BuildCharSet(cset, format)
  */
 
 static int
-CharInSet(cset, c)
-    CharSet *cset;
-    int c;			/* Character to test, passed as int because
+CharInSet (
+    CharSet *cset,
+    int c 			/* Character to test, passed as int because
 				 * of non-ANSI prototypes. */
+)
 {
     Tcl_UniChar ch = (Tcl_UniChar) c;
     int i, match = 0;
@@ -233,8 +235,7 @@ CharInSet(cset, c)
  */
 
 static void
-ReleaseCharSet(cset)
-    CharSet *cset;
+ReleaseCharSet (CharSet *cset)
 {
     ckfree((char *)cset->chars);
     if (cset->ranges) {
@@ -582,7 +583,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
     int base = 0;
     int underflow = 0;
     size_t width;
-    long (*fn)() = NULL;
+    long (*fn)(...) = NULL;
 #ifndef TCL_WIDE_INT_IS_LONG
     Tcl_WideInt (*lfn)() = NULL;
     Tcl_WideInt wideValue;
@@ -734,7 +735,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 	    case 'd':
 		op = 'i';
 		base = 10;
-		fn = (long (*)())strtol;
+		fn = (long (*)(...))strtol;
 #ifndef TCL_WIDE_INT_IS_LONG
 		lfn = (Tcl_WideInt (*)())strtoll;
 #endif
@@ -742,7 +743,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 	    case 'i':
 		op = 'i';
 		base = 0;
-		fn = (long (*)())strtol;
+		fn = (long (*)(...))strtol;
 #ifndef TCL_WIDE_INT_IS_LONG
 		lfn = (Tcl_WideInt (*)())strtoll;
 #endif
@@ -750,7 +751,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 	    case 'o':
 		op = 'i';
 		base = 8;
-		fn = (long (*)())strtoul;
+		fn = (long (*)(...))strtoul;
 #ifndef TCL_WIDE_INT_IS_LONG
 		lfn = (Tcl_WideInt (*)())strtoull;
 #endif
@@ -758,7 +759,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 	    case 'x':
 		op = 'i';
 		base = 16;
-		fn = (long (*)())strtoul;
+		fn = (long (*)(...))strtoul;
 #ifndef TCL_WIDE_INT_IS_LONG
 		lfn = (Tcl_WideInt (*)())strtoull;
 #endif
@@ -767,7 +768,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 		op = 'i';
 		base = 10;
 		flags |= SCAN_UNSIGNED;
-		fn = (long (*)())strtoul;
+		fn = (long (*)(...))strtoul;
 #ifndef TCL_WIDE_INT_IS_LONG
 		lfn = (Tcl_WideInt (*)())strtoull;
 #endif

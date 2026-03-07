@@ -649,6 +649,7 @@ ac_subst_vars='LTLIBOBJS
 POW_LIB
 GETGROUPS_LIB
 ALLOCA
+CFLAGS_WARNING
 LIBOBJS
 EGREP
 GREP
@@ -4798,7 +4799,7 @@ else
   echo "config.cache is missing, which means we can skip attempts to hack it"
 fi
 if test "x${CC}" = "x"; then
-  test -z "${CC}"
+  test -z "${CC}" || unset CC
   ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -5553,8 +5554,8 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 else
-  test ! -z "${CC}" && export CC
-
+  test -n "${CC}" && export CC && echo "CC is set to '${CC}'"
+    ## dummy comment
 fi
 for ac_prog in gawk mawk nawk awk
 do
@@ -6497,10 +6498,48 @@ then :
   printf "%s\n" "#define HAVE_UNISTD_H 1" >>confdefs.h
 
 fi
-
+  ## (keep autoscan happy)
 fi
 
 # Checks for typedefs, structures, and compiler characteristics.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for _Generic" >&5
+printf %s "checking for _Generic... " >&6; }
+if test ${ac_cv_c__Generic+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+int
+	 main (int argc, char **argv)
+	 {
+	   int a = _Generic (argc, int: argc = 1);
+	   int *b = &_Generic (argc, default: argc);
+	   char ***c = _Generic (argv, int: argc, default: argv ? &argv : 0);
+	   _Generic (1 ? 0 : b, int: a, default: b) = &argc;
+	   _Generic (a = 1, default: a) = 3;
+	   return a + !b + !c;
+	 }
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  ac_cv_c__Generic=yes
+else case e in #(
+  e) ac_cv_c__Generic=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c__Generic" >&5
+printf "%s\n" "$ac_cv_c__Generic" >&6; }
+if test $ac_cv_c__Generic = yes; then
+
+printf "%s\n" "#define HAVE_C__GENERIC 1" >>confdefs.h
+
+fi
+
  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
 printf %s "checking whether byte ordering is bigendian... " >&6; }
 if test ${ac_cv_c_bigendian+y}
@@ -6795,6 +6834,61 @@ printf "%s\n" "#define __PROTOTYPES 1" >>confdefs.h
 
 fi
 
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for typeof syntax and keyword spelling" >&5
+printf %s "checking for typeof syntax and keyword spelling... " >&6; }
+if test ${ac_cv_c_typeof+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_cv_c_typeof=no
+     for ac_kw in typeof __typeof__ no; do
+       test $ac_kw = no && break
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+	   int value;
+	   typedef struct {
+		   char a [1
+			   + ! (($ac_kw (value))
+				(($ac_kw (value)) 0 < ($ac_kw (value)) -1
+				 ? ($ac_kw (value)) - 1
+				 : ~ (~ ($ac_kw (value)) 0
+				      << sizeof ($ac_kw (value)))))]; }
+	      ac__typeof_type_;
+	   return
+	     (! ((void) ((ac__typeof_type_ *) 0), 0));
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  ac_cv_c_typeof=$ac_kw
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+       test $ac_cv_c_typeof != no && break
+     done ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_typeof" >&5
+printf "%s\n" "$ac_cv_c_typeof" >&6; }
+  if test $ac_cv_c_typeof != no; then
+
+printf "%s\n" "#define HAVE_TYPEOF 1" >>confdefs.h
+
+    if test $ac_cv_c_typeof != typeof; then
+
+printf "%s\n" "#define typeof $ac_cv_c_typeof" >>confdefs.h
+
+    fi
+  fi
+
 ac_fn_c_check_type "$LINENO" "uid_t" "ac_cv_type_uid_t" "$ac_includes_default"
 if test "x$ac_cv_type_uid_t" = xyes
 then :
@@ -6957,6 +7051,110 @@ printf "%s\n" "#define HAVE_STRUCT_STAT_ST_RDEV 1" >>confdefs.h
 
 
 fi
+
+# ...including warning flags:
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+CFLAGS_WARNING=""
+if test "x${GCC}" = "xyes" && test "x${WERROR_CFLAGS}" = "x"; then
+  WERROR_CFLAGS="-Werror"
+fi
+save_CFLAGS="${CFLAGS}"
+for real_option in -Wbad-function-cast; do
+  # Do the check with the no- prefix removed since gcc silently accepts
+  # any -Wno-* option on purpose:
+  case ${real_option} in
+    -Wno-*) option=-W`expr x${real_option} : 'x-Wno-\(.*\)'` ;;
+    *) option="${real_option}" ;;
+  esac
+  as_acx_Woption=`printf "%s\n" "acx_cv_prog_cc_warning_$option" | sed "$as_sed_sh"`
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ${CC} supports ${option}" >&5
+printf %s "checking whether ${CC} supports ${option}... " >&6; }
+if eval test \${$as_acx_Woption+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) CFLAGS="${option} ${WERROR_CFLAGS}"
+     case ${option} in
+      -Wold-style-definition|-Wstrict-prototypes|-Wsuggest-attribute=const)
+                     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  eval "$as_acx_Woption=yes"
+else case e in #(
+  e) eval "$as_acx_Woption=no" ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+       ;;
+      *-arch*)
+                            cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  eval "$as_acx_Woption=yes"
+else case e in #(
+  e) eval "$as_acx_Woption=no" ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+       ;;
+      *)
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  eval "$as_acx_Woption=yes"
+else case e in #(
+  e) eval "$as_acx_Woption=no" ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+       ;;
+     esac
+   ;;
+esac
+fi
+eval ac_res=\$$as_acx_Woption
+	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+printf "%s\n" "$ac_res" >&6; }
+  if test `eval 'as_val=${'$as_acx_Woption'};printf "%s\n" "$as_val"'` = yes
+then :
+  CFLAGS_WARNING="$CFLAGS_WARNING${CFLAGS_WARNING:+ }$real_option"
+fi
+  done
+CFLAGS="${save_CFLAGS}"
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 # Checks for library functions.
 # The Ultrix 4.2 mips builtin alloca declared by alloca.h only works

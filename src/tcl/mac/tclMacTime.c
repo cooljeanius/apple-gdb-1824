@@ -1,4 +1,4 @@
-/* 
+/*
  * tclMacTime.c --
  *
  *	Contains Macintosh specific versions of Tcl functions that
@@ -22,7 +22,7 @@
 /*
  * Static variables used by the Tcl_GetTime function.
  */
- 
+
 static int initalized = false;
 static unsigned long baseSeconds;
 static UnsignedWide microOffset;
@@ -137,11 +137,11 @@ static void SubtractUnsignedWide _ANSI_ARGS_((UnsignedWide *x,
  */
 
 long
-TclpGetGMTOffset()
+TclpGetGMTOffset (void)
 {
     if (gmt_initialized == false) {
 	MachineLocation loc;
-	
+
     Tcl_MutexLock(&gmtMutex);
 	ReadLocation(&loc);
 	gmt_offset = loc.u.gmtDelta & 0x00ffffff;
@@ -176,7 +176,7 @@ TclpGetGMTOffset()
  */
 
 unsigned long
-TclpGetSeconds()
+TclpGetSeconds (void)
 {
     unsigned long seconds;
 
@@ -204,7 +204,7 @@ TclpGetSeconds()
  */
 
 unsigned long
-TclpGetClicks()
+TclpGetClicks (void)
 {
     UnsignedWide micros;
 
@@ -244,7 +244,7 @@ TclpGetTimeZone (
     if (gmt_isdst) {
 	offset += 60;
     }
-    
+
     return offset;
 }
 
@@ -273,7 +273,7 @@ Tcl_GetTime(
 #ifndef NO_LONG_LONG
     long long *microPtr;
 #endif
-	
+
     if (initalized == false) {
 	GetDateTime(&baseSeconds);
 	/*
@@ -297,12 +297,12 @@ Tcl_GetTime(
     /*
      * This lovely computation is equal to: base + (micro / 1000000)
      * For the .hi part the ratio of 0x100000000 / 1000000 has been
-     * reduced to avoid overflow.  This computation certainly has 
+     * reduced to avoid overflow.  This computation certainly has
      * problems as the .hi part gets large.  However, your application
      * would have to run for a long time to make that happen.
      */
 
-    timePtr->sec = baseSeconds + (micro.lo / 1000000) + 
+    timePtr->sec = baseSeconds + (micro.lo / 1000000) +
     	(long) (micro.hi * ((double) 33554432.0 / 15625.0));
     timePtr->usec = micro.lo % 1000000;
 #endif
@@ -314,7 +314,7 @@ Tcl_GetTime(
  * TclpGetDate --
  *
  *	Converts raw seconds to a struct tm data structure.  The
- *	returned time will be for Greenwich Mean Time if the useGMT flag 
+ *	returned time will be for Greenwich Mean Time if the useGMT flag
  *	is set.  Otherwise, the returned time will be for the local
  *	time zone.  This function is meant to be used as a replacement
  *	for localtime and gmtime which is broken on most ANSI libs
@@ -340,12 +340,12 @@ TclpGetDate(
     static struct tm statictime;
     static const short monthday[12] =
         {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
-	    
+
 	if(useGMT)
 		SecondsToDate(*tp - tcl_mac_epoch_offset, &dtr);
 	else
 		SecondsToDate(*tp + TclpGetGMTOffset() - tcl_mac_epoch_offset, &dtr);
-	
+
     statictime.tm_sec = dtr.second;
     statictime.tm_min = dtr.minute;
     statictime.tm_hour = dtr.hour;
@@ -387,7 +387,7 @@ TclpGetTZName(int dst)
 {
     register TABLE *tp;
 	long zonevalue=-TclpGetGMTOffset();
-		
+
     if (gmt_isdst)
         zonevalue += HOUR(1);
 
@@ -432,4 +432,6 @@ SubtractUnsignedWide(
     }
     result->lo = x->lo - y->lo;
 }
-#endif
+#endif /* NO_LONG_LONG */
+
+/* EOF */

@@ -45,8 +45,8 @@ indent_size = 8
 trim_trailing_whitespace = true
 charset = utf-8
 
-# C/C++
-[*.{c,h,cc}]
+# C/C++/Yacc
+[*.{c,h,cc,y}]
 charset = utf-8
 indent_style = tab
 indent_size = 2

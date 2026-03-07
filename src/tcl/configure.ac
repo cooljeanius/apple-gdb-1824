@@ -102,11 +102,12 @@ else
   echo "config.cache is missing, which means we can skip attempts to hack it"
 fi
 if test "x${CC}" = "x"; then
-  test -z "${CC}"
+  test -z "${CC}" || unset CC
   AC_PROG_CC
 else
-  test ! -z "${CC}" && export CC
-  AC_SUBST([CC])
+  test -n "${CC}" && export CC && echo "CC is set to '${CC}'"
+  AC_SUBST([CC])dnl
+  ## dummy comment
 fi
 AC_PROG_AWK
 AC_PROG_INSTALL
@@ -132,13 +133,16 @@ AC_CHECK_HEADERS([dispatch/dispatch.h dispatch/queue.h dispatch/workloop.h \
 
 if test "x${ac_cv_header_unistd_h}" = "x"; then
   test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
-  AC_CHECK_HEADERS([unistd.h])
+  AC_CHECK_HEADERS([unistd.h])dnl
+  ## (keep autoscan happy)
 fi
 
 # Checks for typedefs, structures, and compiler characteristics.
+AC_C__GENERIC
 AC_C_BIGENDIAN
 AC_C_INLINE
 AC_C_PROTOTYPES
+AC_C_TYPEOF
 AC_TYPE_UID_T
 AC_TYPE_MODE_T
 AC_TYPE_OFF_T
@@ -149,6 +153,9 @@ AC_CHECK_TYPES([dispatch_qos_class_t, dispatch_workloop_t])dnl
 AC_CHECK_MEMBERS([struct stat.st_blksize])dnl
 AC_STRUCT_ST_BLOCKS
 AC_CHECK_MEMBERS([struct stat.st_rdev])dnl
+
+# ...including warning flags:
+ACX_PROG_CC_WARNING_OPTS([-Wbad-function-cast],[CFLAGS_WARNING])dnl
 
 # Checks for library functions.
 AC_FUNC_ALLOCA

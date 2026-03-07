@@ -1,4 +1,4 @@
-/* 
+/*
  * tclWinChan.c
  *
  *	Channel drivers for Windows channels based on files, command
@@ -80,7 +80,7 @@ static void		FileCheckProc _ANSI_ARGS_((ClientData clientData,
 			    int flags));
 static int		FileCloseProc _ANSI_ARGS_((ClientData instanceData,
 		            Tcl_Interp *interp));
-static int		FileEventProc _ANSI_ARGS_((Tcl_Event *evPtr, 
+static int		FileEventProc _ANSI_ARGS_((Tcl_Event *evPtr,
 			    int flags));
 static int		FileGetHandleProc _ANSI_ARGS_((ClientData instanceData,
 		            int direction, ClientData *handlePtr));
@@ -98,7 +98,7 @@ static void		FileSetupProc _ANSI_ARGS_((ClientData clientData,
 static void		FileWatchProc _ANSI_ARGS_((ClientData instanceData,
 		            int mask));
 
-			    
+
 /*
  * This structure describes the channel type structure for file based IO.
  */
@@ -138,13 +138,13 @@ static void *EBP;
  *	None.
  *
  * Side effects:
- *	Creates a new window and creates an exit handler. 
+ *	Creates a new window and creates an exit handler.
  *
  *----------------------------------------------------------------------
  */
 
 static ThreadSpecificData *
-FileInit()
+FileInit (void)
 {
     ThreadSpecificData *tsdPtr =
 	(ThreadSpecificData *)TclThreadDataKeyGet(&dataKey);
@@ -210,12 +210,12 @@ FileSetupProc(data, flags)
     if (!(flags & TCL_FILE_EVENTS)) {
 	return;
     }
-    
+
     /*
      * Check to see if there is a ready file.  If so, poll.
      */
 
-    for (infoPtr = tsdPtr->firstFilePtr; infoPtr != NULL; 
+    for (infoPtr = tsdPtr->firstFilePtr; infoPtr != NULL;
 	    infoPtr = infoPtr->nextPtr) {
 	if (infoPtr->watchMask) {
 	    Tcl_SetMaxBlockTime(&blockTime);
@@ -230,7 +230,7 @@ FileSetupProc(data, flags)
  * FileCheckProc --
  *
  *	This procedure is called by Tcl_DoOneEvent to check the file
- *	event source for events. 
+ *	event source for events.
  *
  * Results:
  *	None.
@@ -253,14 +253,14 @@ FileCheckProc(data, flags)
     if (!(flags & TCL_FILE_EVENTS)) {
 	return;
     }
-    
+
     /*
      * Queue events for any ready files that don't already have events
      * queued (caused by persistent states that won't generate WinSock
      * events).
      */
 
-    for (infoPtr = tsdPtr->firstFilePtr; infoPtr != NULL; 
+    for (infoPtr = tsdPtr->firstFilePtr; infoPtr != NULL;
 	    infoPtr = infoPtr->nextPtr) {
 	if (infoPtr->watchMask && !(infoPtr->flags & FILE_PENDING)) {
 	    infoPtr->flags |= FILE_PENDING;
@@ -347,7 +347,7 @@ FileBlockProc(instanceData, mode)
                                  * TCL_MODE_NONBLOCKING. */
 {
     FileInfo *infoPtr = (FileInfo *) instanceData;
-    
+
     /*
      * Files on Windows can not be switched between blocking and nonblocking,
      * hence we have to emulate the behavior. This is done in the input
@@ -401,7 +401,7 @@ FileCloseProc(instanceData, interp)
      * of another.
      */
 
-    if (!TclInExit() 
+    if (!TclInExit()
 	    || ((GetStdHandle(STD_INPUT_HANDLE) != fileInfoPtr->handle)
 		&& (GetStdHandle(STD_OUTPUT_HANDLE) != fileInfoPtr->handle)
 		&& (GetStdHandle(STD_ERROR_HANDLE) != fileInfoPtr->handle))) {
@@ -594,7 +594,7 @@ FileInputProc(instanceData, buf, bufSize, errorCode)
             (LPOVERLAPPED) NULL) != FALSE) {
 	return bytesRead;
     }
-    
+
     TclWinConvertError(GetLastError());
     *errorCode = errno;
     if (errno == EPIPE) {
@@ -630,7 +630,7 @@ FileOutputProc(instanceData, buf, toWrite, errorCode)
 {
     FileInfo *infoPtr = (FileInfo *) instanceData;
     DWORD bytesWritten;
-    
+
     *errorCode = 0;
 
     /*
@@ -700,7 +700,7 @@ FileWatchProc(instanceData, mask)
  *
  * Results:
  *	Returns TCL_OK with the fd in handlePtr, or TCL_ERROR if
- *	there is no handle for the specified direction. 
+ *	there is no handle for the specified direction.
  *
  * Side effects:
  *	None.
@@ -767,7 +767,7 @@ TclpOpenFileChannel(interp, pathPtr, mode, permissions)
     if (nativeName == NULL) {
 	return NULL;
     }
-    
+
     switch (mode & (O_RDONLY | O_WRONLY | O_RDWR)) {
 	case O_RDONLY:
 	    accessMode = GENERIC_READ;
@@ -838,7 +838,7 @@ TclpOpenFileChannel(interp, pathPtr, mode, permissions)
      * Now we get to create the file.
      */
 
-    handle = (*tclWinProcs->createFileProc)(nativeName, accessMode, 
+    handle = (*tclWinProcs->createFileProc)(nativeName, accessMode,
 	    shareMode, NULL, createMode, flags, (HANDLE) NULL);
 
     if (handle == INVALID_HANDLE_VALUE) {
@@ -849,13 +849,13 @@ TclpOpenFileChannel(interp, pathPtr, mode, permissions)
 	}
         TclWinConvertError(err);
 	if (interp != (Tcl_Interp *) NULL) {
-            Tcl_AppendResult(interp, "couldn't open \"", 
+            Tcl_AppendResult(interp, "couldn't open \"",
 			     Tcl_GetString(pathPtr), "\": ",
 			     Tcl_PosixError(interp), (char *) NULL);
         }
         return NULL;
     }
-    
+
     type = GetFileType(handle);
 
     /*
@@ -872,7 +872,7 @@ TclpOpenFileChannel(interp, pathPtr, mode, permissions)
 	    if (GetCommState(handle, &dcb)) {
 		type = FILE_TYPE_SERIAL;
 	    }
-		    
+
 	}
     }
 
@@ -921,11 +921,11 @@ TclpOpenFileChannel(interp, pathPtr, mode, permissions)
     default:
 	/*
 	 * The handle is of an unknown type, probably /dev/nul equivalent
-	 * or possibly a closed handle.  
+	 * or possibly a closed handle.
 	 */
-	
+
 	channel = NULL;
-	Tcl_AppendResult(interp, "couldn't open \"", 
+	Tcl_AppendResult(interp, "couldn't open \"",
 			 Tcl_GetString(pathPtr), "\": ",
 			 "bad file type", (char *) NULL);
 	break;
@@ -1018,7 +1018,7 @@ Tcl_MakeFileChannel(rawHandle, mode)
     case FILE_TYPE_CHAR:
 	channel = TclWinOpenFileChannel(handle, channelName, mode, 0);
 	break;
-	
+
     case FILE_TYPE_UNKNOWN:
     default:
 	/*
@@ -1035,7 +1035,7 @@ Tcl_MakeFileChannel(rawHandle, mode)
 		DUPLICATE_SAME_ACCESS);
 
 	if (result != 0) {
-	    /* 
+	    /*
 	     * Unable to make a duplicate. It's definately invalid at this
 	     * point.
 	     */
@@ -1106,7 +1106,7 @@ Tcl_MakeFileChannel(rawHandle, mode)
 }
 #ifdef HAVE_NO_SEH
 static
-__attribute__ ((cdecl))
+__attribute__((cdecl))
 EXCEPTION_DISPOSITION
 _except_makefilechannel_handler(
     struct _EXCEPTION_RECORD *ExceptionRecord,
@@ -1211,7 +1211,7 @@ TclpGetDefaultStdChannel(type)
  * TclWinOpenFileChannel --
  *
  *	Constructs a File channel for the specified standard OS handle.
- *      This is a helper function to break up the construction of 
+ *      This is a helper function to break up the construction of
  *      channels into File, Console, or Serial.
  *
  * Results:
@@ -1239,8 +1239,8 @@ TclWinOpenFileChannel(handle, channelName, permissions, appendMode)
     /*
      * See if a channel with this handle already exists.
      */
-    
-    for (infoPtr = tsdPtr->firstFilePtr; infoPtr != NULL; 
+
+    for (infoPtr = tsdPtr->firstFilePtr; infoPtr != NULL;
 	 infoPtr = infoPtr->nextPtr) {
 	if (infoPtr->handle == (HANDLE) handle) {
 	    return (permissions == infoPtr->validMask) ? infoPtr->channel : NULL;
@@ -1256,15 +1256,15 @@ TclWinOpenFileChannel(handle, channelName, permissions, appendMode)
     infoPtr->handle = handle;
     infoPtr->dirty = 0;
     wsprintfA(channelName, "file%lx", (int) infoPtr);
-    
+
     infoPtr->channel = Tcl_CreateChannel(&fileChannelType, channelName,
 	    (ClientData) infoPtr, permissions);
-    
+
     /*
      * Files have default translation of AUTO and ^Z eof char, which
      * means that a ^Z will be accepted as EOF when reading.
      */
-    
+
     Tcl_SetChannelOption(NULL, infoPtr->channel, "-translation", "auto");
     Tcl_SetChannelOption(NULL, infoPtr->channel, "-eofchar", "\032 {}");
 
@@ -1285,7 +1285,7 @@ TclWinOpenFileChannel(handle, channelName, permissions, appendMode)
  *
  * Side effects:
  *	Information is actually written to disk now, rather than
- *	later.  Don't call this too often, or there will be a 
+ *	later.  Don't call this too often, or there will be a
  *	performance hit (i.e. only call when we need to ask for
  *	the size of a file).
  *
@@ -1293,7 +1293,7 @@ TclWinOpenFileChannel(handle, channelName, permissions, appendMode)
  */
 
 void
-TclWinFlushDirtyChannels ()
+TclWinFlushDirtyChannels (void)
 {
     FileInfo *infoPtr;
     ThreadSpecificData *tsdPtr;
@@ -1304,9 +1304,9 @@ TclWinFlushDirtyChannels ()
      * Flush all channels which are dirty, i.e. may have data pending
      * in the OS
      */
-    
+
     for (infoPtr = tsdPtr->firstFilePtr;
-	 infoPtr != NULL; 
+	 infoPtr != NULL;
 	 infoPtr = infoPtr->nextPtr) {
 	if (infoPtr->dirty) {
 	    FlushFileBuffers(infoPtr->handle);

@@ -179,7 +179,7 @@ static int Tcl_MacOSXGetLibraryPath(Tcl_Interp *interp, int maxPathLen, char *tc
  */
 
 void
-TclpInitPlatform()
+TclpInitPlatform (void)
 {
     tclPlatform = TCL_PLATFORM_UNIX;
 
@@ -466,7 +466,7 @@ CONST char *path;		/* Path to the executable in native
  */
 
 void
-TclpSetInitialEncodings()
+TclpSetInitialEncodings (void)
 {
     if (libraryPathEncodingFixed == 0) {
 	CONST char *encoding = NULL;
@@ -1022,7 +1022,7 @@ Tcl_SourceRCFile(interp)
  */
 
 int
-TclpCheckStackSpace()
+TclpCheckStackSpace (void)
 {
     /*
      * This function is unimplemented on Unix platforms.
@@ -1060,3 +1060,4 @@ static int Tcl_MacOSXGetLibraryPath(Tcl_Interp *interp, int maxPathLen, char *tc
 }
 #endif /* HAVE_CFBUNDLE */
 
+/* EOF */

@@ -1,4 +1,4 @@
-/* 
+/*
  * tclAppInit.c --
  *
  *	Provides a default version of the main program and Tcl_AppInit
@@ -53,9 +53,10 @@ extern int		Tclxttest_Init _ANSI_ARGS_((Tcl_Interp *interp));
  */
 
 int
-main(argc, argv)
-    int argc;			/* Number of command-line arguments. */
-    char **argv;		/* Values of command-line arguments. */
+main (
+    int argc,			/* Number of command-line arguments. */
+    char **argv 		/* Values of command-line arguments. */
+)
 {
     /*
      * The following #if block allows you to change the AppInit
@@ -65,7 +66,7 @@ main(argc, argv)
      */
 
 #ifndef TCL_LOCAL_APPINIT
-#define TCL_LOCAL_APPINIT Tcl_AppInit    
+#define TCL_LOCAL_APPINIT Tcl_AppInit
 #endif
     extern int TCL_LOCAL_APPINIT _ANSI_ARGS_((Tcl_Interp *interp));
 

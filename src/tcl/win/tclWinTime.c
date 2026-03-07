@@ -1,4 +1,4 @@
-/* 
+/*
  * tclWinTime.c --
  *
  *	Contains Windows specific versions of Tcl functions that
@@ -73,7 +73,7 @@ typedef struct TimeInfo {
     /*
      * The following values are used for calculating virtual time.
      * Virtual time is always equal to:
-     *    lastFileTime + (current perf counter - lastCounter) 
+     *    lastFileTime + (current perf counter - lastCounter)
      *				* 10000000 / curCounterFreq
      * and lastFileTime and lastCounter are updated any time that
      * virtual time is returned to a caller.
@@ -83,7 +83,7 @@ typedef struct TimeInfo {
     LARGE_INTEGER lastCounter;
     LARGE_INTEGER curCounterFreq;
 
-    /* 
+    /*
      * The next two values are used only in the calibration thread, to track
      * the frequency of the performance counter.
      */
@@ -99,22 +99,22 @@ typedef struct TimeInfo {
 } TimeInfo;
 
 static TimeInfo timeInfo = {
-    { NULL }, 
-    0, 
-    0, 
-    (HANDLE) NULL, 
-    (HANDLE) NULL, 
-    (HANDLE) NULL, 
-    0, 
-    0, 
-    0, 
-    0, 
+    { NULL },
+    0,
+    0,
+    (HANDLE) NULL,
+    (HANDLE) NULL,
+    (HANDLE) NULL,
+    0,
+    0,
+    0,
+    0,
     0,
     0
 };
 
 CONST static FILETIME posixEpoch = { 0xD53E8000, 0x019DB1DE };
-    
+
 /*
  * Declarations for functions defined later in this file.
  */
@@ -142,7 +142,7 @@ static void 		UpdateTimeEachSecond _ANSI_ARGS_(( void ));
  */
 
 unsigned long
-TclpGetSeconds()
+TclpGetSeconds (void)
 {
     Tcl_Time t;
     Tcl_GetTime( &t );
@@ -170,7 +170,7 @@ TclpGetSeconds()
  */
 
 unsigned long
-TclpGetClicks()
+TclpGetClicks (void)
 {
     /*
      * Use the Tcl_GetTime abstraction to get the time in microseconds,
@@ -205,8 +205,7 @@ TclpGetClicks()
  */
 
 int
-TclpGetTimeZone (currentTime)
-    unsigned long  currentTime;
+TclpGetTimeZone (unsigned long currentTime)
 {
     int timeZone;
 
@@ -243,7 +242,7 @@ void
 Tcl_GetTime(timePtr)
     Tcl_Time *timePtr;		/* Location to store time information. */
 {
-	
+
     struct timeb t;
 
     /* Initialize static storage on the first trip through. */
@@ -253,7 +252,7 @@ Tcl_GetTime(timePtr)
      * since it avoids an extra mutex lock in the common case.
      */
 
-    if ( !timeInfo.initialized ) { 
+    if ( !timeInfo.initialized ) {
 	TclpInitLock();
 	if ( !timeInfo.initialized ) {
 	    timeInfo.perfCounterAvailable
@@ -328,7 +327,7 @@ Tcl_GetTime(timePtr)
     }
 
     if ( timeInfo.perfCounterAvailable ) {
-	
+
 	/*
 	 * Query the performance counter and use it to calculate the
 	 * current time.
@@ -362,14 +361,14 @@ Tcl_GetTime(timePtr)
 	usecSincePosixEpoch = ( curFileTime - posixEpoch.QuadPart ) / 10;
 	timePtr->sec = (time_t) ( usecSincePosixEpoch / 1000000 );
 	timePtr->usec = (unsigned long ) ( usecSincePosixEpoch % 1000000 );
-	
+
 	LeaveCriticalSection( &timeInfo.cs );
 
-	
+
     } else {
-	
+
 	/* High resolution timer is not available.  Just use ftime */
-	
+
 	ftime(&t);
 	timePtr->sec = t.time;
 	timePtr->usec = t.millitm * 1000;
@@ -434,8 +433,8 @@ TclpGetTZName(int dst)
      * tzset() under Borland doesn't seem to set up tzname[] at all.
      * tzset() under MSVC has the following weird observed behavior:
      *	 First time we call "clock format [clock seconds] -format %Z -gmt 1"
-     *	 we get "GMT", but on all subsequent calls we get the current time 
-     *	 zone string, even though env(TZ) is GMT and the variable _timezone 
+     *	 we get "GMT", but on all subsequent calls we get the current time
+     *	 zone string, even though env(TZ) is GMT and the variable _timezone
      *   is 0.
      */
 
@@ -446,8 +445,8 @@ TclpGetTZName(int dst)
 	/*
 	 * TZ is of form "NST-4:30NDT", where "NST" would be the
 	 * name of the standard time zone for this area, "-4:30" is
-	 * the offset from GMT in hours, and "NDT is the name of 
-	 * the daylight savings time zone in this area.  The offset 
+	 * the offset from GMT in hours, and "NDT is the name of
+	 * the daylight savings time zone in this area.  The offset
 	 * and DST strings are optional.
 	 */
 
@@ -482,11 +481,11 @@ TclpGetTZName(int dst)
 	    dst = 0;
 	}
 	encoding = Tcl_GetEncoding(NULL, "unicode");
-	Tcl_ExternalToUtf(NULL, encoding, 
-		(char *) ((dst) ? tz.DaylightName : tz.StandardName), -1, 
+	Tcl_ExternalToUtf(NULL, encoding,
+		(char *) ((dst) ? tz.DaylightName : tz.StandardName), -1,
 		0, NULL, name, sizeof(tsdPtr->tzName), NULL, NULL, NULL);
 	Tcl_FreeEncoding(encoding);
-    } 
+    }
     return name;
 }
 
@@ -531,7 +530,7 @@ TclpGetDate(t, useGMT)
 	}
 
 	time = *tp - _timezone;
-	
+
 	/*
 	 * If we aren't near to overflowing the long, just add the bias and
 	 * use the normal calculation.  Otherwise we will need to adjust
@@ -557,7 +556,7 @@ TclpGetDate(t, useGMT)
 		tmPtr->tm_sec += 60;
 		time -= 60;
 	    }
-    
+
 	    time = tmPtr->tm_min + time/60;
 	    tmPtr->tm_min = (int)(time % 60);
 	    if (tmPtr->tm_min < 0) {
@@ -601,8 +600,7 @@ TclpGetDate(t, useGMT)
  */
 
 static struct tm *
-ComputeGMT(tp)
-    const time_t *tp;
+ComputeGMT (const time_t *tp)
 {
     struct tm *tmPtr;
     long tmp, rem;
@@ -659,7 +657,7 @@ ComputeGMT(tp)
 
     tmPtr->tm_yday = rem / SECSPERDAY;
     rem %= SECSPERDAY;
-    
+
     /*
      * Compute the time of day.
      */
@@ -786,7 +784,7 @@ CalibrationThread( LPVOID arg )
  */
 
 static void
-UpdateTimeEachSecond()
+UpdateTimeEachSecond (void)
 {
 
     LARGE_INTEGER curPerfCounter;
@@ -896,14 +894,14 @@ UpdateTimeEachSecond()
 	 * up with system time one second from now, assuming that the
 	 * performance counter continues to tick at timeInfo.estPerfCounterFreq.
 	 */
-	
+
 	timeInfo.curCounterFreq.QuadPart
 	    = 10000000 * timeInfo.estPerfCounterFreq / ( delta + 10000000 );
 
 	/*
 	 * Limit frequency excursions to 1000 ppm from estimate
 	 */
-	
+
 	if ( timeInfo.curCounterFreq.QuadPart < lowBound ) {
 	    timeInfo.curCounterFreq.QuadPart = lowBound;
 	} else if ( timeInfo.curCounterFreq.QuadPart > hiBound ) {
@@ -912,5 +910,6 @@ UpdateTimeEachSecond()
     }
 
     LeaveCriticalSection( &timeInfo.cs );
-
 }
+
+/* EOF */

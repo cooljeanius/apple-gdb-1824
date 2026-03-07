@@ -1,4 +1,4 @@
-/* 
+/*
  * waitpid.c --
  *
  *	This procedure emulates the POSIX waitpid kernel call on
@@ -69,13 +69,14 @@ static WaitInfo *deadList = NULL;	/* First in list of all dead
 #endif
 
 pid_t
-waitpid(pid, statusPtr, options)
-    pid_t pid;			/* The pid to wait on.  Must be -1 or
+waitpid (
+    pid_t pid,			/* The pid to wait on.  Must be -1 or
 				 * greater than zero. */
-    int *statusPtr;		/* Where to store wait status for the
+    int *statusPtr,		/* Where to store wait status for the
 				 * process. */
-    int options;		/* OR'ed combination of WNOHANG and
+    int options 		/* OR'ed combination of WNOHANG and
 				 * WUNTRACED. */
+)
 {
     register WaitInfo *waitPtr, *prevPtr;
     pid_t result;

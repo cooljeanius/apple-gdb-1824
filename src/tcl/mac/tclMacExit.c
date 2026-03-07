@@ -1,11 +1,11 @@
-/* 
+/*
  * tclMacExit.c --
  *
  *	This file contains routines that deal with cleaning up various state
  *	when Tcl/Tk applications quit.  Unfortunantly, not all state is cleaned
  *	up by the process when an application quites or crashes.  Also you
  *	need to do different things depending on wether you are running as
- *	68k code, PowerPC, or a code resource.  The Exit handler code was 
+ *	68k code, PowerPC, or a code resource.  The Exit handler code was
  *	adapted from code posted on alt.sources.mac by Dave Nebinger.
  *
  * Copyright (c) 1995 Dave Nebinger.
@@ -26,7 +26,7 @@
 /*
  * Various typedefs and defines needed to patch ExitToShell.
  */
- 
+
 enum {
         uppExitToShellProcInfo = kPascalStackBased
 };
@@ -92,7 +92,7 @@ static ExitToShellDataPtr gExitToShellData = (ExitToShellDataPtr) NULL;
  *
  *	This procedure implements the Macintosh specific exit routine.
  *	We explicitly callthe ExitHandler function to do various clean
- *	up.  
+ *	up.
  *
  * Results:
  *	None.
@@ -109,17 +109,17 @@ TclpExit(
 {
     TclMacExitHandler();
 
-/* 
+/*
  * If we are using the Metrowerks Standard Library, then we will call its exit so that it
- * will get a chance to clean up temp files, and so forth.  It always calls the standard 
+ * will get a chance to clean up temp files, and so forth.  It always calls the standard
  * ExitToShell, so the Tcl handlers will also get called.
- *   
+ *
  * If you have another exit, make sure that it does not patch ExitToShell, and does
  * call it.  If so, it will probably work as well.
  *
  */
- 
-#ifdef __MSL__    
+
+#ifdef __MSL__
     exit(status);
 #else
     ExitToShell();
@@ -147,7 +147,7 @@ TclpExit(
  */
 
 void
-TclMacExitHandler()
+TclMacExitHandler (void)
 {
     ExitToShellUPPListPtr curProc;
 
@@ -157,7 +157,7 @@ TclMacExitHandler()
      * a clean state in case we are recursivly called.
      */
     if ((gExitToShellData) != NULL && (gExitToShellData->userProcs != NULL)){
-    
+
 	/*
 	 * Call the installed exit to shell routines.
 	 */
@@ -185,7 +185,7 @@ TclMacExitHandler()
  *	this is implemented depends on the architecture in which we are
  *	running.  For 68k applications we patch the ExitToShell call.
  *	For PowerPC applications we just create a list of procs to call.
- *	The function ExitHandler should be installed in the Code 
+ *	The function ExitHandler should be installed in the Code
  *	Fragments terminiation routine.
  *
  * Results:
@@ -197,7 +197,7 @@ TclMacExitHandler()
  *----------------------------------------------------------------------
  */
 
-OSErr 
+OSErr
 TclMacInstallExitToShellPatch(
     ExitToShellProcPtr newProc)		/* Function pointer. */
 {
@@ -275,7 +275,7 @@ ExitToShellPatchRoutine()
  *
  *	This procedure initializes the ExitToShell clean up machanism.
  *	Generally, this is handled automatically when users make a call
- *	to InstallExitToShellPatch.  However, it can be called 
+ *	to InstallExitToShellPatch.  However, it can be called
  *	explicitly at startup time to turn off the patching mechanism.
  *	This can be used by code resources which could be removed from
  *	the application before ExitToShell is called.
@@ -293,7 +293,7 @@ ExitToShellPatchRoutine()
  *----------------------------------------------------------------------
  */
 
-void 
+void
 TclMacInitExitToShell(
     int usePatch)	/* True if on 68k. */
 {
@@ -306,11 +306,11 @@ TclMacInitExitToShell(
 #else
 	ExitToShellUPP oldExitToShell, newExitToShellPatch;
 	short exitToShellTrap;
-	
+
 	/*
 	 * Initialize patch mechanism.
 	 */
-	 
+
 	gExitToShellData = (ExitToShellDataPtr) NewPtr(sizeof(ExitToShellDataRec));
 	gExitToShellData->a5 = SetCurrentA5();
 	gExitToShellData->userProcs = (ExitToShellUPPList*) NULL;
@@ -331,3 +331,5 @@ TclMacInitExitToShell(
 #endif
     }
 }
+
+/* EOF */

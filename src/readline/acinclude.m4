@@ -403,8 +403,8 @@ AC_CACHE_VAL([bash_cv_void_sighandler],
 extern "C"
 #endif
 void (*signal ()) ();]],[[int i;]])],[bash_cv_void_sighandler=yes],[bash_cv_void_sighandler=no])])dnl
-AC_MSG_RESULT([$bash_cv_void_sighandler])
-if test $bash_cv_void_sighandler = yes; then
+AC_MSG_RESULT([${bash_cv_void_sighandler}])
+if test "x${bash_cv_void_sighandler}" = "xyes"; then
 AC_DEFINE([VOID_SIGHANDLER],[1],[Define to 1 if signal handlers are of type void])
 fi
 ])
@@ -851,6 +851,7 @@ AC_REQUIRE([BASH_SYS_SIGNAL_VINTAGE])
 AC_MSG_CHECKING([for presence of POSIX-style sigsetjmp/siglongjmp])
 AC_CACHE_VAL([bash_cv_func_sigsetjmp],
 [AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include <stdlib.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif /* HAVE_UNINSTD_H */
@@ -906,6 +907,8 @@ AC_MSG_CHECKING([whether or not strcoll and strcmp differ])
 AC_CACHE_VAL([bash_cv_func_strcoll_broken],
 [AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #if defined (HAVE_LOCALE_H)
 # include <locale.h>
 #endif /* HAVE_LOCALE_H */
@@ -1338,11 +1341,16 @@ AC_MSG_CHECKING([if signal handlers must be reinstalled when invoked])
 AC_CACHE_VAL([bash_cv_must_reinstall_sighandlers],
 [AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <signal.h>
+#include <stdlib.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif /* HAVE_UNISTD_H */
 
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+typedef RETSIGTYPE sigfunc(int);
+#else
 typedef RETSIGTYPE sigfunc();
+#endif /* C99 */
 
 int nsigint;
 

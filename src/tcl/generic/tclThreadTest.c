@@ -1,4 +1,4 @@
-/* 
+/*
  * tclThreadTest.c --
  *
  *	This file implements the testthread command.  Eventually this
@@ -21,9 +21,9 @@
  * Each thread has an single instance of the following structure.  There
  * is one instance of this structure per thread even if that thread contains
  * multiple interpreters.  The interpreter identified by this structure is
- * the main interpreter for the thread.  
+ * the main interpreter for the thread.
  *
- * The main interpreter is the one that will process any messages 
+ * The main interpreter is the one that will process any messages
  * received by a thread.  Any thread can send messages but only the
  * main interpreter can receive them.
  */
@@ -58,7 +58,7 @@ static struct ThreadSpecificData *threadList;
 
 typedef struct ThreadCtrl {
     char *script;    /* The TCL command this thread should execute */
-    int flags;        /* Initial value of the "flags" field in the 
+    int flags;        /* Initial value of the "flags" field in the
                        * ThreadSpecificData structure for the new thread.
                        * Might contain TP_Detached or TP_TclThread. */
     Tcl_Condition condWait;
@@ -104,9 +104,9 @@ static ThreadEventResult *resultList;
 static Tcl_ThreadId errorThreadId;
 static char *errorProcString;
 
-/* 
+/*
  * Access to the list of threads and to the thread send results is
- * guarded by this mutex. 
+ * guarded by this mutex.
  */
 
 TCL_DECLARE_MUTEX(threadMutex)
@@ -157,8 +157,8 @@ int
 TclThread_Init(interp)
     Tcl_Interp *interp; /* The current Tcl interpreter */
 {
-    
-    Tcl_CreateObjCommand(interp,"testthread", Tcl_ThreadObjCmd, 
+
+    Tcl_CreateObjCommand(interp,"testthread", Tcl_ThreadObjCmd,
 	    (ClientData)NULL ,NULL);
     if (Tcl_PkgProvide(interp, "Thread", "1.0" ) != TCL_OK) {
 	return TCL_ERROR;
@@ -218,7 +218,7 @@ Tcl_ThreadObjCmd(dummy, interp, objc, objv)
 	return TCL_ERROR;
     }
 
-    /* 
+    /*
      * Make sure the initial thread is on the list before doing anything.
      */
 
@@ -447,8 +447,8 @@ TclCreateThread(interp, script, joinable)
  *    a pointer to a structure that contains the text of the TCL script
  *    to be executed.
  *
- *    Space to hold the script field of the ThreadControl structure passed 
- *    in as the only argument was obtained from malloc() and must be freed 
+ *    Space to hold the script field of the ThreadControl structure passed
+ *    in as the only argument was obtained from malloc() and must be freed
  *    by this function before it exits.  Space to hold the ThreadControl
  *    structure itself is released by the calling function, and the
  *    two condition variables in the ThreadControl structure are destroyed
@@ -587,8 +587,7 @@ ThreadErrorProc(interp)
  *------------------------------------------------------------------------
  */
 static void
-ListUpdateInner(tsdPtr)
-    ThreadSpecificData *tsdPtr;
+ListUpdateInner (ThreadSpecificData *tsdPtr)
 {
     if (tsdPtr == NULL) {
 	tsdPtr = TCL_TSD_INIT(&dataKey);
@@ -619,8 +618,7 @@ ListUpdateInner(tsdPtr)
  *------------------------------------------------------------------------
  */
 static void
-ListRemove(tsdPtr)
-    ThreadSpecificData *tsdPtr;
+ListRemove (ThreadSpecificData *tsdPtr)
 {
     if (tsdPtr == NULL) {
 	tsdPtr = TCL_TSD_INIT(&dataKey);
@@ -701,7 +699,7 @@ TclThreadSend(interp, id, script, wait)
     int found, code;
     Tcl_ThreadId threadId = (Tcl_ThreadId) id;
 
-    /* 
+    /*
      * Verify the thread exists.
      */
 
@@ -729,7 +727,7 @@ TclThreadSend(interp, id, script, wait)
 	return Tcl_GlobalEval(interp, script);
     }
 
-    /* 
+    /*
      * Create the event for its event queue.
      */
 
@@ -752,7 +750,7 @@ TclThreadSend(interp, id, script, wait)
 	resultPtr->errorInfo = NULL;
 	resultPtr->errorCode = NULL;
 
-	/* 
+	/*
 	 * Maintain the cleanup list.
 	 */
 
@@ -772,7 +770,7 @@ TclThreadSend(interp, id, script, wait)
      */
 
     threadEventPtr->event.proc = ThreadEventProc;
-    Tcl_ThreadQueueEvent(threadId, (Tcl_Event *)threadEventPtr, 
+    Tcl_ThreadQueueEvent(threadId, (Tcl_Event *)threadEventPtr,
 	    TCL_QUEUE_TAIL);
     Tcl_ThreadAlert(threadId);
 
@@ -781,7 +779,7 @@ TclThreadSend(interp, id, script, wait)
 	return TCL_OK;
     }
 
-    /* 
+    /*
      * Block on the results and then get them.
      */
 
@@ -963,7 +961,7 @@ ThreadDeleteEvent(eventPtr, clientData)
  *
  * ThreadExitProc --
  *
- *    This is called when the thread exits.  
+ *    This is called when the thread exits.
  *
  * Results:
  *    None.
@@ -1027,3 +1025,5 @@ ThreadExitProc(clientData)
 }
 
 #endif /* TCL_THREADS */
+
+/* EOF */

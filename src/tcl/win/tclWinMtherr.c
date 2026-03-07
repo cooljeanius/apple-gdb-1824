@@ -1,4 +1,4 @@
-/* 
+/*
  * tclWinMtherr.c --
  *
  *	This function provides a default implementation of the
@@ -37,8 +37,9 @@
  */
 
 int
-_matherr(xPtr)
-    struct exception *xPtr;	/* Describes error that occurred. */
+_matherr (
+    struct exception *xPtr	/* Describes error that occurred. */
+)
 {
     if ((xPtr->type == DOMAIN)
 #ifdef __BORLANDC__
@@ -51,3 +52,5 @@ _matherr(xPtr)
     }
     return 1;
 }
+
+/* EOF */

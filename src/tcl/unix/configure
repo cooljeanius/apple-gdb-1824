@@ -11334,7 +11334,7 @@ else case e in #(
 # include <time.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "This conftest expects <time.h> to be included."
+#  warning "This conftest for tm_tzadj expects <time.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* TIME_WITH_SYS_TIME || HAVE_TIME_H */
 
@@ -11800,7 +11800,11 @@ else case e in #(
 	    #  warning "this conftest for strtod expects <stdlib.h> to be included."
 	    # endif /* !NO_STDLIB_H && __GNUC__ && !__STRICT_ANSI__ */
 	    #endif /* HAVE_STDLIB_H || STDC_HEADERS || __STDC__ */
+	    #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+		extern double strtod(const char *restrict nptr, char **restrict endptr);
+	    #else
 		extern double strtod();
+	    #endif /* C99 */
 		int main(void) {
 		    char *infString="Inf", *nanString="NaN", *spaceString=" ";
 		    char *term;
@@ -11839,9 +11843,11 @@ fi
 	    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ok" >&5
 printf "%s\n" "ok" >&6; }
 	else
-	    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: buggy; redefining as fixstrtod" >&5
-printf "%s\n" "buggy; redefining as fixstrtod" >&6; }
-	    LIBOBJS="$LIBOBJS fixstrtod.o"
+	    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: buggy!" >&5
+printf "%s\n" "buggy!" >&6; }
+	    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: redefining strtod as fixstrtod" >&5
+printf "%s\n" "$as_me: WARNING: redefining strtod as fixstrtod" >&2;}
+	    LIBOBJS="${LIBOBJS} fixstrtod.o"
 
 printf "%s\n" "#define strtod fixstrtod" >>confdefs.h
 
@@ -12943,6 +12949,9 @@ else case e in #(
 /* end confdefs.h.  */
 
 	#include <stdlib.h>
+	#if defined(STDC_HEADERS) || defined(HAVE_STRING_H) || defined(__STDC__)
+	# include <string.h>
+	#endif /* STDC_HEADERS || HAVE_STRING_H || __STDC__ */
 	#define OURVAR "havecopy=yes"
 	int main (int argc, char *argv[])
 	{
@@ -14456,7 +14465,7 @@ done
 	    # is kind of overkill but it works.
 	    # Disable inlining only when one of the
 	    # files in compat/*.c is being linked in.
-	    if test x"${LIBOBJS}" != x ; then
+	    if test x"${LIBOBJS}" != x""; then
 	        EXTRA_CFLAGS="${EXTRA_CFLAGS} -fno-inline"
 	    fi
 

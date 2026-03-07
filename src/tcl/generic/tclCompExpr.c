@@ -1,4 +1,4 @@
-/* 
+/*
  * tclCompExpr.c --
  *
  *	This file contains the code to compile Tcl expressions.
@@ -22,14 +22,14 @@
  */
 
 #ifndef TCL_GENERIC_ONLY
-#include "tclPort.h"
+# include "tclPort.h"
 #else
-#define NO_ERRNO_H
+# define NO_ERRNO_H
 #endif
 
 #ifdef NO_ERRNO_H
 extern int errno;			/* Use errno from tclExecute.c. */
-#define ERANGE 34
+# define ERANGE 34
 #endif
 
 /*
@@ -64,7 +64,7 @@ typedef struct ExprInfo {
 /*
  * Definitions of numeric codes representing each expression operator.
  * The order of these must match the entries in the operatorTable below.
- * Also the codes for the relational operators (OP_LESS, OP_GREATER, 
+ * Also the codes for the relational operators (OP_LESS, OP_GREATER,
  * OP_LE, OP_GE, OP_EQ, and OP_NE) must be consecutive and in that order.
  * Note that OP_PLUS and OP_MINUS represent both unary and binary operators.
  */
@@ -114,7 +114,7 @@ static OperatorDesc operatorTable[] = {
     {"*",   2,  INST_MULT},
     {"/",   2,  INST_DIV},
     {"%",   2,  INST_MOD},
-    {"+",   0}, 
+    {"+",   0},
     {"-",   0},
     {"<<",  2,  INST_LSHIFT},
     {">>",  2,  INST_RSHIFT},
@@ -246,7 +246,7 @@ TclCompileExpr(interp, script, numBytes, envPtr)
     info.interp = interp;
     info.parsePtr = &parse;
     info.expr = script;
-    info.lastChar = (script + numBytes); 
+    info.lastChar = (script + numBytes);
     info.hasOperators = 0;
 
     /*
@@ -263,7 +263,7 @@ TclCompileExpr(interp, script, numBytes, envPtr)
 	Tcl_FreeParse(&parse);
 	goto done;
     }
-    
+
     if (!info.hasOperators) {
 	/*
 	 * Attempt to convert the primary's object to an int or double.
@@ -271,7 +271,7 @@ TclCompileExpr(interp, script, numBytes, envPtr)
 	 * operands if at all possible as first integers, else
 	 * floating-point numbers.
 	 */
-	
+
 	TclEmitOpcode(INST_TRY_CVT_TO_NUMERIC, envPtr);
     }
     Tcl_FreeParse(&parse);
@@ -301,7 +301,7 @@ TclCompileExpr(interp, script, numBytes, envPtr)
  */
 
 void
-TclFinalizeCompilation()
+TclFinalizeCompilation (void)
 {
     Tcl_MutexLock(&opMutex);
     if (opTableInitialized) {
@@ -359,7 +359,7 @@ CompileSubExpr(exprTokenPtr, infoPtr, envPtr)
      * After processing it, advance tokenPtr to point just after the
      * subexpression's last token.
      */
-    
+
     tokenPtr = exprTokenPtr+1;
     TRACE(exprTokenPtr->start, exprTokenPtr->size,
 	    tokenPtr->start, tokenPtr->size);
@@ -372,7 +372,7 @@ CompileSubExpr(exprTokenPtr, infoPtr, envPtr)
 	    }
 	    tokenPtr += (tokenPtr->numComponents + 1);
 	    break;
-	    
+
         case TCL_TOKEN_TEXT:
 	    if (tokenPtr->size > 0) {
 		objIndex = TclRegisterNewLiteral(envPtr, tokenPtr->start,
@@ -383,7 +383,7 @@ CompileSubExpr(exprTokenPtr, infoPtr, envPtr)
 	    TclEmitPush(objIndex, envPtr);
 	    tokenPtr += 1;
 	    break;
-	    
+
         case TCL_TOKEN_BS:
 	    length = Tcl_UtfBackslash(tokenPtr->start, (int *) NULL,
 		    buffer);
@@ -395,7 +395,7 @@ CompileSubExpr(exprTokenPtr, infoPtr, envPtr)
 	    TclEmitPush(objIndex, envPtr);
 	    tokenPtr += 1;
 	    break;
-	    
+
         case TCL_TOKEN_COMMAND:
 	    code = TclCompileScript(interp, tokenPtr->start+1,
 		    tokenPtr->size-2, /*nested*/ 1, envPtr);
@@ -404,7 +404,7 @@ CompileSubExpr(exprTokenPtr, infoPtr, envPtr)
 	    }
 	    tokenPtr += 1;
 	    break;
-	    
+
         case TCL_TOKEN_VARIABLE:
 	    code = TclCompileTokens(interp, tokenPtr, 1, envPtr);
 	    if (code != TCL_OK) {
@@ -412,7 +412,7 @@ CompileSubExpr(exprTokenPtr, infoPtr, envPtr)
 	    }
 	    tokenPtr += (tokenPtr->numComponents + 1);
 	    break;
-	    
+
         case TCL_TOKEN_SUB_EXPR:
 	    code = CompileSubExpr(tokenPtr, infoPtr, envPtr);
 	    if (code != TCL_OK) {
@@ -420,14 +420,14 @@ CompileSubExpr(exprTokenPtr, infoPtr, envPtr)
 	    }
 	    tokenPtr += (tokenPtr->numComponents + 1);
 	    break;
-	    
+
         case TCL_TOKEN_OPERATOR:
 	    /*
 	     * Look up the operator.  If the operator isn't found, treat it
 	     * as a math function.
 	     */
 	    Tcl_DStringInit(&opBuf);
-	    operator = Tcl_DStringAppend(&opBuf, 
+	    operator = Tcl_DStringAppend(&opBuf,
 		    tokenPtr->start, tokenPtr->size);
 	    hPtr = Tcl_FindHashEntry(&opHashTable, operator);
 	    if (hPtr == NULL) {
@@ -468,12 +468,12 @@ CompileSubExpr(exprTokenPtr, infoPtr, envPtr)
 		infoPtr->hasOperators = 1;
 		break;
 	    }
-	    
+
 	    /*
 	     * The operator requires special treatment, and is either
 	     * "+" or "-", or one of "&&", "||" or "?".
 	     */
-	    
+
 	    switch (opIndex) {
 	        case OP_PLUS:
 	        case OP_MINUS:
@@ -483,11 +483,11 @@ CompileSubExpr(exprTokenPtr, infoPtr, envPtr)
 			goto done;
 		    }
 		    tokenPtr += (tokenPtr->numComponents + 1);
-		    
+
 		    /*
 		     * Check whether the "+" or "-" is unary.
 		     */
-		    
+
 		    afterSubexprPtr = exprTokenPtr
 			    + exprTokenPtr->numComponents+1;
 		    if (tokenPtr == afterSubexprPtr) {
@@ -496,11 +496,11 @@ CompileSubExpr(exprTokenPtr, infoPtr, envPtr)
 			        envPtr);
 			break;
 		    }
-		    
+
 		    /*
 		     * The "+" or "-" is binary.
 		     */
-		    
+
 		    code = CompileSubExpr(tokenPtr, infoPtr, envPtr);
 		    if (code != TCL_OK) {
 			goto done;
@@ -519,7 +519,7 @@ CompileSubExpr(exprTokenPtr, infoPtr, envPtr)
 		    }
 		    tokenPtr = endPtr;
 		    break;
-			
+
 	        case OP_QUESTY:
 		    code = CompileCondExpr(exprTokenPtr, infoPtr,
 			    envPtr, &endPtr);
@@ -528,7 +528,7 @@ CompileSubExpr(exprTokenPtr, infoPtr, envPtr)
 		    }
 		    tokenPtr = endPtr;
 		    break;
-		    
+
 		default:
 		    panic("CompileSubExpr: unexpected operator %d requiring special treatment\n",
 		        opIndex);
@@ -547,12 +547,12 @@ CompileSubExpr(exprTokenPtr, infoPtr, envPtr)
      * subexpression's last token. For example, a "*" subexpression must
      * contain the tokens for exactly two operands.
      */
-    
+
     if (tokenPtr != (exprTokenPtr + exprTokenPtr->numComponents+1)) {
 	LogSyntaxError(infoPtr);
 	code = TCL_ERROR;
     }
-    
+
     done:
     return code;
 }
@@ -615,7 +615,7 @@ CompileLandOrLorExpr(exprTokenPtr, opIndex, infoPtr, envPtr, endPtrPtr)
      * Convert the first operand to the result that Tcl requires:
      * "0" or "1". Eventually we'll use a new instruction for this.
      */
-    
+
     TclEmitForwardJump(envPtr, TCL_TRUE_JUMP, &lhsTrueFixup);
     TclEmitPush(TclRegisterNewLiteral(envPtr, "0", 1), envPtr);
     TclEmitForwardJump(envPtr, TCL_UNCONDITIONAL_JUMP, &lhsEndFixup);
@@ -725,11 +725,11 @@ CompileCondExpr(exprTokenPtr, infoPtr, envPtr, endPtrPtr)
 	goto done;
     }
     tokenPtr += (tokenPtr->numComponents + 1);
-    
+
     /*
      * Emit the jump to the "else" expression if the test was false.
      */
-    
+
     TclEmitForwardJump(envPtr, TCL_FALSE_JUMP, &jumpAroundThenFixup);
 
     /*
@@ -752,7 +752,7 @@ CompileCondExpr(exprTokenPtr, infoPtr, envPtr, endPtrPtr)
     /*
      * Emit an unconditional jump around the "else" condExpr.
      */
-    
+
     TclEmitForwardJump(envPtr, TCL_UNCONDITIONAL_JUMP,
 	    &jumpAroundElseFixup);
 
@@ -783,14 +783,14 @@ CompileCondExpr(exprTokenPtr, infoPtr, envPtr, endPtrPtr)
 	 * Update the else expression's starting code offset since it
 	 * moved down 3 bytes too.
 	 */
-	
+
 	elseCodeOffset += 3;
     }
-	
+
     /*
      * Fix up the first jump to the "else" expression if the test was false.
      */
-    
+
     dist = (elseCodeOffset - jumpAroundThenFixup.codeOffset);
     TclFixupForwardJump(envPtr, &jumpAroundThenFixup, dist, 127);
     *endPtrPtr = tokenPtr;
@@ -890,7 +890,7 @@ CompileMathFuncCall(exprTokenPtr, funcName, infoPtr, envPtr, endPtrPtr)
 		    "too many arguments for math function", -1);
 	    code = TCL_ERROR;
 	    goto done;
-	} 
+	}
     } else if (tokenPtr != afterSubexprPtr) {
 	Tcl_ResetResult(interp);
 	Tcl_AppendToObj(Tcl_GetObjResult(interp),
@@ -898,7 +898,7 @@ CompileMathFuncCall(exprTokenPtr, funcName, infoPtr, envPtr, endPtrPtr)
 	code = TCL_ERROR;
 	goto done;
     }
-    
+
     /*
      * Compile the call on the math function. Note that the "objc" argument
      * count for non-builtin functions is incremented by 1 to include the
@@ -908,7 +908,7 @@ CompileMathFuncCall(exprTokenPtr, funcName, infoPtr, envPtr, endPtrPtr)
     if (mathFuncPtr->builtinFuncIndex >= 0) { /* a builtin function */
 	/*
 	 * Adjust the current stack depth by the number of arguments
-	 * of the builtin function. This cannot be handled by the 
+	 * of the builtin function. This cannot be handled by the
 	 * TclEmitInstInt1 macro as the number of arguments is not
 	 * passed as an operand.
 	 */
@@ -948,9 +948,10 @@ CompileMathFuncCall(exprTokenPtr, funcName, infoPtr, envPtr, endPtrPtr)
  */
 
 static void
-LogSyntaxError(infoPtr)
-    ExprInfo *infoPtr;		/* Describes the compilation state for the
+LogSyntaxError (
+    ExprInfo *infoPtr		/* Describes the compilation state for the
 				 * expression being compiled. */
+)
 {
     int numBytes = (infoPtr->lastChar - infoPtr->expr);
     char buffer[100];
