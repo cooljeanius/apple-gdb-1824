@@ -991,11 +991,189 @@ aarch64_prologue_this_id (struct frame_info *this_frame,
   *this_id = id;
 }
 
+#if defined(__APPLE__) && (defined(MACOSX_DYLD) || defined(TM_NEXTSTEP))
+/* APPLE LOCAL BEGIN: fast stacks. */
+
+/* (originally copied from arm-tdep.c, with minor tweaks for archname)
+ * This is set to the FAST_COUNT_STACK macro for aarch64. The return value
+ * is 1 if no errors were encountered traversing the stack, and 0 otherwise.
+ * It sets COUNT to the stack depth. If PRINT_FUN is non-null, then
+ * it will be passed the pc & fp for each frame as it is encountered.
+ */
+
+/*
+ * COUNT_LIMIT parameter sets a limit on the number of frames that
+ * will be counted by this function. -1 means unlimited.
+ *
+ * PRINT_LIMIT parameter sets a limit on the number of frames for
+ * which the full information is printed. -1 means unlimited.
+ */
+int
+aarch64_macosx_fast_show_stack(unsigned int count_limit,
+			       unsigned int print_start,
+			       unsigned int print_end,
+			       unsigned int *count,
+			       void (print_fun)(struct ui_out * uiout,
+                                            	int *frame_num,
+                                            	CORE_ADDR pc, CORE_ADDR fp))
+{
+  CORE_ADDR fp;
+  CORE_ADDR prev_fp = 0UL;
+  static CORE_ADDR sigtramp_start = 0UL;
+  static CORE_ADDR sigtramp_end = 0UL;
+  unsigned int i = 0U;
+  int more_frames;
+  int success = 1;
+  struct frame_info *fi;
+  ULONGEST next_fp = 0UL;
+  ULONGEST pc = 0UL;
+  int wordsize = 4; /* FIXME: find actual wordsize (this is a hack) */
+
+  more_frames = fast_show_stack_trace_prologue(count_limit, print_start,
+                                               print_end, wordsize,
+                                               &sigtramp_start,
+                                               &sigtramp_end, &i, &fi,
+                                               print_fun);
+
+  if (more_frames < 0)
+    {
+      /* An error occurred during the initial stack frames: */
+      success = 0;
+    }
+  else if (more_frames == 0)
+    {
+      /* We already have all the frames we need: */
+      success = 1;
+    }
+  else if (i < count_limit)
+    {
+      /* We got some stack frames and still need more: */
+      struct aarch64_prologue_cache *cache = aarch64_make_prologue_cache(fi);
+      int done;
+      fp = get_frame_register_unsigned(fi, (cache
+					    ? cache->framereg
+					    : AARCH64_FP_REGNUM));
+      prev_fp = fp;
+      done = (fp == 0);
+
+      while (!done && (i < count_limit))
+	{
+	  int add_frame = 0;
+	  CORE_ADDR next_fp_addr = 0;
+	  CORE_ADDR next_pc_addr = 0;
+	  if ((sigtramp_start <= pc) && (pc < sigtramp_end))
+	    {
+	      CORE_ADDR mcontext_addr = 0UL;
+	      CORE_ADDR gpr_addr = 0UL;
+#ifdef GP_REG_SIZE
+	      /* We are in signal trampoline: */
+	      mcontext_addr = read_memory_unsigned_integer((fp + 104),
+	                                                   GP_REG_SIZE);
+# ifdef EXC_STATE_SIZE
+	      gpr_addr = (mcontext_addr + EXC_STATE_SIZE);
+# else
+	      gpr_addr = (mcontext_addr + 0UL);
+# endif /* EXC_STATE_SIZE */
+	      next_fp_addr = (gpr_addr + (AARCH64_FP_REGNUM * GP_REG_SIZE));
+	      next_pc_addr = (gpr_addr + (AARCH64_PC_REGNUM * GP_REG_SIZE));
+#else
+	      if (gpr_addr == mcontext_addr) {
+		(void)mcontext_addr;
+		(void)gpr_addr;
+	      }
+#endif /* GP_REG_SIZE */
+	    }
+	  else
+	    {
+	      /* We have a normal frame: */
+	      next_fp_addr = fp;
+	      next_pc_addr = (fp + 4);
+	    }
+
+	  if ((next_fp_addr != 0) && (next_pc_addr != 0))
+	    {
+#ifdef GP_REG_SIZE
+	      /* Read the next FP by dereferencing the current FP: */
+	      if (safe_read_memory_unsigned_integer(next_fp_addr, GP_REG_SIZE,
+						    &next_fp))
+		{
+		  if (next_fp == 0)
+		    done = 1; /* normal end of our FP chain.  */
+		  else if (next_fp == fp)
+		    {
+		      warning(_("Frame ptr points back at the previous frame"));
+		      done = 1; /* Avoid infinite loop.  */
+		      success = 0;  /* This is not good, return error... */
+		    }
+		  else
+		    {
+		      /* Read the previous PC value: */
+		      if (safe_read_memory_unsigned_integer(next_pc_addr,
+							    GP_REG_SIZE, &pc))
+			{
+			  if (pc == 0)
+			    done = 1;
+			  else
+			    add_frame = 1;
+			}
+		      else
+			{
+			  done = 1; /* Could NOT read the previous PC.  */
+			}
+		    }
+		}
+	      else
+		{
+		  done = 1; /* Could NOT read the previous FP.  */
+		}
+#else
+	      warning(_("Missing GP_REG_SIZE"));
+	      done = 1;
+#endif /* GP_REG_SIZE */
+	    }
+	  else
+	    {
+	      done = 1; /* Invalid previous FP and PC addresses.  */
+	    }
+
+	  if (add_frame)
+	    {
+	      prev_fp = fp;
+	      fp = next_fp;
+	      /* Strip bit zero (thumb bit) for any return addresses since
+	         we read this from memory.  */
+	      pc = ADDR_BITS_REMOVE(pc);
+	      pc_set_load_state(pc, OBJF_SYM_ALL, 0);
+
+	      if (print_fun && ((i >= print_start) && (i < print_end)))
+		print_fun(uiout, (int *)&i, pc, fp);
+	      i++;
+
+	      if (!backtrace_past_main && addr_inside_main_func(pc))
+		done = 1;
+	    }
+	  else
+	    done = 1;
+	}
+    }
+
+  if (print_fun)
+    ui_out_end(uiout, ui_out_type_list);
+
+  if (prev_fp == INVALID_ADDRESS) {
+    ; /* do nothing; just silence '-Wunused-but-set-variable' */
+  }
+
+  *count = i;
+  return success;
+}
+#endif /* __APPLE__ && (MACOSX_DYLD || TM_NEXTSTEP) */
+
 #if defined(__GNUC__) && (__GNUC__ > 5)
-# pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
-# pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
-# pragma GCC diagnostic ignored "-Wint-conversion"
-# pragma GCC diagnostic ignored "-Wunused-variable"
+# if (defined(__STDC_VERSION__) && (__STDC_VERSION__ < 199901L)) || \
+     (defined(__STDC__) && (__STDC__ >= 1))
+#  pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+# endif /* !C99 */
 #elif defined(__clang__) && (__clang__ >= 1)
 # if (defined(__STDC_VERSION__) && (__STDC_VERSION__ < 199901L)) || \
      (defined(__STDC__) && (__STDC__ < 1) && defined(ALMOST_STDC))
@@ -1094,7 +1272,7 @@ aarch64_stub_this_id (struct frame_info *this_frame,
 
   if (*this_cache == NULL)
     *this_cache = aarch64_make_stub_cache (this_frame);
-  cache = *this_cache;
+  cache = *(struct aarch64_prologue_cache **)this_cache;
 
   *this_id = frame_id_build (cache->prev_sp, get_frame_pc (this_frame));
 }
@@ -1139,7 +1317,7 @@ aarch64_normal_frame_base (struct frame_info *this_frame, void **this_cache)
 
   if (*this_cache == NULL)
     *this_cache = aarch64_make_prologue_cache (this_frame);
-  cache = *this_cache;
+  cache = *(struct aarch64_prologue_cache **)this_cache;
 
   return cache->prev_sp - cache->framesize;
 }
@@ -1153,19 +1331,20 @@ struct frame_base aarch64_normal_base =
   aarch64_normal_frame_base
 };
 
+#ifdef HAVE_GDBARCH_DUMMY_ID
 /* Assuming THIS_FRAME is a dummy, return the frame ID of that
    dummy frame.  The frame ID's base needs to match the TOS value
    saved by save_dummy_frame_tos () and returned from
    aarch64_push_dummy_call, and the PC needs to match the dummy
    frame's breakpoint.  */
-
 static struct frame_id
-aarch64_dummy_id (struct gdbarch *gdbarch, struct frame_info *this_frame)
+aarch64_dummy_id(struct gdbarch *gdbarch, struct frame_info *this_frame)
 {
-  return frame_id_build (get_frame_register_unsigned (this_frame,
-						      AARCH64_SP_REGNUM),
-			 get_frame_pc (this_frame));
+  return frame_id_build(get_frame_register_unsigned(this_frame,
+						     AARCH64_SP_REGNUM),
+			get_frame_pc(this_frame));
 }
+#endif /* HAVE_GDBARCH_DUMMY_ID */
 
 /* Implement the "unwind_pc" gdbarch method.  */
 
@@ -1369,7 +1548,7 @@ pass_in_x (struct gdbarch *gdbarch, struct regcache *regcache,
 	   struct aarch64_call_info *info, struct type *type,
 	   const bfd_byte *buf)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   int len = TYPE_LENGTH (type);
   enum type_code typecode = TYPE_CODE (type);
   int regnum = AARCH64_X0_REGNUM + info->ngrn;
@@ -1715,7 +1894,7 @@ aarch64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
       stack_item_t *si = VEC_last (stack_item_t, info.si);
 
       sp -= si->len;
-      write_memory (sp, si->data, si->len);
+      write_memory(sp, (const gdb_byte *)si->data, si->len);
       VEC_pop (stack_item_t, info.si);
     }
 
@@ -1933,7 +2112,7 @@ aarch64_extract_return_value (struct type *type, struct regcache *regs,
 			      gdb_byte *valbuf)
 {
   struct gdbarch *gdbarch = get_regcache_arch (regs);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
 
   if (TYPE_CODE (type) == TYPE_CODE_FLT)
     {
@@ -2072,7 +2251,7 @@ aarch64_store_return_value (struct type *type, struct regcache *regs,
 			    const gdb_byte *valbuf)
 {
   struct gdbarch *gdbarch = get_regcache_arch (regs);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
 
   if (TYPE_CODE (type) == TYPE_CODE_FLT)
     {
@@ -2203,7 +2382,7 @@ aarch64_get_longjmp_target (struct frame_info *frame, CORE_ADDR *pc)
   gdb_byte buf[X_REGISTER_SIZE];
   struct gdbarch *gdbarch = get_frame_arch (frame);
   struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
 
   jb_addr = get_frame_register_unsigned (frame, AARCH64_X0_REGNUM);
 
@@ -2359,8 +2538,8 @@ aarch64_pseudo_register_reggroup_p (struct gdbarch *gdbarch, int regnum,
   return group == all_reggroup;
 }
 
+#ifdef HAVE_SET_GDBARCH_PSEUDO_REGISTER_READ_VALUE
 /* Implement the "pseudo_register_read_value" gdbarch method.  */
-
 static struct value *
 aarch64_pseudo_read_value (struct gdbarch *gdbarch,
 			   struct regcache *regcache,
@@ -2430,6 +2609,7 @@ aarch64_pseudo_read_value (struct gdbarch *gdbarch,
   gdb_assert_not_reached("regnum out of bound");
   return NULL; /*NOTREACHED*/
 }
+#endif /* HAVE_SET_GDBARCH_PSEUDO_REGISTER_READ_VALUE */
 
 /* Implement the "pseudo_register_write" gdbarch method.  */
 
@@ -2510,7 +2690,7 @@ aarch64_pseudo_write (struct gdbarch *gdbarch, struct regcache *regcache,
 static struct value *
 value_of_aarch64_user_reg (struct frame_info *frame, const void *baton)
 {
-  const int *reg_p = baton;
+  const int *reg_p = (const int *)baton;
 
   return value_of_register (*reg_p, frame);
 }
@@ -2614,7 +2794,7 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
       return best_arch->gdbarch;
     }
 
-  tdep = xcalloc (1, sizeof (struct gdbarch_tdep));
+  tdep = (struct gdbarch_tdep *)xcalloc(1, sizeof(struct gdbarch_tdep));
   gdbarch = gdbarch_alloc (&info, tdep);
 
   /* This should be low enough for everything.  */
@@ -2758,5 +2938,9 @@ When on, AArch64 specific debugging is enabled."),
 			    show_aarch64_debug,
 			    &setdebuglist, &showdebuglist);
 }
+
+#if defined(STOP_BEFORE_WE_CAN_LINK)
+# error "stopping compilation here"
+#endif /* STOP_BEFORE_WE_CAN_LINK */
 
 /* EOF */

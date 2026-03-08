@@ -101,10 +101,10 @@ struct option
 
 #if defined(__STDC__) && __STDC__
 /* HAVE_DECL_* is a three-state macro: undefined, 0 or 1.  If it is
-   undefined, we haven't run the autoconf check so provide the
+   undefined, we haven't run the autoconf check, so provide the
    declaration without arguments.  If it is 0, we checked and failed
-   to find the declaration so provide a fully prototyped one.  If it
-   is 1, we found it so don't provide any declaration at all.  */
+   to find the declaration, so provide a fully prototyped one.  If it
+   is 1, we found it, so don't provide any declaration at all.  */
 # if !HAVE_DECL_GETOPT
 #  if defined(__GNU_LIBRARY__) || defined(HAVE_DECL_GETOPT) || \
       (!defined(_UNISTD_H_) && (defined(PROTOTYPES) || defined(__PROTOTYPES)))

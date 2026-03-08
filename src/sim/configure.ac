@@ -30,10 +30,10 @@ AR=${AR-ar}
 AC_SUBST([AR])dnl
   ## keep autoscan happy:
 if test "x${RANLIB}" = "x"; then
-  test -z "${RANLIB}"
+  test -z "${RANLIB}" || unset RANLIB
   AC_PROG_RANLIB
 else
-  test ! -z "${RANLIB}" && export RANLIB
+  test -n "${RANLIB}" && export RANLIB 
   AC_SUBST([RANLIB])dnl
   ## gotta do something here...
 fi
@@ -46,10 +46,14 @@ else
 fi
 AC_SUBST([CC_FOR_BUILD])dnl
 
+# In case a subdir forgets to do it:
+AC_CHECK_DECLS([getopt])
+
 # If a cpu ever has more than one simulator to choose from, use
 # --enable-sim=... to choose.
 AC_ARG_ENABLE([sim],
-[AS_HELP_STRING([--enable-sim],[If a cpu ever has more than one simulator to choose from, use this flag.])],
+[AS_HELP_STRING([--enable-sim],
+                [If a cpu ever has more than one simulator to choose from, use this flag.])],
 [case "${enableval}" in
 yes | no) ;;
 *) AC_MSG_ERROR([bad value ${enableval} given for --enable-sim option]) ;;

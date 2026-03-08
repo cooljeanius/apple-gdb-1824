@@ -402,7 +402,8 @@ AC_CACHE_VAL([bash_cv_void_sighandler],
 #ifdef __cplusplus
 extern "C"
 #endif
-void (*signal ()) ();]],[[int i;]])],[bash_cv_void_sighandler=yes],[bash_cv_void_sighandler=no])])dnl
+void (*signal(int sig, void (*func)(int)))(int);
+]],[[int i;]])],[bash_cv_void_sighandler=yes],[bash_cv_void_sighandler=no])])dnl
 AC_MSG_RESULT([${bash_cv_void_sighandler}])
 if test "x${bash_cv_void_sighandler}" = "xyes"; then
 AC_DEFINE([VOID_SIGHANDLER],[1],[Define to 1 if signal handlers are of type void])
@@ -810,12 +811,13 @@ AC_CACHE_VAL([bash_cv_have_gethostbyname],
   hp = gethostbyname("localhost");
 ]])],[bash_cv_have_gethostbyname=yes],[bash_cv_have_gethostbyname=no])]
 )
-if test "X$_bash_needmsg" = Xyes; then
+if test "X${_bash_needmsg}" = "Xyes"; then
     AC_MSG_CHECKING([for gethostbyname in socket library])
 fi
-AC_MSG_RESULT([$bash_cv_have_gethostbyname])
-if test "$bash_cv_have_gethostbyname" = yes; then
-AC_DEFINE([HAVE_GETHOSTBYNAME],[1],[Define to 1 if we have the gethostbyname function (in the socket library)])
+AC_MSG_RESULT([${bash_cv_have_gethostbyname}])
+if test "x${bash_cv_have_gethostbyname}" = "xyes"; then
+AC_DEFINE([HAVE_GETHOSTBYNAME],[1],
+          [Define to 1 if we have the gethostbyname function (in the socket library)])
 fi
 ])
 
@@ -921,25 +923,25 @@ main(int c, char *v[])
 
 #ifdef HAVE_SETLOCALE
         deflocale = setlocale(LC_ALL, "");
-	defcoll = setlocale(LC_COLLATE, "");
+        defcoll = setlocale(LC_COLLATE, "");
 #endif
 
 #ifdef HAVE_STRCOLL
-	/* These two values are taken from tests/glob-test. */
+        /* These two values are taken from tests/glob-test. */
         r1 = strcoll("abd", "aXd");
 #else
-	r1 = 0;
+        r1 = 0;
 #endif
         r2 = strcmp("abd", "aXd");
 
-	/* These two should both be greater than 0.  It is permissible for
-	   a system to return different values, as long as the sign is the
-	   same. */
+        /* These two should both be greater than 0.  It is permissible for
+         * a system to return different values, as long as the sign is the
+         * same. */
 
         /* Exit with 1 (failure) if these two values are both > 0, since
-	   this tests whether strcoll(3) is broken with respect to strcmp(3)
-	   in the default locale. */
-	exit (r1 > 0 && r2 > 0);
+         * this tests whether strcoll(3) is broken with respect to strcmp(3)
+         * in the default locale. */
+        exit((r1 > 0) && (r2 > 0));
 }
 ]])],[bash_cv_func_strcoll_broken=yes],[bash_cv_func_strcoll_broken=no],[AC_MSG_WARN([cannot check strcoll if cross compiling -- defaulting to no])
     bash_cv_func_strcoll_broken=no

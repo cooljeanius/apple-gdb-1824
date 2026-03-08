@@ -59,6 +59,7 @@ AC_FUNC_MALLOC
 AC_CHECK_FUNCS([memset strchr strdup])dnl
 
 # Checks for declarations.
+AC_CHECK_DECLS([getopt])
 AC_CHECK_DECLS([NULL])
 
 dnl# Substitutions:

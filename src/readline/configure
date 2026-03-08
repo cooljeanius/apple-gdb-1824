@@ -12661,25 +12661,25 @@ main(int c, char *v[])
 
 #ifdef HAVE_SETLOCALE
         deflocale = setlocale(LC_ALL, "");
-	defcoll = setlocale(LC_COLLATE, "");
+        defcoll = setlocale(LC_COLLATE, "");
 #endif
 
 #ifdef HAVE_STRCOLL
-	/* These two values are taken from tests/glob-test. */
+        /* These two values are taken from tests/glob-test. */
         r1 = strcoll("abd", "aXd");
 #else
-	r1 = 0;
+        r1 = 0;
 #endif
         r2 = strcmp("abd", "aXd");
 
-	/* These two should both be greater than 0.  It is permissible for
-	   a system to return different values, as long as the sign is the
-	   same. */
+        /* These two should both be greater than 0.  It is permissible for
+         * a system to return different values, as long as the sign is the
+         * same. */
 
         /* Exit with 1 (failure) if these two values are both > 0, since
-	   this tests whether strcoll(3) is broken with respect to strcmp(3)
-	   in the default locale. */
-	exit (r1 > 0 && r2 > 0);
+         * this tests whether strcoll(3) is broken with respect to strcmp(3)
+         * in the default locale. */
+        exit((r1 > 0) && (r2 > 0));
 }
 
 _ACEOF
@@ -13288,7 +13288,8 @@ else case e in #(
 #ifdef __cplusplus
 extern "C"
 #endif
-void (*signal ()) ();
+void (*signal(int sig, void (*func)(int)))(int);
+
 int
 main (void)
 {

@@ -1215,7 +1215,7 @@ Tcl_StringObjCmd(dummy, interp, objc, objv)
 	     * comparison in INST_EQ/INST_NEQ/INST_LT/...).
 	     */
 	    int i, match, length, nocase = 0, reqlength = -1;
-	    int (*strCmpFn)(...); /* FIXME: "..." is not the proper fix. */
+	    int (*strCmpFn)(char *, char *, unsigned int); /* FIXME: wrong */
 
 	    if (objc < 4 || objc > 7) {
 	    str_cmp_args:
