@@ -392,6 +392,9 @@
    'HAVE_STRUCT_TM_TM_ZONE' instead. */
 #undef HAVE_TM_ZONE
 
+/* Define to 1 if typeof works with your compiler. */
+#undef HAVE_TYPEOF
+
 /* Define to 1 if we have the off64_t type */
 #undef HAVE_TYPE_OFF64_T
 
@@ -827,6 +830,9 @@
 
 /* Define to fixstrtod if the original strtod is buggy */
 #undef strtod
+
+/* Define to __typeof__ if your compiler spells it that way. */
+#undef typeof
 
 /* Define as 'int' if <sys/types.h> doesn't define. */
 #undef uid_t

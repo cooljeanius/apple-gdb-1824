@@ -44,19 +44,6 @@ m4_ifdef([AC_REQUIRE_AUX_FILE],[
   AC_REQUIRE_AUX_FILE([depcomp])dnl
 ])dnl
 
-dnl########################################################################
-dnl# Port to Automake 1.11.
-dnl# This section can be removed once we assume Automake 1.14 or later.
-: ${AM_DEFAULT_VERBOSITY=1}
-: ${AM_V=${AM_DEFAULT_VERBOSITY}}
-: ${AM_DEFAULT_V=${AM_DEFAULT_VERBOSITY}}
-dnl# now subst:
-AC_SUBST([AM_V])dnl
-AM_SUBST_NOTMAKE([AM_V])dnl
-AC_SUBST([AM_DEFAULT_V])dnl
-AM_SUBST_NOTMAKE([AM_DEFAULT_V])dnl
-AC_SUBST([AM_DEFAULT_VERBOSITY])dnl
-
 # Libtool:
 LT_INIT([win32-dll])dnl
 LT_LANG([C])dnl

@@ -49684,6 +49684,61 @@ printf "%s\n" "#define HAVE_STRINGIZE 1" >>confdefs.h
 fi
 
 
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for typeof syntax and keyword spelling" >&5
+printf %s "checking for typeof syntax and keyword spelling... " >&6; }
+if test ${ac_cv_c_typeof+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_cv_c_typeof=no
+     for ac_kw in typeof __typeof__ no; do
+       test $ac_kw = no && break
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+	   int value;
+	   typedef struct {
+		   char a [1
+			   + ! (($ac_kw (value))
+				(($ac_kw (value)) 0 < ($ac_kw (value)) -1
+				 ? ($ac_kw (value)) - 1
+				 : ~ (~ ($ac_kw (value)) 0
+				      << sizeof ($ac_kw (value)))))]; }
+	      ac__typeof_type_;
+	   return
+	     (! ((void) ((ac__typeof_type_ *) 0), 0));
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  ac_cv_c_typeof=$ac_kw
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+       test $ac_cv_c_typeof != no && break
+     done ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_typeof" >&5
+printf "%s\n" "$ac_cv_c_typeof" >&6; }
+  if test $ac_cv_c_typeof != no; then
+
+printf "%s\n" "#define HAVE_TYPEOF 1" >>confdefs.h
+
+    if test $ac_cv_c_typeof != typeof; then
+
+printf "%s\n" "#define typeof $ac_cv_c_typeof" >>confdefs.h
+
+    fi
+  fi
+
+
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for variable-length arrays" >&5
 printf %s "checking for variable-length arrays... " >&6; }
 if test ${ac_cv_c_vararrays+y}
@@ -55111,7 +55166,7 @@ build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wtautological-compare -Wduplicated-cond -Wwrite-strings -Wenum-compare \
 -Wnonnull-compare -Wdangling-else -Wmemset-elt-size -Wswitch-unreachable -Whsa \
 -Wscalar-storage-order -Wimplicit-fallthrough=3 \
--Wformat-overflow=2 -Wformat-truncation=2 \
+-Wformat-overflow=2 -Wformat-truncation=2 -Wheader-guard \
 -Wint-in-bool-context -Wbool-operation -Wduplicated-branches \
 -Wstringop-overflow=2 -Wstringop-truncation -Wstringop-overread \
 -Wenum-conversion -Wbuiltin-declaration-mismatch \

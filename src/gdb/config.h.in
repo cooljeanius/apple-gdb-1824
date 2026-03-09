@@ -1746,6 +1746,9 @@
 /* Define to 1 if you have the 'ttrace' function. */
 #undef HAVE_TTRACE
 
+/* Define to 1 if typeof works with your compiler. */
+#undef HAVE_TYPEOF
+
 /* Define to 1 if you don't have 'tm_zone' but do have the external array
    'tzname'. */
 #undef HAVE_TZNAME
@@ -2400,6 +2403,9 @@
 
 /* Define on a GNU/Linux system to fix problems in sys/procfs.h */
 #undef sys_quotactl
+
+/* Define to __typeof__ if your compiler spells it that way. */
+#undef typeof
 
 /* Define as 'int' if <sys/types.h> doesn't define. */
 #undef uid_t

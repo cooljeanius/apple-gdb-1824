@@ -1426,6 +1426,9 @@ extern unsigned int target_struct_size;
 extern unsigned int target_struct_index;
 extern unsigned int target_struct_allocsize;
 
+/* */
+extern const struct target_desc *target_read_description(struct target_ops *);
+
 #endif /* !defined(TARGET_H) */
 
 /* EOF */

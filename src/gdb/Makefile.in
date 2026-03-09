@@ -899,7 +899,7 @@ SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c \
   solib.c solib-null.c source.c \
   stabsread.c stack.c std-regs.c symfile.c symfile-mem.c symmisc.c \
   symtab.c \
-  target/target.c thread.c top.c tracepoint.c \
+  target/target.c target/target-descriptions.c thread.c top.c tracepoint.c \
   trad-frame.c \
   tramp-frame.c \
   typeprint.c \
@@ -1386,7 +1386,8 @@ HFILES_NO_SRCDIR = bcache.h buildsym.h call-cmds.h coff-solib.h defs.h \
   environ.h $(gdbcmd_h) gdb.h gdbcore.h \
   gdb-stabs.h $(inferior_h) language.h minimon.h monitor.h \
   objfiles.h parser-defs.h serial.h solib.h \
-  symfile.h symfile-mem.h stabsread.h target.h terminal.h typeprint.h \
+  symfile.h symfile-mem.h stabsread.h \
+  target.h target/target-descriptions.h terminal.h typeprint.h \
   xcoffsolib.h \
   macrotab.h macroexp.h macroscope.h \
   ada-lang.h c-lang.h f-lang.h \
@@ -1480,7 +1481,8 @@ BASE_OBS = \
   checkpoint.o \
   solib.o solib-null.o \
   i386-amd64-shared-tdep.o \
-  x86-shared-tdep.o
+  x86-shared-tdep.o \
+  target-descriptions.o
 # APPLE LOCAL end subroutine inlining
 
 TSOBS = inflow.o

@@ -86,6 +86,8 @@ pipe_open(struct serial *scb, const char *name)
   /* Child. */
   if (pid == 0)
     {
+      int retval;
+
       /* re-wire pdes[1] to stdin/stdout */
       close(pdes[0]);
       if (pdes[1] != STDOUT_FILENO)
@@ -106,7 +108,11 @@ pipe_open(struct serial *scb, const char *name)
       /* APPLE LOCAL: gdb is setgid to give it extra special debuggizer
          powers; we need to drop those privileges before executing the
          inferior process.  */
-      setgid(getgid());
+      retval = setgid(getgid());
+
+      if (retval == -1) {
+        warning(_("call to setgid() failed!"));
+      }
 
       execl("/bin/sh", "sh", "-c", name, (char *)0);
       _exit(127);

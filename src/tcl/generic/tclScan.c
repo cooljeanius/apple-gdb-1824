@@ -583,7 +583,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
     int base = 0;
     int underflow = 0;
     size_t width;
-    long (*fn)(...) = NULL;
+    long (*fn)(const char *restrict, char **restrict, int) = NULL;
 #ifndef TCL_WIDE_INT_IS_LONG
     Tcl_WideInt (*lfn)() = NULL;
     Tcl_WideInt wideValue;
@@ -602,7 +602,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
     }
 
     format = Tcl_GetStringFromObj(objv[2], NULL);
-    numVars = objc-3;
+    numVars = (objc - 3);
 
     /*
      * Check for errors in the format string.
@@ -735,7 +735,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 	    case 'd':
 		op = 'i';
 		base = 10;
-		fn = (long (*)(...))strtol;
+		fn = (typeof(fn))strtol;
 #ifndef TCL_WIDE_INT_IS_LONG
 		lfn = (Tcl_WideInt (*)())strtoll;
 #endif
@@ -743,7 +743,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 	    case 'i':
 		op = 'i';
 		base = 0;
-		fn = (long (*)(...))strtol;
+		fn = (typeof(fn))strtol;
 #ifndef TCL_WIDE_INT_IS_LONG
 		lfn = (Tcl_WideInt (*)())strtoll;
 #endif
@@ -751,7 +751,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 	    case 'o':
 		op = 'i';
 		base = 8;
-		fn = (long (*)(...))strtoul;
+		fn = (typeof(fn))strtoul;
 #ifndef TCL_WIDE_INT_IS_LONG
 		lfn = (Tcl_WideInt (*)())strtoull;
 #endif
@@ -759,7 +759,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 	    case 'x':
 		op = 'i';
 		base = 16;
-		fn = (long (*)(...))strtoul;
+		fn = (typeof(fn))strtoul;
 #ifndef TCL_WIDE_INT_IS_LONG
 		lfn = (Tcl_WideInt (*)())strtoull;
 #endif
@@ -768,7 +768,7 @@ Tcl_ScanObjCmd(dummy, interp, objc, objv)
 		op = 'i';
 		base = 10;
 		flags |= SCAN_UNSIGNED;
-		fn = (long (*)(...))strtoul;
+		fn = (typeof(fn))strtoul;
 #ifndef TCL_WIDE_INT_IS_LONG
 		lfn = (Tcl_WideInt (*)())strtoull;
 #endif

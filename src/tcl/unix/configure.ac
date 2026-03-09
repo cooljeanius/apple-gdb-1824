@@ -474,6 +474,9 @@ AC_CHECK_SIZEOF([char])dnl
 AC_CHECK_ALIGNOF([char])dnl
 AC_CHECK_TYPES([regoff_t])dnl
 
+dnl# kinda related; useful for casting to unknown types:
+AC_C_TYPEOF
+
 #--------------------------------------------------------------------
 #	If a system does NOT have an opendir function (man, is that old!)
 #	then we have to supply a different version of dirent.h which

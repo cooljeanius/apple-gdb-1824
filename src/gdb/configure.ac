@@ -2292,6 +2292,7 @@ AC_C_CHAR_UNSIGNED dnl# can help with conversion warnings eventually
 AC_C_FLEXIBLE_ARRAY_MEMBER dnl# struct hack in at least 1 header (symtab.h)
 AC_C_PROTOTYPES
 AC_C_STRINGIZE
+AC_C_TYPEOF
 AC_C_VARARRAYS
 AC_C_VOLATILE
 AC_DEFUN([AC_C_DUPES],[
@@ -3416,7 +3417,7 @@ build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wtautological-compare -Wduplicated-cond -Wwrite-strings -Wenum-compare \
 -Wnonnull-compare -Wdangling-else -Wmemset-elt-size -Wswitch-unreachable -Whsa \
 -Wscalar-storage-order -Wimplicit-fallthrough=3 \
--Wformat-overflow=2 -Wformat-truncation=2 \
+-Wformat-overflow=2 -Wformat-truncation=2 -Wheader-guard \
 -Wint-in-bool-context -Wbool-operation -Wduplicated-branches \
 -Wstringop-overflow=2 -Wstringop-truncation -Wstringop-overread \
 -Wenum-conversion -Wbuiltin-declaration-mismatch \
