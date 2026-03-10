@@ -1068,7 +1068,7 @@ f_lang_h = f-lang.h $(language_h)
 fix_and_continue_h = fix-and-continue.h
 fork_child_h = fork-child.h
 frame_base_h = frame-base.h
-frame_h = frame.h
+frame_h = frame.h unwind_stop_reasons.def
 frame_unwind_h = frame-unwind.h $(frame_h) $(value_h)
 frv_tdep_h = frv-tdep.h
 gdbarch_h = gdbarch.h
@@ -2973,7 +2973,8 @@ frame.o: frame.c $(defs_h) $(frame_h) $(target_h) $(value_h) \
   $(frame_base_h) $(command_h) $(gdbcmd_h) $(observer_h) $(objfiles_h) \
   $(exceptions_h) $(inlining_h) $(top_h)
 frame-unwind.o: frame-unwind.c $(defs_h) $(frame_h) $(frame_unwind_h) \
-  $(gdb_assert_h) $(dummy_frame_h) $(gdb_obstack_h) $(inlining_h)
+  $(gdb_assert_h) $(dummy_frame_h) $(value_h) $(regcache_h) \
+  $(gdb_obstack_h) $(target_h) $(inlining_h)
 # APPLE LOCAL end subroutine inlining
 frv-linux-tdep.o: frv-linux-tdep.c $(defs_h) $(target_h) $(frame_h) \
   $(osabi_h) $(elf_bfd_h) $(elf_frv_h) $(frv_tdep_h) $(trad_frame_h) \

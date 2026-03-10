@@ -323,6 +323,7 @@ frame_unwind_id(struct frame_info *next_frame)
 const struct frame_id null_frame_id = {
   0UL, 0UL, 0UL, 0U, 0U, 0U
 };
+const struct frame_id outer_frame_id = { 0, 0, 0, FID_STACK_INVALID, 0, 1 };
 
 /* */
 struct frame_id ATTRIBUTE_CONST
@@ -1768,6 +1769,39 @@ struct gdbarch *
 get_frame_arch(struct frame_info *this_frame)
 {
   return current_gdbarch;
+}
+
+struct gdbarch *
+frame_unwind_arch (struct frame_info *next_frame)
+{
+#ifdef HAVE_PREV_ARCH
+  if (!next_frame->prev_arch.p)
+    {
+      struct gdbarch *arch;
+
+      if (next_frame->unwind == NULL)
+	frame_unwind_find_by_frame (next_frame, &next_frame->prologue_cache);
+
+      if (next_frame->unwind->prev_arch != NULL)
+	arch = next_frame->unwind->prev_arch (next_frame,
+					      &next_frame->prologue_cache);
+      else
+	arch = get_frame_arch (next_frame);
+
+      next_frame->prev_arch.arch = arch;
+      next_frame->prev_arch.p = 1;
+      if (frame_debug)
+	fprintf_unfiltered (gdb_stdlog,
+			    "{ frame_unwind_arch (next_frame=%d) -> %s }\n",
+			    next_frame->level,
+			    gdbarch_bfd_arch_info (arch)->printable_name);
+    }
+
+  return next_frame->prev_arch.arch;
+#else
+  (void)next_frame;
+  return NULL;
+#endif /* HAVE_PREV_ARCH */
 }
 
 /* Stack pointer methods.  */

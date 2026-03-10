@@ -24,7 +24,11 @@
 #include "frame-unwind.h"
 #include "gdb_assert.h"
 #include "dummy-frame.h"
+#include "inline-frame.h"
+#include "value.h"
+#include "regcache.h"
 #include "gdb_obstack.h"
+#include "target.h"
 /* APPLE LOCAL - subroutine inlining  */
 #include "inlining.h"
 
@@ -101,6 +105,20 @@ frame_unwind_prepend_unwinder(struct gdbarch *gdbarch,
   (*table->osabi_head) = entry;
 }
 
+void
+frame_unwind_append_unwinder (struct gdbarch *gdbarch,
+			      const struct frame_unwind *unwinder)
+{
+  struct frame_unwind_table *table =
+    (struct frame_unwind_table *)new_gdbarch_data(gdbarch, frame_unwind_data);
+  struct frame_unwind_table_entry **ip;
+
+  /* Find the end of the list and insert the new entry there.  */
+  for (ip = table->osabi_head; (*ip) != NULL; ip = &(*ip)->next);
+  (*ip) = GDBARCH_OBSTACK_ZALLOC (gdbarch, struct frame_unwind_table_entry);
+  (*ip)->unwinder = unwinder;
+}
+
 const struct frame_unwind *
 frame_unwind_find_by_frame(struct frame_info *next_frame, void **this_cache)
 {
@@ -126,6 +144,54 @@ frame_unwind_find_by_frame(struct frame_info *next_frame, void **this_cache)
     }
   internal_error(__FILE__, __LINE__, _("frame_unwind_find_by_frame failed"));
   /*NOTREACHED*/
+}
+
+/* A default frame sniffer which always accepts the frame.  Used by
+   fallback prologue unwinders.  */
+
+int
+default_frame_sniffer (const struct frame_unwind *self,
+		       struct frame_info *this_frame,
+		       void **this_prologue_cache)
+{
+  return 1;
+}
+
+/* The default frame unwinder stop_reason callback.  */
+
+enum unwind_stop_reason
+default_frame_unwind_stop_reason (struct frame_info *this_frame,
+				  void **this_cache)
+{
+  struct frame_id this_id = get_frame_id (this_frame);
+
+  if (frame_id_eq (this_id, outer_frame_id))
+    return UNWIND_OUTERMOST;
+  else
+    return UNWIND_NO_REASON;
+}
+
+/* Return a value which indicates that FRAME's saved version of
+   REGNUM has a known constant (computed) value of VAL.  */
+
+struct value *
+frame_unwind_got_constant (struct frame_info *frame, int regnum,
+			   ULONGEST val)
+{
+  struct gdbarch *gdbarch = frame_unwind_arch(frame);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
+  struct value *reg_val;
+
+  reg_val = value_zero(register_type(gdbarch, regnum), not_lval);
+#ifdef S_U_I_TAKES_FOUR_ARGS
+  store_unsigned_integer(value_contents_writeable(reg_val),
+			 register_size(gdbarch, regnum), byte_order, val);
+#else
+  store_unsigned_integer(value_contents_writeable(reg_val),
+			 register_size(gdbarch, regnum), val);
+  (void)byte_order;
+#endif /* S_U_I_TAKES_FOUR_ARGS */
+  return reg_val;
 }
 
 extern initialize_file_ftype _initialize_frame_unwind; /* -Wmissing-prototypes */

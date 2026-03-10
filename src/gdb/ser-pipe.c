@@ -97,7 +97,7 @@ pipe_open(struct serial *scb, const char *name)
 	}
       dup2(STDOUT_FILENO, STDIN_FILENO);
 # if 0
-      /* close any stray FD's - FIXME - how? */
+      /* close any stray FD's - FIXME: how? */
       /* POSIX.2 B.3.2.2 "popen() shall ensure that any streams
          from previous popen() calls that remain open in the
          parent process are closed in the new child process. */
@@ -111,7 +111,8 @@ pipe_open(struct serial *scb, const char *name)
       retval = setgid(getgid());
 
       if (retval == -1) {
-        warning(_("call to setgid() failed!"));
+        warning(_("call to setgid() failed! (errno: %d, %s)"), errno,
+	        xstrerror(errno));
       }
 
       execl("/bin/sh", "sh", "-c", name, (char *)0);

@@ -76,6 +76,23 @@ struct block;
 struct gdbarch;
 struct ui_file;
 
+/* Status of a given frame's stack.  */
+
+enum frame_id_stack_status
+{
+  /* Stack address is invalid.  E.g., this frame is the outermost
+     (i.e., _start), and the stack hasn't been setup yet.  */
+  FID_STACK_INVALID = 0,
+
+  /* Stack address is valid, and is found in the stack_addr field.  */
+  FID_STACK_VALID = 1,
+
+  /* Stack address is unavailable.  I.e., there's a valid stack, but
+     we don't know where it is (because memory or registers we'd
+     compute it from were not collected).  */
+  FID_STACK_UNAVAILABLE = -1
+};
+
 /* The frame object.  */
 
 struct frame_info;
@@ -149,6 +166,11 @@ struct frame_id
 
 /* For convenience.  All fields are zero.  */
 extern const struct frame_id null_frame_id;
+
+/* This means "there is no frame ID, but there is a frame".  It should be
+   replaced by best-effort frame IDs for the outermost frame, somehow.
+   The implementation is only special_addr_p set.  */
+extern const struct frame_id outer_frame_id;
 
 /* Construct a frame ID.  The first parameter is the frame's constant
    stack address (typically the outer-bound), and the second the
@@ -400,6 +422,22 @@ enum frame_type
 };
 extern enum frame_type get_frame_type (struct frame_info *);
 
+/* For frames where we can not unwind further, describe why.  */
+
+enum unwind_stop_reason
+  {
+#define SET(name, description) name,
+#define FIRST_ENTRY(name) UNWIND_FIRST = name,
+#define LAST_ENTRY(name) UNWIND_LAST = name,
+#define FIRST_ERROR(name) UNWIND_FIRST_ERROR = name,
+
+#include "unwind_stop_reasons.def"
+#undef SET
+#undef FIRST_ENTRY
+#undef LAST_ENTRY
+#undef FIRST_ERROR
+  };
+
 /* Unwind the stack frame so that the value of REGNUM, in the previous
    (up, older) frame is returned.  If VALUEP is NULL, don't
    fetch/compute the value.  Instead just return the location of the
@@ -498,9 +536,10 @@ extern int safe_frame_unwind_memory (struct frame_info *this_frame,
 				     CORE_ADDR addr, gdb_byte *buf, int len);
 
 /* Return this frame's architecture.  */
-
 extern struct gdbarch *get_frame_arch (struct frame_info *this_frame);
 
+/* Return the previous frame's architecture.  */
+extern struct gdbarch *frame_unwind_arch (struct frame_info *frame);
 
 /* Values for the source flag to be used in print_frame_info_base().  */
 enum print_what
