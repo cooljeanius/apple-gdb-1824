@@ -870,7 +870,7 @@ SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c \
   cp-name-parser.y \
   dbxread.c demangle.c dictionary.c disasm.c doublest.c dummy-frame.c \
   dwarfread.c dwarf2expr.c dwarf2loc.c dwarf2read.c dwarf2read-repository.c \
-  dwarf2-frame.c \
+  dwarf2-frame.c dwarf2-frame-tailcall.c \
   elfread.c environ.c eval.c event-loop.c event-top.c expprint.c \
   f-exp.y f-lang.c f-typeprint.c f-valprint.c findvar.c frame.c \
   frame-base.c \
@@ -1052,6 +1052,7 @@ doublest_h = doublest.h $(ansidecl_h) $(floatformat_h)
 dummy_frame_h = dummy-frame.h
 dwarf2expr_h = dwarf2expr.h $(dwarf2loc_h)
 dwarf2_frame_h = dwarf2-frame.h
+dwarf2_frame_tailcall_h = dwarf2-frame-tailcall.h
 dwarf2loc_h = dwarf2loc.h $(dwarf2read_h)
 dwarf2read_h = dwarf2read.h $(bfd_h) $(buildsym_h) $(elf_dwarf2_h) \
   $(hashtab_h) $(db_access_functions_h)
@@ -1394,7 +1395,7 @@ HFILES_NO_SRCDIR = bcache.h buildsym.h call-cmds.h coff-solib.h defs.h \
   jv-lang.h \
   m2-lang.h p-lang.h \
   complaints.h valprint.h \
-  gdbthread.h \
+  gdbthread.h dwarf2-frame.h dwarf2-frame-tailcall.h \
   dcache.h remote-utils.h top.h solib-som.h
 
 # Header files that already have srcdir in them, or which are in objdir.
@@ -1456,7 +1457,7 @@ BASE_OBS = \
   dbxread.o coffread.o coff-pe-read.o elfread.o \
   dwarfread.o dwarf2read.o dwarf2read-repository.o mipsread.o stabsread.o \
   corefile.o \
-  dwarf2expr.o dwarf2loc.o dwarf2-frame.o \
+  dwarf2expr.o dwarf2loc.o dwarf2-frame.o dwarf2-frame-tailcall.o \
   ada-lang.o c-lang.o f-lang.o objc-lang.o \
   ui-out.o cli-out.o \
   varobj.o wrapper.o \
@@ -2897,7 +2898,12 @@ dwarf2expr.o: dwarf2expr.c $(defs_h) $(symtab_h) $(gdbtypes_h) $(value_h) \
 dwarf2-frame.o: dwarf2-frame.c $(defs_h) $(dwarf2expr_h) $(elf_dwarf2_h) \
   $(frame_h) $(frame_base_h) $(frame_unwind_h) $(gdbcore_h) $(gdbtypes_h) \
   $(symtab_h) $(objfiles_h) $(regcache_h) $(value_h) $(dwarf2read_h) \
-  $(gdb_assert_h) $(gdb_string_h) $(complaints_h) $(dwarf2_frame_h)
+  $(gdb_assert_h) $(gdb_string_h) $(complaints_h) $(dwarf2_frame_h) \
+  $(dwarf2_frame_tailcall_h)
+dwarf2-frame-tailcall.o: dwarf2-frame-tailcall.c $(defs_h) $(gdb_assert_h) \
+  $(frame_h) $(dwarf2_frame_tailcall_h) $(dwarf2loc_h) $(frame_unwind_h) \
+  $(block_h) $(hashtab_h) $(exceptions_h) $(gdbtypes_h) $(regcache_h) \
+  $(value_h) $(dwarf2_frame_h)
 dwarf2loc.o: dwarf2loc.c $(defs_h) $(ui_out_h) $(value_h) $(frame_h) \
   $(gdbcore_h) $(target_h) $(inferior_h) $(ax_h) $(ax_gdb_h) \
   $(regcache_h) $(objfiles_h) $(exceptions_h) $(elf_dwarf2_h) \

@@ -413,6 +413,8 @@ enum frame_type
   /* A frame created by GDB to indicate the inlined function bodies.  */
   INLINED_FRAME,
   /* APPLE LOCAL end subroutine inlining  */
+  /* A virtual frame of a tail call - see dwarf2_tailcall_frame_unwind.  */
+  TAILCALL_FRAME,
   /* In a signal handler, various OSs handle this in various ways.
      The main thing is that the frame may be far from normal.  */
   SIGTRAMP_FRAME,

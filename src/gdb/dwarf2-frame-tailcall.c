@@ -70,7 +70,7 @@ struct tailcall_cache
 static hashval_t
 cache_hash (const void *arg)
 {
-  const struct tailcall_cache *cache = arg;
+  const struct tailcall_cache *cache = (const struct tailcall_cache *)arg;
 
   return htab_hash_pointer (cache->next_bottom_frame);
 }
@@ -80,8 +80,8 @@ cache_hash (const void *arg)
 static int
 cache_eq (const void *arg1, const void *arg2)
 {
-  const struct tailcall_cache *cache1 = arg1;
-  const struct tailcall_cache *cache2 = arg2;
+  const struct tailcall_cache *cache1 = (const struct tailcall_cache *)arg1;
+  const struct tailcall_cache *cache2 = (const struct tailcall_cache *)arg2;
 
   return cache1->next_bottom_frame == cache2->next_bottom_frame;
 }
@@ -96,7 +96,7 @@ cache_new_ref1 (struct frame_info *next_bottom_frame)
   struct tailcall_cache *cache;
   void **slot;
 
-  cache = xzalloc (sizeof (*cache));
+  cache = (struct tailcall_cache *)xzalloc(sizeof(*cache));
 
   cache->next_bottom_frame = next_bottom_frame;
   cache->refc = 1;
@@ -142,7 +142,12 @@ cache_unref (struct tailcall_cache *cache)
 static int
 frame_is_tailcall (struct frame_info *fi)
 {
+#ifdef HAVE_FRAME_UNWINDER_IS
   return frame_unwinder_is (fi, &dwarf2_tailcall_frame_unwind);
+#else
+  (void)fi;
+  return 0;
+#endif /* HAVE_FRAME_UNWINDER_IS */
 }
 
 /* Try to find tailcall_cache in cache_htab if FI is a part of its virtual tail
@@ -164,7 +169,7 @@ cache_find (struct frame_info *fi)
   if (slot == NULL)
     return NULL;
 
-  cache = *slot;
+  cache = *(struct tailcall_cache **)slot;
   gdb_assert (cache != NULL);
   return cache;
 }
@@ -184,6 +189,7 @@ existing_next_levels (struct frame_info *this_frame,
   return retval;
 }
 
+#ifdef HAVE_STRUCT_CALL_SITE_CHAIN
 /* The number of virtual tail call frames in CHAIN.  With no virtual tail call
    frames the function would return 0 (but CHAIN does not exist in such
    case).  */
@@ -203,6 +209,7 @@ pretended_chain_levels (struct call_site_chain *chain)
 
   return chain_levels;
 }
+#endif /* HAVE_STRUCT_CALL_SITE_CHAIN */
 
 /* Implementation of frame_this_id_ftype.  THIS_CACHE must be already
    initialized with tailcall_cache, THIS_FRAME must be a part of THIS_CACHE.
@@ -213,7 +220,7 @@ static void
 tailcall_frame_this_id (struct frame_info *this_frame, void **this_cache,
 			struct frame_id *this_id)
 {
-  struct tailcall_cache *cache = *this_cache;
+  struct tailcall_cache *cache = *(struct tailcall_cache **)this_cache;
   struct frame_info *next_frame;
 
   /* Tail call does not make sense for a sentinel frame.  */
@@ -223,9 +230,13 @@ tailcall_frame_this_id (struct frame_info *this_frame, void **this_cache,
   *this_id = get_frame_id (next_frame);
   (*this_id).code_addr = get_frame_pc (this_frame);
   (*this_id).code_addr_p = 1;
+#ifdef HAVE_STRUCT_FRAME_ID_ARTIFICIAL_DEPTH
   (*this_id).artificial_depth = (cache->chain_levels
 				 - existing_next_levels (this_frame, cache));
   gdb_assert ((*this_id).artificial_depth > 0);
+#else
+  (void)cache;
+#endif /* HAVE_STRUCT_FRAME_ID_ARTIFICIAL_DEPTH */
 }
 
 /* Find PC to be unwound from THIS_FRAME.  THIS_FRAME must be a part of
@@ -235,13 +246,16 @@ static CORE_ADDR
 pretend_pc (struct frame_info *this_frame, struct tailcall_cache *cache)
 {
   int next_levels = existing_next_levels (this_frame, cache);
+#ifdef HAVE_STRUCT_CALL_SITE_CHAIN
   struct call_site_chain *chain = cache->chain;
 
   gdb_assert (chain != NULL);
+#endif /* HAVE_STRUCT_CALL_SITE_CHAIN */
 
   next_levels++;
   gdb_assert (next_levels >= 0);
 
+#ifdef HAVE_STRUCT_CALL_SITE_CHAIN
   if (next_levels < chain->callees)
     return chain->call_site[chain->length - next_levels - 1]->pc;
   next_levels -= chain->callees;
@@ -253,6 +267,10 @@ pretend_pc (struct frame_info *this_frame, struct tailcall_cache *cache)
 	return chain->call_site[chain->callers - next_levels - 1]->pc;
       next_levels -= chain->callers;
     }
+#else
+  while (next_levels > 0)
+    next_levels--;
+#endif /* HAVE_STRUCT_CALL_SITE_CHAIN */
 
   gdb_assert (next_levels == 0);
   return cache->prev_pc;
@@ -268,7 +286,7 @@ dwarf2_tailcall_prev_register_first (struct frame_info *this_frame,
 				     void **tailcall_cachep, int regnum)
 {
   struct gdbarch *this_gdbarch = get_frame_arch (this_frame);
-  struct tailcall_cache *cache = *tailcall_cachep;
+  struct tailcall_cache *cache = *(struct tailcall_cache **)tailcall_cachep;
   CORE_ADDR addr;
 
   if (regnum == gdbarch_pc_regnum (this_gdbarch))
@@ -280,7 +298,13 @@ dwarf2_tailcall_prev_register_first (struct frame_info *this_frame,
       if (next_levels == cache->chain_levels - 1)
 	addr = cache->prev_sp;
       else
-	addr = dwarf2_frame_cfa (this_frame) - cache->entry_cfa_sp_offset;
+        {
+#ifdef HAVE_DWARF2_FRAME_CFA
+	  addr = (dwarf2_frame_cfa(this_frame) - cache->entry_cfa_sp_offset);
+#else
+	  addr = INVALID_ADDRESS;
+#endif /* HAVE_DWARF2_FRAME_CFA */
+	}
     }
   else
     return NULL;
@@ -294,10 +318,10 @@ dwarf2_tailcall_prev_register_first (struct frame_info *this_frame,
    dwarf2_tailcall_prev_register_first.  */
 
 static struct value *
-tailcall_frame_prev_register (struct frame_info *this_frame,
-			       void **this_cache, int regnum)
+tailcall_frame_prev_register(struct frame_info *this_frame,
+			     void **this_cache, int regnum)
 {
-  struct tailcall_cache *cache = *this_cache;
+  struct tailcall_cache *cache = *(struct tailcall_cache **)this_cache;
   struct value *val;
 
   gdb_assert (this_frame != cache->next_bottom_frame);
@@ -364,11 +388,13 @@ dwarf2_tailcall_sniffer_first (struct frame_info *this_frame,
 			       void **tailcall_cachep,
 			       const LONGEST *entry_cfa_sp_offsetp)
 {
-  CORE_ADDR prev_pc = 0, prev_sp = 0;	/* GCC warning.  */
-  int prev_sp_p = 0;
+  volatile CORE_ADDR prev_pc = 0, prev_sp = 0;	/* GCC warning.  */
+  volatile int prev_sp_p = 0;
   CORE_ADDR this_pc;
   struct gdbarch *prev_gdbarch;
+#ifdef HAVE_STRUCT_CALL_SITE_CHAIN
   struct call_site_chain *chain = NULL;
+#endif /* HAVE_STRUCT_CALL_SITE_CHAIN */
   struct tailcall_cache *cache;
   volatile struct gdb_exception except;
 
@@ -388,8 +414,12 @@ dwarf2_tailcall_sniffer_first (struct frame_info *this_frame,
       /* Simulate frame_unwind_pc without setting this_frame->prev_pc.p.  */
       prev_pc = gdbarch_unwind_pc (prev_gdbarch, this_frame);
 
+#ifdef HAVE_STRUCT_CALL_SITE_CHAIN
       /* call_site_find_chain can throw an exception.  */
       chain = call_site_find_chain (prev_gdbarch, prev_pc, this_pc);
+#else
+      (void)this_pc;
+#endif /* HAVE_STRUCT_CALL_SITE_CHAIN */
 
       if (entry_cfa_sp_offsetp == NULL)
 	break;
@@ -401,23 +431,31 @@ dwarf2_tailcall_sniffer_first (struct frame_info *this_frame,
     }
   if (except.reason < 0)
     {
+#ifdef HAVE_ENTRY_VALUES_DEBUG
       if (entry_values_debug)
 	exception_print (gdb_stdout, except);
+#endif /* HAVE_ENTRY_VALUES_DEBUG */
       return;
     }
 
+#ifdef HAVE_STRUCT_CALL_SITE_CHAIN
   /* Ambiguous unwind or unambiguous unwind verified as matching.  */
   if (chain == NULL || chain->length == 0)
     {
       xfree (chain);
       return;
     }
+#endif /* HAVE_STRUCT_CALL_SITE_CHAIN */
 
   cache = cache_new_ref1 (this_frame);
   *tailcall_cachep = cache;
+#ifdef HAVE_STRUCT_CALL_SITE_CHAIN
   cache->chain = chain;
+#endif /* HAVE_STRUCT_CALL_SITE_CHAIN */
   cache->prev_pc = prev_pc;
+#ifdef HAVE_STRUCT_CALL_SITE_CHAIN
   cache->chain_levels = pretended_chain_levels (chain);
+#endif /* HAVE_STRUCT_CALL_SITE_CHAIN */
   cache->prev_sp_p = prev_sp_p;
   if (cache->prev_sp_p)
     {
@@ -434,7 +472,7 @@ dwarf2_tailcall_sniffer_first (struct frame_info *this_frame,
 static void
 tailcall_frame_dealloc_cache (struct frame_info *self, void *this_cache)
 {
-  struct tailcall_cache *cache = this_cache;
+  struct tailcall_cache *cache = (struct tailcall_cache *)this_cache;
 
   cache_unref (cache);
 }
@@ -446,10 +484,14 @@ static struct gdbarch *
 tailcall_frame_prev_arch (struct frame_info *this_frame,
 			  void **this_prologue_cache)
 {
-  struct tailcall_cache *cache = *this_prologue_cache;
+  struct tailcall_cache *cache = *(struct tailcall_cache **)this_prologue_cache;
 
   return get_frame_arch (cache->next_bottom_frame);
 }
+
+#if defined(__GNUC__) && (__GNUC__ >= 5)
+# pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+#endif /* GCC 5+ */
 
 /* Virtual tail call frame unwinder if dwarf2_tailcall_sniffer_first finds
    a chain to create.  */
@@ -475,3 +517,5 @@ _initialize_tailcall_frame (void)
   cache_htab = htab_create_alloc (50, cache_hash, cache_eq, NULL, xcalloc,
 				  xfree);
 }
+
+/* EOF */
