@@ -465,6 +465,7 @@ dwarf2_tailcall_sniffer_first (struct frame_info *this_frame,
   gdb_assert (cache->chain_levels > 0);
 }
 
+#ifdef HAVE_STRUCT_FRAME_UNWIND_DEALLOC_CACHE
 /* Implementation of frame_dealloc_cache_ftype.  It can be called even for the
    bottom chain frame from dwarf2_frame_dealloc_cache which is not a real
    TAILCALL_FRAME.  */
@@ -476,6 +477,7 @@ tailcall_frame_dealloc_cache (struct frame_info *self, void *this_cache)
 
   cache_unref (cache);
 }
+#endif /* HAVE_STRUCT_FRAME_UNWIND_DEALLOC_CACHE */
 
 /* Implementation of frame_prev_arch_ftype.  We assume all the virtual tail
    call frames have gdbarch of the bottom (callee) frame.  */
@@ -489,23 +491,23 @@ tailcall_frame_prev_arch (struct frame_info *this_frame,
   return get_frame_arch (cache->next_bottom_frame);
 }
 
-#if defined(__GNUC__) && (__GNUC__ >= 5)
-# pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
-#endif /* GCC 5+ */
-
 /* Virtual tail call frame unwinder if dwarf2_tailcall_sniffer_first finds
    a chain to create.  */
 
 const struct frame_unwind dwarf2_tailcall_frame_unwind =
 {
   TAILCALL_FRAME,
+#ifdef HAVE_STRUCT_FRAME_UNWIND_STOP_REASON
   default_frame_unwind_stop_reason,
+#endif /* HAVE_STRUCT_FRAME_UNWIND_STOP_REASON */
   tailcall_frame_this_id,
-  tailcall_frame_prev_register,
+  (frame_prev_register_ftype *)tailcall_frame_prev_register,
   NULL,
   tailcall_frame_sniffer,
+#ifdef HAVE_STRUCT_FRAME_UNWIND_DEALLOC_CACHE
   tailcall_frame_dealloc_cache,
-  tailcall_frame_prev_arch
+#endif /* HAVE_STRUCT_FRAME_UNWIND_DEALLOC_CACHE */
+  (frame_prev_pc_ftype *)tailcall_frame_prev_arch
 };
 
 /* Provide a prototype to silence -Wmissing-prototypes.  */

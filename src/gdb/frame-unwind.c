@@ -171,6 +171,20 @@ default_frame_unwind_stop_reason (struct frame_info *this_frame,
     return UNWIND_NO_REASON;
 }
 
+/* Return a value which indicates that FRAME copied REGNUM into
+   register NEW_REGNUM.  */
+
+struct value *
+frame_unwind_got_register(struct frame_info *frame,
+			  int regnum, int new_regnum)
+{
+#ifdef HAVE_VALUE_OF_REGISTER_LAZY
+  return value_of_register_lazy(frame, new_regnum);
+#else
+  return value_of_register(new_regnum, frame);
+#endif /* HAVE_VALUE_OF_REGISTER_LAZY */
+}
+
 /* Return a value which indicates that FRAME's saved version of
    REGNUM has a known constant (computed) value of VAL.  */
 
@@ -191,6 +205,23 @@ frame_unwind_got_constant (struct frame_info *frame, int regnum,
 			 register_size(gdbarch, regnum), val);
   (void)byte_order;
 #endif /* S_U_I_TAKES_FOUR_ARGS */
+  return reg_val;
+}
+
+/* Return a value which indicates that FRAME's saved version of REGNUM
+   has a known constant (computed) value of ADDR.  Convert the
+   CORE_ADDR to a target address if necessary.  */
+
+struct value *
+frame_unwind_got_address(struct frame_info *frame, int regnum,
+			 CORE_ADDR addr)
+{
+  struct gdbarch *gdbarch = frame_unwind_arch(frame);
+  struct value *reg_val;
+
+  reg_val = value_zero(register_type(gdbarch, regnum), not_lval);
+  pack_long(value_contents_writeable(reg_val),
+	    register_type(gdbarch, regnum), addr);
   return reg_val;
 }
 
