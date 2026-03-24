@@ -1282,16 +1282,19 @@ if test "x${ac_cv_header_libxml_tree_h}" = "xyes" -a \
      "x${ac_cv_header_libxml_parser_h}" = "xyes" -a \
      "x${ac_cv_lib_xml2_xmlParseFile}" = "xyes"
 then
-  AC_CACHE_CHECK([if libxml headers can be compiled],[ac_cv_compile_libxml_headers],[
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+  AC_CACHE_CHECK([if libxml headers can be compiled into a working program],
+                 [ac_cv_run_libxml_headers],[
+  AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 ]],[[
 LIBXML_TEST_VERSION
-]])],[ac_cv_compile_libxml_headers=yes],[ac_cv_compile_libxml_headers=no])dnl
+]])],[ac_cv_run_libxml_headers=yes],
+     [ac_cv_run_libxml_headers=no],
+     [ac_cv_run_libxml_headers=unknown])dnl
 ])dnl
   ## Only define if conftest was successful:
-  if test "x${ac_cv_compile_libxml_headers}" = "xyes"; then
+  if test "x${ac_cv_run_libxml_headers}" = "xyes"; then
     AC_DEFINE([LIBXML2_IS_USABLE],[1],[libxml2 on this system is usable])
   else
     AC_MSG_WARN([libxml2 support is broken; disabling])

@@ -128,6 +128,56 @@ struct type *builtin_type_CORE_ADDR;
 struct type *builtin_type_bfd_vma;
 struct type *builtin_type_voidptrfuncptr;
 
+/* Floatformat pairs.  */
+const struct floatformat *floatformats_ieee_half[BFD_ENDIAN_UNKNOWN] = {
+  &floatformat_ieee_half_big,
+  &floatformat_ieee_half_little
+};
+const struct floatformat *floatformats_ieee_single[BFD_ENDIAN_UNKNOWN] = {
+  &floatformat_ieee_single_big,
+  &floatformat_ieee_single_little
+};
+const struct floatformat *floatformats_ieee_double[BFD_ENDIAN_UNKNOWN] = {
+  &floatformat_ieee_double_big,
+  &floatformat_ieee_double_little
+};
+const struct floatformat *floatformats_ieee_double_littlebyte_bigword[BFD_ENDIAN_UNKNOWN] = {
+  &floatformat_ieee_double_big,
+  &floatformat_ieee_double_littlebyte_bigword
+};
+const struct floatformat *floatformats_i387_ext[BFD_ENDIAN_UNKNOWN] = {
+  &floatformat_i387_ext,
+  &floatformat_i387_ext
+};
+const struct floatformat *floatformats_m68881_ext[BFD_ENDIAN_UNKNOWN] = {
+  &floatformat_m68881_ext,
+  &floatformat_m68881_ext
+};
+const struct floatformat *floatformats_arm_ext[BFD_ENDIAN_UNKNOWN] = {
+  &floatformat_arm_ext_big,
+  &floatformat_arm_ext_littlebyte_bigword
+};
+const struct floatformat *floatformats_ia64_spill[BFD_ENDIAN_UNKNOWN] = {
+  &floatformat_ia64_spill_big,
+  &floatformat_ia64_spill_little
+};
+const struct floatformat *floatformats_ia64_quad[BFD_ENDIAN_UNKNOWN] = {
+  &floatformat_ia64_quad_big,
+  &floatformat_ia64_quad_little
+};
+const struct floatformat *floatformats_vax_f[BFD_ENDIAN_UNKNOWN] = {
+  &floatformat_vax_f,
+  &floatformat_vax_f
+};
+const struct floatformat *floatformats_vax_d[BFD_ENDIAN_UNKNOWN] = {
+  &floatformat_vax_d,
+  &floatformat_vax_d
+};
+const struct floatformat *floatformats_ibm_long_double[BFD_ENDIAN_UNKNOWN] = {
+  &floatformat_ibm_long_double_big,
+  &floatformat_ibm_long_double_little
+};
+
 int opaque_type_resolution = 1;
 
 /* APPLE LOCAL: referenced by get_array_bounds */

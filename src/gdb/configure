@@ -42470,14 +42470,18 @@ if test "x${ac_cv_header_libxml_tree_h}" = "xyes" -a \
      "x${ac_cv_header_libxml_parser_h}" = "xyes" -a \
      "x${ac_cv_lib_xml2_xmlParseFile}" = "xyes"
 then
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if libxml headers can be compiled" >&5
-printf %s "checking if libxml headers can be compiled... " >&6; }
-if test ${ac_cv_compile_libxml_headers+y}
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if libxml headers can be compiled into a working program" >&5
+printf %s "checking if libxml headers can be compiled into a working program... " >&6; }
+if test ${ac_cv_run_libxml_headers+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
   e)
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+  if test "$cross_compiling" = yes
+then :
+  ac_cv_run_libxml_headers=unknown
+else case e in #(
+  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
 #include <libxml/parser.h>
@@ -42493,19 +42497,23 @@ LIBXML_TEST_VERSION
   return 0;
 }
 _ACEOF
-if ac_fn_c_try_compile "$LINENO"
+if ac_fn_c_try_run "$LINENO"
 then :
-  ac_cv_compile_libxml_headers=yes
+  ac_cv_run_libxml_headers=yes
 else case e in #(
-  e) ac_cv_compile_libxml_headers=no ;;
+  e) ac_cv_run_libxml_headers=no ;;
 esac
 fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_compile_libxml_headers" >&5
-printf "%s\n" "$ac_cv_compile_libxml_headers" >&6; }  ## Only define if conftest was successful:
-  if test "x${ac_cv_compile_libxml_headers}" = "xyes"; then
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_run_libxml_headers" >&5
+printf "%s\n" "$ac_cv_run_libxml_headers" >&6; }  ## Only define if conftest was successful:
+  if test "x${ac_cv_run_libxml_headers}" = "xyes"; then
 
 printf "%s\n" "#define LIBXML2_IS_USABLE 1" >>confdefs.h
 
