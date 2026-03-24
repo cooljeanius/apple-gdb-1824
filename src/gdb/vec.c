@@ -1,4 +1,4 @@
-/* Vector API for GDB.
+/* vec.c: Vector API for GDB.
    Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009
    Free Software Foundation, Inc.
    Contributed by Nathan Sidwell <nathan@codesourcery.com>
@@ -23,20 +23,19 @@
 
 struct vec_prefix
 {
-  unsigned num;
-  unsigned alloc;
+  unsigned int num;
+  unsigned int alloc;
   void *vec[1];
 };
 
 /* Calculate the new ALLOC value, making sure that abs(RESERVE) slots
    are free.  If RESERVE < 0 grow exactly, otherwise grow
    exponentially.  */
-
-static inline unsigned
-calculate_allocation (const struct vec_prefix *pfx, int reserve)
+static inline unsigned int
+calculate_allocation(const struct vec_prefix *pfx, int reserve)
 {
-  unsigned alloc = 0;
-  unsigned num = 0;
+  unsigned int alloc = 0U;
+  unsigned int num = 0U;
 
   if (pfx)
     {
@@ -49,26 +48,27 @@ calculate_allocation (const struct vec_prefix *pfx, int reserve)
     return 0;
 
   /* We must have run out of room.  */
-  gdb_assert (alloc - num < (unsigned)(reserve < 0 ? -reserve : reserve));
+  gdb_assert((alloc - num) < (unsigned int)((reserve < 0)
+					    ? -reserve : reserve));
 
   if (reserve < 0)
-    /* Exact size.  */
-    alloc = num + -reserve;
+    /* Exact size: */
+    alloc = (num + -reserve);
   else
     {
-      /* Exponential growth. */
+      /* Exponential growth: */
       if (!alloc)
-	alloc = 4;
-      else if (alloc < 16)
-	/* Double when small.  */
-	alloc = alloc * 2;
+	alloc = 4U;
+      else if (alloc < 16U)
+	/* Double when small: */
+	alloc = (alloc * 2U);
       else
-	/* Grow slower when large.  */
-	alloc = (alloc * 3 / 2);
+	/* Grow slower when large: */
+	alloc = ((alloc * 3U) / 2U);
 
-      /* If this is still too small, set it to the right size. */
-      if (alloc < num + reserve)
-	alloc = num + reserve;
+      /* If this is still too small, then set it to the right size: */
+      if (alloc < (num + reserve))
+	alloc = (num + reserve);
     }
   return alloc;
 }
@@ -76,28 +76,26 @@ calculate_allocation (const struct vec_prefix *pfx, int reserve)
 /* Ensure there are at least abs(RESERVE) free slots in VEC.  If
    RESERVE < 0 grow exactly, else grow exponentially.  As a special
    case, if VEC is NULL, and RESERVE is 0, no vector will be created. */
-
 void *
-vec_p_reserve (void *vec, int reserve)
+vec_p_reserve(void *vec, int reserve)
 {
-  return vec_o_reserve (vec, reserve,
-			offsetof (struct vec_prefix, vec), sizeof (void *));
+  return vec_o_reserve(vec, reserve,
+		       offsetof(struct vec_prefix, vec), sizeof(void *));
 }
 
 /* As vec_p_reserve, but for object vectors.  The vector's trailing
    array is at VEC_OFFSET offset and consists of ELT_SIZE sized
    elements.  */
-
 void *
-vec_o_reserve (void *vec, int reserve, size_t vec_offset, size_t elt_size)
+vec_o_reserve(void *vec, int reserve, size_t vec_offset, size_t elt_size)
 {
-  struct vec_prefix *pfx = vec;
-  unsigned alloc = calculate_allocation (pfx, reserve);
+  struct vec_prefix *pfx = (struct vec_prefix *)vec;
+  unsigned int alloc = calculate_allocation(pfx, reserve);
 
   if (!alloc)
     return NULL;
 
-  vec = xrealloc (vec, vec_offset + alloc * elt_size);
+  vec = xrealloc(vec, (vec_offset + (alloc * elt_size)));
   ((struct vec_prefix *)vec)->alloc = alloc;
   if (!pfx)
     ((struct vec_prefix *)vec)->num = 0;
@@ -106,14 +104,14 @@ vec_o_reserve (void *vec, int reserve, size_t vec_offset, size_t elt_size)
 }
 
 #if 0
-/* Example uses.  */
-DEF_VEC_I (int);
+/* Example uses: */
+DEF_VEC_I(int);
 typedef struct X
 {
   int i;
 } obj_t;
 typedef obj_t *ptr_t;
 
-DEF_VEC_P (ptr_t);
-DEF_VEC_O (obj_t);
-#endif
+DEF_VEC_P(ptr_t);
+DEF_VEC_O(obj_t);
+#endif /* 0 */

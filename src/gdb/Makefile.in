@@ -892,6 +892,7 @@ SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c \
   objc-exp.y objc-lang.c \
   objfiles.c osabi.c observer.c \
   p-exp.y p-lang.c p-typeprint.c p-valprint.c parse.c printcmd.c \
+  prologue-value.c \
   regcache.c reggroups.c remote.c remote-fileio.c \
   scm-exp.c scm-lang.c scm-valprint.c \
   sentinel-frame.c \
@@ -905,7 +906,7 @@ SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c \
   typeprint.c \
   ui-out.c utils.c ui-file.h ui-file.c \
   user-regs.c \
-  valarith.c valops.c valprint.c value.c varobj.c \
+  valarith.c valops.c valprint.c value.c varobj.c vec.c \
   wrapper.c target/i386-amd64-shared-tdep.c target/x86-shared-tdep.c \
   xmodem.c @MAINT@@APPLE_MAINT@@EXTRA_YFLAGS_SEP@ go-exp.y
 # APPLE LOCAL end subroutine inlining
@@ -1394,9 +1395,9 @@ HFILES_NO_SRCDIR = bcache.h buildsym.h call-cmds.h coff-solib.h defs.h \
   ada-lang.h c-lang.h f-lang.h \
   jv-lang.h \
   m2-lang.h p-lang.h \
-  complaints.h valprint.h \
+  complaints.h valprint.h vec.h \
   gdbthread.h dwarf2-frame.h dwarf2-frame-tailcall.h \
-  dcache.h remote-utils.h top.h solib-som.h
+  dcache.h remote-utils.h top.h solib-som.h prologue-value.h
 
 # Header files that already have srcdir in them, or which are in objdir.
 
@@ -1460,7 +1461,8 @@ BASE_OBS = \
   dwarf2expr.o dwarf2loc.o dwarf2-frame.o dwarf2-frame-tailcall.o \
   ada-lang.o c-lang.o f-lang.o objc-lang.o \
   ui-out.o cli-out.o \
-  varobj.o wrapper.o \
+  varobj.o vec.o \
+  wrapper.o \
   jv-lang.o jv-valprint.o jv-typeprint.o \
   m2-lang.o p-lang.o p-typeprint.o p-valprint.o \
   scm-exp.o scm-lang.o scm-valprint.o \
@@ -1481,6 +1483,7 @@ BASE_OBS = \
   fix-and-continue.o \
   checkpoint.o \
   solib.o solib-null.o \
+  prologue-value.o \
   i386-amd64-shared-tdep.o \
   x86-shared-tdep.o \
   target-descriptions.o
