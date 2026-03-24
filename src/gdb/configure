@@ -817,6 +817,7 @@ LIBLZMA_PREFIX
 LTLIBLZMA
 LIBLZMA
 HAVE_LIBLZMA
+LIBDL
 WIN32LIBS
 SER_HARDWIRE
 MMALLOC
@@ -827,6 +828,7 @@ acl_cv_wa
 TARGET_SYSTEM_ROOT_DEFINE
 TARGET_SYSTEM_ROOT
 CONFIG_LDFLAGS
+IGNORE_UNUSED_LIBRARIES_CFLAGS
 RDYNAMIC
 MIG_CHECKING
 DEBUG_SYMBOLS_LIBS
@@ -1154,6 +1156,7 @@ C_ARCHFLAGS
 C_BUILDARCHFLAGS
 WARN_CFLAGS
 HOST_CPU_C_ABI
+HOST_CPU
 CPP
 target_noncanonical
 host_noncanonical
@@ -6876,6 +6879,45 @@ printf "%s\n" "$ac_cv_path_EGREP_TRADITIONAL" >&6; }
  EGREP_TRADITIONAL=$ac_cv_path_EGREP_TRADITIONAL
 
 
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifdef _MSC_VER
+MicrosoftCompiler
+#endif
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP_TRADITIONAL "MicrosoftCompiler" >/dev/null 2>&1
+then :
+            rm -fr conftest*
+     echo 'int dummy;' > conftest.c
+     { ac_try='${CC-cc} $CFLAGS $CPPFLAGS -c conftest.c'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; } >/dev/null 2>&1
+     if test -f conftest.o; then
+       gl_asmext='s'
+       gl_c_asm_opt='-S'
+     else
+       gl_asmext='asm'
+       gl_c_asm_opt='-c -Fa'
+     fi
+     rm -fr conftest*
+
+else case e in #(
+  e) gl_asmext='s'
+     gl_c_asm_opt='-S'
+     ;;
+esac
+fi
+rm -rf conftest*
+
+
+
+
 
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking host CPU and C ABI" >&5
 printf %s "checking host CPU and C ABI... " >&6; }
@@ -6885,57 +6927,167 @@ then :
 else case e in #(
   e) case "$host_cpu" in
 
-       i[4567]86 )
+       i[34567]86 )
          gl_cv_host_cpu_c_abi=i386
          ;;
 
        x86_64 )
-         # On x86_64 systems, the C compiler may still be generating
-         # 32-bit code.
+         # On x86_64 systems, the C compiler may be generating code in one of
+         # these ABIs:
+         # - 64-bit instruction set, 64-bit pointers, 64-bit 'long': x86_64.
+         # - 64-bit instruction set, 64-bit pointers, 32-bit 'long': x86_64
+         #   with native Windows (mingw, MSVC).
+         # - 64-bit instruction set, 32-bit pointers, 32-bit 'long': x86_64-x32.
+         # - 32-bit instruction set, 32-bit pointers, 32-bit 'long': i386.
          cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#if defined __LP64__ || defined __x86_64__ || defined __amd64__
-            yes
-            #endif
+#if (defined __x86_64__ || defined __amd64__ \
+                     || defined _M_X64 || defined _M_AMD64)
+                 int ok;
+                #else
+                 error fail
+                #endif
+
 _ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP_TRADITIONAL "yes" >/dev/null 2>&1
+if ac_fn_c_try_compile "$LINENO"
 then :
-  gl_cv_host_cpu_c_abi=x86_64
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined __ILP32__ || defined _ILP32
+                    int ok;
+                   #else
+                    error fail
+                   #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  gl_cv_host_cpu_c_abi=x86_64-x32
+else case e in #(
+  e) gl_cv_host_cpu_c_abi=x86_64 ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
 else case e in #(
   e) gl_cv_host_cpu_c_abi=i386 ;;
 esac
 fi
-rm -rf conftest*
-
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
          ;;
 
        alphaev[4-8] | alphaev56 | alphapca5[67] | alphaev6[78] )
          gl_cv_host_cpu_c_abi=alpha
          ;;
 
-       arm* )
+       arm* | aarch64 )
+         # Assume arm with EABI.
+         # On arm64 systems, the C compiler may be generating code in one of
+         # these ABIs:
+         # - aarch64 instruction set, 64-bit pointers, 64-bit 'long': arm64.
+         # - aarch64 instruction set, 32-bit pointers, 32-bit 'long': arm64-ilp32.
+         # - 32-bit instruction set, 32-bit pointers, 32-bit 'long': arm or armhf.
          cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#if defined __ARMEL__
-            yes
-            #endif
+#ifdef __aarch64__
+                 int ok;
+                #else
+                 error fail
+                #endif
+
 _ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP_TRADITIONAL "yes" >/dev/null 2>&1
+if ac_fn_c_try_compile "$LINENO"
 then :
-  gl_cv_host_cpu_c_abi=armel
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined __ILP32__ || defined _ILP32
+                   int ok;
+                  #else
+                   error fail
+                  #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  gl_cv_host_cpu_c_abi=arm64-ilp32
 else case e in #(
-  e) gl_cv_host_cpu_c_abi=arm ;;
+  e) gl_cv_host_cpu_c_abi=arm64 ;;
 esac
 fi
-rm -rf conftest*
-
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+else case e in #(
+  e) # Don't distinguish little-endian and big-endian arm, since they
+            # don't require different machine code for simple operations and
+            # since the user can distinguish them through the preprocessor
+            # defines __ARMEL__ vs. __ARMEB__.
+            # But distinguish arm which passes floating-point arguments and
+            # return values in integer registers (r0, r1, ...) - this is
+            # gcc -mfloat-abi=soft or gcc -mfloat-abi=softfp - from arm which
+            # passes them in float registers (s0, s1, ...) and double registers
+            # (d0, d1, ...) - this is gcc -mfloat-abi=hard. GCC 4.6 or newer
+            # sets the preprocessor defines __ARM_PCS (for the first case) and
+            # __ARM_PCS_VFP (for the second case), but older GCC does not.
+            echo 'double ddd; void func (double dd) { ddd = dd; }' > conftest.c
+            # Look for a reference to the register d0 in the .s file.
+            { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $gl_c_asm_opt conftest.c'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; } >/dev/null 2>&1
+            if LC_ALL=C grep 'd0,' conftest.$gl_asmext >/dev/null; then
+              gl_cv_host_cpu_c_abi=armhf
+            else
+              gl_cv_host_cpu_c_abi=arm
+            fi
+            rm -fr conftest*
+            ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
          ;;
 
        hppa1.0 | hppa1.1 | hppa2.0* | hppa64 )
-         # TODO: Distinguish hppa and hppa64 correctly.
-         gl_cv_host_cpu_c_abi=hppa
+         # On hppa, the C compiler may be generating 32-bit code or 64-bit
+         # code. In the latter case, it defines _LP64 and __LP64__.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#ifdef __LP64__
+                 int ok;
+                #else
+                 error fail
+                #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  gl_cv_host_cpu_c_abi=hppa64
+else case e in #(
+  e) gl_cv_host_cpu_c_abi=hppa ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+         ;;
+
+       ia64* )
+         # On ia64 on HP-UX, the C compiler may be generating 64-bit code or
+         # 32-bit code. In the latter case, it defines _ILP32.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#ifdef _ILP32
+                 int ok;
+                #else
+                 error fail
+                #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  gl_cv_host_cpu_c_abi=ia64-ilp32
+else case e in #(
+  e) gl_cv_host_cpu_c_abi=ia64 ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
          ;;
 
        mips* )
@@ -6944,66 +7096,194 @@ rm -rf conftest*
          cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #if defined _MIPS_SZLONG && (_MIPS_SZLONG == 64)
-            yes
-            #endif
+                 int ok;
+                #else
+                 error fail
+                #endif
+
 _ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP_TRADITIONAL "yes" >/dev/null 2>&1
+if ac_fn_c_try_compile "$LINENO"
 then :
   gl_cv_host_cpu_c_abi=mips64
 else case e in #(
-  e) # Strictly speaking, the MIPS ABI (-32 or -n32) is independent
-            # from the CPU identification (-mips[12] or -mips[34]). But -n32
-            # is commonly used together with -mips3, and it's easier to test
-            # the CPU identification.
+  e) # In the n32 ABI, _ABIN32 is defined, _ABIO32 is not defined (but
+            # may later get defined by <sgidefs.h>), and _MIPS_SIM == _ABIN32.
+            # In the 32 ABI, _ABIO32 is defined, _ABIN32 is not defined (but
+            # may later get defined by <sgidefs.h>), and _MIPS_SIM == _ABIO32.
             cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#if __mips >= 3
-               yes
-               #endif
+#if (_MIPS_SIM == _ABIN32)
+                    int ok;
+                   #else
+                    error fail
+                   #endif
+
 _ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP_TRADITIONAL "yes" >/dev/null 2>&1
+if ac_fn_c_try_compile "$LINENO"
 then :
   gl_cv_host_cpu_c_abi=mipsn32
 else case e in #(
   e) gl_cv_host_cpu_c_abi=mips ;;
 esac
 fi
-rm -rf conftest*
- ;;
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
 esac
 fi
-rm -rf conftest*
-
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
          ;;
 
-       powerpc64 )
+       powerpc* )
+         # Different ABIs are in use on AIX vs. Mac OS X vs. Linux,*BSD.
+         # No need to distinguish them here; the caller may distinguish
+         # them based on the OS.
          # On powerpc64 systems, the C compiler may still be generating
-         # 32-bit code.
+         # 32-bit code. And on powerpc-ibm-aix systems, the C compiler may
+         # be generating 64-bit code.
          cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#if defined __powerpc64__ || defined _ARCH_PPC64
-            yes
-            #endif
+#if defined __powerpc64__ || defined __LP64__
+                 int ok;
+                #else
+                 error fail
+                #endif
+
 _ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP_TRADITIONAL "yes" >/dev/null 2>&1
+if ac_fn_c_try_compile "$LINENO"
 then :
-  gl_cv_host_cpu_c_abi=powerpc64
+  # On powerpc64, there are two ABIs on Linux: The AIX compatible
+            # one and the ELFv2 one. The latter defines _CALL_ELF=2.
+            cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined _CALL_ELF && _CALL_ELF == 2
+                    int ok;
+                   #else
+                    error fail
+                   #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  gl_cv_host_cpu_c_abi=powerpc64-elfv2
+else case e in #(
+  e) gl_cv_host_cpu_c_abi=powerpc64 ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+
 else case e in #(
   e) gl_cv_host_cpu_c_abi=powerpc ;;
 esac
 fi
-rm -rf conftest*
-
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
          ;;
 
        rs6000 )
          gl_cv_host_cpu_c_abi=powerpc
          ;;
 
-       # TODO: Distinguish s390 and s390x correctly.
+       riscv32 | riscv64 )
+         # There are 2 architectures (with variants): rv32* and rv64*.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if __riscv_xlen == 64
+                  int ok;
+                #else
+                  error fail
+                #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  cpu=riscv64
+else case e in #(
+  e) cpu=riscv32 ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+         # There are 6 ABIs: ilp32, ilp32f, ilp32d, lp64, lp64f, lp64d.
+         # Size of 'long' and 'void *':
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined __LP64__
+                  int ok;
+                #else
+                  error fail
+                #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  main_abi=lp64
+else case e in #(
+  e) main_abi=ilp32 ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+         # Float ABIs:
+         # __riscv_float_abi_double:
+         #   'float' and 'double' are passed in floating-point registers.
+         # __riscv_float_abi_single:
+         #   'float' are passed in floating-point registers.
+         # __riscv_float_abi_soft:
+         #   No values are passed in floating-point registers.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined __riscv_float_abi_double
+                  int ok;
+                #else
+                  error fail
+                #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  float_abi=d
+else case e in #(
+  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined __riscv_float_abi_single
+                     int ok;
+                   #else
+                     error fail
+                   #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  float_abi=f
+else case e in #(
+  e) float_abi='' ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+            ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+         gl_cv_host_cpu_c_abi="${cpu}-${main_abi}${float_abi}"
+         ;;
+
+       s390* )
+         # On s390x, the C compiler may be generating 64-bit (= s390x) code
+         # or 31-bit (= s390) code.
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined __LP64__ || defined __s390x__
+                  int ok;
+                #else
+                  error fail
+                #endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  gl_cv_host_cpu_c_abi=s390x
+else case e in #(
+  e) gl_cv_host_cpu_c_abi=s390 ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+         ;;
 
        sparc | sparc64 )
          # UltraSPARCs running Linux have `uname -m` = "sparc64", but the
@@ -7011,19 +7291,20 @@ rm -rf conftest*
          cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #if defined __sparcv9 || defined __arch64__
-            yes
-            #endif
+                 int ok;
+                #else
+                 error fail
+                #endif
+
 _ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP_TRADITIONAL "yes" >/dev/null 2>&1
+if ac_fn_c_try_compile "$LINENO"
 then :
   gl_cv_host_cpu_c_abi=sparc64
 else case e in #(
   e) gl_cv_host_cpu_c_abi=sparc ;;
 esac
 fi
-rm -rf conftest*
-
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
          ;;
 
        *)
@@ -7036,14 +7317,21 @@ fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $gl_cv_host_cpu_c_abi" >&5
 printf "%s\n" "$gl_cv_host_cpu_c_abi" >&6; }
 
+    HOST_CPU=`echo "$gl_cv_host_cpu_c_abi" | sed -e 's/-.*//'`
   HOST_CPU_C_ABI="$gl_cv_host_cpu_c_abi"
 
 
-  # This was AC_DEFINE_UNQUOTED([__${gl_cv_host_cpu_c_abi}__]) earlier,
-  # but KAI C++ 3.2d doesn't like this.
-  cat >> confdefs.h <<EOF
-#ifndef __${gl_cv_host_cpu_c_abi}__
-#define __${gl_cv_host_cpu_c_abi}__ 1
+
+  # This was
+  #   AC_DEFINE_UNQUOTED([__${HOST_CPU}__])
+  #   AC_DEFINE_UNQUOTED([__${HOST_CPU_C_ABI}__])
+  # earlier, but KAI C++ 3.2d doesn't like this.
+  sed -e 's/-/_/g' >> confdefs.h <<EOF
+#ifndef __${HOST_CPU}__
+#define __${HOST_CPU}__ 1
+#endif
+#ifndef __${HOST_CPU_C_ABI}__
+#define __${HOST_CPU_C_ABI}__ 1
 #endif
 EOF
 
@@ -10415,69 +10703,37 @@ fi
 
 printf "%s\n" "#define HAVE_GETTEXT 1" >>confdefs.h
 
-
-# Prepare PATH_SEPARATOR.
-# The user is always right.
-if test "${PATH_SEPARATOR+set}" != set; then
-  echo "#! /bin/sh" >conf$$.sh
-  echo  "exit 0"   >>conf$$.sh
-  chmod +x conf$$.sh
-  if (PATH="/nonexistent;."; conf$$.sh) >/dev/null 2>&1; then
-    PATH_SEPARATOR=';'
-  else
-    PATH_SEPARATOR=:
-  fi
-  rm -f conf$$.sh
-fi
-
-# Find out how to test for executable files. Don't use a zero-byte file,
-# as systems may use methods other than mode bits to determine executability.
-cat >conf$$.file <<_ASEOF
-#! /bin/sh
-exit 0
-_ASEOF
-chmod +x conf$$.file
-if test -x conf$$.file >/dev/null 2>&1; then
-  ac_executable_p="test -x"
-else
-  ac_executable_p="test -f"
-fi
-rm -f conf$$.file
-
-# Extract the first word of "msgfmt", so it can be a program name with args.
+	      # Extract the first word of "msgfmt", so it can be a program name with args.
 set dummy msgfmt; ac_word=$2
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-printf %s "checking for $ac_word... " >&6; }
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for ${ac_word}" >&5
+printf %s "checking for ${ac_word}... " >&6; }
 if test ${ac_cv_path_MSGFMT+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
   e) case "$MSGFMT" in
-  [\\/]* | ?:[\\/]*)
-    ac_cv_path_MSGFMT="$MSGFMT" # Let the user override the test with a path.
-    ;;
+  /*)
+  ac_cv_path_MSGFMT="$MSGFMT" # Let the user override the test with a path.
+  ;;
   *)
-    ac_save_IFS="$IFS"; IFS=$PATH_SEPARATOR
-    for ac_dir in $PATH; do
-      IFS="$ac_save_IFS"
-      test -z "$ac_dir" && ac_dir=.
-      for ac_exec_ext in '' $ac_executable_extensions; do
-        if $ac_executable_p "$ac_dir/$ac_word$ac_exec_ext"; then
-          if test -z "`$ac_dir/$ac_word -h 2>&1 | grep 'dv '`"; then
-            ac_cv_path_MSGFMT="$ac_dir/$ac_word$ac_exec_ext"
-            break 2
-          fi
-        fi
-      done
-    done
-    IFS="$ac_save_IFS"
-  test -z "$ac_cv_path_MSGFMT" && ac_cv_path_MSGFMT=":"
-    ;;
+  IFS="${IFS= 	}"; ac_save_ifs="${IFS}"; IFS="${IFS}:"
+  for ac_dir in ${PATH}; do
+    test -z "${ac_dir}" && ac_dir=.
+    if test -f ${ac_dir}/${ac_word}; then
+      if test -z "`$ac_dir/$ac_word -h 2>&1 | grep 'dv '`"; then
+	ac_cv_path_MSGFMT="${ac_dir}/${ac_word}"
+	break
+      fi
+    fi
+  done
+  IFS="${ac_save_ifs}"
+test -z "$ac_cv_path_MSGFMT" && ac_cv_path_MSGFMT=":"
+  ;;
 esac ;;
 esac
 fi
 MSGFMT="$ac_cv_path_MSGFMT"
-if test "$MSGFMT" != ":"; then
+if test -n "$MSGFMT"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $MSGFMT" >&5
 printf "%s\n" "$MSGFMT" >&6; }
 else
@@ -10539,69 +10795,37 @@ printf "%s\n" "no" >&6; }
 fi
 
 
-
-# Prepare PATH_SEPARATOR.
-# The user is always right.
-if test "${PATH_SEPARATOR+set}" != set; then
-  echo "#! /bin/sh" >conf$$.sh
-  echo  "exit 0"   >>conf$$.sh
-  chmod +x conf$$.sh
-  if (PATH="/nonexistent;."; conf$$.sh) >/dev/null 2>&1; then
-    PATH_SEPARATOR=';'
-  else
-    PATH_SEPARATOR=:
-  fi
-  rm -f conf$$.sh
-fi
-
-# Find out how to test for executable files. Don't use a zero-byte file,
-# as systems may use methods other than mode bits to determine executability.
-cat >conf$$.file <<_ASEOF
-#! /bin/sh
-exit 0
-_ASEOF
-chmod +x conf$$.file
-if test -x conf$$.file >/dev/null 2>&1; then
-  ac_executable_p="test -x"
-else
-  ac_executable_p="test -f"
-fi
-rm -f conf$$.file
-
-# Extract the first word of "xgettext", so it can be a program name with args.
+		# Extract the first word of "xgettext", so it can be a program name with args.
 set dummy xgettext; ac_word=$2
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-printf %s "checking for $ac_word... " >&6; }
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for ${ac_word}" >&5
+printf %s "checking for ${ac_word}... " >&6; }
 if test ${ac_cv_path_XGETTEXT+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
   e) case "$XGETTEXT" in
-  [\\/]* | ?:[\\/]*)
-    ac_cv_path_XGETTEXT="$XGETTEXT" # Let the user override the test with a path.
-    ;;
+  /*)
+  ac_cv_path_XGETTEXT="$XGETTEXT" # Let the user override the test with a path.
+  ;;
   *)
-    ac_save_IFS="$IFS"; IFS=$PATH_SEPARATOR
-    for ac_dir in $PATH; do
-      IFS="$ac_save_IFS"
-      test -z "$ac_dir" && ac_dir=.
-      for ac_exec_ext in '' $ac_executable_extensions; do
-        if $ac_executable_p "$ac_dir/$ac_word$ac_exec_ext"; then
-          if test -z "`${ac_dir}/${ac_word} -h 2>&1 | grep '(HELP)'`"; then
-            ac_cv_path_XGETTEXT="$ac_dir/$ac_word$ac_exec_ext"
-            break 2
-          fi
-        fi
-      done
-    done
-    IFS="$ac_save_IFS"
-  test -z "$ac_cv_path_XGETTEXT" && ac_cv_path_XGETTEXT=":"
-    ;;
+  IFS="${IFS= 	}"; ac_save_ifs="${IFS}"; IFS="${IFS}:"
+  for ac_dir in ${PATH}; do
+    test -z "${ac_dir}" && ac_dir=.
+    if test -f ${ac_dir}/${ac_word}; then
+      if test -z "`${ac_dir}/${ac_word} -h 2>&1 | grep '(HELP)'`"; then
+	ac_cv_path_XGETTEXT="${ac_dir}/${ac_word}"
+	break
+      fi
+    fi
+  done
+  IFS="${ac_save_ifs}"
+test -z "$ac_cv_path_XGETTEXT" && ac_cv_path_XGETTEXT=":"
+  ;;
 esac ;;
 esac
 fi
 XGETTEXT="$ac_cv_path_XGETTEXT"
-if test "$XGETTEXT" != ":"; then
+if test -n "$XGETTEXT"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $XGETTEXT" >&5
 printf "%s\n" "$XGETTEXT" >&6; }
 else
@@ -10635,69 +10859,37 @@ fi
         fi       fi
       if test "x${nls_cv_use_gnu_gettext}" = "xyes"; then
                 INTLOBJS="\$(GETTOBJS)"
-
-# Prepare PATH_SEPARATOR.
-# The user is always right.
-if test "${PATH_SEPARATOR+set}" != set; then
-  echo "#! /bin/sh" >conf$$.sh
-  echo  "exit 0"   >>conf$$.sh
-  chmod +x conf$$.sh
-  if (PATH="/nonexistent;."; conf$$.sh) >/dev/null 2>&1; then
-    PATH_SEPARATOR=';'
-  else
-    PATH_SEPARATOR=:
-  fi
-  rm -f conf$$.sh
-fi
-
-# Find out how to test for executable files. Don't use a zero-byte file,
-# as systems may use methods other than mode bits to determine executability.
-cat >conf$$.file <<_ASEOF
-#! /bin/sh
-exit 0
-_ASEOF
-chmod +x conf$$.file
-if test -x conf$$.file >/dev/null 2>&1; then
-  ac_executable_p="test -x"
-else
-  ac_executable_p="test -f"
-fi
-rm -f conf$$.file
-
-# Extract the first word of "msgfmt", so it can be a program name with args.
+        # Extract the first word of "msgfmt", so it can be a program name with args.
 set dummy msgfmt; ac_word=$2
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-printf %s "checking for $ac_word... " >&6; }
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for ${ac_word}" >&5
+printf %s "checking for ${ac_word}... " >&6; }
 if test ${ac_cv_path_MSGFMT+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
   e) case "$MSGFMT" in
-  [\\/]* | ?:[\\/]*)
-    ac_cv_path_MSGFMT="$MSGFMT" # Let the user override the test with a path.
-    ;;
+  /*)
+  ac_cv_path_MSGFMT="$MSGFMT" # Let the user override the test with a path.
+  ;;
   *)
-    ac_save_IFS="$IFS"; IFS=$PATH_SEPARATOR
-    for ac_dir in $PATH; do
-      IFS="$ac_save_IFS"
-      test -z "$ac_dir" && ac_dir=.
-      for ac_exec_ext in '' $ac_executable_extensions; do
-        if $ac_executable_p "$ac_dir/$ac_word$ac_exec_ext"; then
-          if test -z "`${ac_dir}/${ac_word} -h 2>&1 | grep 'dv '`"; then
-            ac_cv_path_MSGFMT="$ac_dir/$ac_word$ac_exec_ext"
-            break 2
-          fi
-        fi
-      done
-    done
-    IFS="$ac_save_IFS"
-  test -z "$ac_cv_path_MSGFMT" && ac_cv_path_MSGFMT=":"
-    ;;
+  IFS="${IFS= 	}"; ac_save_ifs="${IFS}"; IFS="${IFS}:"
+  for ac_dir in ${PATH}; do
+    test -z "${ac_dir}" && ac_dir=.
+    if test -f ${ac_dir}/${ac_word}; then
+      if test -z "`${ac_dir}/${ac_word} -h 2>&1 | grep 'dv '`"; then
+	ac_cv_path_MSGFMT="${ac_dir}/${ac_word}"
+	break
+      fi
+    fi
+  done
+  IFS="${ac_save_ifs}"
+test -z "$ac_cv_path_MSGFMT" && ac_cv_path_MSGFMT=":"
+  ;;
 esac ;;
 esac
 fi
 MSGFMT="$ac_cv_path_MSGFMT"
-if test "$MSGFMT" != ":"; then
+if test -n "$MSGFMT"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $MSGFMT" >&5
 printf "%s\n" "$MSGFMT" >&6; }
 else
@@ -10752,69 +10944,37 @@ printf "%s\n" "no" >&6; }
 fi
 
 
-
-# Prepare PATH_SEPARATOR.
-# The user is always right.
-if test "${PATH_SEPARATOR+set}" != set; then
-  echo "#! /bin/sh" >conf$$.sh
-  echo  "exit 0"   >>conf$$.sh
-  chmod +x conf$$.sh
-  if (PATH="/nonexistent;."; conf$$.sh) >/dev/null 2>&1; then
-    PATH_SEPARATOR=';'
-  else
-    PATH_SEPARATOR=:
-  fi
-  rm -f conf$$.sh
-fi
-
-# Find out how to test for executable files. Don't use a zero-byte file,
-# as systems may use methods other than mode bits to determine executability.
-cat >conf$$.file <<_ASEOF
-#! /bin/sh
-exit 0
-_ASEOF
-chmod +x conf$$.file
-if test -x conf$$.file >/dev/null 2>&1; then
-  ac_executable_p="test -x"
-else
-  ac_executable_p="test -f"
-fi
-rm -f conf$$.file
-
-# Extract the first word of "xgettext", so it can be a program name with args.
+        # Extract the first word of "xgettext", so it can be a program name with args.
 set dummy xgettext; ac_word=$2
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-printf %s "checking for $ac_word... " >&6; }
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for ${ac_word}" >&5
+printf %s "checking for ${ac_word}... " >&6; }
 if test ${ac_cv_path_XGETTEXT+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
   e) case "$XGETTEXT" in
-  [\\/]* | ?:[\\/]*)
-    ac_cv_path_XGETTEXT="$XGETTEXT" # Let the user override the test with a path.
-    ;;
+  /*)
+  ac_cv_path_XGETTEXT="$XGETTEXT" # Let the user override the test with a path.
+  ;;
   *)
-    ac_save_IFS="$IFS"; IFS=$PATH_SEPARATOR
-    for ac_dir in $PATH; do
-      IFS="$ac_save_IFS"
-      test -z "$ac_dir" && ac_dir=.
-      for ac_exec_ext in '' $ac_executable_extensions; do
-        if $ac_executable_p "$ac_dir/$ac_word$ac_exec_ext"; then
-          if test -z "`${ac_dir}/${ac_word} -h 2>&1 | grep '(HELP)'`"; then
-            ac_cv_path_XGETTEXT="$ac_dir/$ac_word$ac_exec_ext"
-            break 2
-          fi
-        fi
-      done
-    done
-    IFS="$ac_save_IFS"
-  test -z "$ac_cv_path_XGETTEXT" && ac_cv_path_XGETTEXT=":"
-    ;;
+  IFS="${IFS= 	}"; ac_save_ifs="${IFS}"; IFS="${IFS}:"
+  for ac_dir in ${PATH}; do
+    test -z "${ac_dir}" && ac_dir=.
+    if test -f ${ac_dir}/${ac_word}; then
+      if test -z "`${ac_dir}/${ac_word} -h 2>&1 | grep '(HELP)'`"; then
+	ac_cv_path_XGETTEXT="${ac_dir}/${ac_word}"
+	break
+      fi
+    fi
+  done
+  IFS="${ac_save_ifs}"
+test -z "$ac_cv_path_XGETTEXT" && ac_cv_path_XGETTEXT=":"
+  ;;
 esac ;;
 esac
 fi
 XGETTEXT="$ac_cv_path_XGETTEXT"
-if test "$XGETTEXT" != ":"; then
+if test -n "$XGETTEXT"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $XGETTEXT" >&5
 printf "%s\n" "$XGETTEXT" >&6; }
 else
@@ -41291,8 +41451,7 @@ printf "%s\n" "$as_me: WARNING: Using something other than bison is untested." >
 esac
 fi
 
-
-  echo "Skipping i18n for bison without gettext"
+echo "Skipping i18n for bison"
 if test -n "$ac_tool_prefix"; then
   for ac_prog in dlltool gdlltool
   do
@@ -42311,9 +42470,52 @@ if test "x${ac_cv_header_libxml_tree_h}" = "xyes" -a \
      "x${ac_cv_header_libxml_parser_h}" = "xyes" -a \
      "x${ac_cv_lib_xml2_xmlParseFile}" = "xyes"
 then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if libxml headers can be compiled" >&5
+printf %s "checking if libxml headers can be compiled... " >&6; }
+if test ${ac_cv_compile_libxml_headers+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e)
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+
+int
+main (void)
+{
+
+LIBXML_TEST_VERSION
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  ac_cv_compile_libxml_headers=yes
+else case e in #(
+  e) ac_cv_compile_libxml_headers=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_compile_libxml_headers" >&5
+printf "%s\n" "$ac_cv_compile_libxml_headers" >&6; }  ## Only define if conftest was successful:
+  if test "x${ac_cv_compile_libxml_headers}" = "xyes"; then
 
 printf "%s\n" "#define LIBXML2_IS_USABLE 1" >>confdefs.h
 
+  else
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: libxml2 support is broken; disabling" >&5
+printf "%s\n" "$as_me: WARNING: libxml2 support is broken; disabling" >&2;}
+  fi
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: missing requirements for libxml2 support" >&5
+printf "%s\n" "$as_me: WARNING: missing requirements for libxml2 support" >&2;}
 fi
 # APPLE LOCAL end: Get the libxml2 headers and libraries
 
@@ -51810,6 +52012,18 @@ then :
   printf "%s\n" "#define HAVE_CLNT_PCREATEERROR 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "dirname" "ac_cv_func_dirname"
+if test "x$ac_cv_func_dirname" = xyes
+then :
+  printf "%s\n" "#define HAVE_DIRNAME 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "dirname_r" "ac_cv_func_dirname_r"
+if test "x$ac_cv_func_dirname_r" = xyes
+then :
+  printf "%s\n" "#define HAVE_DIRNAME_R 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "dup2" "ac_cv_func_dup2"
 if test "x$ac_cv_func_dup2" = xyes
 then :
@@ -51946,6 +52160,12 @@ ac_fn_c_check_func "$LINENO" "ldexpl" "ac_cv_func_ldexpl"
 if test "x$ac_cv_func_ldexpl" = xyes
 then :
   printf "%s\n" "#define HAVE_LDEXPL 1" >>confdefs.h
+
+fi
+ac_fn_c_check_func "$LINENO" "ldirname" "ac_cv_func_ldirname"
+if test "x$ac_cv_func_ldirname" = xyes
+then :
+  printf "%s\n" "#define HAVE_LDIRNAME 1" >>confdefs.h
 
 fi
 ac_fn_c_check_func "$LINENO" "localtime" "ac_cv_func_localtime"
@@ -54619,6 +54839,67 @@ fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${found}" >&5
 printf "%s\n" "${found}" >&6; }
 
+
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for C compiler flag to ignore unused libraries" >&5
+printf %s "checking for C compiler flag to ignore unused libraries... " >&6; }
+if test ${gl_cv_prog_c_ignore_unused_libraries+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) gl_cv_prog_c_ignore_unused_libraries=none
+     gl_saved_ldflags=$LDFLAGS
+     gl_saved_libs=$LIBS
+     # Link with -lm to detect binutils 2.16 bug with --as-needed; see
+     # <https://lists.gnu.org/r/bug-gnulib/2006-06/msg00131.html>.
+     LIBS="$LIBS -lm"
+     # Use long option sequences like '-z ignore' to test for the feature,
+     # to forestall problems with linkers that have -z, -i, -g, -n, etc. flags.
+     # GCC + binutils likes '-Wl,--as-needed'.
+     # GCC + Solaris ld likes '-Wl,-z,ignore'.
+     # Sun C likes '-Wl,-z,ignore'. '-z ignore' is accepted but has no effect.
+     # Don't try bare '--as-needed'; nothing likes it and the HP-UX 11.11
+     # native cc issues annoying warnings and then ignores it,
+     # which would cause us to incorrectly conclude that it worked.
+     for gl_flags in  '-Wl,--as-needed' \
+  '-Wl,-z,ignore' \
+  '-z ignore'
+
+     do
+       LDFLAGS="$gl_flags $LDFLAGS"
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  gl_cv_prog_c_ignore_unused_libraries=$gl_flags
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+       LDFLAGS=$gl_saved_ldflags
+       test "$gl_cv_prog_c_ignore_unused_libraries" != none &&
+         break
+     done
+     LIBS=$gl_saved_libs
+     ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $gl_cv_prog_c_ignore_unused_libraries" >&5
+printf "%s\n" "$gl_cv_prog_c_ignore_unused_libraries" >&6; }
+  IGNORE_UNUSED_LIBRARIES_CFLAGS=
+  if test "$gl_cv_prog_c_ignore_unused_libraries" != none; then
+    IGNORE_UNUSED_LIBRARIES_CFLAGS="$gl_cv_prog_c_ignore_unused_libraries"
+  fi
+
+
+
 if test "x${build}" = "x${host}" -a "x${host}" = "x${target}"; then
    case ${host_os} in
    hpux*)
@@ -55980,7 +56261,77 @@ then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 fi
+      ## ...and how about we try this way, too:
+      if test "x${LIBDL}" = "x"; then
+        test -z "${LIBDL}" || unset LIBDL
 
+          { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library needed for dlopen and dlsym" >&5
+printf %s "checking for library needed for dlopen and dlsym... " >&6; }
+if test ${gl_cv_lib_dl+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <dlfcn.h>
+
+int
+main (void)
+{
+return ! dlsym (RTLD_DEFAULT, "main");
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  gl_cv_lib_dl=none
+else case e in #(
+  e) gl_cv_lib_dl=maybe ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+     if test $gl_cv_lib_dl = maybe; then
+       saved_LIBS="$LIBS"
+       LIBS="$LIBS -ldl"
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <dlfcn.h>
+
+int
+main (void)
+{
+return ! dlsym (RTLD_DEFAULT, "main");
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  gl_cv_lib_dl='-ldl'
+else case e in #(
+  e) gl_cv_lib_dl=none ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+       LIBS="$saved_LIBS"
+     fi
+     ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $gl_cv_lib_dl" >&5
+printf "%s\n" "$gl_cv_lib_dl" >&6; }
+  case "$gl_cv_lib_dl" in
+    none) LIBDL='' ;;
+    *)    LIBDL="$gl_cv_lib_dl" ;;
+  esac
+
+
+      else
+        test -n "${LIBDL}" && echo "LIBDL is '${LIBDL}'"
+      fi
     fi
   fi
 
@@ -56410,9 +56761,9 @@ else case e in #(
        *)
          if test -n "$gl_cv_host_cpu_c_abi"; then
                       case "$gl_cv_host_cpu_c_abi" in
-             i386 | x86_64-x32 | arm | armhf | arm64-ilp32 | hppa | ia64-ilp32 | mips | mipsn32 | powerpc | riscv*-ilp32* | s390 | sparc)
+             i386 | x86_64-x32 | arm | armhf | arm64-ilp32 | hppa | ia64-ilp32 | loongarch32 | mips | mipsn32 | powerpc | riscv*-ilp32* | s390 | sparc)
                gl_cv_host_cpu_c_abi_32bit=yes ;;
-             x86_64 | alpha | arm64 | aarch64c | hppa64 | ia64 | mips64 | powerpc64 | powerpc64-elfv2 | riscv*-lp64* | s390x | sparc64 )
+             x86_64 | alpha | arm64 | aarch64c | hppa64 | ia64 | loongarch64 | mips64 | powerpc64 | powerpc64-elfv2 | riscv*-lp64* | s390x | sparc64 )
                gl_cv_host_cpu_c_abi_32bit=no ;;
              *)
                gl_cv_host_cpu_c_abi_32bit=unknown ;;
@@ -56457,7 +56808,7 @@ then :
 else case e in #(
   e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#if defined __ELF__ || (defined __linux__ && defined __EDG__)
+#if defined __ELF__ || (defined __linux__ && (defined __EDG__ || defined __SUNPRO_C))
         Extensible Linking Format
         #endif
 

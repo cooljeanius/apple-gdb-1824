@@ -37,6 +37,9 @@
 #ifndef __ia64__
 #undef __ia64__
 #endif
+#ifndef __loongarch32__
+#undef __loongarch32__
+#endif
 #ifndef __loongarch64__
 #undef __loongarch64__
 #endif
@@ -117,6 +120,10 @@
 
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
+
+/* Define to the directory where to find the localizations of the translation
+   domain 'bison-runtime', as a C string. */
+#undef BISON_LOCALEDIR
 
 /* Define to the number of bits in type 'ptrdiff_t'. */
 #undef BITSIZEOF_PTRDIFF_T

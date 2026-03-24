@@ -10,6 +10,9 @@
 #ifndef __i386__
 #undef __i386__
 #endif
+#ifndef __x86_64_x32__
+#undef __x86_64_x32__
+#endif
 #ifndef __x86_64__
 #undef __x86_64__
 #endif
@@ -19,8 +22,14 @@
 #ifndef __arm__
 #undef __arm__
 #endif
-#ifndef __armel__
-#undef __armel__
+#ifndef __armhf__
+#undef __armhf__
+#endif
+#ifndef __arm64_ilp32__
+#undef __arm64_ilp32__
+#endif
+#ifndef __arm64__
+#undef __arm64__
 #endif
 #ifndef __hppa__
 #undef __hppa__
@@ -28,8 +37,17 @@
 #ifndef __hppa64__
 #undef __hppa64__
 #endif
+#ifndef __ia64_ilp32__
+#undef __ia64_ilp32__
+#endif
 #ifndef __ia64__
 #undef __ia64__
+#endif
+#ifndef __loongarch32__
+#undef __loongarch32__
+#endif
+#ifndef __loongarch64__
+#undef __loongarch64__
 #endif
 #ifndef __m68k__
 #undef __m68k__
@@ -48,6 +66,42 @@
 #endif
 #ifndef __powerpc64__
 #undef __powerpc64__
+#endif
+#ifndef __powerpc64_elfv2__
+#undef __powerpc64_elfv2__
+#endif
+#ifndef __riscv32__
+#undef __riscv32__
+#endif
+#ifndef __riscv64__
+#undef __riscv64__
+#endif
+#ifndef __riscv32_ilp32__
+#undef __riscv32_ilp32__
+#endif
+#ifndef __riscv32_ilp32f__
+#undef __riscv32_ilp32f__
+#endif
+#ifndef __riscv32_ilp32d__
+#undef __riscv32_ilp32d__
+#endif
+#ifndef __riscv64_ilp32__
+#undef __riscv64_ilp32__
+#endif
+#ifndef __riscv64_ilp32f__
+#undef __riscv64_ilp32f__
+#endif
+#ifndef __riscv64_ilp32d__
+#undef __riscv64_ilp32d__
+#endif
+#ifndef __riscv64_lp64__
+#undef __riscv64_lp64__
+#endif
+#ifndef __riscv64_lp64f__
+#undef __riscv64_lp64f__
+#endif
+#ifndef __riscv64_lp64d__
+#undef __riscv64_lp64d__
 #endif
 #ifndef __s390__
 #undef __s390__
@@ -586,6 +640,12 @@
    */
 #undef HAVE_DIRENT_H
 
+/* Define to 1 if you have the 'dirname' function. */
+#undef HAVE_DIRNAME
+
+/* Define to 1 if you have the 'dirname_r' function. */
+#undef HAVE_DIRNAME_R
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
@@ -744,6 +804,9 @@
 
 /* Define to 1 if you have the 'ldexpl' function. */
 #undef HAVE_LDEXPL
+
+/* Define to 1 if you have the 'ldirname' function. */
+#undef HAVE_LDIRNAME
 
 /* Define if you have the libbabeltrace library. */
 #undef HAVE_LIBBABELTRACE

@@ -27,6 +27,7 @@ m4_include(m4/codeset.m4)
 
 dnl# gettext stuff:
 sinclude(../lcmessage.m4)
+sinclude(../progtest.m4)
 sinclude(../gettext.m4)
 dnl# The lines below arrange for aclocal not to bring gettext.m4's
 dnl# CY_GNU_GETTEXT into aclocal.m4.

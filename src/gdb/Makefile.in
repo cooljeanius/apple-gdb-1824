@@ -78,7 +78,9 @@ aclocal_m4_deps = \
 	../config/zlib.m4 \
 	../libiberty/m4/libiberty.m4 \
 	m4/build-with-cxx.m4 \
+	m4/codeset.m4 \
 	../lcmessage.m4 \
+	../progtest.m4 \
 	../gettext.m4 \
 	m4/ccstdc.m4
 
@@ -907,7 +909,9 @@ SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c \
   ui-out.c utils.c ui-file.h ui-file.c \
   user-regs.c \
   valarith.c valops.c valprint.c value.c varobj.c vec.c \
-  wrapper.c target/i386-amd64-shared-tdep.c target/x86-shared-tdep.c \
+  wrapper.c \
+  xml-tdesc.c \
+  target/i386-amd64-shared-tdep.c target/x86-shared-tdep.c \
   xmodem.c @MAINT@@APPLE_MAINT@@EXTRA_YFLAGS_SEP@ go-exp.y
 # APPLE LOCAL end subroutine inlining
 
@@ -1390,7 +1394,7 @@ HFILES_NO_SRCDIR = bcache.h buildsym.h call-cmds.h coff-solib.h defs.h \
   objfiles.h parser-defs.h serial.h solib.h \
   symfile.h symfile-mem.h stabsread.h \
   target.h target/target-descriptions.h terminal.h typeprint.h \
-  xcoffsolib.h \
+  xcoffsolib.h xml-tdesc.h \
   macrotab.h macroexp.h macroscope.h \
   ada-lang.h c-lang.h f-lang.h \
   jv-lang.h \
@@ -1486,7 +1490,8 @@ BASE_OBS = \
   prologue-value.o \
   i386-amd64-shared-tdep.o \
   x86-shared-tdep.o \
-  target-descriptions.o
+  target-descriptions.o \
+  xml-tdesc.o
 # APPLE LOCAL end subroutine inlining
 
 TSOBS = inflow.o

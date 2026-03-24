@@ -3349,6 +3349,8 @@ GL_GNULIB_C32ISBLANK
 GL_GNULIB_C32ISALPHA
 GL_GNULIB_C32ISALNUM
 GL_GNULIB_BTOC32
+BISON_LOCALEDIR_c_make
+BISON_LOCALEDIR_c
 BISON_LOCALEDIR
 GL_COND_OBJ_ATEXIT_FALSE
 GL_COND_OBJ_ATEXIT_TRUE
@@ -10671,6 +10673,16 @@ fi
 
 
 
+
+  gl_sed_double_backslashes='s/\\/\\\\/g'
+  gl_sed_escape_doublequotes='s/"/\\"/g'
+  gl_sed_escape_for_make_1="s,\\([ \"&'();<>\\\\\`|]\\),\\\\\\1,g"
+  gl_sed_escape_for_make_2='s,\$,\\$$,g'
+      case `echo r | tr -d '\r'` in
+    '') gl_tr_cr='\015' ;;
+    *)  gl_tr_cr='\r' ;;
+  esac
+
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for inline" >&5
 printf %s "checking for inline... " >&6; }
 if test ${ac_cv_c_inline+y}
@@ -13802,16 +13814,6 @@ fi
 
   pkglibexecdir='${libexecdir}/${PACKAGE}'
 
-
-
-  gl_sed_double_backslashes='s/\\/\\\\/g'
-  gl_sed_escape_doublequotes='s/"/\\"/g'
-  gl_sed_escape_for_make_1="s,\\([ \"&'();<>\\\\\`|]\\),\\\\\\1,g"
-  gl_sed_escape_for_make_2='s,\$,\\$$,g'
-      case `echo r | tr -d '\r'` in
-    '') gl_tr_cr='\015' ;;
-    *)  gl_tr_cr='\r' ;;
-  esac
 
 
   HAVE_STRUCT_SOCKADDR_STORAGE=1;
@@ -23468,8 +23470,8 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
         LIBS=$save_LIBS
         test $gl_pthread_api = yes && break
       done
-      echo "$as_me:23471: gl_pthread_api=$gl_pthread_api" >&5
-      echo "$as_me:23472: LIBPTHREAD=$LIBPTHREAD" >&5
+      echo "$as_me:23473: gl_pthread_api=$gl_pthread_api" >&5
+      echo "$as_me:23474: LIBPTHREAD=$LIBPTHREAD" >&5
 
       gl_pthread_in_glibc=no
       # On Linux with glibc >= 2.34, libc contains the fully functional
@@ -23495,7 +23497,7 @@ rm -rf conftest*
 
           ;;
       esac
-      echo "$as_me:23498: gl_pthread_in_glibc=$gl_pthread_in_glibc" >&5
+      echo "$as_me:23500: gl_pthread_in_glibc=$gl_pthread_in_glibc" >&5
 
       # Test for libpthread by looking for pthread_kill. (Not pthread_self,
       # since it is defined as a macro on OSF/1.)
@@ -23673,7 +23675,7 @@ fi
 
         fi
       fi
-      echo "$as_me:23676: LIBPMULTITHREAD=$LIBPMULTITHREAD" >&5
+      echo "$as_me:23678: LIBPMULTITHREAD=$LIBPMULTITHREAD" >&5
     fi
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether POSIX threads API is available" >&5
 printf %s "checking whether POSIX threads API is available... " >&6; }
@@ -24224,7 +24226,7 @@ else case e in #(
             else
               gl_cv_host_cpu_c_abi=arm
             fi
-            rm -f conftest*
+            rm -fr conftest*
             ;;
 esac
 fi
@@ -30612,8 +30614,8 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
         LIBS=$save_LIBS
         test $gl_pthread_api = yes && break
       done
-      echo "$as_me:30615: gl_pthread_api=$gl_pthread_api" >&5
-      echo "$as_me:30616: LIBPTHREAD=$LIBPTHREAD" >&5
+      echo "$as_me:30617: gl_pthread_api=$gl_pthread_api" >&5
+      echo "$as_me:30618: LIBPTHREAD=$LIBPTHREAD" >&5
 
       gl_pthread_in_glibc=no
       # On Linux with glibc >= 2.34, libc contains the fully functional
@@ -30639,7 +30641,7 @@ rm -rf conftest*
 
           ;;
       esac
-      echo "$as_me:30642: gl_pthread_in_glibc=$gl_pthread_in_glibc" >&5
+      echo "$as_me:30644: gl_pthread_in_glibc=$gl_pthread_in_glibc" >&5
 
       # Test for libpthread by looking for pthread_kill. (Not pthread_self,
       # since it is defined as a macro on OSF/1.)
@@ -30817,7 +30819,7 @@ fi
 
         fi
       fi
-      echo "$as_me:30820: LIBPMULTITHREAD=$LIBPMULTITHREAD" >&5
+      echo "$as_me:30822: LIBPMULTITHREAD=$LIBPMULTITHREAD" >&5
     fi
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether POSIX threads API is available" >&5
 printf %s "checking whether POSIX threads API is available... " >&6; }
@@ -31072,8 +31074,8 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
         LIBS=$save_LIBS
         test $gl_pthread_api = yes && break
       done
-      echo "$as_me:31075: gl_pthread_api=$gl_pthread_api" >&5
-      echo "$as_me:31076: LIBPTHREAD=$LIBPTHREAD" >&5
+      echo "$as_me:31077: gl_pthread_api=$gl_pthread_api" >&5
+      echo "$as_me:31078: LIBPTHREAD=$LIBPTHREAD" >&5
 
       gl_pthread_in_glibc=no
       # On Linux with glibc >= 2.34, libc contains the fully functional
@@ -31099,7 +31101,7 @@ rm -rf conftest*
 
           ;;
       esac
-      echo "$as_me:31102: gl_pthread_in_glibc=$gl_pthread_in_glibc" >&5
+      echo "$as_me:31104: gl_pthread_in_glibc=$gl_pthread_in_glibc" >&5
 
       # Test for libpthread by looking for pthread_kill. (Not pthread_self,
       # since it is defined as a macro on OSF/1.)
@@ -31277,7 +31279,7 @@ fi
 
         fi
       fi
-      echo "$as_me:31280: LIBPMULTITHREAD=$LIBPMULTITHREAD" >&5
+      echo "$as_me:31282: LIBPMULTITHREAD=$LIBPMULTITHREAD" >&5
     fi
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether POSIX threads API is available" >&5
 printf %s "checking whether POSIX threads API is available... " >&6; }
@@ -37018,8 +37020,8 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
         LIBS=$save_LIBS
         test $gl_pthread_api = yes && break
       done
-      echo "$as_me:37021: gl_pthread_api=$gl_pthread_api" >&5
-      echo "$as_me:37022: LIBPTHREAD=$LIBPTHREAD" >&5
+      echo "$as_me:37023: gl_pthread_api=$gl_pthread_api" >&5
+      echo "$as_me:37024: LIBPTHREAD=$LIBPTHREAD" >&5
 
       gl_pthread_in_glibc=no
       # On Linux with glibc >= 2.34, libc contains the fully functional
@@ -37045,7 +37047,7 @@ rm -rf conftest*
 
           ;;
       esac
-      echo "$as_me:37048: gl_pthread_in_glibc=$gl_pthread_in_glibc" >&5
+      echo "$as_me:37050: gl_pthread_in_glibc=$gl_pthread_in_glibc" >&5
 
       # Test for libpthread by looking for pthread_kill. (Not pthread_self,
       # since it is defined as a macro on OSF/1.)
@@ -37223,7 +37225,7 @@ fi
 
         fi
       fi
-      echo "$as_me:37226: LIBPMULTITHREAD=$LIBPMULTITHREAD" >&5
+      echo "$as_me:37228: LIBPMULTITHREAD=$LIBPMULTITHREAD" >&5
     fi
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether POSIX threads API is available" >&5
 printf %s "checking whether POSIX threads API is available... " >&6; }
@@ -40417,12 +40419,12 @@ done
 
 
   if test -z "$USE_NLS"; then
-    echo "The BISON-I18N macro is used without being preceded by AM-GNU-GETTEXT." | sed -e 's/-/_/g' 1>&2
-    exit 1
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: The BISON_I18N macro is used without being preceded by AM_GNU_GETTEXT." >&5
+printf "%s\n" "$as_me: WARNING: The BISON_I18N macro is used without being preceded by AM_GNU_GETTEXT." >&2;}
   fi
   BISON_LOCALEDIR=
   BISON_USE_NLS=no
-  if test "$USE_NLS" = yes; then
+            if test "$USE_NLS" = yes; then
                                 BISON_LOCALEDIR="${localedir}"
 
 # Check whether --with-bison-prefix was given.
@@ -40447,6 +40449,49 @@ fi
     fi
 
   fi
+
+      gl_saved_prefix="${prefix}"
+  gl_saved_datarootdir="${datarootdir}"
+  gl_saved_localedir="${localedir}"
+  gl_saved_bisonlocaledir="${BISON_LOCALEDIR}"
+      if test "X$prefix" = "XNONE"; then
+    prefix="$ac_default_prefix"
+  fi
+  eval datarootdir="$datarootdir"
+  eval localedir="$localedir"
+  eval BISON_LOCALEDIR="$BISON_LOCALEDIR"
+
+
+
+
+
+    gl_final_BISON_LOCALEDIR="$BISON_LOCALEDIR"
+    case "$build_os" in
+    cygwin*)
+      case "$host_os" in
+        mingw*)
+          gl_final_BISON_LOCALEDIR=`cygpath -w "$gl_final_BISON_LOCALEDIR"` ;;
+      esac
+      ;;
+  esac
+    BISON_LOCALEDIR_c=`printf '%s\n' "$gl_final_BISON_LOCALEDIR" | sed -e "$gl_sed_double_backslashes" -e "$gl_sed_escape_doublequotes" | tr -d "$gl_tr_cr"`
+  BISON_LOCALEDIR_c='"'"$BISON_LOCALEDIR_c"'"'
+
+
+    BISON_LOCALEDIR_c_make=`printf '%s\n' "$BISON_LOCALEDIR_c" | sed -e "$gl_sed_escape_for_make_1" -e "$gl_sed_escape_for_make_2" | tr -d "$gl_tr_cr"`
+      if test "$BISON_LOCALEDIR_c_make" = '\"'"${gl_final_BISON_LOCALEDIR}"'\"'; then
+    BISON_LOCALEDIR_c_make='\"$(BISON_LOCALEDIR)\"'
+  fi
+
+
+  BISON_LOCALEDIR="${gl_saved_bisonlocaledir}"
+  localedir="${gl_saved_localedir}"
+  datarootdir="${gl_saved_datarootdir}"
+  prefix="${gl_saved_prefix}"
+
+
+printf "%s\n" "#define BISON_LOCALEDIR ${BISON_LOCALEDIR_c}" >>confdefs.h
+
   if test $BISON_USE_NLS = yes; then
 
 printf "%s\n" "#define YYENABLE_NLS 1" >>confdefs.h

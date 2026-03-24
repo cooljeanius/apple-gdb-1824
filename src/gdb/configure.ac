@@ -1282,7 +1282,22 @@ if test "x${ac_cv_header_libxml_tree_h}" = "xyes" -a \
      "x${ac_cv_header_libxml_parser_h}" = "xyes" -a \
      "x${ac_cv_lib_xml2_xmlParseFile}" = "xyes"
 then
-  AC_DEFINE([LIBXML2_IS_USABLE],[1],[libxml2 on this system is usable])
+  AC_CACHE_CHECK([if libxml headers can be compiled],[ac_cv_compile_libxml_headers],[
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+]],[[
+LIBXML_TEST_VERSION
+]])],[ac_cv_compile_libxml_headers=yes],[ac_cv_compile_libxml_headers=no])dnl
+])dnl
+  ## Only define if conftest was successful:
+  if test "x${ac_cv_compile_libxml_headers}" = "xyes"; then
+    AC_DEFINE([LIBXML2_IS_USABLE],[1],[libxml2 on this system is usable])
+  else
+    AC_MSG_WARN([libxml2 support is broken; disabling])
+  fi
+else
+  AC_MSG_WARN([missing requirements for libxml2 support])
 fi
 AC_SUBST([LIBXML2_INCLUDES])dnl
 AC_SUBST([LIBXML2_LIBS])dnl
@@ -2418,19 +2433,19 @@ unset ac_cv_func_gethostbyname
 unset ac_cv_func_strcasecmp
 unset ac_cv_func_strchr
 AC_CHECK_FUNCS([atof alarm assert atexit bcopy bsearch bzero clnt_pcreateerror \
-                dup2 exit fflush fgets fprintf fwrite gdbarch_obstack_strdup \
-                get_type_arch getcwd gethostbyaddr gethostbyname gethostname \
-                getpass gets gettimeofday gmtime inet_addr inet_ntoa isascii \
-                ishexnumber isnumber isspace ldexpl localtime localtime_r \
-                mach_error_string memchr memcmp memcpy memmove mempcpy \
-                memset mkdir netname_look_up nl_langinfo pathconf pclose \
-                popen pow powl qsort qsort_r readdir recv re_comp regcomp \
-                select send set_type_code setitimer socket strcasecmp strcat \
-                strchr strcpy strcspn strdup strerror strlcat strlcpy strlen \
-                strncasecmp strncat strncmp strncpy strndup strpbrk \
-                strrchr strspn strstr strtok strtok_r strtol strtoul \
-                timeradd timerclear timersub uname vasprintf \
-                verify_floatformat wcwidth])dnl
+                dirname dirname_r dup2 exit fflush fgets fprintf fwrite \
+                gdbarch_obstack_strdup get_type_arch getcwd gethostbyaddr \
+                gethostbyname gethostname getpass gets gettimeofday gmtime \
+                inet_addr inet_ntoa isascii ishexnumber isnumber isspace \
+                ldexpl ldirname localtime localtime_r mach_error_string \
+                memchr memcmp memcpy memmove mempcpy memset mkdir \
+                netname_look_up nl_langinfo pathconf pclose popen pow powl \
+                qsort qsort_r readdir recv re_comp regcomp select send \
+                set_type_code setitimer socket strcasecmp strcat strchr strcpy \
+                strcspn strdup strerror strlcat strlcpy strlen strncasecmp \
+                strncat strncmp strncpy strndup strpbrk strrchr strspn strstr \
+                strtok strtok_r strtol strtoul timeradd timerclear timersub \
+                uname vasprintf verify_floatformat wcwidth])dnl
 
 dnl# Use as a replacement for just-plain sprintf:
 if test "x${ac_cv_func_snprintf}" = "x"; then
@@ -3138,6 +3153,9 @@ else
 fi
 AC_MSG_RESULT([${found}])
 AC_SUBST([RDYNAMIC])dnl
+
+dnl# another linker flag:
+gl_IGNORE_UNUSED_LIBRARIES
 
 dnl# For certain native configurations, we need to check whether thread
 dnl# support can be built in or not.
@@ -4000,7 +4018,14 @@ m4_ifdef([GDB_AC_CHECK_BFD],[
     # -ldl is provided by bfd/Makfile.am (LIBDL) <PLUGINS>.
     if test "x${plugins}" = "xyes" && test "x${ac_cv_search_dlopen}" = "x"; then
       test -z "${ac_cv_search_dlopen}" || unset ac_cv_search_dlopen
-      AC_SEARCH_LIBS([dlopen],[dl zrldsrl dlcompat ltdl])
+      AC_SEARCH_LIBS([dlopen],[dl zrldsrl dlcompat ltdl])dnl
+      ## ...and how about we try this way, too:
+      if test "x${LIBDL}" = "x"; then
+        test -z "${LIBDL}" || unset LIBDL
+        gl_LIBDL
+      else
+        test -n "${LIBDL}" && echo "LIBDL is '${LIBDL}'"
+      fi
     fi
   fi
 
