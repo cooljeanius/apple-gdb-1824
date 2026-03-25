@@ -7046,6 +7046,9 @@ else
 fi
 
 
+if test -d conftest.dSYM; then
+  rm -rf conftest.dSYM 2>/dev/null || rmdir conftest.dSYM 2>/dev/null
+fi
 case `pwd` in
   *\ * | *\	*)
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Libtool does not cope well with whitespace in \`pwd\`" >&5
@@ -24871,7 +24874,7 @@ else
 fi
 
 else
-  test ! -z "${RANLIB}"
+  test -n "${RANLIB}" && echo "RANLIB is '${RANLIB}'"
   test -n "${ac_cv_prog_ac_ct_RANLIB}"
 fi
 

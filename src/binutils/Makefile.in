@@ -842,11 +842,6 @@ am__v_LFLAG_0 = -w # (or maybe "-n" for POSIX)
 am__v_LFLAG_1 = -d
 AM_YFLAGS = @MAINT@@EXTRA_YFLAGS_SEP@ -d $(AM_V_YFLAG) $(AM_V_v) -k @YFLAGS_SEP1@ -Wall -Wyacc
 AM_LFLAGS = @MAINT@ $(AM_V_LFLAG)
-
-# Automake 1.10+ disables lex and yacc output file regeneration if
-# maintainer mode is disabled.  Avoid this.
-am__skiplex = 
-am__skipyacc = 
 AM_CFLAGS = $(WARN_CFLAGS) $(C_ARCHFLAGS) @MAINT@ $(WARN_WRITE_STRINGS)
 AM_CFLAGS_FOR_BUILD = $(WARN_CFLAGS_FOR_BUILD) $(ZLIBINC)
 AM_DEFS = @WARN_DEFS@

@@ -95,6 +95,9 @@ AC_SUBST([GCC])dnl
 AC_MSG_CHECKING([libtool stuff])
 AC_MSG_RESULT([ ])
 AC_PROG_CXX
+if test -d conftest.dSYM; then
+  rm -rf conftest.dSYM 2>/dev/null || rmdir conftest.dSYM 2>/dev/null
+fi
 LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])dnl
 LT_LANG([C])dnl
 LT_LANG([C++])dnl
@@ -319,7 +322,7 @@ if test "x${RANLIB}" = "x" && test "x${ac_cv_prog_ac_ct_RANLIB}" = "x"; then
   test -z "${RANLIB}" && test -z "${ac_cv_prog_ac_ct_RANLIB}"
   AC_PROG_RANLIB
 else
-  test ! -z "${RANLIB}"
+  test -n "${RANLIB}" && echo "RANLIB is '${RANLIB}'"
   test -n "${ac_cv_prog_ac_ct_RANLIB}"
 fi
 AC_PROG_INSTALL

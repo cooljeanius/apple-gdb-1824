@@ -72,11 +72,6 @@ AM_YFLAGS = @MAINT@@EXTRA_YFLAGS_SEP@ -d $(AM_V_YFLAG) $(AM_V_v) -k @YFLAGS_SEP1
 LEX = `if [ -f ../flex/flex ]; then echo ../flex/flex; else echo @LEX@; fi`
 AM_LFLAGS = @MAINT@ $(AM_V_LFLAG)
 
-# Automake 1.10+ disables lex and yacc output file regeneration if
-# maintainer mode is disabled.  Avoid this.
-am__skiplex =
-am__skipyacc =
-
 ## also needed:
 HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
 ## not strictly necessary, but goes with the previous:

@@ -4228,19 +4228,23 @@ AC_ARG_ENABLE([werror],
 [AS_HELP_STRING([--enable-werror],
                 [enable -Werror in bootstrap stage2 and later])],[
 case "${enableval}" in
-  yes | ye | y) 
-    test -n "${enableval}" && echo "enableval is '${enableval}' 4 --enable-werror"
+  yeah | yes | ye | y) 
+    test -n "${enableval}" && echo "enableval is '${enableval}' for --enable-werror"
     ERROR_ON_WARNING="yes"
   ;;
   nope | nop | no | n)
-    test -n "${enableval}" && echo "enableval is '${enableval}' 4 --enable-werror"
+    test -n "${enableval}" && echo "enableval is '${enableval}' for --enable-werror"
     ERROR_ON_WARNING="no"
   ;;
   *) AC_MSG_ERROR([bad value ${enableval} for --enable-werror]) ;;
 esac
 ],[
-if test "${GCC}" = yes && test -z "${GITHUB_ACTIONS}" && test "x${development}" = "xtrue"; then
-  enable_werror=yes
+if test "x${GCC}" = "xyes" && test "x${development}" = "xtrue"; then
+  if test -z "${GITHUB_ACTIONS}"; then
+    enable_werror=yes
+  else
+    enable_werror=sorry
+  fi
 else
   enable_werror=no
 fi
