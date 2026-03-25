@@ -42470,8 +42470,8 @@ if test "x${ac_cv_header_libxml_tree_h}" = "xyes" -a \
      "x${ac_cv_header_libxml_parser_h}" = "xyes" -a \
      "x${ac_cv_lib_xml2_xmlParseFile}" = "xyes"
 then
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if libxml headers can be compiled into a working program" >&5
-printf %s "checking if libxml headers can be compiled into a working program... " >&6; }
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if libxml headers can be included along with \"defs.h\" and compiled into a working program" >&5
+printf %s "checking if libxml headers can be included along with \"defs.h\" and compiled into a working program... " >&6; }
 if test ${ac_cv_run_libxml_headers+y}
 then :
   printf %s "(cached) " >&6
@@ -42484,6 +42484,7 @@ else case e in #(
   e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
+#include "defs.h"
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 

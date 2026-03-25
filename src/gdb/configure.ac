@@ -1282,9 +1282,10 @@ if test "x${ac_cv_header_libxml_tree_h}" = "xyes" -a \
      "x${ac_cv_header_libxml_parser_h}" = "xyes" -a \
      "x${ac_cv_lib_xml2_xmlParseFile}" = "xyes"
 then
-  AC_CACHE_CHECK([if libxml headers can be compiled into a working program],
+  AC_CACHE_CHECK([if libxml headers can be included along with "defs.h" and compiled into a working program],
                  [ac_cv_run_libxml_headers],[
   AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include "defs.h"
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 ]],[[

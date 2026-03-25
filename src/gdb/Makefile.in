@@ -910,7 +910,7 @@ SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c \
   user-regs.c \
   valarith.c valops.c valprint.c value.c varobj.c vec.c \
   wrapper.c \
-  xml-tdesc.c \
+  xml-tdesc.c xml-support.c \
   target/i386-amd64-shared-tdep.c target/x86-shared-tdep.c \
   xmodem.c @MAINT@@APPLE_MAINT@@EXTRA_YFLAGS_SEP@ go-exp.y
 # APPLE LOCAL end subroutine inlining
@@ -1394,7 +1394,7 @@ HFILES_NO_SRCDIR = bcache.h buildsym.h call-cmds.h coff-solib.h defs.h \
   objfiles.h parser-defs.h serial.h solib.h \
   symfile.h symfile-mem.h stabsread.h \
   target.h target/target-descriptions.h terminal.h typeprint.h \
-  xcoffsolib.h xml-tdesc.h \
+  xcoffsolib.h xml-support.h xml-tdesc.h \
   macrotab.h macroexp.h macroscope.h \
   ada-lang.h c-lang.h f-lang.h \
   jv-lang.h \
@@ -1491,7 +1491,7 @@ BASE_OBS = \
   i386-amd64-shared-tdep.o \
   x86-shared-tdep.o \
   target-descriptions.o \
-  xml-tdesc.o
+  xml-support.o xml-tdesc.o
 # APPLE LOCAL end subroutine inlining
 
 TSOBS = inflow.o

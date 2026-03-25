@@ -1080,6 +1080,19 @@ language_class_name_from_physname (const struct language_defn *current_language,
   return NULL;
 }
 
+/* Return non-zero if TYPE should be passed (and returned) by
+   reference at the language level.  */
+int
+language_pass_by_reference(struct type *type)
+{
+#ifdef HAVE_CURRENT_LANGUAGE_LA_PASS_BY_REFERENCE
+  return current_language->la_pass_by_reference(type);
+#else
+  (void)type;
+  return -1;
+#endif /* HAVE_CURRENT_LANGUAGE_LA_PASS_BY_REFERENCE */
+}
+
 /* Return the default string containing the list of characters
    delimiting words.  This is a reasonable default value that
    most languages should be able to use.  */

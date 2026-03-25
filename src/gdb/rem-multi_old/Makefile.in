@@ -323,6 +323,7 @@ AM_CPPFLAGS = -Wp,-I. -Wp,-I.. -Wp,-I${upsrcdir} -Wp,-I${upupsrcdir} \
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CFLAGS = $(C_ARCHFLAGS) -ggdb -fno-strict-aliasing -std=gnu99 -Wall \
 -Wextra -Wold-style-definition -Wwrite-strings -Wformat=2 \
+-Wno-error=int-conversion \
 -Wmissing-include-dirs @MAINT@ -Wstrict-prototypes -Wnested-externs
 
 AM_EXTRA_WARN_CFLAGS = -Wmissing-format-attribute -Wc++-compat \
