@@ -1,5 +1,5 @@
 /* Construct a regular expression from a literal string.
-   Copyright (C) 1995, 2010-2023 Free Software Foundation, Inc.
+   Copyright (C) 1995, 2010-2026 Free Software Foundation, Inc.
    Written by Bruno Haible <haible@clisp.cons.org>, 2010.
 
    This program is free software: you can redistribute it and/or modify
@@ -24,6 +24,11 @@
 #endif
 
 #include <stdlib.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 /* Specifies a quotation task for converting a fixed string to a regular
    expression pattern.  */
@@ -89,5 +94,9 @@ extern char *
        _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE
        _GL_ATTRIBUTE_RETURNS_NONNULL;
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _REGEX_QUOTE_H */

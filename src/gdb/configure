@@ -1098,6 +1098,7 @@ EGREP
 RANLIB
 LD_ARCHFLAGS
 acl_cv_wl
+SDKROOT
 MACH_EXC_SERVER_PREFACE
 want64
 SED
@@ -1307,6 +1308,7 @@ CXX
 CXXFLAGS
 CCC
 CPP
+SDKROOT
 MAKEINFO
 MAKEINFOFLAGS
 CCAS
@@ -2079,6 +2081,7 @@ Some influential environment variables:
   CXX         C++ compiler command
   CXXFLAGS    C++ compiler flags
   CPP         C preprocessor
+  SDKROOT     Where the SDK is.
   MAKEINFO    Parent configure detects if it is of sufficient version.
   MAKEINFOFLAGS
               Parameters for MAKEINFO.
@@ -4310,7 +4313,7 @@ as_fn_append ac_func_c_list " codeset HAVE_CODESET"
 as_fn_append ac_header_c_list " sys/procfs.h sys_procfs_h HAVE_SYS_PROCFS_H"
 
 # Auxiliary files required by this configure script.
-ac_aux_files="config.rpath ltmain.sh ar-lib depcomp missing install-sh config.guess config.sub compile"
+ac_aux_files="ltmain.sh ar-lib config.rpath depcomp missing install-sh config.guess config.sub compile"
 
 # Locations in which to look for auxiliary files.
 ac_aux_dir_candidates="${srcdir}/.."
@@ -9120,6 +9123,7 @@ rm -f conftest.file
 
 
 
+
       ## should now have it...
 fi
 
@@ -9367,7 +9371,26 @@ printf "%s\n" "(disabled!) no" >&6; }
         ## TODO: come back to this after working on aarch64 support
     ;;
   *-apple-darwin* | *-apple-macosx*)
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether we can use 64 bit mach exceptions" >&5
+
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for SDKROOT" >&5
+printf %s "checking for SDKROOT... " >&6; }
+    if test -n "${SDKROOT}"; then
+      if test -d "${SDKROOT}" && test -r "${SDKROOT}"; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: set and usable: '${SDKROOT}'" >&5
+printf "%s\n" "set and usable: '${SDKROOT}'" >&6; }
+      else
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: set to '${SDKROOT}', but not usable" >&5
+printf "%s\n" "set to '${SDKROOT}', but not usable" >&6; }
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: issues may arise with current SDKROOT setting" >&5
+printf "%s\n" "$as_me: WARNING: issues may arise with current SDKROOT setting" >&2;}
+      fi
+    else
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: unset" >&5
+printf "%s\n" "unset" >&6; }
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: generally you should set SDKROOT on '${host}'" >&5
+printf "%s\n" "$as_me: WARNING: generally you should set SDKROOT on '${host}'" >&2;}
+    fi
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether we can use 64 bit mach exceptions" >&5
 printf %s "checking whether we can use 64 bit mach exceptions... " >&6; }
     if test -r "${SDKROOT}/usr/include/mach/mach_exc.defs"; then
 

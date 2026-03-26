@@ -1,16 +1,19 @@
-#serial 15
+# unlink-busy.m4
+# serial 17
+dnl Copyright (C) 2000-2001, 2004, 2007, 2009-2026 Free Software Foundation,
+dnl Inc.
+dnl This file is free software; the Free Software Foundation
+dnl gives unlimited permission to copy and/or distribute it,
+dnl with or without modifications, as long as this notice is preserved.
+dnl This file is offered as-is, without any warranty.
 
 dnl From J. David Anglin.
 
 dnl HPUX and other systems can't unlink shared text that is being executed.
 
-# Copyright (C) 2000-2001, 2004, 2007, 2009-2023 Free Software Foundation, Inc.
-# This file is free software; the Free Software Foundation
-# gives unlimited permission to copy and/or distribute it,
-# with or without modifications, as long as this notice is preserved.
-
 AC_DEFUN([gl_FUNC_UNLINK_BUSY_TEXT],
-[dnl
+[
+  AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles
   AC_CACHE_CHECK([whether a running program can be unlinked],
     [gl_cv_func_unlink_busy_text],
     [
@@ -31,9 +34,9 @@ AC_DEFUN([gl_FUNC_UNLINK_BUSY_TEXT],
         [gl_cv_func_unlink_busy_text=yes],
         [gl_cv_func_unlink_busy_text=no],
         [case "$host_os" in
-                   # Guess no on native Windows.
-           mingw*) gl_cv_func_unlink_busy_text="guessing no" ;;
-           *)      gl_cv_func_unlink_busy_text="guessing no" ;;
+                              # Guess no on native Windows.
+           mingw* | windows*) gl_cv_func_unlink_busy_text="guessing no" ;;
+           *)                 gl_cv_func_unlink_busy_text="guessing no" ;;
          esac
         ]
       )

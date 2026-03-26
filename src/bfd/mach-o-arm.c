@@ -33,9 +33,20 @@
 #define bfd_mach_o_mkobject bfd_mach_o_arm_mkobject
 
 #define bfd_mach_o_canonicalize_one_reloc bfd_mach_o_arm_canonicalize_one_reloc
+
+static bfd_boolean
+bfd_mach_o_arm_canonicalize_one_reloc(bfd *,
+                                      struct mach_o_reloc_info_external *,
+                                      arelent *, asymbol **)
+  ATTRIBUTE_UNUSED;
+
 #define bfd_mach_o_swap_reloc_out NULL
 #define bfd_mach_o_bfd_reloc_type_lookup bfd_mach_o_arm_bfd_reloc_type_lookup
 #define bfd_mach_o_bfd_reloc_name_lookup bfd_mach_o_arm_bfd_reloc_name_lookup
+
+static reloc_howto_type *
+bfd_mach_o_arm_bfd_reloc_name_lookup(bfd *, const char *)
+  ATTRIBUTE_USED;
 
 #define bfd_mach_o_print_thread NULL
 #define bfd_mach_o_tgt_seg_table NULL
@@ -180,8 +191,9 @@ static reloc_howto_type arm_howto_table[]=
 	 FALSE, 0x07ff2fff, 0x07ff2fff, TRUE)
 };
 
+/* */
 static bfd_boolean
-bfd_mach_o_arm_canonicalize_one_reloc (bfd *abfd,
+bfd_mach_o_arm_canonicalize_one_reloc(bfd *abfd,
                                       struct mach_o_reloc_info_external *raw,
                                       arelent *res, asymbol **syms)
  {

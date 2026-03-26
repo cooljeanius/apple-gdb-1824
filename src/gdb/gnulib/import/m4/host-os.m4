@@ -1,9 +1,11 @@
-# serial 12
-
-# Copyright (C) 2001, 2003-2004, 2006, 2009-2023 Free Software Foundation, Inc.
-# This file is free software; the Free Software Foundation
-# gives unlimited permission to copy and/or distribute it,
-# with or without modifications, as long as this notice is preserved.
+# host-os.m4
+# serial 13
+dnl Copyright (C) 2001, 2003-2004, 2006, 2009-2026 Free Software Foundation,
+dnl Inc.
+dnl This file is free software; the Free Software Foundation
+dnl gives unlimited permission to copy and/or distribute it,
+dnl with or without modifications, as long as this notice is preserved.
+dnl This file is offered as-is, without any warranty.
 
 # Written by Paul Eggert.
 
@@ -47,7 +49,7 @@ AC_DEFUN([gl_HOST_OS],
        msdosdjgpp*)     os='DJGPP';;
        mpeix*)          os='MPE/iX';;
        mint*)           os='MiNT';;
-       mingw*)          os='MinGW';;
+       mingw* | windows*) os='MinGW';;
        lynxos*)         os='LynxOS';;
        linux*)          os='GNU/Linux';;
        hpux*)           os='HP-UX';;

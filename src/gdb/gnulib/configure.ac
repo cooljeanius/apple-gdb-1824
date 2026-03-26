@@ -22,7 +22,7 @@ dnl# Process this file with autoconf to produce a configure script.
 echo "hello from the gnulib subdirectory of the gdb directory"
 
 # Setup:
-AC_PREREQ([2.64])dnl
+AC_PREREQ([2.69])dnl
 AC_INIT([libgnu],[2013.11.14],[bug-gnulib@gnu.org])
 AC_CONFIG_SRCDIR([import/memmem.c])
 AC_CONFIG_LIBOBJ_DIR([import])
@@ -61,7 +61,7 @@ AC_PROG_CPP
 test -z "${am_cv_prog_cc_stdc}" && am_cv_prog_cc_stdc="${ac_cv_prog_cc_stdc}"
 
 AC_CONFIG_AUX_DIR([../..])
-AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_MACRO_DIRS([m4 import/m4])
 AC_CANONICAL_TARGET
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"

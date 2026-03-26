@@ -394,6 +394,9 @@ MIG_CHECKING = @MIG_CHECKING@
 # APPLE LOCAL: 64 bit MIG generates files with mach_ as a prefix.
 MACH_EXC_SERVER_PREFACE = @MACH_EXC_SERVER_PREFACE@
 
+# APPLE LOCAL: MIG might need to include defs from the SDKROOT:
+SDKROOT = @SDKROOT@
+
 # APPLE LOCAL: Encode the Info.plist in the binary for the security
 # framework's benefit.
 ADD_INFO_PLIST = -sectcreate __TEXT __info_plist $(srcdir)/Info.plist
@@ -604,6 +607,7 @@ CONFIG_UNINSTALL = @CONFIG_UNINSTALL@
 
 # ${acl_cv_wp}-I. for config files.
 # ${acl_cv_wp}-I$(srcdir) for gdb internal headers.
+# ${acl_cv_wp}-I$(srcdir)/common for headers shared between gdb and others.
 # ${acl_cv_wp}-I$(srcdir)/config for more generic config files.
 
 # It is also possible that you will need to add ${acl_cv_wp}-I/usr/include/sys

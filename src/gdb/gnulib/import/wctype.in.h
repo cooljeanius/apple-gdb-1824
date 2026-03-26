@@ -1,6 +1,6 @@
 /* A substitute for ISO C99 <wctype.h>, for platforms that lack it.
 
-   Copyright (C) 2006-2023 Free Software Foundation, Inc.
+   Copyright (C) 2006-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
@@ -50,16 +50,19 @@
  #error "Please include config.h first."
 #endif
 
-#if @HAVE_WINT_T@
-/* Solaris 2.5 has a bug: <wchar.h> must be included before <wctype.h>.  */
+/* Solaris 2.5 has a bug: <wchar.h> must be included before <wctype.h>.
+   But don't do it in very old mingw, when <wchar.h> is already partially
+   processed.  */
+#if @HAVE_WINT_T@ && !(defined __MINGW32__ && defined _WCHAR_H)
 # include <wchar.h>
 #endif
 
 /* Native Windows (mingw, MSVC) have declarations of towupper, towlower, and
    isw* functions in <ctype.h>, <wchar.h> as well as in <wctype.h>.  Include
    <ctype.h>, <wchar.h> in advance to avoid rpl_ prefix being added to the
-   declarations.  */
-#if defined _WIN32 && ! defined __CYGWIN__
+   declarations.  But don't do it in very old mingw, when <wchar.h> is already
+   partially processed.  */
+#if defined _WIN32 && !defined __CYGWIN__ && !(defined __MINGW32__ && defined _WCHAR_H)
 # include <ctype.h>
 # include <wchar.h>
 #endif
@@ -133,7 +136,7 @@ typedef unsigned int rpl_wint_t;
    Linux libc5 has <wctype.h> and the functions but they are broken.
    mingw and MSVC have <wctype.h> and the functions but they take a wchar_t
    as argument, not an rpl_wint_t.  Additionally, the mingw iswprint function
-   is broken.
+   and the Android iswpunct function are broken.
    Assume all 11 functions (all isw* except iswblank) are implemented the
    same way, or not at all.  */
 # if ! @HAVE_ISWCNTRL@ || @REPLACE_ISWCNTRL@
@@ -264,27 +267,7 @@ rpl_towupper (wint_t wc)
 
 #  else
 
-/* IRIX 5.3 has macros but no functions, its isw* macros refer to an
-   undefined variable _ctmp_ and to <ctype.h> macros like _P, and they
-   refer to system functions like _iswctype that are not in the
-   standard C library.  Rather than try to get ancient buggy
-   implementations like this to work, just disable them.  */
-#   undef iswalnum
-#   undef iswalpha
-#   undef iswblank
-#   undef iswcntrl
-#   undef iswdigit
-#   undef iswgraph
-#   undef iswlower
-#   undef iswprint
-#   undef iswpunct
-#   undef iswspace
-#   undef iswupper
-#   undef iswxdigit
-#   undef towlower
-#   undef towupper
-
-/* Linux libc5 has <wctype.h> and the functions but they are broken.  */
+/* On some old platforms the functions are broken.  */
 #   if @REPLACE_ISWCNTRL@
 #    if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #     define iswalnum rpl_iswalnum
@@ -478,9 +461,9 @@ towupper
 #    if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #     define iswblank rpl_iswblank
 #    endif
-_GL_FUNCDECL_RPL (iswblank, int, (wint_t wc));
+_GL_FUNCDECL_RPL (iswblank, int, (wint_t wc), );
 #   else
-_GL_FUNCDECL_SYS (iswblank, int, (wint_t wc));
+_GL_FUNCDECL_SYS (iswblank, int, (wint_t wc), );
 #   endif
 #  endif
 
@@ -490,7 +473,17 @@ _GL_FUNCDECL_SYS (iswblank, int, (wint_t wc));
 #     undef iswdigit
 #     define iswdigit rpl_iswdigit
 #    endif
-_GL_FUNCDECL_RPL (iswdigit, int, (wint_t wc));
+_GL_FUNCDECL_RPL (iswdigit, int, (wint_t wc), );
+#   endif
+#  endif
+
+#  if @GNULIB_ISWPUNCT@
+#   if @REPLACE_ISWPUNCT@
+#    if !(defined __cplusplus && defined GNULIB_NAMESPACE)
+#     undef iswpunct
+#     define iswpunct rpl_iswpunct
+#    endif
+_GL_FUNCDECL_RPL (iswpunct, int, (wint_t wc), );
 #   endif
 #  endif
 
@@ -500,7 +493,7 @@ _GL_FUNCDECL_RPL (iswdigit, int, (wint_t wc));
 #     undef iswxdigit
 #     define iswxdigit rpl_iswxdigit
 #    endif
-_GL_FUNCDECL_RPL (iswxdigit, int, (wint_t wc));
+_GL_FUNCDECL_RPL (iswxdigit, int, (wint_t wc), );
 #   endif
 #  endif
 
@@ -649,12 +642,12 @@ typedef void *rpl_wctype_t;
 #   undef wctype
 #   define wctype rpl_wctype
 #  endif
-_GL_FUNCDECL_RPL (wctype, wctype_t, (const char *name)
+_GL_FUNCDECL_RPL (wctype, wctype_t, (const char *name),
                                     _GL_ARG_NONNULL ((1)));
 _GL_CXXALIAS_RPL (wctype, wctype_t, (const char *name));
 # else
 #  if !@HAVE_WCTYPE_T@
-_GL_FUNCDECL_SYS (wctype, wctype_t, (const char *name)
+_GL_FUNCDECL_SYS (wctype, wctype_t, (const char *name),
                                     _GL_ARG_NONNULL ((1)));
 #  endif
 _GL_CXXALIAS_SYS (wctype, wctype_t, (const char *name));
@@ -663,7 +656,6 @@ _GL_CXXALIAS_SYS (wctype, wctype_t, (const char *name));
 _GL_CXXALIASWARN (wctype);
 # endif
 #elif defined GNULIB_POSIXCHECK
-# undef wctype
 # if HAVE_RAW_DECL_WCTYPE
 _GL_WARN_ON_USE (wctype, "wctype is unportable - "
                  "use gnulib module wctype for portability");
@@ -679,11 +671,11 @@ _GL_WARN_ON_USE (wctype, "wctype is unportable - "
 #   undef iswctype
 #   define iswctype rpl_iswctype
 #  endif
-_GL_FUNCDECL_RPL (iswctype, int, (wint_t wc, wctype_t desc));
+_GL_FUNCDECL_RPL (iswctype, int, (wint_t wc, wctype_t desc), );
 _GL_CXXALIAS_RPL (iswctype, int, (wint_t wc, wctype_t desc));
 # else
 #  if !@HAVE_WCTYPE_T@
-_GL_FUNCDECL_SYS (iswctype, int, (wint_t wc, wctype_t desc));
+_GL_FUNCDECL_SYS (iswctype, int, (wint_t wc, wctype_t desc), );
 #  endif
 _GL_CXXALIAS_SYS (iswctype, int, (wint_t wc, wctype_t desc));
 # endif
@@ -691,7 +683,6 @@ _GL_CXXALIAS_SYS (iswctype, int, (wint_t wc, wctype_t desc));
 _GL_CXXALIASWARN (iswctype);
 # endif
 #elif defined GNULIB_POSIXCHECK
-# undef iswctype
 # if HAVE_RAW_DECL_ISWCTYPE
 _GL_WARN_ON_USE (iswctype, "iswctype is unportable - "
                  "use gnulib module iswctype for portability");
@@ -731,12 +722,12 @@ typedef void *rpl_wctrans_t;
 #   undef wctrans
 #   define wctrans rpl_wctrans
 #  endif
-_GL_FUNCDECL_RPL (wctrans, wctrans_t, (const char *name)
+_GL_FUNCDECL_RPL (wctrans, wctrans_t, (const char *name),
                                       _GL_ARG_NONNULL ((1)));
 _GL_CXXALIAS_RPL (wctrans, wctrans_t, (const char *name));
 # else
 #  if !@HAVE_WCTRANS_T@
-_GL_FUNCDECL_SYS (wctrans, wctrans_t, (const char *name)
+_GL_FUNCDECL_SYS (wctrans, wctrans_t, (const char *name),
                                       _GL_ARG_NONNULL ((1)));
 #  endif
 _GL_CXXALIAS_SYS (wctrans, wctrans_t, (const char *name));
@@ -745,7 +736,6 @@ _GL_CXXALIAS_SYS (wctrans, wctrans_t, (const char *name));
 _GL_CXXALIASWARN (wctrans);
 # endif
 #elif defined GNULIB_POSIXCHECK
-# undef wctrans
 # if HAVE_RAW_DECL_WCTRANS
 _GL_WARN_ON_USE (wctrans, "wctrans is unportable - "
                  "use gnulib module wctrans for portability");
@@ -761,11 +751,11 @@ _GL_WARN_ON_USE (wctrans, "wctrans is unportable - "
 #   undef towctrans
 #   define towctrans rpl_towctrans
 #  endif
-_GL_FUNCDECL_RPL (towctrans, wint_t, (wint_t wc, wctrans_t desc));
+_GL_FUNCDECL_RPL (towctrans, wint_t, (wint_t wc, wctrans_t desc), );
 _GL_CXXALIAS_RPL (towctrans, wint_t, (wint_t wc, wctrans_t desc));
 # else
 #  if !@HAVE_WCTRANS_T@
-_GL_FUNCDECL_SYS (towctrans, wint_t, (wint_t wc, wctrans_t desc));
+_GL_FUNCDECL_SYS (towctrans, wint_t, (wint_t wc, wctrans_t desc), );
 #  endif
 _GL_CXXALIAS_SYS (towctrans, wint_t, (wint_t wc, wctrans_t desc));
 # endif
@@ -773,7 +763,6 @@ _GL_CXXALIAS_SYS (towctrans, wint_t, (wint_t wc, wctrans_t desc));
 _GL_CXXALIASWARN (towctrans);
 # endif
 #elif defined GNULIB_POSIXCHECK
-# undef towctrans
 # if HAVE_RAW_DECL_TOWCTRANS
 _GL_WARN_ON_USE (towctrans, "towctrans is unportable - "
                  "use gnulib module towctrans for portability");

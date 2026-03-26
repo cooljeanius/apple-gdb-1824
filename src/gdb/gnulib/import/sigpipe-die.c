@@ -1,5 +1,5 @@
 /* Report a SIGPIPE signal and exit.
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
+   Copyright (C) 2008-2026 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,16 +24,16 @@
 #include <signal.h>
 #include <stdlib.h>
 
-#include "error.h"
+#include <error.h>
 #include "exitfail.h"
 
 #include "gettext.h"
-#define _(msgid) gettext (msgid)
+#define _(msgid) dgettext (GNULIB_TEXT_DOMAIN, msgid)
 
 void
 sigpipe_die (void)
 {
-  error (exit_failure, 0, "%s",
+  error (exit_failure, 0,
          _("error writing to a closed pipe or socket"));
 
   /* Ensure that this function really does not return.  */

@@ -1,5 +1,5 @@
 /* Stop reading the entries of a directory.
-   Copyright (C) 2006-2023 Free Software Foundation, Inc.
+   Copyright (C) 2006-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
@@ -40,7 +40,7 @@ int
 closedir (DIR *dirp)
 #undef closedir
 {
-#if GNULIB_defined_DIR || REPLACE_FCHDIR || defined __KLIBC__
+#if GNULIB_defined_DIR || REPLACE_FCHDIR
   int fd = dirfd (dirp);
 #endif
   int retval;
@@ -55,10 +55,6 @@ closedir (DIR *dirp)
   retval = closedir (dirp);
 # endif
 
-# ifdef __KLIBC__
-  if (!retval)
-    _gl_unregister_dirp_fd (fd);
-# endif
 #else
 
   if (dirp->current != INVALID_HANDLE_VALUE)

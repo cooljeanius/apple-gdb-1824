@@ -1,5 +1,5 @@
 /* Substitute for and wrapper around <pty.h>.
-   Copyright (C) 2010-2023 Free Software Foundation, Inc.
+   Copyright (C) 2010-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
@@ -44,16 +44,14 @@
 # include <libutil.h>
 #endif
 
-/* Get 'struct termios' and 'struct winsize'.  */
+/* Get 'struct termios', if available, and 'struct winsize'.  */
 #include <termios.h>
 #if defined _AIX
 # include <sys/ioctl.h>
 #endif
-/* Mingw lacks 'struct termios' and 'struct winsize', but a forward
-   declaration of an opaque type is sufficient to allow compilation of
-   a stub openpty().  */
+/* Mingw lacks 'struct termios', but a forward declaration of an opaque type is
+   sufficient to allow compilation of a stub openpty().  */
 struct termios;
-struct winsize;
 
 /* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
 
@@ -74,7 +72,7 @@ struct winsize;
 #  endif
 _GL_FUNCDECL_RPL (forkpty, int,
                   (int *amaster, char *name,
-                   struct termios const *termp, struct winsize const *winp));
+                   struct termios const *termp, struct winsize const *winp), );
 _GL_CXXALIAS_RPL (forkpty, int,
                   (int *amaster, char *name,
                    struct termios const *termp, struct winsize const *winp));
@@ -82,7 +80,7 @@ _GL_CXXALIAS_RPL (forkpty, int,
 #  if !@HAVE_FORKPTY@
 _GL_FUNCDECL_SYS (forkpty, int,
                   (int *amaster, char *name,
-                   struct termios const *termp, struct winsize const *winp));
+                   struct termios const *termp, struct winsize const *winp), );
 #  endif
 _GL_CXXALIAS_SYS (forkpty, int,
                   (int *amaster, char *name,
@@ -90,7 +88,6 @@ _GL_CXXALIAS_SYS (forkpty, int,
 # endif
 _GL_CXXALIASWARN (forkpty);
 #elif defined GNULIB_POSIXCHECK
-# undef forkpty
 # if HAVE_RAW_DECL_FORKPTY
 _GL_WARN_ON_USE (forkpty, "forkpty is not declared consistently - "
                  "use gnulib module forkpty for portability");
@@ -108,7 +105,7 @@ _GL_WARN_ON_USE (forkpty, "forkpty is not declared consistently - "
 #  endif
 _GL_FUNCDECL_RPL (openpty, int,
                   (int *amaster, int *aslave, char *name,
-                   struct termios const *termp, struct winsize const *winp));
+                   struct termios const *termp, struct winsize const *winp), );
 _GL_CXXALIAS_RPL (openpty, int,
                   (int *amaster, int *aslave, char *name,
                    struct termios const *termp, struct winsize const *winp));
@@ -116,7 +113,7 @@ _GL_CXXALIAS_RPL (openpty, int,
 #  if !@HAVE_OPENPTY@
 _GL_FUNCDECL_SYS (openpty, int,
                   (int *amaster, int *aslave, char *name,
-                   struct termios const *termp, struct winsize const *winp));
+                   struct termios const *termp, struct winsize const *winp), );
 #  endif
 _GL_CXXALIAS_SYS (openpty, int,
                   (int *amaster, int *aslave, char *name,
@@ -124,7 +121,6 @@ _GL_CXXALIAS_SYS (openpty, int,
 # endif
 _GL_CXXALIASWARN (openpty);
 #elif defined GNULIB_POSIXCHECK
-# undef openpty
 # if HAVE_RAW_DECL_OPENPTY
 _GL_WARN_ON_USE (openpty, "openpty is not declared consistently - "
                  "use gnulib module openpty for portability");

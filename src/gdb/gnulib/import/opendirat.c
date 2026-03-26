@@ -1,6 +1,6 @@
 /* Open a directory relative to another directory.
 
-   Copyright 2006-2023 Free Software Foundation, Inc.
+   Copyright 2006-2026 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -22,8 +22,12 @@
 #include <opendirat.h>
 
 #include <errno.h>
-#include <fcntl--.h>
+#include <fcntl.h>
 #include <unistd.h>
+
+#ifdef GNULIB_OPENAT_SAFER
+# include "fcntl--.h"
+#endif
 
 /* Relative to DIR_FD, open the directory DIR, passing EXTRA_FLAGS to
    the underlying openat call.  On success, store into *PNEW_FD the

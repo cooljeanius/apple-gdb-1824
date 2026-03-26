@@ -1,6 +1,6 @@
 /* Provide a more complete sys/file.h.
 
-   Copyright (C) 2007-2023 Free Software Foundation, Inc.
+   Copyright (C) 2007-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
@@ -56,7 +56,6 @@
 extern int flock (int fd, int operation);
 # endif
 #elif defined GNULIB_POSIXCHECK
-# undef flock
 # if HAVE_RAW_DECL_FLOCK
 _GL_WARN_ON_USE (flock, "flock is unportable - "
                  "use gnulib module flock for portability");

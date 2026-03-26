@@ -1,8 +1,10 @@
-#serial 24
-dnl Copyright (C) 2005-2023 Free Software Foundation, Inc.
+# fts.m4
+# serial 26
+dnl Copyright (C) 2005-2026 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
+dnl This file is offered as-is, without any warranty.
 
 AC_DEFUN([gl_FUNC_FTS],
 [
@@ -13,6 +15,7 @@ AC_DEFUN([gl_FUNC_FTS_CORE],
 [
   dnl Prerequisites of lib/fts.c.
   gl_FUNC_OPENAT
+  gl_CHECK_HEADER_SYS_CDEFS_H
 
   AC_CHECK_FUNCS_ONCE([fstatfs])
   AC_CHECK_HEADERS_ONCE([sys/param.h sys/vfs.h])dnl

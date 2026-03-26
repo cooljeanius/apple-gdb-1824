@@ -1,5 +1,5 @@
 /* Substitute for and wrapper around <malloc.h>.
-   Copyright (C) 2020-2023 Free Software Foundation, Inc.
+   Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
@@ -19,7 +19,7 @@
 #endif
 @PRAGMA_COLUMNS@
 
-#if defined _GL_ALREADY_INCLUDING_MALLOC_H
+#if defined _@GUARD_PREFIX@_ALREADY_INCLUDING_MALLOC_H
 /* Special invocation convention:
    - On Android we have a sequence of nested includes
        <malloc.h> -> <stdio.h> -> <sys/stat.h> -> <time.h> -> <sys/time.h> ->
@@ -34,19 +34,20 @@
 
 #ifndef _@GUARD_PREFIX@_MALLOC_H
 
-#define _GL_ALREADY_INCLUDING_MALLOC_H
+#define _@GUARD_PREFIX@_ALREADY_INCLUDING_MALLOC_H
 
 /* The include_next requires a split double-inclusion guard.  */
 #if @HAVE_MALLOC_H@
 # @INCLUDE_NEXT_AS_FIRST_DIRECTIVE@ @NEXT_AS_FIRST_DIRECTIVE_MALLOC_H@
 #endif
 
-#undef _GL_ALREADY_INCLUDING_MALLOC_H
+#undef _@GUARD_PREFIX@_ALREADY_INCLUDING_MALLOC_H
 
 #ifndef _@GUARD_PREFIX@_MALLOC_H
 #define _@GUARD_PREFIX@_MALLOC_H
 
-/* This file uses _GL_ATTRIBUTE_DEALLOC, GNULIB_POSIXCHECK, HAVE_RAW_DECL_*.  */
+/* This file uses _GL_ATTRIBUTE_DEALLOC, _GL_ATTRIBUTE_NODISCARD,
+   _GL_ATTRIBUTE_NOTHROW, GNULIB_POSIXCHECK, HAVE_RAW_DECL_*.  */
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
@@ -58,6 +59,29 @@
 
 /* Get size_t.  */
 #include <stddef.h>
+
+
+/* _GL_ATTRIBUTE_NOTHROW declares that the function does not throw exceptions.
+ */
+#ifndef _GL_ATTRIBUTE_NOTHROW
+# if defined __cplusplus
+#  if (__GNUC__ + (__GNUC_MINOR__ >= 8) > 2) || __clang_major__ >= 4
+#   if __cplusplus >= 201103L
+#    define _GL_ATTRIBUTE_NOTHROW noexcept (true)
+#   else
+#    define _GL_ATTRIBUTE_NOTHROW throw ()
+#   endif
+#  else
+#   define _GL_ATTRIBUTE_NOTHROW
+#  endif
+# else
+#  if (__GNUC__ + (__GNUC_MINOR__ >= 3) > 3) || defined __clang__
+#   define _GL_ATTRIBUTE_NOTHROW __attribute__ ((__nothrow__))
+#  else
+#   define _GL_ATTRIBUTE_NOTHROW
+#  endif
+# endif
+#endif
 
 /* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
 
@@ -71,7 +95,7 @@
       && !(defined __cplusplus && defined GNULIB_NAMESPACE))
 /* We can't do '#define free rpl_free' here.  */
 #  if defined __cplusplus && (__GLIBC__ + (__GLIBC_MINOR__ >= 14) > 2)
-_GL_EXTERN_C void rpl_free (void *) throw ();
+_GL_EXTERN_C void rpl_free (void *) _GL_ATTRIBUTE_NOTHROW;
 #  else
 _GL_EXTERN_C void rpl_free (void *);
 #  endif
@@ -86,7 +110,7 @@ _GL_EXTERN_C
      void __cdecl free (void *);
 #  else
 #   if defined __cplusplus && (__GLIBC__ + (__GLIBC_MINOR__ >= 14) > 2)
-_GL_EXTERN_C void free (void *) throw ();
+_GL_EXTERN_C void free (void *) _GL_ATTRIBUTE_NOTHROW;
 #   else
 _GL_EXTERN_C void free (void *);
 #   endif
@@ -101,7 +125,7 @@ _GL_EXTERN_C
      void __cdecl free (void *);
 # else
 #  if defined __cplusplus && (__GLIBC__ + (__GLIBC_MINOR__ >= 14) > 2)
-_GL_EXTERN_C void free (void *) throw ();
+_GL_EXTERN_C void free (void *) _GL_ATTRIBUTE_NOTHROW;
 #  else
 _GL_EXTERN_C void free (void *);
 #  endif
@@ -118,16 +142,26 @@ _GL_EXTERN_C void free (void *);
 #   define memalign rpl_memalign
 #  endif
 _GL_FUNCDECL_RPL (memalign, void *,
-                  (size_t alignment, size_t size)
-                  _GL_ATTRIBUTE_DEALLOC_FREE);
+                  (size_t alignment, size_t size),
+                  _GL_ATTRIBUTE_DEALLOC_FREE
+                  _GL_ATTRIBUTE_NODISCARD);
 _GL_CXXALIAS_RPL (memalign, void *, (size_t alignment, size_t size));
 # else
 #  if @HAVE_MEMALIGN@
-#   if __GNUC__ >= 11
+#   if __GNUC__ >= 11 && !defined __clang__
 /* For -Wmismatched-dealloc: Associate memalign with free or rpl_free.  */
+#    if __GLIBC__ + (__GLIBC_MINOR__ >= 14) > 2
 _GL_FUNCDECL_SYS (memalign, void *,
-                  (size_t alignment, size_t size)
-                  _GL_ATTRIBUTE_DEALLOC_FREE);
+                  (size_t alignment, size_t size),
+                  _GL_ATTRIBUTE_DEALLOC_FREE
+                  _GL_ATTRIBUTE_NODISCARD)
+                  _GL_ATTRIBUTE_NOTHROW;
+#    else
+_GL_FUNCDECL_SYS (memalign, void *,
+                  (size_t alignment, size_t size),
+                  _GL_ATTRIBUTE_DEALLOC_FREE
+                  _GL_ATTRIBUTE_NODISCARD);
+#    endif
 #   endif
 _GL_CXXALIAS_SYS (memalign, void *, (size_t alignment, size_t size));
 #  endif
@@ -136,14 +170,20 @@ _GL_CXXALIAS_SYS (memalign, void *, (size_t alignment, size_t size));
 _GL_CXXALIASWARN (memalign);
 # endif
 #else
-# if __GNUC__ >= 11 && !defined memalign
+# if (__GNUC__ >= 11 && !defined __clang__) && !defined memalign
 /* For -Wmismatched-dealloc: Associate memalign with free or rpl_free.  */
+#  if __GLIBC__ + (__GLIBC_MINOR__ >= 14) > 2
 _GL_FUNCDECL_SYS (memalign, void *,
-                  (size_t alignment, size_t size)
+                  (size_t alignment, size_t size),
+                  _GL_ATTRIBUTE_DEALLOC_FREE)
+                  _GL_ATTRIBUTE_NOTHROW;
+#  else
+_GL_FUNCDECL_SYS (memalign, void *,
+                  (size_t alignment, size_t size),
                   _GL_ATTRIBUTE_DEALLOC_FREE);
+#  endif
 # endif
 # if defined GNULIB_POSIXCHECK
-#  undef memalign
 #  if HAVE_RAW_DECL_MEMALIGN
 _GL_WARN_ON_USE (memalign, "memalign is not portable - "
                  "use gnulib module memalign for portability");

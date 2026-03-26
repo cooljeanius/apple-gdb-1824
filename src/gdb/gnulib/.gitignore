@@ -9,6 +9,8 @@ core
 *.stackdump
 fnmatch.h
 fnmatch.h-t
+obstack.h
+obstack.h-t
 stdint.h
 stdint.h-t
 string.h

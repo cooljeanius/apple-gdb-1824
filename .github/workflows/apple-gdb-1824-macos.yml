@@ -464,6 +464,7 @@ jobs:
         else \
           sync && sleep 1; \
         fi
+        env | grep "SDK"
     strategy:
       fail-fast: false
       matrix:

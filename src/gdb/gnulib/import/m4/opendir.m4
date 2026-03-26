@@ -1,8 +1,10 @@
-# opendir.m4 serial 6
-dnl Copyright (C) 2011-2023 Free Software Foundation, Inc.
+# opendir.m4
+# serial 7
+dnl Copyright (C) 2011-2026 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
+dnl This file is offered as-is, without any warranty.
 
 AC_DEFUN([gl_FUNC_OPENDIR],
 [
@@ -13,16 +15,12 @@ AC_DEFUN([gl_FUNC_OPENDIR],
   if test $ac_cv_func_opendir = no; then
     HAVE_OPENDIR=0
   else
-    dnl Replace opendir() on native Windows, to support fdopendir().
+    dnl Replace opendir() on native Windows and OS/2 kLIBC,
+    dnl to support fdopendir().
     AC_REQUIRE([gl_DIRENT_DIR])
     if test $DIR_HAS_FD_MEMBER = 0; then
       REPLACE_OPENDIR=1
     fi
-    dnl Replace opendir() on OS/2 kLIBC to support dirfd() function replaced
-    dnl by gnulib.
-    case $host_os in
-      os2*) REPLACE_OPENDIR=1 ;;
-    esac
     dnl Replace opendir() for supporting the gnulib-defined fchdir() function,
     dnl to keep fchdir's bookkeeping up-to-date.
     m4_ifdef([gl_FUNC_FCHDIR], [

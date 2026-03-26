@@ -167,6 +167,7 @@ if test -x ${srcdir}/missing; then
     AC_REQUIRE_AUX_FILE([compile])dnl
     AC_REQUIRE_AUX_FILE([depcomp])dnl
     AC_REQUIRE_AUX_FILE([missing])dnl
+    AC_REQUIRE_AUX_FILE([config.rpath])dnl
   ])dnl
   ## should now have it...
 fi
@@ -246,6 +247,20 @@ case "${host}" in
     ## TODO: come back to this after working on aarch64 support
     ;;
   *-apple-darwin* | *-apple-macosx*)
+    AC_ARG_VAR([SDKROOT],[Where the SDK is.])
+    AC_MSG_CHECKING([for SDKROOT])
+    if test -n "${SDKROOT}"; then
+      if test -d "${SDKROOT}" && test -r "${SDKROOT}"; then
+        AC_MSG_RESULT([set and usable: '${SDKROOT}'])
+      else
+        AC_MSG_RESULT([set to '${SDKROOT}', but not usable])
+        AC_MSG_WARN([issues may arise with current SDKROOT setting])
+      fi
+    else
+      AC_MSG_RESULT([unset])
+      AC_MSG_WARN([generally you should set SDKROOT on '${host}'])
+    fi
+    AC_SUBST([SDKROOT])dnl
     AC_MSG_CHECKING([whether we can use 64 bit mach exceptions])
     if test -r "${SDKROOT}/usr/include/mach/mach_exc.defs"; then
       AC_DEFINE([HAVE_64_BIT_MACH_EXCEPTIONS],[1],

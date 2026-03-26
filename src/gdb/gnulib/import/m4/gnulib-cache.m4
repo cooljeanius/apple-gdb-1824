@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2023 Free Software Foundation, Inc.
+# Copyright (C) 2002-2026 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@
 #  --avoid=setlocale \
 #  --avoid=threadlib \
 #  absolute-header \
+#  accept \
 #  alignof \
 #  alloca \
 #  alloca-opt \
@@ -54,6 +55,7 @@
 #  assure \
 #  autobuild \
 #  bcopy \
+#  bind \
 #  bison-i18n \
 #  bitset \
 #  btowc \
@@ -63,15 +65,20 @@
 #  c-strcasestr \
 #  c99 \
 #  calloc-posix \
+#  canonicalize-lgpl \
 #  chdir-long \
+#  chown \
 #  closedir \
 #  configmake \
 #  connect \
+#  count-one-bits \
 #  crc \
 #  ctime \
 #  dirent \
 #  dirent-safer \
 #  dirfd \
+#  dirname \
+#  dirname-lgpl \
 #  double-slash-root \
 #  dup2 \
 #  environ \
@@ -87,6 +94,7 @@
 #  fcntl-h \
 #  fcntl-safer \
 #  fflush \
+#  ffs \
 #  fileblocks \
 #  filename \
 #  flexmember \
@@ -102,13 +110,16 @@
 #  frexpl \
 #  fstatat \
 #  fts \
+#  gendocs \
 #  getcwd \
 #  getcwd-lgpl \
+#  getline \
 #  getpagesize \
 #  gettext-h \
 #  gettimeofday \
 #  git-version-gen \
 #  gitlog-to-changelog \
+#  glob \
 #  gnu-make \
 #  gpl-2.0 \
 #  havelib \
@@ -116,6 +127,7 @@
 #  host-os \
 #  ignore-value \
 #  include_next \
+#  inet_ntop \
 #  inline \
 #  intprops \
 #  inttypes \
@@ -127,6 +139,7 @@
 #  ldd \
 #  ldexpl \
 #  limits-h \
+#  listen \
 #  localcharset \
 #  locale \
 #  localtime \
@@ -150,7 +163,9 @@
 #  memrchr \
 #  mkdir \
 #  mkdtemp \
+#  mkostemp \
 #  multiarch \
+#  netdb \
 #  nextafter \
 #  no-c++ \
 #  nocrash \
@@ -165,6 +180,7 @@
 #  popen \
 #  posixcheck \
 #  putenv \
+#  rawmemchr \
 #  readdir \
 #  readlink \
 #  realloc-gnu \
@@ -173,10 +189,13 @@
 #  regex \
 #  regex-quote \
 #  regexprops-generic \
+#  rename \
 #  rmdir \
 #  secure_getenv \
+#  select \
 #  send \
 #  setenv \
+#  setsockopt \
 #  sh-filename \
 #  sig2str \
 #  sigaction \
@@ -191,6 +210,7 @@
 #  snippet/link-warning \
 #  snippet/warn-on-use \
 #  snprintf \
+#  socket \
 #  sprintf-posix \
 #  ssize_t \
 #  stat \
@@ -201,6 +221,7 @@
 #  stddef \
 #  stdint \
 #  stdlib \
+#  strchrnul \
 #  streq \
 #  strerror \
 #  strerror-override \
@@ -219,6 +240,7 @@
 #  sys_time \
 #  sys_types \
 #  sys_wait \
+#  system-posix \
 #  tempname \
 #  time \
 #  time_r \
@@ -257,6 +279,7 @@
 gl_LOCAL_DIR([])
 gl_MODULES([
   absolute-header
+  accept
   alignof
   alloca
   alloca-opt
@@ -266,6 +289,7 @@ gl_MODULES([
   assure
   autobuild
   bcopy
+  bind
   bison-i18n
   bitset
   btowc
@@ -275,15 +299,20 @@ gl_MODULES([
   c-strcasestr
   c99
   calloc-posix
+  canonicalize-lgpl
   chdir-long
+  chown
   closedir
   configmake
   connect
+  count-one-bits
   crc
   ctime
   dirent
   dirent-safer
   dirfd
+  dirname
+  dirname-lgpl
   double-slash-root
   dup2
   environ
@@ -299,6 +328,7 @@ gl_MODULES([
   fcntl-h
   fcntl-safer
   fflush
+  ffs
   fileblocks
   filename
   flexmember
@@ -314,13 +344,16 @@ gl_MODULES([
   frexpl
   fstatat
   fts
+  gendocs
   getcwd
   getcwd-lgpl
+  getline
   getpagesize
   gettext-h
   gettimeofday
   git-version-gen
   gitlog-to-changelog
+  glob
   gnu-make
   gpl-2.0
   havelib
@@ -328,6 +361,7 @@ gl_MODULES([
   host-os
   ignore-value
   include_next
+  inet_ntop
   inline
   intprops
   inttypes
@@ -339,6 +373,7 @@ gl_MODULES([
   ldd
   ldexpl
   limits-h
+  listen
   localcharset
   locale
   localtime
@@ -362,7 +397,9 @@ gl_MODULES([
   memrchr
   mkdir
   mkdtemp
+  mkostemp
   multiarch
+  netdb
   nextafter
   no-c++
   nocrash
@@ -377,6 +414,7 @@ gl_MODULES([
   popen
   posixcheck
   putenv
+  rawmemchr
   readdir
   readlink
   realloc-gnu
@@ -385,10 +423,13 @@ gl_MODULES([
   regex
   regex-quote
   regexprops-generic
+  rename
   rmdir
   secure_getenv
+  select
   send
   setenv
+  setsockopt
   sh-filename
   sig2str
   sigaction
@@ -403,6 +444,7 @@ gl_MODULES([
   snippet/link-warning
   snippet/warn-on-use
   snprintf
+  socket
   sprintf-posix
   ssize_t
   stat
@@ -413,6 +455,7 @@ gl_MODULES([
   stddef
   stdint
   stdlib
+  strchrnul
   streq
   strerror
   strerror-override
@@ -431,6 +474,7 @@ gl_MODULES([
   sys_time
   sys_types
   sys_wait
+  system-posix
   tempname
   time
   time_r
@@ -466,7 +510,7 @@ gl_MODULES([
   xstrndup
 ])
 gl_WITH_OBSOLETE
-gl_AVOID([ localename lock msvc-nothrow setlocale threadlib])
+gl_AVOID([localename lock msvc-nothrow setlocale threadlib])
 gl_SOURCE_BASE([import])
 gl_M4_BASE([import/m4])
 gl_PO_BASE([])

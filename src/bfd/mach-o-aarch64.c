@@ -36,8 +36,18 @@
   bfd_mach_o_arm64_canonicalize_one_reloc
 #define bfd_mach_o_swap_reloc_out NULL
 
+static bfd_boolean
+bfd_mach_o_arm64_canonicalize_one_reloc(bfd *,
+				        struct mach_o_reloc_info_external *,
+					arelent *, asymbol **)
+  ATTRIBUTE_UNUSED;
+
 #define bfd_mach_o_bfd_reloc_type_lookup bfd_mach_o_arm64_bfd_reloc_type_lookup
 #define bfd_mach_o_bfd_reloc_name_lookup bfd_mach_o_arm64_bfd_reloc_name_lookup
+
+static reloc_howto_type *
+bfd_mach_o_arm64_bfd_reloc_name_lookup(bfd *, const char *)
+  ATTRIBUTE_USED;
 
 #define bfd_mach_o_print_thread NULL
 #define bfd_mach_o_tgt_seg_table NULL
@@ -65,16 +75,17 @@
 #endif /* old versions of C */
 
 static const bfd_target *
-bfd_mach_o_arm64_object_p (bfd *abfd)
+bfd_mach_o_arm64_object_p(bfd *abfd)
 {
-  return bfd_mach_o_header_p (abfd, 0, 0, BFD_MACH_O_CPU_TYPE_ARM64);
+  return bfd_mach_o_header_p(abfd, 0, (bfd_mach_o_filetype)0,
+			     BFD_MACH_O_CPU_TYPE_ARM64);
 }
 
 static const bfd_target *
-bfd_mach_o_arm64_core_p (bfd *abfd)
+bfd_mach_o_arm64_core_p(bfd *abfd)
 {
-  return bfd_mach_o_header_p (abfd, 0,
-                              BFD_MACH_O_MH_CORE, BFD_MACH_O_CPU_TYPE_ARM64);
+  return bfd_mach_o_header_p(abfd, 0, BFD_MACH_O_MH_CORE,
+			     BFD_MACH_O_CPU_TYPE_ARM64);
 }
 
 static bfd_boolean
@@ -173,9 +184,9 @@ static reloc_howto_type arm64_howto_table[]=
 #include "mach-o/external.h"
 
 static bfd_boolean
-bfd_mach_o_arm64_canonicalize_one_reloc (bfd *abfd,
-				       struct mach_o_reloc_info_external *raw,
-					 arelent *res, asymbol **syms)
+bfd_mach_o_arm64_canonicalize_one_reloc(bfd *abfd,
+				        struct mach_o_reloc_info_external *raw,
+					arelent *res, asymbol **syms)
 {
   bfd_mach_o_reloc_info reloc;
 

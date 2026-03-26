@@ -1,6 +1,6 @@
 /* Convert file size to number of blocks on System V-like machines.
 
-   Copyright (C) 1990, 1997-1999, 2004-2006, 2009-2023 Free Software
+   Copyright (C) 1990, 1997-1999, 2004-2006, 2009-2026 Free Software
    Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -36,7 +36,7 @@
 typedef long daddr_t; /* for disk address */
 #  endif
 
-/* Some SysV's, like Irix, seem to lack this.  Hope it's correct. */
+/* Some SysV's seem to lack this.  Hope it's correct. */
 /* Number of inode pointers per indirect block. */
 #  define NINDIR (BSIZE / sizeof (daddr_t))
 # endif /* !NINDIR */

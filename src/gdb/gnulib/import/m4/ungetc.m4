@@ -1,8 +1,10 @@
-# ungetc.m4 serial 11
-dnl Copyright (C) 2009-2023 Free Software Foundation, Inc.
+# ungetc.m4
+# serial 12
+dnl Copyright (C) 2009-2026 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
+dnl This file is offered as-is, without any warranty.
 
 AC_DEFUN_ONCE([gl_FUNC_UNGETC_WORKS],
 [
@@ -49,7 +51,7 @@ AC_DEFUN_ONCE([gl_FUNC_UNGETC_WORKS],
                                # Guess yes on bionic systems.
            *-android*)         gl_cv_func_ungetc_works="guessing yes" ;;
                                # Guess yes on native Windows.
-           mingw*)             gl_cv_func_ungetc_works="guessing yes" ;;
+           mingw* | windows*)  gl_cv_func_ungetc_works="guessing yes" ;;
                                # If we don't know, obey --enable-cross-guesses.
            *)                  gl_cv_func_ungetc_works="$gl_cross_guess_normal" ;;
          esac

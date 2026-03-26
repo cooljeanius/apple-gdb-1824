@@ -1327,7 +1327,7 @@ remote_fileio_func_system(char *buf)
     }
 
   remote_fio_no_longjmp = 1;
-  ret = system(cmdline);
+  ret = system(cmdline); /* FIXME: unavailable on iOS */
 
   if (ret == -1)
     remote_fileio_return_errno(-1);
