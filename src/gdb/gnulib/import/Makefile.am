@@ -74,6 +74,7 @@
 #  dirfd \
 #  dirname \
 #  dirname-lgpl \
+#  dosname \
 #  double-slash-root \
 #  dup2 \
 #  environ \
@@ -90,6 +91,7 @@
 #  fcntl-safer \
 #  fflush \
 #  ffs \
+#  ffsll \
 #  fileblocks \
 #  filename \
 #  flexmember \
@@ -110,6 +112,7 @@
 #  getcwd-lgpl \
 #  getline \
 #  getpagesize \
+#  gettext \
 #  gettext-h \
 #  gettimeofday \
 #  git-version-gen \
@@ -166,6 +169,7 @@
 #  nocrash \
 #  noreturn \
 #  obstack \
+#  obstack-printf \
 #  opendirat \
 #  openmp \
 #  pathmax \
@@ -216,17 +220,25 @@
 #  stddef \
 #  stdint \
 #  stdlib \
+#  stpcpy \
+#  stpncpy \
+#  strcasestr \
 #  strchrnul \
+#  strcspn \
 #  streq \
 #  strerror \
 #  strerror-override \
 #  strerror_r-posix \
 #  strftime-fixes \
 #  string \
+#  string-h \
 #  strncat \
+#  strncpy \
 #  strndup \
 #  strnlen \
 #  strnlen1 \
+#  strsep \
+#  strsignal \
 #  strstr \
 #  strstr-simple \
 #  strtok_r \
@@ -237,6 +249,7 @@
 #  sys_wait \
 #  system-posix \
 #  tempname \
+#  threads-h \
 #  time \
 #  time_r \
 #  time_rz \
@@ -1027,6 +1040,13 @@ EXTRA_DIST += dirname.h
 
 ## end   gnulib module dirname-lgpl
 
+## begin gnulib module dosname
+
+
+EXTRA_DIST += dosname.h
+
+## end   gnulib module dosname
+
 ## begin gnulib module dup
 
 if GL_COND_OBJ_DUP
@@ -1282,6 +1302,16 @@ endif
 EXTRA_DIST += ffsl.h
 
 ## end   gnulib module ffsl
+
+## begin gnulib module ffsll
+
+if GL_COND_OBJ_FFSLL
+libgnu_a_SOURCES += ffsll.c
+endif
+
+EXTRA_DIST += ffsl.h
+
+## end   gnulib module ffsll
 
 ## begin gnulib module fileblocks
 
@@ -1691,6 +1721,13 @@ libgnu_a_SOURCES += getrandom.c
 endif
 
 ## end   gnulib module getrandom
+
+## begin gnulib module gettext
+
+
+EXTRA_DIST += $(top_srcdir)/import/extra/config.rpath
+
+## end   gnulib module gettext
 
 ## begin gnulib module gettext-h
 
@@ -2921,6 +2958,14 @@ endif
 
 ## end   gnulib module memrchr
 
+## begin gnulib module memset
+
+if GL_COND_OBJ_MEMSET
+libgnu_a_SOURCES += memset.c
+endif
+
+## end   gnulib module memset
+
 ## begin gnulib module minmax
 
 libgnu_a_SOURCES += minmax.h
@@ -3128,6 +3173,21 @@ endif
 EXTRA_DIST += obstack.in.h
 
 ## end   gnulib module obstack
+
+## begin gnulib module obstack-printf
+
+
+EXTRA_DIST += obstack_printf.c
+
+EXTRA_libgnu_a_SOURCES += obstack_printf.c
+
+## end   gnulib module obstack-printf
+
+## begin gnulib module once
+
+libgnu_a_SOURCES += glthread/once.h glthread/once.c
+
+## end   gnulib module once
 
 ## begin gnulib module open
 
@@ -3409,6 +3469,14 @@ MOSTLYCLEANFILES += pthread.h pthread.h-t1 pthread.h-t2 pthread.h-t3 pthread.h-t
 EXTRA_DIST += pthread.in.h
 
 ## end   gnulib module pthread-h
+
+## begin gnulib module pthread-once
+
+if GL_COND_OBJ_PTHREAD_ONCE
+libgnu_a_SOURCES += pthread-once.c
+endif
+
+## end   gnulib module pthread-once
 
 ## begin gnulib module pty-h
 
@@ -4556,6 +4624,40 @@ EXTRA_DIST += stdlib.in.h
 
 ## end   gnulib module stdlib-h
 
+## begin gnulib module stpcpy
+
+if GL_COND_OBJ_STPCPY
+libgnu_a_SOURCES += stpcpy.c
+endif
+
+## end   gnulib module stpcpy
+
+## begin gnulib module stpncpy
+
+if GL_COND_OBJ_STPNCPY
+libgnu_a_SOURCES += stpncpy.c
+endif
+
+## end   gnulib module stpncpy
+
+## begin gnulib module strcasestr
+
+
+EXTRA_DIST += strcasestr.c
+
+EXTRA_libgnu_a_SOURCES += strcasestr.c
+
+## end   gnulib module strcasestr
+
+## begin gnulib module strcasestr-simple
+
+
+EXTRA_DIST += str-two-way.h strcasestr.c
+
+EXTRA_libgnu_a_SOURCES += strcasestr.c
+
+## end   gnulib module strcasestr-simple
+
 ## begin gnulib module strchrnul
 
 if GL_COND_OBJ_STRCHRNUL
@@ -4565,6 +4667,14 @@ endif
 EXTRA_DIST += strchrnul.valgrind
 
 ## end   gnulib module strchrnul
+
+## begin gnulib module strcspn
+
+if GL_COND_OBJ_STRCSPN
+libgnu_a_SOURCES += strcspn.c
+endif
+
+## end   gnulib module strcspn
 
 ## begin gnulib module strdup-posix
 
@@ -4795,6 +4905,14 @@ EXTRA_DIST += strings.in.h
 
 ## end   gnulib module strings-h
 
+## begin gnulib module strncasecmp
+
+if GL_COND_OBJ_STRNCASECMP
+libgnu_a_SOURCES += strncasecmp.c
+endif
+
+## end   gnulib module strncasecmp
+
 ## begin gnulib module strncat
 
 if GL_COND_OBJ_STRNCAT
@@ -4846,6 +4964,24 @@ libgnu_a_SOURCES += strpbrk.c
 endif
 
 ## end   gnulib module strpbrk
+
+## begin gnulib module strsep
+
+if GL_COND_OBJ_STRSEP
+libgnu_a_SOURCES += strsep.c
+endif
+
+## end   gnulib module strsep
+
+## begin gnulib module strsignal
+
+if GL_COND_OBJ_STRSIGNAL
+libgnu_a_SOURCES += strsignal.c
+endif
+
+EXTRA_DIST += siglist.h
+
+## end   gnulib module strsignal
 
 ## begin gnulib module strstr
 
@@ -5511,6 +5647,12 @@ endif
 EXTRA_DIST += mktime-internal.h
 
 ## end   gnulib module timegm
+
+## begin gnulib module tls
+
+libgnu_a_SOURCES += glthread/tls.h glthread/tls.c
+
+## end   gnulib module tls
 
 ## begin gnulib module tzset
 
@@ -6637,6 +6779,26 @@ libgnu_a_SOURCES += wcwidth.c
 endif
 
 ## end   gnulib module wcwidth
+
+## begin gnulib module windows-once
+
+if GL_COND_OBJ_WINDOWS_ONCE
+libgnu_a_SOURCES += windows-once.c
+endif
+
+EXTRA_DIST += windows-once.h
+
+## end   gnulib module windows-once
+
+## begin gnulib module windows-tls
+
+if GL_COND_OBJ_WINDOWS_TLS
+libgnu_a_SOURCES += windows-tls.c
+endif
+
+EXTRA_DIST += windows-tls.h
+
+## end   gnulib module windows-tls
 
 ## begin gnulib module wmemchr
 

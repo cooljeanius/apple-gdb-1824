@@ -36,7 +36,7 @@ AC_CACHE_CHECK([return type of ptrace],[gdb_cv_func_ptrace_ret],
   [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 ${gdb_ptrace_headers}
    ]],[[
-extern int ptrace();
+extern int ptrace(); /* FIXME: C23+ compatibility */
    ]])],[gdb_cv_func_ptrace_ret='int'],[gdb_cv_func_ptrace_ret='long'])
 ])dnl
 AC_DEFINE_UNQUOTED([PTRACE_TYPE_RET],[${gdb_cv_func_ptrace_ret}],

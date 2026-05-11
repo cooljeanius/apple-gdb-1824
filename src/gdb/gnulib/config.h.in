@@ -565,6 +565,9 @@
 /* Define to 1 when the gnulib module ffsl should be tested. */
 #undef GNULIB_TEST_FFSL
 
+/* Define to 1 when the gnulib module ffsll should be tested. */
+#undef GNULIB_TEST_FFSLL
+
 /* Define to 1 when the gnulib module fgetc should be tested. */
 #undef GNULIB_TEST_FGETC
 
@@ -784,6 +787,9 @@
 /* Define to 1 when the gnulib module nl_langinfo should be tested. */
 #undef GNULIB_TEST_NL_LANGINFO
 
+/* Define to 1 when the gnulib module obstack-printf should be tested. */
+#undef GNULIB_TEST_OBSTACK_PRINTF
+
 /* Define to 1 when the gnulib module open should be tested. */
 #undef GNULIB_TEST_OPEN
 
@@ -807,6 +813,9 @@
 
 /* Define to 1 when the gnulib module printf should be tested. */
 #undef GNULIB_TEST_PRINTF
+
+/* Define to 1 when the gnulib module pthread-once should be tested. */
+#undef GNULIB_TEST_PTHREAD_ONCE
 
 /* Define to 1 when the gnulib module putc should be tested. */
 #undef GNULIB_TEST_PUTC
@@ -904,6 +913,15 @@
 /* Define to 1 when the gnulib module stdc_memreverse8u should be tested. */
 #undef GNULIB_TEST_STDC_MEMREVERSE8U
 
+/* Define to 1 when the gnulib module stpcpy should be tested. */
+#undef GNULIB_TEST_STPCPY
+
+/* Define to 1 when the gnulib module stpncpy should be tested. */
+#undef GNULIB_TEST_STPNCPY
+
+/* Define to 1 when the gnulib module strcasestr should be tested. */
+#undef GNULIB_TEST_STRCASESTR
+
 /* Define to 1 when the gnulib module strchrnul should be tested. */
 #undef GNULIB_TEST_STRCHRNUL
 
@@ -939,6 +957,12 @@
 
 /* Define to 1 when the gnulib module strpbrk should be tested. */
 #undef GNULIB_TEST_STRPBRK
+
+/* Define to 1 when the gnulib module strsep should be tested. */
+#undef GNULIB_TEST_STRSEP
+
+/* Define to 1 when the gnulib module strsignal should be tested. */
+#undef GNULIB_TEST_STRSIGNAL
 
 /* Define to 1 when the gnulib module strstr should be tested. */
 #undef GNULIB_TEST_STRSTR
@@ -1265,6 +1289,10 @@
    don't. */
 #undef HAVE_DECL_MEMRCHR
 
+/* Define to 1 if you have the declaration of 'obstack_printf', and to 0 if
+   you don't. */
+#undef HAVE_DECL_OBSTACK_PRINTF
+
 /* Define to 1 if you have the declaration of 'program_invocation_name', and
    to 0 if you don't. */
 #undef HAVE_DECL_PROGRAM_INVOCATION_NAME
@@ -1293,6 +1321,10 @@
    if you don't. */
 #undef HAVE_DECL_STDC_ROTATE_LEFT_UC
 
+/* Define to 1 if you have the declaration of 'stpncpy', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STPNCPY
+
 /* Define to 1 if you have the declaration of 'strdup', and to 0 if you don't.
    */
 #undef HAVE_DECL_STRDUP
@@ -1309,6 +1341,10 @@
    don't. */
 #undef HAVE_DECL_STRERROR_R
 
+/* Define to 1 if you have the declaration of 'strncasecmp', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRNCASECMP
+
 /* Define to 1 if you have the declaration of 'strndup', and to 0 if you
    don't. */
 #undef HAVE_DECL_STRNDUP
@@ -1317,9 +1353,17 @@
    don't. */
 #undef HAVE_DECL_STRNLEN
 
+/* Define to 1 if you have the declaration of 'strsignal', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRSIGNAL
+
 /* Define to 1 if you have the declaration of 'strtok_r', and to 0 if you
    don't. */
 #undef HAVE_DECL_STRTOK_R
+
+/* Define to 1 if you have the declaration of 'sys_siglist', and to 0 if you
+   don't. */
+#undef HAVE_DECL_SYS_SIGLIST
 
 /* Define to 1 if you have the declaration of 'towlower', and to 0 if you
    don't. */
@@ -1360,6 +1404,10 @@
 /* Define to 1 if you have the declaration of '_snprintf', and to 0 if you
    don't. */
 #undef HAVE_DECL__SNPRINTF
+
+/* Define to 1 if you have the declaration of '_sys_siglist', and to 0 if you
+   don't. */
+#undef HAVE_DECL__SYS_SIGLIST
 
 /* Define to 1 if you have the declaration of '__argv', and to 0 if you don't.
    */
@@ -1768,6 +1816,9 @@
 
 /* Define to 1 if you have the <obstack.h> header file. */
 #undef HAVE_OBSTACK_H
+
+/* Define to 1 if you have the 'obstack_printf' function. */
+#undef HAVE_OBSTACK_PRINTF
 
 /* Define to 1 if you have the 'openat' function. */
 #undef HAVE_OPENAT
@@ -3606,11 +3657,17 @@
 /* Define to 1 if you have the 'stpcpy' function. */
 #undef HAVE_STPCPY
 
+/* Define if you have the stpncpy() function and it works. */
+#undef HAVE_STPNCPY
+
 /* Define to 1 if you have the `str2sig' function. */
 #undef HAVE_STR2SIG
 
 /* Define to 1 if you have the 'strcasecmp' function. */
 #undef HAVE_STRCASECMP
+
+/* Define to 1 if you have the 'strcasestr' function. */
+#undef HAVE_STRCASESTR
 
 /* Define to 1 if you have the 'strchr' function. */
 #undef HAVE_STRCHR
@@ -3653,6 +3710,12 @@
 
 /* Define to 1 if you have the 'strrchr' function. */
 #undef HAVE_STRRCHR
+
+/* Define to 1 if you have the 'strsep' function. */
+#undef HAVE_STRSEP
+
+/* Define to 1 if you have the 'strsignal' function. */
+#undef HAVE_STRSIGNAL
 
 /* Define to 1 if you have the 'strspn' function. */
 #undef HAVE_STRSPN

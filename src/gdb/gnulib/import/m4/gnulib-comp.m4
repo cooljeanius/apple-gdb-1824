@@ -119,6 +119,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module dirfd:
   # Code from module dirname:
   # Code from module dirname-lgpl:
+  # Code from module dosname:
   # Code from module double-slash-root:
   # Code from module dup:
   # Code from module dup2:
@@ -149,6 +150,7 @@ AC_DEFUN([gl_EARLY],
   AC_REQUIRE([gl_SET_LARGEFILE_SOURCE])
   # Code from module ffs:
   # Code from module ffsl:
+  # Code from module ffsll:
   # Code from module fileblocks:
   # Code from module filename:
   # Code from module filenamecat-lgpl:
@@ -193,6 +195,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module getpagesize:
   # Code from module getprogname:
   # Code from module getrandom:
+  # Code from module gettext:
   # Code from module gettext-h:
   # Code from module gettimeofday:
   # Code from module git-version-gen:
@@ -285,6 +288,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module memmove:
   # Code from module mempcpy:
   # Code from module memrchr:
+  # Code from module memset:
   # Code from module minmax:
   # Code from module mixin/printf-posix:
   # Code from module mkdir:
@@ -305,6 +309,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module nocrash:
   # Code from module noreturn:
   # Code from module obstack:
+  # Code from module obstack-printf:
+  # Code from module once:
   # Code from module open:
   # Code from module openat:
   # Code from module openat-die:
@@ -325,6 +331,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module printf-safe:
   # Code from module pthread-h:
   gl_ANYTHREADLIB_EARLY
+  # Code from module pthread-once:
   # Code from module pty-h:
   # Code from module putenv:
   # Code from module putenv-gnu:
@@ -397,7 +404,12 @@ AC_DEFUN([gl_EARLY],
   # Code from module stdio-windows:
   # Code from module stdlib:
   # Code from module stdlib-h:
+  # Code from module stpcpy:
+  # Code from module stpncpy:
+  # Code from module strcasestr:
+  # Code from module strcasestr-simple:
   # Code from module strchrnul:
+  # Code from module strcspn:
   # Code from module strdup:
   # Code from module strdup-posix:
   # Code from module streq:
@@ -409,6 +421,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module string:
   # Code from module string-h:
   # Code from module strings-h:
+  # Code from module strncasecmp:
   # Code from module strncat:
   # Code from module strncpy:
   # Code from module strndup:
@@ -416,6 +429,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module strnlen1:
   # Code from module strnul:
   # Code from module strpbrk:
+  # Code from module strsep:
+  # Code from module strsignal:
   # Code from module strstr:
   # Code from module strstr-simple:
   # Code from module strtok_r:
@@ -448,6 +463,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module time_r:
   # Code from module time_rz:
   # Code from module timegm:
+  # Code from module tls:
   # Code from module tzset:
   # Code from module uchar-h:
   # Code from module unicase/base:
@@ -503,6 +519,8 @@ AC_DEFUN([gl_EARLY],
   # Code from module wctype:
   # Code from module wctype-h:
   # Code from module wcwidth:
+  # Code from module windows-once:
+  # Code from module windows-tls:
   # Code from module winsz-ioctl:
   # Code from module winsz-termios:
   # Code from module wmemchr:
@@ -835,6 +853,10 @@ AC_DEFUN([gl_INIT],
   gl_FUNC_FFSL
   gl_CONDITIONAL([GL_COND_OBJ_FFSL], [test $HAVE_FFSL = 0])
   gl_STRING_MODULE_INDICATOR([ffsl])
+  gl_FUNC_FFSLL
+  gl_CONDITIONAL([GL_COND_OBJ_FFSLL],
+                 [test $HAVE_FFSLL = 0 || test $REPLACE_FFSLL = 1])
+  gl_STRING_MODULE_INDICATOR([ffsll])
   gl_FILEBLOCKS
   gl_CONDITIONAL([GL_COND_OBJ_FILEBLOCKS],
                  [test $ac_cv_member_struct_stat_st_blocks = no])
@@ -1017,6 +1039,8 @@ AC_DEFUN([gl_INIT],
   gl_CONDITIONAL([GL_COND_OBJ_GETRANDOM],
                  [test $HAVE_GETRANDOM = 0 || test $REPLACE_GETRANDOM = 1])
   gl_SYS_RANDOM_MODULE_INDICATOR([getrandom])
+  dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
+  AM_GNU_GETTEXT_VERSION([0.22])
   gl_GETTEXT_H
   gl_FUNC_GETTIMEOFDAY
   gl_CONDITIONAL([GL_COND_OBJ_GETTIMEOFDAY],
@@ -1304,6 +1328,11 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_MEMRCHR
   ])
   gl_STRING_MODULE_INDICATOR([memrchr])
+  gl_FUNC_MEMSET
+  gl_CONDITIONAL([GL_COND_OBJ_MEMSET], [test $ac_cv_func_memset = no])
+  AM_COND_IF([GL_COND_OBJ_MEMSET], [
+    gl_PREREQ_MEMSET
+  ])
   gl_MINMAX
   # Conditionally invoke gl_PREREQ_VASNPRINTF_WITH_POSIX_EXTRAS.
   gl_FUNC_MKDIR
@@ -1364,6 +1393,12 @@ AC_DEFUN([gl_INIT],
   gl_CONDITIONAL([GL_COND_OBJ_OBSTACK],
                  [test $HAVE_OBSTACK = 0 || test $REPLACE_OBSTACK = 1])
   AC_PROG_MKDIR_P
+  gl_FUNC_OBSTACK_PRINTF
+  if test $ac_cv_func_obstack_printf = no || test $REPLACE_OBSTACK_PRINTF = 1; then
+    AC_LIBOBJ([obstack_printf])
+  fi
+  gl_STDIO_MODULE_INDICATOR([obstack-printf])
+  gl_ONCE
   gl_FUNC_OPEN
   gl_CONDITIONAL([GL_COND_OBJ_OPEN], [test $REPLACE_OPEN = 1])
   AM_COND_IF([GL_COND_OBJ_OPEN], [
@@ -1413,6 +1448,10 @@ AC_DEFUN([gl_INIT],
   gl_PTHREAD_H
   gl_PTHREAD_H_REQUIRE_DEFAULTS
   AC_PROG_MKDIR_P
+  gl_PTHREAD_ONCE
+  gl_CONDITIONAL([GL_COND_OBJ_PTHREAD_ONCE],
+                 [test $HAVE_PTHREAD_ONCE = 0 || test $REPLACE_PTHREAD_ONCE = 1])
+  gl_PTHREAD_MODULE_INDICATOR([pthread-once])
   gl_PTY_H
   gl_PTY_H_REQUIRE_DEFAULTS
   AC_PROG_MKDIR_P
@@ -1667,6 +1706,31 @@ AC_DEFUN([gl_INIT],
   gl_STDLIB_H
   gl_STDLIB_H_REQUIRE_DEFAULTS
   AC_PROG_MKDIR_P
+  gl_FUNC_STPCPY
+  gl_CONDITIONAL([GL_COND_OBJ_STPCPY],
+                 [test $HAVE_STPCPY = 0 || test $REPLACE_STPCPY = 1])
+  AM_COND_IF([GL_COND_OBJ_STPCPY], [
+    gl_PREREQ_STPCPY
+  ])
+  gl_STRING_MODULE_INDICATOR([stpcpy])
+  gl_FUNC_STPNCPY
+  gl_CONDITIONAL([GL_COND_OBJ_STPNCPY],
+                 [test $HAVE_STPNCPY = 0 || test $REPLACE_STPNCPY = 1])
+  AM_COND_IF([GL_COND_OBJ_STPNCPY], [
+    gl_PREREQ_STPNCPY
+  ])
+  gl_STRING_MODULE_INDICATOR([stpncpy])
+  gl_FUNC_STRCASESTR
+  if test $HAVE_STRCASESTR = 0 || test $REPLACE_STRCASESTR = 1; then
+    AC_LIBOBJ([strcasestr])
+    gl_PREREQ_STRCASESTR
+  fi
+  gl_FUNC_STRCASESTR_SIMPLE
+  if test $HAVE_STRCASESTR = 0 || test $REPLACE_STRCASESTR = 1; then
+    AC_LIBOBJ([strcasestr])
+    gl_PREREQ_STRCASESTR
+  fi
+  gl_STRING_MODULE_INDICATOR([strcasestr])
   gl_FUNC_STRCHRNUL
   gl_CONDITIONAL([GL_COND_OBJ_STRCHRNUL],
                  [test $HAVE_STRCHRNUL = 0 || test $REPLACE_STRCHRNUL = 1])
@@ -1674,6 +1738,11 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_STRCHRNUL
   ])
   gl_STRING_MODULE_INDICATOR([strchrnul])
+  gl_FUNC_STRCSPN
+  gl_CONDITIONAL([GL_COND_OBJ_STRCSPN], [test $ac_cv_func_strcspn = no])
+  AM_COND_IF([GL_COND_OBJ_STRCSPN], [
+    gl_PREREQ_STRCSPN
+  ])
   gl_FUNC_STRDUP
   gl_STRING_MODULE_INDICATOR([strdup])
   gl_FUNC_STRDUP_POSIX
@@ -1712,6 +1781,13 @@ AC_DEFUN([gl_INIT],
   gl_STRINGS_H
   gl_STRINGS_H_REQUIRE_DEFAULTS
   AC_PROG_MKDIR_P
+  gl_FUNC_STRNCASECMP
+  gl_CONDITIONAL([GL_COND_OBJ_STRNCASECMP],
+                 [test $HAVE_STRNCASECMP = 0 || test $REPLACE_STRNCASECMP = 1])
+  AM_COND_IF([GL_COND_OBJ_STRNCASECMP], [
+    gl_PREREQ_STRNCASECMP
+  ])
+  gl_STRINGS_MODULE_INDICATOR([strncasecmp])
   gl_FUNC_STRNCAT
   gl_CONDITIONAL([GL_COND_OBJ_STRNCAT], [test $REPLACE_STRNCAT = 1])
   AM_COND_IF([GL_COND_OBJ_STRNCAT], [
@@ -1742,6 +1818,19 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_STRPBRK
   ])
   gl_STRING_MODULE_INDICATOR([strpbrk])
+  gl_FUNC_STRSEP
+  gl_CONDITIONAL([GL_COND_OBJ_STRSEP], [test $HAVE_STRSEP = 0])
+  AM_COND_IF([GL_COND_OBJ_STRSEP], [
+    gl_PREREQ_STRSEP
+  ])
+  gl_STRING_MODULE_INDICATOR([strsep])
+  gl_FUNC_STRSIGNAL
+  gl_CONDITIONAL([GL_COND_OBJ_STRSIGNAL],
+                 [test $HAVE_STRSIGNAL = 0 || test $REPLACE_STRSIGNAL = 1])
+  AM_COND_IF([GL_COND_OBJ_STRSIGNAL], [
+    gl_PREREQ_STRSIGNAL
+  ])
+  gl_STRING_MODULE_INDICATOR([strsignal])
   gl_FUNC_STRSTR
   if test $REPLACE_STRSTR = 1; then
     AC_LIBOBJ([strstr])
@@ -1831,6 +1920,7 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_TIMEGM
   ])
   gl_TIME_MODULE_INDICATOR([timegm])
+  gl_TLS
   gl_FUNC_TZSET
   gl_CONDITIONAL([GL_COND_OBJ_TZSET], [test $REPLACE_TZSET = 1])
   gl_TIME_MODULE_INDICATOR([tzset])
@@ -1954,6 +2044,12 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_WCWIDTH
   ])
   gl_WCHAR_MODULE_INDICATOR([wcwidth])
+  AC_REQUIRE([AC_CANONICAL_HOST])
+  gl_CONDITIONAL([GL_COND_OBJ_WINDOWS_ONCE],
+                 [case "$host_os" in mingw* | windows*) true;; *) false;; esac])
+  AC_REQUIRE([AC_CANONICAL_HOST])
+  gl_CONDITIONAL([GL_COND_OBJ_WINDOWS_TLS],
+                 [case "$host_os" in mingw* | windows*) true;; *) false;; esac])
   gl_HEADER_TIOCGWINSZ_NEEDS_SYS_IOCTL
   gl_HEADER_TIOCGWINSZ_IN_TERMIOS_H
   gl_WINSIZE_IN_PTEM
@@ -2267,6 +2363,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/dirname-lgpl.c
   lib/dirname.c
   lib/dirname.h
+  lib/dosname.h
   lib/dup-safer.c
   lib/dup.c
   lib/dup2.c
@@ -2296,6 +2393,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/ffs.c
   lib/ffsl.c
   lib/ffsl.h
+  lib/ffsll.c
   lib/fileblocks.c
   lib/filename.h
   lib/filenamecat-lgpl.c
@@ -2346,6 +2444,10 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/glob_internal.h
   lib/glob_pattern_p.c
   lib/globfree.c
+  lib/glthread/once.c
+  lib/glthread/once.h
+  lib/glthread/tls.c
+  lib/glthread/tls.h
   lib/group-member.c
   lib/hard-locale.c
   lib/hard-locale.h
@@ -2451,6 +2553,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/memmove.c
   lib/mempcpy.c
   lib/memrchr.c
+  lib/memset.c
   lib/minmax.h
   lib/mkdir.c
   lib/mkdtemp.c
@@ -2469,6 +2572,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/noreturn.h
   lib/obstack.c
   lib/obstack.in.h
+  lib/obstack_printf.c
   lib/open-safer.c
   lib/open.c
   lib/openat-die.c
@@ -2495,6 +2599,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/printf-frexpl.h
   lib/printf-parse.c
   lib/printf-parse.h
+  lib/pthread-once.c
   lib/pthread.in.h
   lib/pty.in.h
   lib/putenv.c
@@ -2539,6 +2644,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/sig2str.c
   lib/sig2str.h
   lib/sigaction.c
+  lib/siglist.h
   lib/signal.in.h
   lib/signbitd.c
   lib/signbitf.c
@@ -2574,9 +2680,13 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/stdio.in.h
   lib/stdlib.c
   lib/stdlib.in.h
+  lib/stpcpy.c
+  lib/stpncpy.c
   lib/str-two-way.h
+  lib/strcasestr.c
   lib/strchrnul.c
   lib/strchrnul.valgrind
+  lib/strcspn.c
   lib/strdup.c
   lib/streq-opt.h
   lib/streq.c
@@ -2588,6 +2698,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/string.in.h
   lib/strings.in.h
   lib/stripslash.c
+  lib/strncasecmp.c
   lib/strncat.c
   lib/strncpy.c
   lib/strndup.c
@@ -2596,6 +2707,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/strnlen1.h
   lib/strnul.c
   lib/strpbrk.c
+  lib/strsep.c
+  lib/strsignal.c
   lib/strstr.c
   lib/strtok_r.c
   lib/sys_file.in.h
@@ -2705,11 +2818,13 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/windows-cond.h
   lib/windows-initguard.h
   lib/windows-mutex.h
+  lib/windows-once.c
   lib/windows-once.h
   lib/windows-recmutex.h
   lib/windows-thread.h
   lib/windows-timedmutex.h
   lib/windows-timedrecmutex.h
+  lib/windows-tls.c
   lib/windows-tls.h
   lib/wmemchr-impl.h
   lib/wmemchr.c
@@ -2792,6 +2907,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/fflush.m4
   m4/ffs.m4
   m4/ffsl.m4
+  m4/ffsll.m4
   m4/fileblocks.m4
   m4/filenamecat.m4
   m4/flexmember.m4
@@ -2826,6 +2942,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/getpagesize.m4
   m4/getprogname.m4
   m4/getrandom.m4
+  m4/gettext.m4
   m4/gettext_h.m4
   m4/gettimeofday.m4
   m4/glob.m4
@@ -2837,11 +2954,14 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/host-cpu-c-abi.m4
   m4/host-os.m4
   m4/i-ring.m4
+  m4/iconv.m4
   m4/iconv_h.m4
   m4/include_next.m4
   m4/inet_ntop.m4
   m4/init-package-version.m4
   m4/inline.m4
+  m4/intl-thread-locale.m4
+  m4/intlmacosx.m4
   m4/intmax_t.m4
   m4/inttypes.m4
   m4/inttypes_h.m4
@@ -2899,6 +3019,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/memmove.m4
   m4/mempcpy.m4
   m4/memrchr.m4
+  m4/memset.m4
   m4/minmax.m4
   m4/mkdir.m4
   m4/mkdtemp.m4
@@ -2913,11 +3034,14 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/netdb_h.m4
   m4/netinet_in_h.m4
   m4/nl_langinfo.m4
+  m4/nls.m4
   m4/no-c++.m4
   m4/nocrash.m4
+  m4/obstack-printf.m4
   m4/obstack.m4
   m4/off64_t.m4
   m4/off_t.m4
+  m4/once.m4
   m4/open-cloexec.m4
   m4/open-slash.m4
   m4/open.m4
@@ -2928,12 +3052,15 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/perror.m4
   m4/pid_t.m4
   m4/pipe.m4
+  m4/po.m4
   m4/poll_h.m4
   m4/popen.m4
   m4/posixcheck.m4
   m4/printf-frexp.m4
   m4/printf-frexpl.m4
   m4/printf.m4
+  m4/progtest.m4
+  m4/pthread-once.m4
   m4/pthread-spin.m4
   m4/pthread_h.m4
   m4/pty_h.m4
@@ -2985,7 +3112,12 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/stdint_h.m4
   m4/stdio_h.m4
   m4/stdlib_h.m4
+  m4/stpcpy.m4
+  m4/stpncpy.m4
+  m4/strcasecmp.m4
+  m4/strcasestr.m4
   m4/strchrnul.m4
+  m4/strcspn.m4
   m4/strdup.m4
   m4/streq.m4
   m4/strerror.m4
@@ -2993,11 +3125,14 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/strftime-fixes.m4
   m4/string_h.m4
   m4/strings_h.m4
+  m4/strncasecmp.m4
   m4/strncat.m4
   m4/strncpy.m4
   m4/strndup.m4
   m4/strnlen.m4
   m4/strpbrk.m4
+  m4/strsep.m4
+  m4/strsignal.m4
   m4/strstr.m4
   m4/strtok_r.m4
   m4/sys_cdefs_h.m4
@@ -3023,6 +3158,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/time_r.m4
   m4/time_rz.m4
   m4/timegm.m4
+  m4/tls.m4
   m4/tzset.m4
   m4/uchar_h.m4
   m4/ungetc.m4

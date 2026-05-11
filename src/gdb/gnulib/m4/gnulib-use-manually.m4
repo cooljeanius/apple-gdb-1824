@@ -638,6 +638,12 @@ if test x"${STDINT_H}" != x""; then
   export GNULIB_STDINT_H=${GNULIB_IMPORT_DIR}/${STDINT_H}
 fi
 AC_SUBST([GNULIB_STDINT_H])dnl
+dnl# from gnulib module strcspn:
+AC_REQUIRE([gl_FUNC_STRCSPN])dnl
+gl_CONDITIONAL([GL_COND_OBJ_STRCSPN],[test "x${ac_cv_func_strcspn}" = "xno"])
+AM_COND_IF([GL_COND_OBJ_STRCSPN],[
+  gl_PREREQ_STRCSPN
+])dnl
 dnl# from gnulib module strerror:
 AC_REQUIRE([gl_FUNC_STRERROR])dnl
   ## set up strerror libobj if needed:

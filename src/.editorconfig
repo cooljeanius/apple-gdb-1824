@@ -70,6 +70,12 @@ indent_style = space
 indent_size = 4
 trim_trailing_whitespace = true
 
+# Assembler
+[*.{s,S,asm}]
+indent_style = tab
+indent_size = 8
+trim_trailing_whitespace = true
+
 # Awk
 [*.awk]
 indent_style = tab

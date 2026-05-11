@@ -79,6 +79,7 @@
 #  dirfd \
 #  dirname \
 #  dirname-lgpl \
+#  dosname \
 #  double-slash-root \
 #  dup2 \
 #  environ \
@@ -95,6 +96,7 @@
 #  fcntl-safer \
 #  fflush \
 #  ffs \
+#  ffsll \
 #  fileblocks \
 #  filename \
 #  flexmember \
@@ -115,6 +117,7 @@
 #  getcwd-lgpl \
 #  getline \
 #  getpagesize \
+#  gettext \
 #  gettext-h \
 #  gettimeofday \
 #  git-version-gen \
@@ -171,6 +174,7 @@
 #  nocrash \
 #  noreturn \
 #  obstack \
+#  obstack-printf \
 #  opendirat \
 #  openmp \
 #  pathmax \
@@ -221,17 +225,25 @@
 #  stddef \
 #  stdint \
 #  stdlib \
+#  stpcpy \
+#  stpncpy \
+#  strcasestr \
 #  strchrnul \
+#  strcspn \
 #  streq \
 #  strerror \
 #  strerror-override \
 #  strerror_r-posix \
 #  strftime-fixes \
 #  string \
+#  string-h \
 #  strncat \
+#  strncpy \
 #  strndup \
 #  strnlen \
 #  strnlen1 \
+#  strsep \
+#  strsignal \
 #  strstr \
 #  strstr-simple \
 #  strtok_r \
@@ -242,6 +254,7 @@
 #  sys_wait \
 #  system-posix \
 #  tempname \
+#  threads-h \
 #  time \
 #  time_r \
 #  time_rz \
@@ -313,6 +326,7 @@ gl_MODULES([
   dirfd
   dirname
   dirname-lgpl
+  dosname
   double-slash-root
   dup2
   environ
@@ -329,6 +343,7 @@ gl_MODULES([
   fcntl-safer
   fflush
   ffs
+  ffsll
   fileblocks
   filename
   flexmember
@@ -349,6 +364,7 @@ gl_MODULES([
   getcwd-lgpl
   getline
   getpagesize
+  gettext
   gettext-h
   gettimeofday
   git-version-gen
@@ -405,6 +421,7 @@ gl_MODULES([
   nocrash
   noreturn
   obstack
+  obstack-printf
   opendirat
   openmp
   pathmax
@@ -455,17 +472,25 @@ gl_MODULES([
   stddef
   stdint
   stdlib
+  stpcpy
+  stpncpy
+  strcasestr
   strchrnul
+  strcspn
   streq
   strerror
   strerror-override
   strerror_r-posix
   strftime-fixes
   string
+  string-h
   strncat
+  strncpy
   strndup
   strnlen
   strnlen1
+  strsep
+  strsignal
   strstr
   strstr-simple
   strtok_r
@@ -476,6 +501,7 @@ gl_MODULES([
   sys_wait
   system-posix
   tempname
+  threads-h
   time
   time_r
   time_rz

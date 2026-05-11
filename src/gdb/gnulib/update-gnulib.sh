@@ -37,13 +37,13 @@ IMPORTED_GNULIB_MODULES="\
     bcopy bind bison-i18n bitset btowc builtin-expect \
     c-ctype c-strcase c-strcasestr c99 calloc-posix canonicalize-lgpl \
     chdir-long chown configmake connect count-one-bits closedir crc ctime \
-    dirent dirent-safer dirfd dirname dirname-lgpl double-slash-root dup2 \
-    environ errno error euidaccess exitfail extensions extern-inline \
-    faccessat fclose fcntl fcntl-h fcntl-safer fflush ffs fileblocks filename \
+    dirent dirent-safer dirfd dirname dirname-lgpl dosname double-slash-root \
+    dup2 environ errno error euidaccess exitfail extensions extern-inline \
+    faccessat fclose fcntl fcntl-h fcntl-safer fflush ffs ffsll fileblocks filename \
     flexmember float fnmatch fnmatch-gnu fnmatch-h fopen fpieee fprintf-posix \
     fpucw frexp frexpl fstatat fts \
-    gendocs getcwd getcwd-lgpl getline getpagesize gettext-h gettimeofday \
-    git-version-gen gitlog-to-changelog glob gnu-make gpl-2.0 \
+    gendocs getcwd getcwd-lgpl getline getpagesize gettext gettext-h \
+    gettimeofday git-version-gen gitlog-to-changelog glob gnu-make gpl-2.0 \
     havelib host-cpu-c-abi host-os \
     ignore-value include_next inet_ntop inline intprops inttypes \
     inttypes-incomplete isnand-nolibm isnanl-nolibm iswctype \
@@ -53,7 +53,7 @@ IMPORTED_GNULIB_MODULES="\
     mbsrtowcs mbsspn memchr memcmp memmem memmem-simple \
     mempcpy memrchr mkdir mkdtemp mkostemp multiarch \
     netdb nextafter no-c++ nocrash noreturn \
-    obstack opendirat openmp \
+    obstack obstack-printf opendirat openmp \
     pathmax pclose perror pipe-posix popen posixcheck putenv \
     rawmemchr readdir readlink realloc-gnu realloc-posix recv regex \
     regex-quote regexprops-generic rename rmdir \
@@ -61,11 +61,12 @@ IMPORTED_GNULIB_MODULES="\
     signal signal-h sigpipe sigpipe-die sigprocmask snippet/_Noreturn \
     snippet/arg-nonnull snippet/c++defs snippet/link-warning \
     snippet/warn-on-use snprintf socket sprintf-posix ssize_t stat stat-macros \
-    stat-size stat-time stdbool stddef stdint stdlib strchrnul streq strerror \
-    strerror_r-posix strerror-override strftime-fixes string strncat strndup \
-    strnlen strnlen1 strstr strstr-simple strtok_r sys_select sys_stat \
-    sys_time sys_types sys_wait system-posix \
-    tempname time time_r time_rz timegm tzset \
+    stat-size stat-time stdbool stddef stdint stdlib stpcpy stpncpy strcasestr \
+    strchrnul strcspn streq strerror strerror_r-posix strerror-override \
+    strftime-fixes string string-h strncat strncpy strndup strnlen strnlen1 \
+    strsep strsignal strstr strstr-simple strtok_r sys_select sys_stat \
+    sys_time sys_types sys_wait system-posix system-quote \
+    tempname threads-h time time_r time_rz timegm tzset \
     unistd unistd-safer unlink unlink-busy unsetenv update-copyright usleep \
     vc-list-files verify vfprintf-posix \
     warnings wchar wcscat wcslen wcsncasecmp wctype wctype-h winsz-ioctl \
@@ -80,6 +81,7 @@ IMPORTED_GNULIB_MODULES="\
 # - memchr-obsolete
 # - memmove
 # - strdup (or strdup-posix)
+# - strpbrk
 # (even though I cannot add them, there is no need to explicitly ignore them
 # below, though, so they may still get dragged in as dependencies)
 # Reasons for explicitly ignoring some:
