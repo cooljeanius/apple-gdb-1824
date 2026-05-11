@@ -238,14 +238,6 @@ dnl# for it.
 
 dnl# APPLE LOCAL if we have mach_exc.def, use the 64 bit exceptions.
 case "${host}" in
-  arm-apple-*)
-    # No 64 bit exceptions for Apple ARM (yet?)
-    AC_MSG_CHECKING([whether we can use 64 bit mach exceptions])
-    MACH_EXC_SERVER_PREFACE=""
-    AC_MSG_RESULT([(disabled!) no])
-    AC_SUBST([MACH_EXC_SERVER_PREFACE])dnl
-    ## TODO: come back to this after working on aarch64 support
-    ;;
   *-apple-darwin* | *-apple-macosx*)
     AC_ARG_VAR([SDKROOT],[Where the SDK is.])
     AC_MSG_CHECKING([for SDKROOT])

@@ -1098,8 +1098,8 @@ EGREP
 RANLIB
 LD_ARCHFLAGS
 acl_cv_wl
-SDKROOT
 MACH_EXC_SERVER_PREFACE
+SDKROOT
 want64
 SED
 am__xargs_n
@@ -9361,15 +9361,6 @@ case "${host}" in
 esac
 
 case "${host}" in
-  arm-apple-*)
-    # No 64 bit exceptions for Apple ARM (yet?)
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether we can use 64 bit mach exceptions" >&5
-printf %s "checking whether we can use 64 bit mach exceptions... " >&6; }
-    MACH_EXC_SERVER_PREFACE=""
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: (disabled!) no" >&5
-printf "%s\n" "(disabled!) no" >&6; }
-        ## TODO: come back to this after working on aarch64 support
-    ;;
   *-apple-darwin* | *-apple-macosx*)
 
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for SDKROOT" >&5
