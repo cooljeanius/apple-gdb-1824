@@ -4,22 +4,26 @@ extends: default
 
 ignore:
   - src/gdb/*/*/*/build/*.build/Debug/*.build/all-product-headers.yaml
+  - src/tcl/macosx/build/*.build/Development/Tcl-*/all-product-headers.yaml
   - src/tk/macosx/build/*.build/Development/*.build/all-product-headers.yaml
+  - src/*/*/*.dSYM/Contents/Resources/Relocations/*/*.yml
 
 rules:
   float-values: enable
   indentation:
     ignore:
-      - .github/workflows/apple-gdb-1824-macos.yml
+      - .github/*workflows*/apple-gdb-1824-macos.yml
       - .github/workflows/codeql*.yml
+      - src/.pre-commit-config.yaml
   # some lines might be really long in this repo, and I don't feel like
   # figuring out how to break them up:
   line-length:
     max: 99
     level: warning
     ignore:
-      - .github/workflows/apple-gdb-1824*.yml
+      - .github/*workflows*/apple-gdb-1824*.yml
       - .github/workflows/codeql.yml
       - .travis.yml
+      - src/.pre-commit-config.yaml
   octal-values: enable
   truthy: disable

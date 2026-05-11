@@ -38,25 +38,71 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 
+minimum_pre_commit_version: 4.5.1
+default_install_hook_types: [pre-commit, commit-msg]
+default_stages: [pre-commit]
 repos:
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 24.8.0
+    rev: 26.3.1
     hooks:
       - id: black
         types_or: [file]
-        files: 'gdb/.*\.py(\.in)?$'
+        files: '^gdb/.*\.py(\.in)?$'
   - repo: https://github.com/pycqa/flake8
-    rev: 7.1.1
+    rev: 7.3.0
     hooks:
       - id: flake8
         types_or: [file]
-        # Note this one is only run on gdb/python, not (for now) the
-        # test suite.
-        files: 'gdb/python/.*\.py(\.in)?$'
+        # Run this for (in glob notation):
+        #
+        #  - gdb/gdb-gdb.py.in
+        #  - gdb/*.py
+        #  - gdb/python/**/*.py
+        #  - gdb/testsuite/*.py
+        #
+        files: '^gdb/.*\.py(\.in)?$'
         args: [--config, gdb/setup.cfg]
   - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+    rev: 9.0.0a3
     hooks:
       - id: isort
         types_or: [file]
-        files: 'gdb/.*\.py(\.in)?$'
+        files: '^gdb/.*\.py(\.in)?$'
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.2
+    hooks:
+    - id: codespell
+      files: '^(gdb/(tui|target|data-directory|po|system-gdbinit|mi|syscalls|arch|regformats|python|guile|config|cli|testsuite/gdb.(dap|gdb|go|guile|mi|modula2|objc|opencl|opt|pascal|perf|reverse|rocm|server|stabs|xml)))/'
+      args: [--config, gdb/contrib/setup.cfg]
+  - repo: local
+    hooks:
+      - id: check-include-guards
+        name: check-include-guards
+        language: python
+        entry: gdb/check-include-guards.py
+        # All gdb header files, but not headers in the test suite.
+        files: '^(gdb(support|server)?)/.*\.h$'
+        exclude: '.*/testsuite/.*'
+      - id: check-gnu-style
+        name: check-gnu-style
+        language: python
+        additional_dependencies: ['termcolor', 'unidiff']
+        entry: gdb/contrib/check-gnu-style-pre-commit.sh
+        files: '^(gdb(support|server)?)/.*\.(c|h|cc)$'
+        exclude: '.*/testsuite/.*'
+        verbose: true
+        stages: [pre-commit]
+      - id: check-whitespace
+        name: check-whitespace
+        language: script
+        entry: gdb/contrib/check-whitespace-pre-commit.py
+        files: '^(gdb(support|server)?)/.*$'
+        pass_filenames: true
+        stages: [pre-commit]
+  - repo: https://github.com/nmoroze/tclint
+    rev: v0.8.0
+    hooks:
+      - id: tclint
+        args: [--trust-plugins]
+        types_or: [file]
+        files: '^gdb/testsuite/.*\.(exp|tcl)$'
