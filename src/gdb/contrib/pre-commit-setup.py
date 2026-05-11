@@ -25,7 +25,7 @@ import sys
 
 import yaml
 
-cfg = ".pre-commit-config.yaml"
+cfg = "src/.pre-commit-config.yaml"
 with open(cfg, "r") as f:
     data = yaml.load(f, Loader=yaml.SafeLoader)
 stages = data.get("default_install_hook_types", ["pre-commit"])

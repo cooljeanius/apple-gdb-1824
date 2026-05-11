@@ -74,6 +74,13 @@ repos:
     - id: codespell
       files: '^(gdb/(tui|target|data-directory|po|system-gdbinit|mi|syscalls|arch|regformats|python|guile|config|cli|testsuite/gdb.(dap|gdb|go|guile|mi|modula2|objc|opencl|opt|pascal|perf|reverse|rocm|server|stabs|xml)))/'
       args: [--config, gdb/contrib/setup.cfg]
+    - id: codespell
+      name: codespell-log
+      entry: src/gdb/contrib/codespell-log.sh
+      args: [--config, gdb/contrib/setup.cfg]
+      always_run: true
+      verbose: true
+      stages: [commit-msg]
   - repo: local
     hooks:
       - id: check-include-guards
@@ -99,6 +106,13 @@ repos:
         files: '^(gdb(support|server)?)/.*$'
         pass_filenames: true
         stages: [pre-commit]
+      - id: pre-commit-setup
+        name: pre-commit-setup
+        language: python
+        entry: src/gdb/contrib/pre-commit-setup.py
+        additional_dependencies: ["pyyaml"]
+        always_run: true
+        require_serial: true
   - repo: https://github.com/nmoroze/tclint
     rev: v0.8.0
     hooks:
