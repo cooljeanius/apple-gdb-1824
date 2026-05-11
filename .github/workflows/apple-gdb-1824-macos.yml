@@ -460,10 +460,14 @@ jobs:
           sleep 1; \
         fi
         if test -x "$(which locate)"; then \
+          sync && echo "Attempting to locate X11/Xlib.h..."; \
           sync && (locate X11/Xlib.h || sleep 1); \
+          sync && echo "Attempting to locate mach/mach_exc.defs..."; \
+          sync && (locate mach/mach_exc.defs || sleep 1); \
         else \
           sync && sleep 1; \
         fi
+        echo "grepping for SDK-related strings in environment..."
         env | grep "SDK"
     strategy:
       fail-fast: false
