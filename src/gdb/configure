@@ -52506,6 +52506,12 @@ then :
   printf "%s\n" "#define HAVE_STRTOUL 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "system" "ac_cv_func_system"
+if test "x$ac_cv_func_system" = xyes
+then :
+  printf "%s\n" "#define HAVE_SYSTEM 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "timeradd" "ac_cv_func_timeradd"
 if test "x$ac_cv_func_timeradd" = xyes
 then :
@@ -52660,7 +52666,7 @@ int
 main (void)
 {
 
-extern int ptrace();
+extern int ptrace(); /* FIXME: C23+ compatibility */
 
   ;
   return 0;

@@ -1327,7 +1327,11 @@ remote_fileio_func_system(char *buf)
     }
 
   remote_fio_no_longjmp = 1;
+#ifdef HAVE_SYSTEM
   ret = system(cmdline); /* FIXME: unavailable on iOS */
+#else
+  ret = -1; /* ???: ??? */
+#endif /* HAVE_SYSTEM */
 
   if (ret == -1)
     remote_fileio_return_errno(-1);

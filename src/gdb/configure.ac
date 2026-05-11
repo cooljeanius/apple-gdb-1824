@@ -2463,8 +2463,8 @@ AC_CHECK_FUNCS([atof alarm assert atexit bcopy bsearch bzero clnt_pcreateerror \
                 set_type_code setitimer socket strcasecmp strcat strchr strcpy \
                 strcspn strdup strerror strlcat strlcpy strlen strncasecmp \
                 strncat strncmp strncpy strndup strpbrk strrchr strspn strstr \
-                strtok strtok_r strtol strtoul timeradd timerclear timersub \
-                uname vasprintf verify_floatformat wcwidth])dnl
+                strtok strtok_r strtol strtoul system timeradd timerclear \
+                timersub uname vasprintf verify_floatformat wcwidth])dnl
 
 dnl# Use as a replacement for just-plain sprintf:
 if test "x${ac_cv_func_snprintf}" = "x"; then
