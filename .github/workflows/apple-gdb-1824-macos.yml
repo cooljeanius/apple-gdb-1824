@@ -347,7 +347,7 @@ jobs:
           time make check-mmalloc; \
           sync && echo "done with mmalloc; moving onto electrict-fence next…"; \
           cd electric-fence; \
-          make check stamp-framework ls; \
+          make check stamp-framework-headers ls; \
           sync && echo "done with electric-fence..." && sync; \
         elif test ${{ matrix.compiler }} == gcc; then \
           sync && echo "getting some additional dependencies..."; \
