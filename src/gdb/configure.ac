@@ -1116,7 +1116,9 @@ AX_PROG_BISON([
 AC_SUBST([EXTRA_YFLAGS_SEP])dnl
 
 m4_ifdef([BISON_I18N],[
-  m4_ifdef([AM_GNU_GETTEXT],[
+  dnl# extra brackets here due to:
+  dnl# https://lists.gnu.org/archive/html/bug-wget/2025-09/msg00000.html
+  m4_ifdef([AM_GNU_][GETTEXT],[
     if test "x${USE_NLS}" = "x"; then
       test -z "${USE_NLS}" && export USE_NLS="no"
     fi

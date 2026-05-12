@@ -6893,7 +6893,7 @@ else case e in #(
             else
               gl_cv_host_cpu_c_abi=arm
             fi
-            rm -fr conftest*
+            rm -f conftest*
             ;;
 esac
 fi
@@ -56670,9 +56670,9 @@ else case e in #(
        *)
          if test -n "$gl_cv_host_cpu_c_abi"; then
                       case "$gl_cv_host_cpu_c_abi" in
-             i386 | x86_64-x32 | arm | armhf | arm64-ilp32 | hppa | ia64-ilp32 | loongarch32 | mips | mipsn32 | powerpc | riscv*-ilp32* | s390 | sparc)
+             i386 | x86_64-x32 | arm | armhf | arm64-ilp32 | hppa | ia64-ilp32 | mips | mipsn32 | powerpc | riscv*-ilp32* | s390 | sparc)
                gl_cv_host_cpu_c_abi_32bit=yes ;;
-             x86_64 | alpha | arm64 | aarch64c | hppa64 | ia64 | loongarch64 | mips64 | powerpc64 | powerpc64-elfv2 | riscv*-lp64* | s390x | sparc64 )
+             x86_64 | alpha | arm64 | aarch64c | hppa64 | ia64 | mips64 | powerpc64 | powerpc64-elfv2 | riscv*-lp64* | s390x | sparc64 )
                gl_cv_host_cpu_c_abi_32bit=no ;;
              *)
                gl_cv_host_cpu_c_abi_32bit=unknown ;;

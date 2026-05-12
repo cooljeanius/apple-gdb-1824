@@ -43,9 +43,6 @@
 #ifndef __ia64__
 #undef __ia64__
 #endif
-#ifndef __loongarch32__
-#undef __loongarch32__
-#endif
 #ifndef __loongarch64__
 #undef __loongarch64__
 #endif
