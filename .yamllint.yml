@@ -4,7 +4,9 @@ extends: default
 
 ignore:
   - src/gdb/*/*/*/build/*.build/Debug/*.build/all-product-headers.yaml
+  - src/tcl/macosx/build/*.build/Development/Tcl-*/all-product-headers.yaml
   - src/tk/macosx/build/*.build/Development/*.build/all-product-headers.yaml
+  - src/*/*/*.dSYM/Contents/Resources/Relocations/*/*.yml
 
 rules:
   float-values: enable

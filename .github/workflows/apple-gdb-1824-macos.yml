@@ -199,7 +199,8 @@ jobs:
     - run: cd src && for dir in sim utils tcl expect dejagnu; do if test -e ${dir}/Makefile; then (echo "building in ${dir}" && make -C ${dir}); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
     - run: cd src && (make all-readline || (pushd readline && (make depend || make stamp-framework-headers) && popd) || make am--refresh)
     - run: cd src && make configure-gdb
-    - run: cd src && make all-gdb
+    # FIXME: get the executable to link properly for aarch64:
+    - run: cd src/gdb && make libgdb_a
     - name: bootstrap libtool
       run: |
         cd src/libtool_gnu
