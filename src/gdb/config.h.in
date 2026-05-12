@@ -584,6 +584,10 @@
    don't. */
 #undef HAVE_DECL_STRVERSCMP
 
+/* Define to 1 if you have the declaration of 'system', and to 0 if you don't.
+   */
+#undef HAVE_DECL_SYSTEM
+
 /* Define to 1 if you have the declaration of 'sys_siglist', and to 0 if you
    don't. */
 #undef HAVE_DECL_SYS_SIGLIST

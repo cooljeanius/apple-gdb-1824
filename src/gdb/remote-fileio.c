@@ -1290,6 +1290,25 @@ remote_fileio_func_isatty(char *buf)
                                || ((fd == FIO_FD_CONSOLE_OUT) ? 1 : 0));
 }
 
+#ifndef CAN_USE_SYSTEM
+# if defined(TARGET_IPHONE_SIMULATOR) || defined(TARGET_OS_IOS) || \
+     defined(TARGET_OS_IPHONE) || defined(__APPLE_EMBEDDED_SIMULATOR__) || \
+     (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) && \
+      (__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ <= 40300))
+#  ifndef CANNOT_USE_SYSTEM
+#   define CANNOT_USE_SYSTEM 1
+#  else
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "We cannot use system(3) here!"
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
+#  endif /* !CANNOT_USE_SYSTEM */
+# else
+#  if defined(HAVE_SYSTEM) && defined(HAVE_DECL_SYSTEM) && HAVE_DECL_SYSTEM
+#   define CAN_USE_SYSTEM 1
+#  endif /* HAVE_SYSTEM && HAVE_DECL_SYSTEM */
+# endif /* TARGET_IPHONE_SIMULATOR || TARGET_OS_IOS || TARGET_OS_IPHONE || etc. */
+#endif /* !CAN_USE_SYSTEM */
+
 static void
 remote_fileio_func_system(char *buf)
 {
@@ -1327,11 +1346,11 @@ remote_fileio_func_system(char *buf)
     }
 
   remote_fio_no_longjmp = 1;
-#ifdef HAVE_SYSTEM
+#ifdef CAN_USE_SYSTEM
   ret = system(cmdline); /* FIXME: unavailable on iOS */
 #else
   ret = -1; /* ???: ??? */
-#endif /* HAVE_SYSTEM */
+#endif /* CAN_USE_SYSTEM */
 
   if (ret == -1)
     remote_fileio_return_errno(-1);

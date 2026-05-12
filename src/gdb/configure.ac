@@ -1997,6 +1997,16 @@ AC_CHECK_DECLS([timeradd, timerclear, timersub],[],[],[
 
 AC_CHECK_DECLS([coreaddr, file, origin])dnl
 
+AC_CHECK_DECLS([system],[],[],[
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest for system wants to include <stdlib.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STDLIB_H */
+])dnl
+
 # ----------------------- #
 # Checks for structures.  #
 # ----------------------- #
