@@ -486,7 +486,7 @@ _bfd_aarch64_elf_add_symbol_hook (bfd *abfd, struct bfd_link_info *info,
       && ((ELF_ST_TYPE(sym->st_info) == STT_GNU_IFUNC)
 	  || (ELF_ST_BIND (sym->st_info) == STB_GNU_UNIQUE)))
     {
-#if 0
+#if 0 /* TODO: better preprocessor conditional */
       elf_tdata(info->output_bfd)->has_gnu_symbols = TRUE;
 #else
       (void)info;
@@ -510,7 +510,7 @@ _bfd_aarch64_elf_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 	return FALSE;
 
       case 408:		/* sizeof(struct elf_prstatus) on Linux/arm64.  */
-#if 0
+#if 0 /* TODO: better preprocessor conditional */
 	/* pr_cursig */
 	elf_tdata(abfd)->core->signal = bfd_get_16(abfd, (note->descdata + 12));
 
