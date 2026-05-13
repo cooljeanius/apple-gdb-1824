@@ -1,0 +1,4 @@
+configury
+SME
+Synopsys
+aranges
