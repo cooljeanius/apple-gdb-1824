@@ -9,8 +9,8 @@ on:
   pull_request:
 jobs:
   test-macos:
-    # "latest" defaults to arm, which will require work to properly support,
-    # but, it needs to be done eventually:
+    # "latest" defaults to arm, which requires work to properly support,
+    # but we have got some pretty good progress towards that end here:
     runs-on: macos-latest
     steps:
     - name: checkout

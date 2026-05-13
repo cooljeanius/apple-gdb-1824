@@ -117,7 +117,8 @@ jobs:
       run: |
         sudo apt-get -qq update
         if test ${{ matrix.language }} == 'actions'; then \
-          sync && echo "TODO: find way to install actionlint on runner" && sleep 1; \
+          sync && echo "TODO: find way to install actionlint and/or zizmor on runner"; \
+          sync && sleep 1; \
         elif test ${{ matrix.language }} == 'c-cpp'; then \
           sudo apt-get -y install autopoint gobjc clang autogen curl \
             guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev \
@@ -305,8 +306,14 @@ jobs:
           else \
             sync && echo "autopep8 missing or unusable; skipping..."; \
           fi; \
-        elif test ${{ matrix.language }} == 'actions' && test -x "$(which actionlint)"; then \
-          actionlint; \
+        elif test ${{ matrix.language }} == 'actions'; then \
+          if test -x "$(which actionlint)"; then \
+            actionlint; \
+          elif test -x "$(which zizmor)"; then \
+            zizmor .github; \
+          else \
+            sync && echo "TODO: please install actionlint and/or zizmor!"; \
+          fi; \
         else \
           sync && echo "unhandled case for syntax check step!"; \
           sync && echo "(matrix.language is ${{ matrix.language }})"; \
