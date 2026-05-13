@@ -309,10 +309,13 @@ jobs:
         elif test ${{ matrix.language }} == 'actions'; then \
           if test -x "$(which actionlint)"; then \
             actionlint; \
-          elif test -x "$(which zizmor)"; then \
+          else \
+            sync && echo "TODO: please install actionlint!" && sleep 1; \
+          fi; \
+          if test -x "$(which zizmor)"; then \
             zizmor .github; \
           else \
-            sync && echo "TODO: please install actionlint and/or zizmor!"; \
+            sync && echo "TODO: please install zizmor!" && sleep 1; \
           fi; \
         else \
           sync && echo "unhandled case for syntax check step!"; \
