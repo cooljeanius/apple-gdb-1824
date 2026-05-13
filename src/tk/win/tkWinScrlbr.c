@@ -1,4 +1,4 @@
-/* 
+/*
  * tkWinScrollbar.c --
  *
  *	This file implements the Windows specific portion of the scrollbar
@@ -14,7 +14,6 @@
 
 #include "tkWinInt.h"
 #include "tkScrollbar.h"
-
 
 /*
  * The following constant is used to specify the maximum scroll position.
@@ -39,7 +38,7 @@ typedef struct WinScrollbar {
 
 /*
  * Flag bits for native scrollbars:
- * 
+ *
  * IN_MODAL_LOOP:		Non-zero means this scrollbar is in the middle
  *				of a modal loop.
  * ALREADY_DEAD:		Non-zero means this scrollbar has been
@@ -117,7 +116,7 @@ TkpCreateScrollbar(tkwin)
 {
     WinScrollbar *scrollPtr;
     TkWindow *winPtr = (TkWindow *)tkwin;
-    
+
     if (!initialized) {
         Tcl_MutexLock(&winScrlbrMutex);
 	UpdateScrollbarMetrics();
@@ -163,8 +162,7 @@ TkpCreateScrollbar(tkwin)
  */
 
 static void
-UpdateScrollbar(scrollPtr)
-    WinScrollbar *scrollPtr;
+UpdateScrollbar (WinScrollbar *scrollPtr)
 {
     SCROLLINFO scrollInfo;
     double thumbSize;
@@ -234,7 +232,7 @@ CreateProc(tkwin, parentWin, instanceData)
 
     /*
      * Ensure new window is inserted into the stacking order at the correct
-     * place. 
+     * place.
      */
 
     SetWindowPos(scrollPtr->hwnd, HWND_TOP, 0, 0, 0, 0,
@@ -369,7 +367,7 @@ TkpDestroyScrollbar(scrollPtr)
  */
 
 void
-UpdateScrollbarMetrics()
+UpdateScrollbarMetrics (void)
 {
     Tk_ConfigSpec *specPtr;
 
@@ -537,11 +535,11 @@ ScrollbarProc(hwnd, message, wParam, lParam)
 		Tcl_ServiceAll();
 		return 0;
 	    }
-		
+
 	    Tcl_DStringInit(&cmdString);
 	    Tcl_DStringAppend(&cmdString, scrollPtr->info.command,
 		    scrollPtr->info.commandSize);
-		
+
 	    if (command == SB_LINELEFT || command == SB_LINERIGHT) {
 		Tcl_DStringAppendElement(&cmdString, "scroll");
 		Tcl_DStringAppendElement(&cmdString,
@@ -582,8 +580,8 @@ ScrollbarProc(hwnd, message, wParam, lParam)
 	    if (code != TCL_OK && code != TCL_CONTINUE && code != TCL_BREAK) {
 		Tcl_AddErrorInfo(interp, "\n    (scrollbar command)");
 		Tcl_BackgroundError(interp);
-	    }		
-	    Tcl_DStringFree(&cmdString);		
+	    }
+	    Tcl_DStringFree(&cmdString);
 
 	    Tcl_ServiceAll();
 	    return 0;
@@ -662,7 +660,7 @@ ScrollbarBindProc(clientData, interp, eventPtr, tkwin, keySym)
  *
  *	This function is invoked at the end of the event processing
  *	whenever the ScrollbarBindProc has been invoked for a ButtonPress
- *	event. 
+ *	event.
  *
  * Results:
  *	None.

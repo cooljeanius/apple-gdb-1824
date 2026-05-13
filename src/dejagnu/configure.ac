@@ -48,15 +48,18 @@ if test "x${ac_cv_prog_AR}" = "x"; then
   AC_PROG_AR
 fi
 if test "x${CC}" = "x"; then
-  test -z "${CC}"
+  test -z "${CC}" || unset CC
   AC_PROG_CC
 else
-  test ! -z "${CC}"
+  test -n "${CC}" && export CC
 fi
 rm -rf *.dSYM
 AC_PROG_CXX
 CXXFLAGSOLD="${CXXFLAGS}"
 AC_PROG_CXX_OLD
+CXXFLAGS_FROM_CXX_OLD="${CXXFLAGS}"
+AC_SUBST([CXXFLAGS_FROM_CXX_OLD])dnl
+  ## restore from previously:
 CXXFLAGS="${CXXFLAGSOLD}"
 AC_PROG_CXXCPP
 AC_PROG_CXX_C_O
@@ -76,6 +79,8 @@ if test -z "${CVS_RSH}"; then
     export CVS_RSH=/usr/bin/ssh
   elif test -n "`which ssh`" && test -x "`which ssh`"; then
     export CVS_RSH="`which ssh`"
+  else
+    echo "unsure what to set CVS_RSH to"
   fi
 fi
 AC_SUBST([CVS_RSH])dnl

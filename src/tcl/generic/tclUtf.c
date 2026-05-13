@@ -812,8 +812,9 @@ Tcl_UtfBackslash(src, readPtr, dst)
  */
 
 int
-Tcl_UtfToUpper(str)
-    char *str;			/* String to convert in place. */
+Tcl_UtfToUpper (
+    char *str			/* String to convert in place. */
+)
 {
     Tcl_UniChar ch, upChar;
     char *src, *dst;
@@ -865,8 +866,9 @@ Tcl_UtfToUpper(str)
  */
 
 int
-Tcl_UtfToLower(str)
-    char *str;			/* String to convert in place. */
+Tcl_UtfToLower (
+    char *str			/* String to convert in place. */
+)
 {
     Tcl_UniChar ch, lowChar;
     char *src, *dst;
@@ -919,8 +921,9 @@ Tcl_UtfToLower(str)
  */
 
 int
-Tcl_UtfToTitle(str)
-    char *str;			/* String to convert in place. */
+Tcl_UtfToTitle (
+    char *str			/* String to convert in place. */
+)
 {
     Tcl_UniChar ch, titleChar, lowChar;
     char *src, *dst;
@@ -1310,8 +1313,9 @@ Tcl_UniCharNcasecmp(cs, ct, n)
  */
 
 int
-Tcl_UniCharIsAlnum(ch)
-    int ch;			/* Unicode character to test. */
+Tcl_UniCharIsAlnum (
+    int ch			/* Unicode character to test. */
+)
 {
     register int category = (GetUniCharInfo(ch) & UNICODE_CATEGORY_MASK);
 
@@ -1335,8 +1339,9 @@ Tcl_UniCharIsAlnum(ch)
  */
 
 int
-Tcl_UniCharIsAlpha(ch)
-    int ch;			/* Unicode character to test. */
+Tcl_UniCharIsAlpha (
+    int ch			/* Unicode character to test. */
+)
 {
     register int category = (GetUniCharInfo(ch) & UNICODE_CATEGORY_MASK);
     return ((ALPHA_BITS >> category) & 1);
@@ -1359,8 +1364,9 @@ Tcl_UniCharIsAlpha(ch)
  */
 
 int
-Tcl_UniCharIsControl(ch)
-    int ch;			/* Unicode character to test. */
+Tcl_UniCharIsControl (
+    int ch			/* Unicode character to test. */
+)
 {
     return ((GetUniCharInfo(ch) & UNICODE_CATEGORY_MASK) == CONTROL);
 }
@@ -1382,8 +1388,9 @@ Tcl_UniCharIsControl(ch)
  */
 
 int
-Tcl_UniCharIsDigit(ch)
-    int ch;			/* Unicode character to test. */
+Tcl_UniCharIsDigit (
+    int ch			/* Unicode character to test. */
+)
 {
     return ((GetUniCharInfo(ch) & UNICODE_CATEGORY_MASK)
 	    == DECIMAL_DIGIT_NUMBER);
@@ -1406,8 +1413,9 @@ Tcl_UniCharIsDigit(ch)
  */
 
 int
-Tcl_UniCharIsGraph(ch)
-    int ch;			/* Unicode character to test. */
+Tcl_UniCharIsGraph (
+    int ch			/* Unicode character to test. */
+)
 {
     register int category = (GetUniCharInfo(ch) & UNICODE_CATEGORY_MASK);
     return (((PRINT_BITS >> category) & 1) && ((unsigned char) ch != ' '));
@@ -1430,8 +1438,9 @@ Tcl_UniCharIsGraph(ch)
  */
 
 int
-Tcl_UniCharIsLower(ch)
-    int ch;			/* Unicode character to test. */
+Tcl_UniCharIsLower (
+    int ch			/* Unicode character to test. */
+)
 {
     return ((GetUniCharInfo(ch) & UNICODE_CATEGORY_MASK) == LOWERCASE_LETTER);
 }
@@ -1453,8 +1462,9 @@ Tcl_UniCharIsLower(ch)
  */
 
 int
-Tcl_UniCharIsPrint(ch)
-    int ch;			/* Unicode character to test. */
+Tcl_UniCharIsPrint (
+    int ch			/* Unicode character to test. */
+)
 {
     register int category = (GetUniCharInfo(ch) & UNICODE_CATEGORY_MASK);
     return ((PRINT_BITS >> category) & 1);
@@ -1477,8 +1487,9 @@ Tcl_UniCharIsPrint(ch)
  */
 
 int
-Tcl_UniCharIsPunct(ch)
-    int ch;			/* Unicode character to test. */
+Tcl_UniCharIsPunct (
+    int ch			/* Unicode character to test. */
+)
 {
     register int category = (GetUniCharInfo(ch) & UNICODE_CATEGORY_MASK);
     return ((PUNCT_BITS >> category) & 1);
@@ -1501,8 +1512,9 @@ Tcl_UniCharIsPunct(ch)
  */
 
 int
-Tcl_UniCharIsSpace(ch)
-    int ch;			/* Unicode character to test. */
+Tcl_UniCharIsSpace (
+    int ch			/* Unicode character to test. */
+)
 {
     register int category;
 
@@ -1536,8 +1548,9 @@ Tcl_UniCharIsSpace(ch)
  */
 
 int
-Tcl_UniCharIsUpper(ch)
-    int ch;			/* Unicode character to test. */
+Tcl_UniCharIsUpper (
+    int ch			/* Unicode character to test. */
+)
 {
     return ((GetUniCharInfo(ch) & UNICODE_CATEGORY_MASK) == UPPERCASE_LETTER);
 }
@@ -1560,8 +1573,9 @@ Tcl_UniCharIsUpper(ch)
  */
 
 int
-Tcl_UniCharIsWordChar(ch)
-    int ch;			/* Unicode character to test. */
+Tcl_UniCharIsWordChar (
+    int ch			/* Unicode character to test. */
+)
 {
     register int category = (GetUniCharInfo(ch) & UNICODE_CATEGORY_MASK);
 
@@ -1746,3 +1760,5 @@ Tcl_UniCharCaseMatch(string, pattern, nocase)
 	pattern++;
     }
 }
+
+/* EOF */

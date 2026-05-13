@@ -376,9 +376,10 @@ Tcl_SetTimer(timePtr)
  */
 
 void
-Tcl_ServiceModeHook(mode)
-    int mode;			/* Either TCL_SERVICE_ALL, or
+Tcl_ServiceModeHook (
+    int mode			/* Either TCL_SERVICE_ALL, or
 				 * TCL_SERVICE_NONE. */
+)
 {
 }
 
@@ -479,8 +480,9 @@ Tcl_CreateFileHandler(fd, mask, proc, clientData)
  */
 
 void
-Tcl_DeleteFileHandler(fd)
-    int fd;		/* Stream id for which to remove callback procedure. */
+Tcl_DeleteFileHandler (
+    int fd		/* Stream id for which to remove callback procedure. */
+)
 {
     FileHandler *filePtr, *prevPtr;
     int index, bit, i;
@@ -874,7 +876,7 @@ NotifierThreadProc(clientData)
 
     receivePipe = fds[0];
 
-#ifndef USE_FIONBIO
+# ifndef USE_FIONBIO
     status = fcntl(receivePipe, F_GETFL);
     status |= O_NONBLOCK;
     if (fcntl(receivePipe, F_SETFL, status) < 0) {
@@ -885,14 +887,14 @@ NotifierThreadProc(clientData)
     if (fcntl(fds[1], F_SETFL, status) < 0) {
 	panic("NotifierThreadProc: could not make trigger pipe non blocking.");
     }
-#else
+# else
     if (ioctl(receivePipe, (int) FIONBIO, &status) < 0) {
 	panic("NotifierThreadProc: could not make receive pipe non blocking.");
     }
     if (ioctl(fds[1], (int) FIONBIO, &status) < 0) {
 	panic("NotifierThreadProc: could not make trigger pipe non blocking.");
     }
-#endif
+# endif
 
     /*
      * Install the write end of the pipe into the global variable.
@@ -1032,4 +1034,6 @@ NotifierThreadProc(clientData)
     Tcl_ConditionNotify(&notifierCV);
     Tcl_MutexUnlock(&notifierMutex);
 }
-#endif
+#endif /* TCL_THREADS */
+
+/* EOF */

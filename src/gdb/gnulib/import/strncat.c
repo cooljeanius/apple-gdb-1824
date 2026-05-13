@@ -1,5 +1,5 @@
 /* Concatenate strings.
-   Copyright (C) 1999, 2002, 2006, 2010-2023 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2002, 2006, 2010-2026 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2002.
 
    This file is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 char *
 strncat (char *dest, const char *src, size_t n)
 {
-  char *destptr = dest + strlen (dest);
+  char *destptr = strnul (dest);
 
   for (; n > 0 && (*destptr = *src) != '\0'; src++, destptr++, n--)
     ;

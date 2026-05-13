@@ -1389,11 +1389,12 @@ TtyGetBaud(speed)
  */
 
 static void
-TtyGetAttributes(fd, ttyPtr)
-    int fd;			/* Open file descriptor for serial port to
+TtyGetAttributes (
+    int fd,			/* Open file descriptor for serial port to
 				 * be queried. */
-    TtyAttrs *ttyPtr;		/* Buffer filled with serial port
+    TtyAttrs *ttyPtr		/* Buffer filled with serial port
 				 * attributes. */
+)
 {
     IOSTATE iostate;
     int baud, parity, data, stop;
@@ -1479,11 +1480,12 @@ TtyGetAttributes(fd, ttyPtr)
  */
 
 static void
-TtySetAttributes(fd, ttyPtr)
-    int fd;			/* Open file descriptor for serial port to
+TtySetAttributes (
+    int fd,			/* Open file descriptor for serial port to
 				 * be modified. */
-    TtyAttrs *ttyPtr;		/* Buffer containing new attributes for
+    TtyAttrs *ttyPtr		/* Buffer containing new attributes for
 				 * serial port. */
+)
 {
     IOSTATE iostate;
 
@@ -1674,10 +1676,11 @@ TtyParseMode(interp, mode, speedPtr, parityPtr, dataPtr, stopPtr)
  */
 
 static FileState *
-TtyInit(fd, initialize)
-    int fd;			/* Open file descriptor for serial port to
+TtyInit (
+    int fd,			/* Open file descriptor for serial port to
 				 * be initialized. */
-    int initialize;
+    int initialize
+)
 {
     TtyState *ttyPtr;
 
@@ -2021,9 +2024,10 @@ TcpBlockModeProc(instanceData, mode)
  */
 
 static int
-WaitForConnect(statePtr, errorCodePtr)
-    TcpState *statePtr;		/* State of the socket. */
-    int *errorCodePtr;		/* Where to store errors? */
+WaitForConnect (
+    TcpState *statePtr,		/* State of the socket. */
+    int *errorCodePtr		/* Where to store errors? */
+)
 {
     int timeOut;		/* How long to wait. */
     int state;			/* Of calling TclWaitForFile. */
@@ -3119,16 +3123,17 @@ Tcl_GetOpenFile(interp, string, forWriting, checkUsage, filePtr)
  */
 
 int
-TclUnixWaitForFile(fd, mask, timeout)
-    int fd;			/* Handle for file on which to wait. */
-    int mask;			/* What to wait for: OR'ed combination of
+TclUnixWaitForFile (
+    int fd,			/* Handle for file on which to wait. */
+    int mask,			/* What to wait for: OR'ed combination of
 				 * TCL_READABLE, TCL_WRITABLE, and
 				 * TCL_EXCEPTION. */
-    int timeout;		/* Maximum amount of time to wait for one
+    int timeout 		/* Maximum amount of time to wait for one
 				 * of the conditions in mask to occur, in
 				 * milliseconds.  A value of 0 means don't
 				 * wait at all, and a value of -1 means
 				 * wait forever. */
+)
 {
     Tcl_Time abortTime, now;
     struct timeval blockTime, *timeoutPtr;

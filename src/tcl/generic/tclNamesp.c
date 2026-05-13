@@ -172,7 +172,7 @@ Tcl_ObjType tclNsNameType = {
  */
 
 void
-TclInitNamespaceSubsystem()
+TclInitNamespaceSubsystem (void)
 {
     /*
      * Does nothing for now.
@@ -3981,3 +3981,5 @@ UpdateStringOfNsName(objPtr)
     }
     objPtr->length = length;
 }
+
+/* EOF */

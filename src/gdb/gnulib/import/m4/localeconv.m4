@@ -1,8 +1,10 @@
-# localeconv.m4 serial 2
-dnl Copyright (C) 2012-2023 Free Software Foundation, Inc.
+# localeconv.m4
+# serial 3
+dnl Copyright (C) 2012-2026 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
+dnl This file is offered as-is, without any warranty.
 
 AC_DEFUN([gl_FUNC_LOCALECONV],
 [
@@ -36,7 +38,7 @@ AC_DEFUN([gl_FUNC_LOCALECONV],
                                 # Guess yes on musl systems.
             *-musl* | midipix*) gl_cv_func_localeconv_works="guessing yes" ;;
                                 # Guess no on native Windows.
-            mingw*)             gl_cv_func_localeconv_works="guessing no" ;;
+            mingw* | windows*)  gl_cv_func_localeconv_works="guessing no" ;;
                                 # If we don't know, obey --enable-cross-guesses.
             *)                  gl_cv_func_localeconv_works="$gl_cross_guess_normal" ;;
           esac

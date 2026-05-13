@@ -2246,7 +2246,11 @@ AC_DEFUN([SC_BUGGY_STRTOD],[
 	    #  warning "this conftest for strtod expects <stdlib.h> to be included."
 	    # endif /* !NO_STDLIB_H && __GNUC__ && !__STRICT_ANSI__ */
 	    #endif /* HAVE_STDLIB_H || STDC_HEADERS || __STDC__ */
+	    #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+		extern double strtod(const char *restrict nptr, char **restrict endptr);
+	    #else
 		extern double strtod();
+	    #endif /* C99 */
 		int main(void) {
 		    char *infString="Inf", *nanString="NaN", *spaceString=" ";
 		    char *term;
@@ -2268,8 +2272,9 @@ AC_DEFUN([SC_BUGGY_STRTOD],[
 	if test "$tcl_cv_strtod_buggy" = 1; then
 	    AC_MSG_RESULT([ok])
 	else
-	    AC_MSG_RESULT([buggy; redefining as fixstrtod])
-	    LIBOBJS="$LIBOBJS fixstrtod.o"
+	    AC_MSG_RESULT([buggy!])
+	    AC_MSG_WARN([redefining strtod as fixstrtod])
+	    LIBOBJS="${LIBOBJS} fixstrtod.o"
 	    AC_DEFINE([strtod],[fixstrtod],[Define to fixstrtod if the original strtod is buggy])
 	fi
     fi

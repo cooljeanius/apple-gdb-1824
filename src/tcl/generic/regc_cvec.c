@@ -3,20 +3,20 @@
  * This file is #included by regcomp.c.
  *
  * Copyright (c) 1998, 1999 Henry Spencer.  All rights reserved.
- * 
+ *
  * Development of this software was funded, in part, by Cray Research Inc.,
  * UUNET Communications Services Inc., Sun Microsystems Inc., and Scriptics
  * Corporation, none of whom are responsible for the results.  The author
- * thanks all of them. 
- * 
+ * thanks all of them.
+ *
  * Redistribution and use in source and binary forms -- with or without
  * modification -- are permitted for any purpose, provided that
  * redistributions in source form retain this entire copyright notice and
  * indicate the origin and nature of any modifications.
- * 
+ *
  * I'd appreciate being given credit for this package in the documentation
  * of software which uses it, but that is not a requirement.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
  * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
  * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL
@@ -35,10 +35,11 @@
  ^ static struct cvec *newcvec(int, int, int);
  */
 static struct cvec *
-newcvec(nchrs, nranges, nmcces)
-    int nchrs;				/* to hold this many chrs... */
-    int nranges;			/* ... and this many ranges... */
-    int nmcces;				/* ... and this many MCCEs */
+newcvec (
+    int nchrs,				/* to hold this many chrs... */
+    int nranges,			/* ... and this many ranges... */
+    int nmcces 				/* ... and this many MCCEs */
+)
 {
     size_t n;
     size_t nc;
@@ -65,8 +66,9 @@ newcvec(nchrs, nranges, nmcces)
  ^ static struct cvec *clearcvec(struct cvec *);
  */
 static struct cvec *
-clearcvec(cv)
-    struct cvec *cv;			/* character vector */
+clearcvec (
+    struct cvec *cv			/* character vector */
+)
 {
     int i;
 
@@ -174,11 +176,12 @@ haschr(cv, c)
  ^ static struct cvec *getcvec(struct vars *, int, int, int);
  */
 static struct cvec *
-getcvec(v, nchrs, nranges, nmcces)
-    struct vars *v;			/* context */
-    int nchrs;				/* to hold this many chrs... */
-    int nranges;			/* ... and this many ranges... */
-    int nmcces;				/* ... and this many MCCEs */
+getcvec (
+    struct vars *v,			/* context */
+    int nchrs,				/* to hold this many chrs... */
+    int nranges,			/* ... and this many ranges... */
+    int nmcces				/* ... and this many MCCEs */
+)
 {
     if (v->cv != NULL && nchrs <= v->cv->chrspace &&
 	    nranges <= v->cv->rangespace && nmcces <= v->cv->mccespace) {

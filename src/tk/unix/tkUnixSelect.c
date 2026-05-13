@@ -357,7 +357,8 @@ TkSelPropProc(eventPtr)
 	    ((char *) buffer)[numItems] = 0;
 
 	    errorHandler = Tk_CreateErrorHandler(eventPtr->xproperty.display,
-		    -1, -1, -1, (int (*)()) NULL, (ClientData) NULL);
+		    -1, -1, -1, (int (*)(void *, XErrorEvent *))NULL,
+		    (ClientData)NULL);
 	    /*
 	     * Encode the data using the proper format for each type.
 	     */
@@ -809,8 +810,8 @@ ConvertSelection(winPtr, eventPtr)
     ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
-    errorHandler = Tk_CreateErrorHandler(eventPtr->display, -1, -1,-1,
-	    (int (*)()) NULL, (ClientData) NULL);
+    errorHandler = Tk_CreateErrorHandler(eventPtr->display, -1, -1, -1,
+	    (int (*)(void *, XErrorEvent *))NULL, (ClientData)NULL);
 
     /*
      * Initialize the reply event.
@@ -1056,7 +1057,8 @@ ConvertSelection(winPtr, eventPtr)
 	}
 	Tcl_DeleteTimerHandler(incr.timeout);
 	errorHandler = Tk_CreateErrorHandler(winPtr->display,
-		-1, -1,-1, (int (*)()) NULL, (ClientData) NULL);
+		-1, -1, -1, (int (*)(void *, XErrorEvent *))NULL,
+		(ClientData)NULL);
 	XSelectInput(reply.display, reply.requestor, 0L);
 	Tk_DeleteErrorHandler(errorHandler);
 	if (tsdPtr->pendingIncrs == &incr) {

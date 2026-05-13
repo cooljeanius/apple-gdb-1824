@@ -1,4 +1,4 @@
-/* 
+/*
  * tkMacAppInit.c --
  *
  *	Provides a version of the Tcl_AppInit procedure for the example shell.
@@ -71,7 +71,7 @@ static pascal void NoMoreOutput() { inMacExit = 1; }
  *	it's done
  *
  * Side effects:
- *	This procedure initializes the wish world and then 
+ *	This procedure initializes the wish world and then
  *	calls Tk_Main.
  *
  *----------------------------------------------------------------------
@@ -91,14 +91,14 @@ main(
     argc = 1;
     newArgv[0] = "Wish";
     newArgv[1] = NULL;
-    
-    /* Tk_Main is actually #defined to 
+
+    /* Tk_Main is actually #defined to
      *     Tk_MainEx(argc, argv, Tcl_AppInit, Tcl_CreateInterp())
      * Unfortunately, you also HAVE to call Tcl_FindExecutable
      * BEFORE creating the first interp, or the tcl_library will not
      * get set properly.  So we call it by hand here...
      */
-    
+
     Tcl_FindExecutable(newArgv[0]);
     Tk_Main(argc, newArgv, Tcl_AppInit);
 }
@@ -133,7 +133,7 @@ Tcl_AppInit(
 	return TCL_ERROR;
     }
     Tcl_StaticPackage(interp, "Tk", Tk_Init, Tk_SafeInit);
-	
+
     /*
      * Call the init procedures for included packages.  Each call should
      * look like this:
@@ -186,7 +186,7 @@ Tcl_AppInit(
  *	process.
  *
  * Results:
- *	Returns TCL_OK if everything went fine.  If it didn't the 
+ *	Returns TCL_OK if everything went fine.  If it didn't the
  *	application should probably fail.
  *
  * Side effects:
@@ -196,7 +196,7 @@ Tcl_AppInit(
  */
 
 static int
-MacintoshInit()
+MacintoshInit (void)
 {
     int i;
     long result, mask = 0x0700; 		/* mask = system 7.x */
@@ -220,9 +220,9 @@ MacintoshInit()
      * If appearance is present, then register Tk as an Appearance client
      * This means that the mapping from non-Appearance to Appearance cdefs
      * will be done for Tk regardless of the setting in the Appearance
-     * control panel.  
+     * control panel.
      */
-     
+
      if (TkMacHaveAppearance()) {
          RegisterAppearanceClient();
      }
@@ -235,14 +235,14 @@ MacintoshInit()
     InitWindows();
     }
     InitMenus();
-    InitDialogs((long) NULL);		
+    InitDialogs((long) NULL);
     InitCursor();
 
     /*
      * Make sure we are running on system 7 or higher
      */
-     
-    if ((NGetTrapAddress(_Gestalt, ToolTrap) == 
+
+    if ((NGetTrapAddress(_Gestalt, ToolTrap) ==
     	    NGetTrapAddress(_Unimplemented, ToolTrap))
     	    || (((Gestalt(gestaltSystemVersion, &result) != noErr)
 	    || (result < mask)))) {
@@ -250,16 +250,16 @@ MacintoshInit()
     }
 
     /*
-     * Make sure we have color quick draw 
+     * Make sure we have color quick draw
      * (this means we can't run on 68000 macs)
      */
-     
+
     if (((Gestalt(gestaltQuickdrawVersion, &result) != noErr)
 	    || (result < gestalt32BitQD13))) {
 	panic("Tk requires Color QuickDraw.");
     }
 
-    
+
     FlushEvents(everyEvent, 0);
     SetEventMask(everyEvent);
 
@@ -273,12 +273,12 @@ MacintoshInit()
  *
  * SetupMainInterp --
  *
- *	This procedure calls initalization routines require a Tcl 
+ *	This procedure calls initalization routines require a Tcl
  *	interp as an argument.  This call effectively makes the passed
  *	iterpreter the "main" interpreter for the application.
  *
  * Results:
- *	Returns TCL_OK if everything went fine.  If it didn't the 
+ *	Returns TCL_OK if everything went fine.  If it didn't the
  *	application should probably fail.
  *
  * Side effects:
@@ -327,7 +327,7 @@ error:
  * InstallConsole, RemoveConsole, etc. --
  *
  *	The following functions provide the UI for the console package.
- *	Users wishing to replace SIOUX with their own console package 
+ *	Users wishing to replace SIOUX with their own console package
  *	need only provide the four functions below in a library.
  *
  * Results:
@@ -339,7 +339,7 @@ error:
  *----------------------------------------------------------------------
  */
 
-short 
+short
 InstallConsole(short fd)
 {
 #pragma unused (fd)
@@ -347,12 +347,12 @@ InstallConsole(short fd)
 	return 0;
 }
 
-void 
+void
 RemoveConsole(void)
 {
 }
 
-long 
+long
 WriteCharsToConsole(char *buffer, long n)
 {
     if (!inMacExit) {
@@ -366,7 +366,7 @@ WriteCharsToConsole(char *buffer, long n)
     }
 }
 
-long 
+long
 ReadCharsFromConsole(char *buffer, long n)
 {
     return 0;
@@ -380,18 +380,18 @@ __ttyname(long fildes)
     if (fildes >= 0 && fildes <= 2) {
 	return (__devicename);
     }
-    
+
     return (0L);
 }
 
 int kbhit(void)
 {
-    return 0; 
+    return 0;
 }
 
 int getch(void)
 {
-    return 0; 
+    return 0;
 }
 
 void clrscr(void)
@@ -407,14 +407,8 @@ SIOUXHandleOneEvent(EventRecord *event)
 static void SetupSIOUX(void) {
 #ifndef STATIC_BUILD
 	extern DLLIMPORT void SetupConsolePlugins(void*, void*, void*, void*,
-									void*, void*, void*, void*);
-	SetupConsolePlugins(	&InstallConsole,
-							&RemoveConsole,
-							&WriteCharsToConsole,
-							&ReadCharsFromConsole,
-							&__ttyname,
-							&kbhit,
-							&getch,
-							&clrscr);
+						  void*, void*, void*, void*);
+	SetupConsolePlugins(&InstallConsole, &RemoveConsole, &WriteCharsToConsole,
+			    &ReadCharsFromConsole, &__ttyname, &kbhit, &getch, &clrscr);
 #endif
 }

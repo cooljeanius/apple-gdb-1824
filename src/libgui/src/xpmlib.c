@@ -291,14 +291,15 @@ ImgXpmCreate(interp, name, argc, objv, typePtr, master, clientDataPtr)
  *
  *----------------------------------------------------------------------
  */
-static int
-ImgXpmConfigureMaster(masterPtr, argc, argv, flags)
-    PixmapMaster *masterPtr;	/* Pointer to data structure describing
+static int 
+ImgXpmConfigureMaster (
+    PixmapMaster *masterPtr,	/* Pointer to data structure describing
 				 * overall pixmap image to (reconfigure). */
-    int argc;			/* Number of entries in argv. */
-    const char **argv;		/* Pairs of configuration options for image. */
-    int flags;			/* Flags to pass to Tk_ConfigureWidget,
+    int argc,			/* Number of entries in argv. */
+    const char **argv,		/* Pairs of configuration options for image. */
+    int flags			/* Flags to pass to Tk_ConfigureWidget,
 				 * such as TK_CONFIG_ARGV_ONLY. */
+)
 {
     PixmapInstance *instancePtr;
     char * oldData, * oldFile;
@@ -693,9 +694,8 @@ static CONST84 char ** ImgXpmGetDataFromFile(interp, fileName, numLines_return)
 }
 
 
-static char * GetType(colorDefn, type_ret)
-    char * colorDefn;
-    int  * type_ret;
+static char *
+GetType (char *colorDefn, int *type_ret)
 {
     char * p = colorDefn;
 
@@ -740,10 +740,12 @@ static char * GetType(colorDefn, type_ret)
 }
 
 /* colorName is guaranteed to be big enough */
-static char * GetColor(colorDefn, colorName, type_ret)
-    char * colorDefn;
-    char * colorName;		/* if found, name is copied to this array */
-    int  * type_ret;
+static char *
+GetColor (
+    char *colorDefn,
+    char *colorName,		/* if found, name is copied to this array */
+    int *type_ret
+)
 {
     int type;
     char * p;
@@ -1109,9 +1111,10 @@ static void ImgXpmGetPixmapFromData(interp, masterPtr, instancePtr)
  *
  *----------------------------------------------------------------------
  */
-static void
-ImgXpmConfigureInstance(instancePtr)
-    PixmapInstance *instancePtr;	/* Instance to reconfigure. */
+static void 
+ImgXpmConfigureInstance (
+    PixmapInstance *instancePtr	/* Instance to reconfigure. */
+)
 {
     PixmapMaster *masterPtr = instancePtr->masterPtr;
     XGCValues gcValues;
@@ -1585,8 +1588,8 @@ Tix_DefinePixmap(interp, name, data)
 
 #endif
 
-void
-ide_create_xpm_image_type ()
+void 
+ide_create_xpm_image_type (void)
 {
 	Tk_CreateImageType(&tixPixmapImageType);
 }

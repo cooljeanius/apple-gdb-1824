@@ -21,3 +21,4 @@ calc.sum
 confdefs.h
 site.exp
 tmpdir/*
+conf*/*.awk

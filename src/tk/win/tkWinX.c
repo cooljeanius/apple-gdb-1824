@@ -1,7 +1,7 @@
-/* 
+/*
  * tkWinX.c --
  *
- *	This file contains Windows emulation procedures for X routines. 
+ *	This file contains Windows emulation procedures for X routines.
  *
  * Copyright (c) 1995-1996 Sun Microsystems, Inc.
  * Copyright (c) 1994 Software Research Associates, Inc.
@@ -22,8 +22,8 @@
  */
 
 #ifndef _WIN32_IE
-#define _WIN32_IE 0x0300
-#endif
+# define _WIN32_IE 0x0300
+#endif /* !_WIN32_IE */
 
 #include <commctrl.h>
 
@@ -219,7 +219,7 @@ TkWinXInit(hInstance)
     /*
      * When threads are enabled, we cannot use CLASSDC because
      * threads will then write into the same device context.
-     * 
+     *
      * This is a hack; we should add a subsystem that manages
      * device context on a per-thread basis.  See also tkWinWm.c,
      * which also initializes a WNDCLASS structure.
@@ -274,7 +274,7 @@ TkWinXCleanup(hInstance)
     /*
      * Clean up our own class.
      */
-    
+
     if (childClassInitialized) {
         childClassInitialized = 0;
         UnregisterClass(TK_WIN_CHILD_CLASS_NAME, hInstance);
@@ -288,7 +288,7 @@ TkWinXCleanup(hInstance)
     /*
      * And let the window manager clean up its own class(es).
      */
-    
+
     TkWinWmCleanup(hInstance);
 }
 
@@ -297,12 +297,12 @@ TkWinXCleanup(hInstance)
  *
  * TkWinGetPlatformId --
  *
- *	Determines whether running under NT, 95, or Win32s, to allow 
+ *	Determines whether running under NT, 95, or Win32s, to allow
  *	runtime conditional code.  Win32s is no longer supported.
  *
  * Results:
  *	The return value is one of:
- *	    VER_PLATFORM_WIN32s		Win32s on Windows 3.1. 
+ *	    VER_PLATFORM_WIN32s		Win32s on Windows 3.1.
  *	    VER_PLATFORM_WIN32_WINDOWS	Win32 on Windows 95.
  *	    VER_PLATFORM_WIN32_NT	Win32 on Windows NT
  *
@@ -312,8 +312,8 @@ TkWinXCleanup(hInstance)
  *----------------------------------------------------------------------
  */
 
-int		
-TkWinGetPlatformId()
+int
+TkWinGetPlatformId (void)
 {
     if (tkPlatformId == 0) {
 	OSVERSIONINFO os;
@@ -378,11 +378,11 @@ TkpOpenDisplay(display_name)
     HDC dc;
     TkWinDrawable *twdPtr;
     Display *display;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
 	    Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     if (tsdPtr->winDisplay != NULL) {
-	if (strcmp(tsdPtr->winDisplay->display->display_name, display_name) 
+	if (strcmp(tsdPtr->winDisplay->display->display_name, display_name)
                 == 0) {
 	    return tsdPtr->winDisplay;
 	} else {
@@ -411,7 +411,7 @@ TkpOpenDisplay(display_name)
 	    GetDeviceCaps(dc, LOGPIXELSX) * 10);
     screen->mheight = MulDiv(screen->height, 254,
 	    GetDeviceCaps(dc, LOGPIXELSY) * 10);
-    
+
     /*
      * Set up the root window.
      */
@@ -426,8 +426,8 @@ TkpOpenDisplay(display_name)
     screen->root = (Window)twdPtr;
 
     /*
-     * On windows, when creating a color bitmap, need two pieces of 
-     * information: the number of color planes and the number of 
+     * On windows, when creating a color bitmap, need two pieces of
+     * information: the number of color planes and the number of
      * pixels per plane.  Need to remember both quantities so that
      * when constructing an HBITMAP for offscreen rendering, we can
      * specify the correct value for the number of planes.  Otherwise
@@ -518,7 +518,7 @@ TkpCloseDisplay(dispPtr)
 {
     Display *display = dispPtr->display;
     HWND hwnd;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
 	    Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     if (dispPtr != tsdPtr->winDisplay) {
@@ -529,7 +529,7 @@ TkpCloseDisplay(dispPtr)
     /*
      * Force the clipboard to be rendered if we are the clipboard owner.
      */
-    
+
     if (dispPtr->clipWindow) {
 	hwnd = Tk_GetHWND(Tk_WindowId(dispPtr->clipWindow));
 	if (GetClipboardOwner() == hwnd) {
@@ -781,7 +781,7 @@ GenerateXEvent(hwnd, message, wParam, lParam)
 {
     XEvent event;
     TkWindow *winPtr = (TkWindow *)Tk_HWNDToWindow(hwnd);
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
 	    Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     if (!winPtr || winPtr->window == None) {
@@ -820,7 +820,7 @@ GenerateXEvent(hwnd, message, wParam, lParam)
 	case WM_SETFOCUS:
 	case WM_KILLFOCUS: {
 	    TkWindow *otherWinPtr = (TkWindow *)Tk_HWNDToWindow((HWND) wParam);
-	    
+
 	    /*
 	     * Compare toplevel windows to avoid reporting focus
 	     * changes within the same toplevel.
@@ -876,14 +876,14 @@ GenerateXEvent(hwnd, message, wParam, lParam)
 		Tk_InternAtom((Tk_Window)winPtr, "CLIPBOARD");
 	    event.xselectionclear.time = TkpGetMS();
 	    break;
-	    
+
 	case WM_MOUSEWHEEL:
 	    /*
 	     * The mouse wheel event is closer to a key event than a
 	     * mouse event in that the message is sent to the window
 	     * that has focus.
 	     */
-	    
+
 	case WM_CHAR:
 	case WM_SYSKEYDOWN:
 	case WM_SYSKEYUP:
@@ -898,7 +898,7 @@ GenerateXEvent(hwnd, message, wParam, lParam)
 	    /*
 	     * Compute the screen and window coordinates of the event.
 	     */
-	    
+
 	    msgPos = GetMessagePos();
 	    rootPoint = MAKEPOINTS(msgPos);
 	    clientPoint.x = rootPoint.x;
@@ -932,7 +932,7 @@ GenerateXEvent(hwnd, message, wParam, lParam)
 		     * However, the keycode field has been overloaded
 		     * to hold the zDelta of the wheel.
 		     */
-		    
+
 		    event.type = MouseWheelEvent;
 		    event.xany.send_event = -1;
 		    event.xkey.keycode = (short) HIWORD(wParam);
@@ -946,7 +946,7 @@ GenerateXEvent(hwnd, message, wParam, lParam)
 		     * event was generated by windows and that the Windows
 		     * extension xkey.trans_chars is filled with the
 		     * MBCS characters that came from the TranslateMessage
-		     * call. 
+		     * call.
 		     */
 
 		    event.type = KeyPress;
@@ -972,31 +972,31 @@ GenerateXEvent(hwnd, message, wParam, lParam)
 		     * Synthesize both a KeyPress and a KeyRelease.
 		     * Strings generated by Input Method Editor are handled
 		     * in the following manner:
-		     * 1. A series of WM_KEYDOWN & WM_KEYUP messages that 
+		     * 1. A series of WM_KEYDOWN & WM_KEYUP messages that
 		     *    cause GetTranslatedKey() to be called and return
-		     *    immediately because the WM_KEYDOWNs have no 
-		     *	  associated WM_CHAR messages -- the IME window is 
-		     *	  accumulating the characters and translating them 
+		     *    immediately because the WM_KEYDOWNs have no
+		     *	  associated WM_CHAR messages -- the IME window is
+		     *	  accumulating the characters and translating them
 		     *    itself.  In the "bind" command, you get an event
-		     *	  with a mystery keysym and %A == "" for each 
+		     *	  with a mystery keysym and %A == "" for each
 		     *	  WM_KEYDOWN that actually was meant for the IME.
 		     * 2. A WM_KEYDOWN corresponding to the "confirm typing"
-		     *    character.  This causes GetTranslatedKey() to be 
+		     *    character.  This causes GetTranslatedKey() to be
 		     *	  called.
-		     * 3. A WM_IME_NOTIFY message saying that the IME is 
-		     *	  done.  A side effect of this message is that 
+		     * 3. A WM_IME_NOTIFY message saying that the IME is
+		     *	  done.  A side effect of this message is that
 		     *    GetTranslatedKey() thinks this means that there
 		     *	  are no WM_CHAR messages and returns immediately.
 		     *    In the "bind" command, you get an another event
 		     *	  with a mystery keysym and %A == "".
-		     * 4. A sequence of WM_CHAR messages that correspond to 
-		     *	  the characters in the IME window.  A bunch of 
-		     *    simulated KeyPress/KeyRelease events will be 
-		     *    generated, one for each character.  Adjacent 
+		     * 4. A sequence of WM_CHAR messages that correspond to
+		     *	  the characters in the IME window.  A bunch of
+		     *    simulated KeyPress/KeyRelease events will be
+		     *    generated, one for each character.  Adjacent
 		     *    WM_CHAR messages may actually specify the high
 		     *	  and low bytes of a multi-byte character -- in that
 		     *    case the two WM_CHAR messages will be combined into
-		     *	  one event.  It is the event-consumer's 
+		     *	  one event.  It is the event-consumer's
 		     *	  responsibility to convert the string returned from
 		     *	  XLookupString from system encoding to UTF-8.
 		     * 5. And finally we get the WM_KEYUP for the "confirm
@@ -1037,7 +1037,7 @@ GenerateXEvent(hwnd, message, wParam, lParam)
  *
  * GetState --
  *
- *	This function constructs a state mask for the mouse buttons 
+ *	This function constructs a state mask for the mouse buttons
  *	and modifier keys as they were before the event occured.
  *
  * Results:
@@ -1131,7 +1131,7 @@ GetTranslatedKey(xkey)
     XKeyEvent *xkey;
 {
     MSG msg;
-    
+
     xkey->nbytes = 0;
 
     while ((xkey->nbytes < XMaxTransChars)
@@ -1194,8 +1194,7 @@ GetTranslatedKey(xkey)
  */
 
 static void
-UpdateInputLanguage(charset)
-    int charset;
+UpdateInputLanguage (int charset)
 {
     CHARSETINFO charsetInfo;
     Tcl_Encoding encoding;
@@ -1296,7 +1295,7 @@ TkWinGetUnicodeEncoding()
  *
  *      This function correctly processes the composition data and
  *      sends the UNICODE values of the composed characters to
- *      TK's event queue. 
+ *      TK's event queue.
  *
  * Results:
  *	If this function has processed the composition data, returns 1.
@@ -1522,7 +1521,7 @@ TkWinResendEvent(wndproc, hwnd, eventPtr)
  */
 
 unsigned long
-TkpGetMS()
+TkpGetMS (void)
 {
     return GetTickCount();
 }
@@ -1545,7 +1544,7 @@ TkpGetMS()
 void
 TkWinUpdatingClipboard(int mode)
 {
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
 	    Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     tsdPtr->updatingClipboard = mode;

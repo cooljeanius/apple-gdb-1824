@@ -76,6 +76,9 @@ typedef struct disassemble_info
   unsigned long mach;
   /* Endianness (for bi-endian cpus).  Mono-endian cpus can ignore this.  */
   enum bfd_endian endian;
+  /* Endianness of code, for mixed-endian situations such as ARM BE8.  */
+  enum bfd_endian endian_code;
+
   /* An arch/mach-specific bitmask of selected instruction subsets, mainly
      for processors with run-time-switchable instruction sets.  The default,
      zero, means that there is no constraint.  CGEN-based opcodes ports
@@ -209,6 +212,7 @@ typedef struct disassemble_info
    target address.  Return number of octets processed.  */
 typedef int (*disassembler_ftype) (bfd_vma, disassemble_info *);
 
+extern int print_insn_aarch64		(bfd_vma, disassemble_info *);
 extern int print_insn_alpha		(bfd_vma, disassemble_info *);
 extern int print_insn_avr		(bfd_vma, disassemble_info *);
 extern int print_insn_bfin		(bfd_vma, disassemble_info *);

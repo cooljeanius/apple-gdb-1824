@@ -57,6 +57,7 @@ enum dwarf2_frame_reg_rule
 
   /* These are NOT defined by the DWARF2 CFI specification, but are
      used internally by GDB.  */
+  DWARF2_FRAME_REG_FN,		/* Call a registered function.  */
   DWARF2_FRAME_REG_RA,		/* Return Address.  */
   DWARF2_FRAME_REG_RA_OFFSET,	/* Return Address with offset.  */
   DWARF2_FRAME_REG_CFA,		/* Call Frame Address.  */
@@ -72,6 +73,8 @@ struct dwarf2_frame_state_reg
     LONGEST offset;
     ULONGEST reg;
     unsigned char *exp;
+    struct value *(*fn) (struct frame_info *this_frame, void **this_cache,
+			 int regnum);
   } loc;
   ULONGEST exp_len;
   enum dwarf2_frame_reg_rule how;
@@ -101,6 +104,9 @@ extern void
   dwarf2_frame_set_signal_frame_p(struct gdbarch *gdbarch,
 				  int (*signal_frame_p)(struct gdbarch *,
 							struct frame_info *));
+
+/* Append the DWARF-2 frame unwinders to GDBARCH's list.  */
+void dwarf2_append_unwinders(struct gdbarch *gdbarch);
 
 /* Return the frame unwind methods for the function that contains PC,
    or NULL if it cannot be handled by DWARF CFI frame unwinder.  */

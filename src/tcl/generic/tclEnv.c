@@ -37,7 +37,7 @@ static int environSize = 0;	/* Non-zero means that the environ array was
  * For MacOS X
  */
 #if defined(__APPLE__) && defined(__DYNAMIC__)
-#include <crt_externs.h>
+# include <crt_externs.h>
 char **environ = NULL;
 #endif
 
@@ -678,7 +678,7 @@ ReplaceString(oldStr, newStr)
  */
 
 void
-TclFinalizeEnvironment()
+TclFinalizeEnvironment (void)
 {
     /*
      * For now we just deallocate the cache array and none of the environment
@@ -710,8 +710,7 @@ TclFinalizeEnvironment()
  */
 
 static void
-TclCygwinPutenv(str)
-    const char *str;
+TclCygwinPutenv (const char *str)
 {
     char *name, *value;
 

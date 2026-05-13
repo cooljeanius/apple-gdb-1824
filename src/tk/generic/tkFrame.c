@@ -1,4 +1,4 @@
-/* 
+/*
  * tkFrame.c --
  *
  *	This module implements "frame", "labelframe" and "toplevel" widgets
@@ -161,7 +161,7 @@ typedef struct {
 
 /*
  * The following enum is used to define a type for the -labelanchor option
- * of the Labelframe widget.  These values are used as indices into the 
+ * of the Labelframe widget.  These values are used as indices into the
  * string table below.
  */
 
@@ -830,8 +830,9 @@ FrameWidgetObjCmd(clientData, interp, objc, objv)
  */
 
 static void
-DestroyFrame(memPtr)
-    char *memPtr;		/* Info about frame widget. */
+DestroyFrame (
+    char *memPtr		/* Info about frame widget. */
+)
 {
     register Frame *framePtr = (Frame *) memPtr;
     register Labelframe *labelframePtr = (Labelframe *) memPtr;
@@ -868,8 +869,9 @@ DestroyFrame(memPtr)
  */
 
 static void
-DestroyFramePartly(framePtr)
-    Frame *framePtr;		/* Info about frame widget. */
+DestroyFramePartly (
+    Frame *framePtr		/* Info about frame widget. */
+)
 {
     register Labelframe *labelframePtr = (Labelframe *) framePtr;
 
@@ -926,7 +928,7 @@ ConfigureFrame(interp, framePtr, objc, objv)
     /*
      * Need the old menubar name for the menu code to delete it.
      */
-    
+
     if (framePtr->menuName == NULL) {
     	oldMenuName = NULL;
     } else {
@@ -1068,7 +1070,7 @@ ConfigureFrame(interp, framePtr, objc, objv)
  *
  *---------------------------------------------------------------------------
  */
- 
+
 static void
 FrameWorldChanged(instanceData)
     ClientData instanceData;	/* Information about widget. */
@@ -1107,7 +1109,7 @@ FrameWorldChanged(instanceData)
 	/*
 	 * Calculate label size.
 	 */
-	
+
 	labelframePtr->labelReqWidth = labelframePtr->labelReqHeight = 0;
 
 	if (anyTextLabel) {
@@ -1123,13 +1125,13 @@ FrameWorldChanged(instanceData)
 	    labelframePtr->labelReqHeight = Tk_ReqHeight(labelframePtr->labelWin);
 	}
 
-	/* 
+	/*
 	 * Make sure label size is at least as big as the border.
 	 * This simplifies later calculations and gives a better
 	 * appearance with thick borders.
 	 */
-     
-	if ((labelframePtr->labelAnchor >= LABELANCHOR_N) && 
+
+	if ((labelframePtr->labelAnchor >= LABELANCHOR_N) &&
 		(labelframePtr->labelAnchor <= LABELANCHOR_SW)) {
 	    if (labelframePtr->labelReqHeight < framePtr->borderWidth) {
 		labelframePtr->labelReqHeight = framePtr->borderWidth;
@@ -1145,14 +1147,14 @@ FrameWorldChanged(instanceData)
      * Calculate individual border widths.
      */
 
-    bWidthBottom = bWidthTop = bWidthRight = bWidthLeft = 
+    bWidthBottom = bWidthTop = bWidthRight = bWidthLeft =
             framePtr->borderWidth + framePtr->highlightWidth;
 
     bWidthLeft   += framePtr->padX;
     bWidthRight  += framePtr->padX;
     bWidthTop    += framePtr->padY;
     bWidthBottom += framePtr->padY;
-    
+
     if (anyTextLabel || anyWindowLabel) {
 	switch (labelframePtr->labelAnchor) {
 	  case LABELANCHOR_E:
@@ -1195,7 +1197,7 @@ FrameWorldChanged(instanceData)
 	    padding += framePtr->borderWidth + LABELMARGIN;
 	}
 	padding *= 2;
-	if ((labelframePtr->labelAnchor >= LABELANCHOR_N) && 
+	if ((labelframePtr->labelAnchor >= LABELANCHOR_N) &&
 		(labelframePtr->labelAnchor <= LABELANCHOR_SW)) {
 	    minwidth += padding;
 	    minheight += framePtr->borderWidth + framePtr->highlightWidth;
@@ -1237,8 +1239,9 @@ FrameWorldChanged(instanceData)
  */
 
 static void
-ComputeFrameGeometry(framePtr)
-    register Frame *framePtr;		/* Information about widget. */
+ComputeFrameGeometry (
+    register Frame *framePtr		/* Information about widget. */
+)
 {
     int otherWidth, otherHeight, otherWidthT, otherHeightT, padding;
     int maxWidth, maxHeight;
@@ -1255,7 +1258,7 @@ ComputeFrameGeometry(framePtr)
 
     tkwin = framePtr->tkwin;
 
-    /* 
+    /*
      * Calculate the available size for the label
      */
 
@@ -1271,7 +1274,7 @@ ComputeFrameGeometry(framePtr)
     maxHeight = Tk_Height(tkwin);
     maxWidth  = Tk_Width(tkwin);
 
-    if ((labelframePtr->labelAnchor >= LABELANCHOR_N) && 
+    if ((labelframePtr->labelAnchor >= LABELANCHOR_N) &&
             (labelframePtr->labelAnchor <= LABELANCHOR_SW)) {
 	maxWidth -= padding;
 	if (maxWidth < 1) maxWidth = 1;
@@ -1334,7 +1337,7 @@ ComputeFrameGeometry(framePtr)
         labelframePtr->labelBox.x = padding;
         break;
       case LABELANCHOR_N:
-      case LABELANCHOR_S:	
+      case LABELANCHOR_S:
         labelframePtr->labelTextX = otherWidthT / 2;
         labelframePtr->labelBox.x = otherWidth / 2;
         break;
@@ -1401,7 +1404,7 @@ DisplayFrame(clientData)
 
     if (hlWidth != 0) {
         GC fgGC, bgGC;
-        
+
 	bgGC = Tk_GCForColor(framePtr->highlightBgColorPtr,
 		Tk_WindowId(tkwin));
 	if (framePtr->flags & GOT_FOCUS) {
@@ -1442,15 +1445,15 @@ DisplayFrame(clientData)
 
 	/*
 	 * In order to avoid screen flashes, this procedure redraws the
-	 * frame into off-screen memory, then copies it back on-screen 
-	 * in a single operation.  This means there's no point in time 
+	 * frame into off-screen memory, then copies it back on-screen
+	 * in a single operation.  This means there's no point in time
 	 * where the on-screen image has been cleared.
 	 */
 
 	pixmap = Tk_GetPixmap(framePtr->display, Tk_WindowId(tkwin),
 		Tk_Width(tkwin), Tk_Height(tkwin), Tk_Depth(tkwin));
-	
-	/* 
+
+	/*
 	 * Clear the pixmap.
 	 */
 
@@ -1475,7 +1478,7 @@ DisplayFrame(clientData)
 	  case LABELANCHOR_N:
 	  case LABELANCHOR_NE:
 	  case LABELANCHOR_NW:
-	    /* 
+	    /*
 	     * Since the glyphs of the text tend to be in the lower part
              * we favor a lower border position by rounding up.
 	     */
@@ -1495,7 +1498,7 @@ DisplayFrame(clientData)
 	    break;
 	}
 
-	/* 
+	/*
          * Draw border
          */
 
@@ -1504,7 +1507,7 @@ DisplayFrame(clientData)
 		framePtr->relief);
 
         if (labelframePtr->labelWin == NULL) {
-            /* 
+            /*
              * Clear behind the label
              */
 
@@ -1518,9 +1521,9 @@ DisplayFrame(clientData)
 	     * If there is not room for the entire label, use clipping to
 	     * get a nice appearance.
              */
-	    
+
 	    if ((labelframePtr->labelBox.width < labelframePtr->labelReqWidth)
-		    || (labelframePtr->labelBox.height < 
+		    || (labelframePtr->labelBox.height <
 			    labelframePtr->labelReqHeight)) {
 		clipRegion = TkCreateRegion();
 		TkUnionRectWithRegion(&labelframePtr->labelBox, clipRegion,
@@ -1543,23 +1546,23 @@ DisplayFrame(clientData)
 	     * Reposition and map the window (but in different ways depending
 	     * on whether the frame is the window's parent).
 	     */
-            
+
 	    if (framePtr->tkwin == Tk_Parent(labelframePtr->labelWin)) {
 		if ((labelframePtr->labelBox.x != Tk_X(labelframePtr->labelWin))
 			|| (labelframePtr->labelBox.y !=
 				Tk_Y(labelframePtr->labelWin))
-			|| (labelframePtr->labelBox.width != 
+			|| (labelframePtr->labelBox.width !=
 				Tk_Width(labelframePtr->labelWin))
-			|| (labelframePtr->labelBox.height != 
+			|| (labelframePtr->labelBox.height !=
 				Tk_Height(labelframePtr->labelWin))) {
 		    Tk_MoveResizeWindow(labelframePtr->labelWin,
-			    labelframePtr->labelBox.x, labelframePtr->labelBox.y, 
+			    labelframePtr->labelBox.x, labelframePtr->labelBox.y,
 			    labelframePtr->labelBox.width,
 			    labelframePtr->labelBox.height);
 		}
 		Tk_MapWindow(labelframePtr->labelWin);
 	    } else {
-		Tk_MaintainGeometry(labelframePtr->labelWin, framePtr->tkwin, 
+		Tk_MaintainGeometry(labelframePtr->labelWin, framePtr->tkwin,
 			labelframePtr->labelBox.x, labelframePtr->labelBox.y,
 			labelframePtr->labelBox.width,
 			labelframePtr->labelBox.height);
@@ -1717,7 +1720,7 @@ FrameCmdDeletedProc(clientData)
      */
 
     if (tkwin != NULL) {
-	/* 
+	/*
 	 * Some options need tkwin to be freed, so we free them here,
 	 * before setting tkwin to NULL.
 	 */
@@ -1811,7 +1814,7 @@ TkInstallFrameMenu(tkwin)
 	if (framePtr == NULL) {
 	    panic("TkInstallFrameMenu couldn't get frame pointer");
 	}
-	TkpMenuNotifyToplevelCreate(winPtr->mainPtr->interp, 
+	TkpMenuNotifyToplevelCreate(winPtr->mainPtr->interp,
 		framePtr->menuName);
     }
 }
@@ -1915,7 +1918,7 @@ FrameLostSlaveProc(clientData, tkwin)
      * This should only happen in a labelframe but it doesn't
      * hurt to be careful.
      */
-    
+
     if (labelframePtr->frame.type == TYPE_LABELFRAME) {
 	Tk_DeleteEventHandler(labelframePtr->labelWin, StructureNotifyMask,
 		FrameStructureProc, (ClientData) labelframePtr);
@@ -1927,3 +1930,5 @@ FrameLostSlaveProc(clientData, tkwin)
     }
     FrameWorldChanged((ClientData) framePtr);
 }
+
+/* EOF */

@@ -1,6 +1,6 @@
-# generated automatically by aclocal 1.17 -*- Autoconf -*-
+# generated automatically by aclocal 1.18.1 -*- Autoconf -*-
 
-# Copyright (C) 1996-2024 Free Software Foundation, Inc.
+# Copyright (C) 1996-2025 Free Software Foundation, Inc.
 
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -14,13 +14,13 @@
 m4_ifndef([AC_CONFIG_MACRO_DIRS], [m4_defun([_AM_CONFIG_MACRO_DIRS], [])m4_defun([AC_CONFIG_MACRO_DIRS], [_AM_CONFIG_MACRO_DIRS($@)])])
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
-m4_if(m4_defn([AC_AUTOCONF_VERSION]), [2.72],,
-[m4_warning([this file was generated for autoconf 2.72.
+m4_if(m4_defn([AC_AUTOCONF_VERSION]), [2.73],,
+[m4_warning([this file was generated for autoconf 2.73.
 You have another version of autoconf.  It may work, but is not guaranteed to.
 If you have problems, you may need to regenerate the build system entirely.
 To do so, use the procedure documented by the package, typically 'autoreconf'.])])
 
-# Copyright (C) 2002-2024 Free Software Foundation, Inc.
+# Copyright (C) 2002-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -32,10 +32,10 @@ To do so, use the procedure documented by the package, typically 'autoreconf'.])
 # generated from the m4 files accompanying Automake X.Y.
 # (This private macro should not be called outside this file.)
 AC_DEFUN([AM_AUTOMAKE_VERSION],
-[am__api_version='1.17'
+[am__api_version='1.18'
 dnl Some users find AM_AUTOMAKE_VERSION and mistake it for a way to
 dnl require some minimum version.  Point them to the right macro.
-m4_if([$1], [1.17], [],
+m4_if([$1], [1.18.1], [],
       [AC_FATAL([Do not call $0, use AM_INIT_AUTOMAKE([$1]).])])dnl
 ])
 
@@ -51,12 +51,12 @@ m4_define([_AM_AUTOCONF_VERSION], [])
 # Call AM_AUTOMAKE_VERSION and AM_AUTOMAKE_VERSION so they can be traced.
 # This function is AC_REQUIREd by AM_INIT_AUTOMAKE.
 AC_DEFUN([AM_SET_CURRENT_AUTOMAKE_VERSION],
-[AM_AUTOMAKE_VERSION([1.17])dnl
+[AM_AUTOMAKE_VERSION([1.18.1])dnl
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
 _AM_AUTOCONF_VERSION(m4_defn([AC_AUTOCONF_VERSION]))])
 
-# Copyright (C) 2011-2024 Free Software Foundation, Inc.
+# Copyright (C) 2011-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -120,7 +120,7 @@ AC_SUBST([AR])dnl
 
 # Figure out how to run the assembler.                      -*- Autoconf -*-
 
-# Copyright (C) 2001-2024 Free Software Foundation, Inc.
+# Copyright (C) 2001-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -140,7 +140,7 @@ _AM_IF_OPTION([no-dependencies],, [_AM_DEPENDENCIES([CCAS])])dnl
 
 # AM_AUX_DIR_EXPAND                                         -*- Autoconf -*-
 
-# Copyright (C) 2001-2024 Free Software Foundation, Inc.
+# Copyright (C) 2001-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -192,7 +192,7 @@ am_aux_dir=`cd "$ac_aux_dir" && pwd`
 
 # AM_COND_IF                                            -*- Autoconf -*-
 
-# Copyright (C) 2008-2024 Free Software Foundation, Inc.
+# Copyright (C) 2008-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -229,7 +229,7 @@ fi[]dnl
 
 # AM_CONDITIONAL                                            -*- Autoconf -*-
 
-# Copyright (C) 1997-2024 Free Software Foundation, Inc.
+# Copyright (C) 1997-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -260,7 +260,7 @@ AC_CONFIG_COMMANDS_PRE(
 Usually this means the macro was only invoked conditionally.]])
 fi])])
 
-# Copyright (C) 1999-2024 Free Software Foundation, Inc.
+# Copyright (C) 1999-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -451,7 +451,7 @@ _AM_SUBST_NOTMAKE([am__nodep])dnl
 
 # Generate code to set up dependency tracking.              -*- Autoconf -*-
 
-# Copyright (C) 1999-2024 Free Software Foundation, Inc.
+# Copyright (C) 1999-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -519,7 +519,7 @@ AC_DEFUN([AM_OUTPUT_DEPENDENCY_COMMANDS],
 
 # Do all the work for Automake.                             -*- Autoconf -*-
 
-# Copyright (C) 1996-2024 Free Software Foundation, Inc.
+# Copyright (C) 1996-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -619,8 +619,9 @@ AC_REQUIRE([AC_PROG_AWK])dnl
 AC_REQUIRE([AC_PROG_MAKE_SET])dnl
 AC_REQUIRE([AM_SET_LEADING_DOT])dnl
 _AM_IF_OPTION([tar-ustar], [_AM_PROG_TAR([ustar])],
-	      [_AM_IF_OPTION([tar-pax], [_AM_PROG_TAR([pax])],
-			     [_AM_PROG_TAR([v7])])])
+  [_AM_IF_OPTION([tar-pax], [_AM_PROG_TAR([pax])],
+    [_AM_IF_OPTION([tar-v7], [_AM_PROG_TAR([v7])],
+      [_AM_PROG_TAR([ustar])])])])
 _AM_IF_OPTION([no-dependencies],,
 [AC_PROVIDE_IFELSE([AC_PROG_CC],
 		  [_AM_DEPENDENCIES([CC])],
@@ -696,7 +697,7 @@ for _am_header in $config_headers :; do
 done
 echo "timestamp for $_am_arg" >`AS_DIRNAME(["$_am_arg"])`/stamp-h[]$_am_stamp_count])
 
-# Copyright (C) 2001-2024 Free Software Foundation, Inc.
+# Copyright (C) 2001-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -717,7 +718,7 @@ if test x"${install_sh+set}" != xset; then
 fi
 AC_SUBST([install_sh])])
 
-# Copyright (C) 2003-2024 Free Software Foundation, Inc.
+# Copyright (C) 2003-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -739,7 +740,7 @@ AC_SUBST([am__leading_dot])])
 # Add --enable-maintainer-mode option to configure.         -*- Autoconf -*-
 # From Jim Meyering
 
-# Copyright (C) 1996-2024 Free Software Foundation, Inc.
+# Copyright (C) 1996-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -774,7 +775,7 @@ AC_MSG_CHECKING([whether to enable maintainer-specific portions of Makefiles])
 
 # Check to see how 'make' treats includes.	            -*- Autoconf -*-
 
-# Copyright (C) 2001-2024 Free Software Foundation, Inc.
+# Copyright (C) 2001-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -817,7 +818,7 @@ AC_SUBST([am__quote])])
 
 # Fake the existence of programs that GNU maintainers use.  -*- Autoconf -*-
 
-# Copyright (C) 1997-2024 Free Software Foundation, Inc.
+# Copyright (C) 1997-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -851,7 +852,7 @@ fi
 
 # Helper functions for option handling.                     -*- Autoconf -*-
 
-# Copyright (C) 2001-2024 Free Software Foundation, Inc.
+# Copyright (C) 2001-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -880,7 +881,7 @@ AC_DEFUN([_AM_SET_OPTIONS],
 AC_DEFUN([_AM_IF_OPTION],
 [m4_ifset(_AM_MANGLE_OPTION([$1]), [$2], [$3])])
 
-# Copyright (C) 1999-2024 Free Software Foundation, Inc.
+# Copyright (C) 1999-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -912,7 +913,10 @@ AC_CACHE_CHECK(
       break
     fi
   done
-  rm -f core conftest*
+  # aligned with autoconf, so not including core; see bug#72225.
+  rm -f -r a.out a.exe b.out conftest.$ac_ext conftest.$ac_objext \
+    conftest.dSYM conftest1.$ac_ext conftest1.$ac_objext conftest1.dSYM \
+    conftest2.$ac_ext conftest2.$ac_objext conftest2.dSYM
   unset am_i])
 if test "$am_cv_prog_cc_c_o" != yes; then
    # Losing compiler, so override with the script.
@@ -927,7 +931,7 @@ AC_LANG_POP([C])])
 # For backward compatibility.
 AC_DEFUN_ONCE([AM_PROG_CC_C_O], [AC_REQUIRE([AC_PROG_CC])])
 
-# Copyright (C) 2022-2024 Free Software Foundation, Inc.
+# Copyright (C) 2022-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -943,7 +947,7 @@ AS_IF([(rm -f && rm -fr && rm -rf) 2>/dev/null], [], [am__rm_f_notfound='""'])
 AC_SUBST(am__rm_f_notfound)
 ])
 
-# Copyright (C) 2001-2024 Free Software Foundation, Inc.
+# Copyright (C) 2001-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -962,7 +966,7 @@ AC_DEFUN([AM_RUN_LOG],
 
 # Check to make sure that the build environment is sane.    -*- Autoconf -*-
 
-# Copyright (C) 1996-2024 Free Software Foundation, Inc.
+# Copyright (C) 1996-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1131,10 +1135,12 @@ am_lf='
 '
 case `pwd` in
   *[[\\\"\#\$\&\'\`$am_lf]]*)
+    AC_MSG_RESULT([no])
     AC_MSG_ERROR([unsafe absolute working directory name]);;
 esac
 case $srcdir in
   *[[\\\"\#\$\&\'\`$am_lf\ \	]]*)
+    AC_MSG_RESULT([no])
     AC_MSG_ERROR([unsafe srcdir value: '$srcdir']);;
 esac
 
@@ -1187,7 +1193,7 @@ AC_CONFIG_COMMANDS_PRE(
 rm -f conftest.file
 ])
 
-# Copyright (C) 2009-2024 Free Software Foundation, Inc.
+# Copyright (C) 2009-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1256,9 +1262,13 @@ fi
 # empty being verbose).
 AC_DEFUN([AM_SILENT_RULES],
 [AC_REQUIRE([_AM_SILENT_RULES])
-AM_DEFAULT_VERBOSITY=m4_if([$1], [yes], [0], [1])])
+AM_DEFAULT_VERBOSITY=m4_if([$1], [yes], [0], [1])m4_newline
+dnl We intentionally force a newline after the assignment, since a) nothing
+dnl good can come of more text following, and b) that was the behavior
+dnl before 1.17. See https://bugs.gnu.org/72267.
+])
 
-# Copyright (C) 2001-2024 Free Software Foundation, Inc.
+# Copyright (C) 2001-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1286,7 +1296,7 @@ fi
 INSTALL_STRIP_PROGRAM="\$(install_sh) -c -s"
 AC_SUBST([INSTALL_STRIP_PROGRAM])])
 
-# Copyright (C) 2006-2024 Free Software Foundation, Inc.
+# Copyright (C) 2006-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1305,7 +1315,7 @@ AC_DEFUN([AM_SUBST_NOTMAKE], [_AM_SUBST_NOTMAKE($@)])
 
 # Check how to create a tarball.                            -*- Autoconf -*-
 
-# Copyright (C) 2004-2024 Free Software Foundation, Inc.
+# Copyright (C) 2004-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1440,7 +1450,7 @@ AC_SUBST([am__tar])
 AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
-# Copyright (C) 2022-2024 Free Software Foundation, Inc.
+# Copyright (C) 2022-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1463,10 +1473,11 @@ AC_SUBST(am__xargs_n)
 m4_include([m4/gnulib-use-manually.m4])
 m4_include([m4/localtime-buffer.m4])
 m4_include([m4/lt_ac.m4])
-m4_include([m4/onceonly_2_57.m4])
+m4_include([m4/realloc_old_gnu.m4])
 m4_include([import/m4/00gnulib.m4])
 m4_include([import/m4/__inline.m4])
 m4_include([import/m4/absolute-header.m4])
+m4_include([import/m4/access.m4])
 m4_include([import/m4/alloca.m4])
 m4_include([import/m4/ansi-c++.m4])
 m4_include([import/m4/arpa_inet_h.m4])
@@ -1478,16 +1489,22 @@ m4_include([import/m4/autobuild.m4])
 m4_include([import/m4/ax_check_gnu_make.m4])
 m4_include([import/m4/bison-i18n.m4])
 m4_include([import/m4/btowc.m4])
+m4_include([import/m4/build-cc.m4])
 m4_include([import/m4/build-to-host.m4])
 m4_include([import/m4/builtin-expect.m4])
+m4_include([import/m4/byteswap.m4])
 m4_include([import/m4/c-bool.m4])
+m4_include([import/m4/c32rtomb.m4])
 m4_include([import/m4/calloc.m4])
+m4_include([import/m4/canonicalize.m4])
 m4_include([import/m4/chdir-long.m4])
+m4_include([import/m4/chown.m4])
 m4_include([import/m4/clock_time.m4])
 m4_include([import/m4/close.m4])
 m4_include([import/m4/closedir.m4])
 m4_include([import/m4/codeset.m4])
 m4_include([import/m4/configmake.m4])
+m4_include([import/m4/crc.m4])
 m4_include([import/m4/ctime.m4])
 m4_include([import/m4/ctype_h.m4])
 m4_include([import/m4/cycle-check.m4])
@@ -1499,7 +1516,7 @@ m4_include([import/m4/dirfd.m4])
 m4_include([import/m4/double-slash-root.m4])
 m4_include([import/m4/dup.m4])
 m4_include([import/m4/dup2.m4])
-m4_include([import/m4/eealloc.m4])
+m4_include([import/m4/endian_h.m4])
 m4_include([import/m4/environ.m4])
 m4_include([import/m4/errno_h.m4])
 m4_include([import/m4/error.m4])
@@ -1508,6 +1525,7 @@ m4_include([import/m4/euidaccess.m4])
 m4_include([import/m4/exponentd.m4])
 m4_include([import/m4/exponentf.m4])
 m4_include([import/m4/exponentl.m4])
+m4_include([import/m4/extensions-aix.m4])
 m4_include([import/m4/extern-inline.m4])
 m4_include([import/m4/faccessat.m4])
 m4_include([import/m4/fchdir.m4])
@@ -1520,6 +1538,7 @@ m4_include([import/m4/fdopendir.m4])
 m4_include([import/m4/fflush.m4])
 m4_include([import/m4/ffs.m4])
 m4_include([import/m4/ffsl.m4])
+m4_include([import/m4/ffsll.m4])
 m4_include([import/m4/fileblocks.m4])
 m4_include([import/m4/filenamecat.m4])
 m4_include([import/m4/flexmember.m4])
@@ -1545,23 +1564,31 @@ m4_include([import/m4/fts.m4])
 m4_include([import/m4/getcwd-abort-bug.m4])
 m4_include([import/m4/getcwd-path-max.m4])
 m4_include([import/m4/getcwd.m4])
+m4_include([import/m4/getdelim.m4])
 m4_include([import/m4/getdtablesize.m4])
 m4_include([import/m4/getgroups.m4])
+m4_include([import/m4/getline.m4])
+m4_include([import/m4/getlogin.m4])
+m4_include([import/m4/getlogin_r.m4])
 m4_include([import/m4/getpagesize.m4])
 m4_include([import/m4/getprogname.m4])
 m4_include([import/m4/getrandom.m4])
 m4_include([import/m4/gettext.m4])
+m4_include([import/m4/gettext_h.m4])
 m4_include([import/m4/gettimeofday.m4])
+m4_include([import/m4/glob.m4])
 m4_include([import/m4/glob_h.m4])
 m4_include([import/m4/gnu-make.m4])
 m4_include([import/m4/gnulib-common.m4])
 m4_include([import/m4/gnulib-comp.m4])
+m4_include([import/m4/gnulib-i18n.m4])
 m4_include([import/m4/group-member.m4])
 m4_include([import/m4/host-cpu-c-abi.m4])
 m4_include([import/m4/host-os.m4])
 m4_include([import/m4/i-ring.m4])
 m4_include([import/m4/iconv_h.m4])
 m4_include([import/m4/include_next.m4])
+m4_include([import/m4/inet_ntop.m4])
 m4_include([import/m4/inline.m4])
 m4_include([import/m4/intmax_t.m4])
 m4_include([import/m4/inttypes.m4])
@@ -1573,6 +1600,7 @@ m4_include([import/m4/isnanl.m4])
 m4_include([import/m4/iswblank.m4])
 m4_include([import/m4/iswctype.m4])
 m4_include([import/m4/iswdigit.m4])
+m4_include([import/m4/iswpunct.m4])
 m4_include([import/m4/iswxdigit.m4])
 m4_include([import/m4/jm-winsz1.m4])
 m4_include([import/m4/jm-winsz2.m4])
@@ -1584,6 +1612,7 @@ m4_include([import/m4/ldexpl.m4])
 m4_include([import/m4/libunistring-base.m4])
 m4_include([import/m4/limits-h.m4])
 m4_include([import/m4/localcharset.m4])
+m4_include([import/m4/locale-en.m4])
 m4_include([import/m4/locale-fr.m4])
 m4_include([import/m4/locale-ja.m4])
 m4_include([import/m4/locale-zh.m4])
@@ -1608,13 +1637,16 @@ m4_include([import/m4/mbstate_t.m4])
 m4_include([import/m4/mbtowc.m4])
 m4_include([import/m4/memchr.m4])
 m4_include([import/m4/memcmp.m4])
+m4_include([import/m4/memeq.m4])
 m4_include([import/m4/memmem.m4])
 m4_include([import/m4/memmove.m4])
 m4_include([import/m4/mempcpy.m4])
 m4_include([import/m4/memrchr.m4])
+m4_include([import/m4/memset.m4])
 m4_include([import/m4/minmax.m4])
 m4_include([import/m4/mkdir.m4])
 m4_include([import/m4/mkdtemp.m4])
+m4_include([import/m4/mkostemp.m4])
 m4_include([import/m4/mktime.m4])
 m4_include([import/m4/mmap-anon.m4])
 m4_include([import/m4/mode_t.m4])
@@ -1623,11 +1655,15 @@ m4_include([import/m4/msvc-inval.m4])
 m4_include([import/m4/multiarch.m4])
 m4_include([import/m4/musl.m4])
 m4_include([import/m4/netdb_h.m4])
+m4_include([import/m4/netinet_in_h.m4])
 m4_include([import/m4/nl_langinfo.m4])
 m4_include([import/m4/no-c++.m4])
 m4_include([import/m4/nocrash.m4])
+m4_include([import/m4/obstack-printf.m4])
 m4_include([import/m4/obstack.m4])
+m4_include([import/m4/off64_t.m4])
 m4_include([import/m4/off_t.m4])
+m4_include([import/m4/once.m4])
 m4_include([import/m4/open-cloexec.m4])
 m4_include([import/m4/open-slash.m4])
 m4_include([import/m4/open.m4])
@@ -1644,21 +1680,26 @@ m4_include([import/m4/posixcheck.m4])
 m4_include([import/m4/printf-frexp.m4])
 m4_include([import/m4/printf-frexpl.m4])
 m4_include([import/m4/printf.m4])
+m4_include([import/m4/pthread-once.m4])
+m4_include([import/m4/pthread-spin.m4])
 m4_include([import/m4/pthread_h.m4])
 m4_include([import/m4/pty_h.m4])
 m4_include([import/m4/putenv.m4])
 m4_include([import/m4/raise.m4])
+m4_include([import/m4/rawmemchr.m4])
 m4_include([import/m4/readdir.m4])
 m4_include([import/m4/readlink.m4])
 m4_include([import/m4/realloc.m4])
 m4_include([import/m4/reallocarray.m4])
 m4_include([import/m4/regex.m4])
+m4_include([import/m4/rename.m4])
 m4_include([import/m4/rewinddir.m4])
 m4_include([import/m4/rmdir.m4])
 m4_include([import/m4/save-cwd.m4])
 m4_include([import/m4/sched_h.m4])
 m4_include([import/m4/search_h.m4])
 m4_include([import/m4/secure_getenv.m4])
+m4_include([import/m4/select.m4])
 m4_include([import/m4/setenv.m4])
 m4_include([import/m4/setlocale_null.m4])
 m4_include([import/m4/sh-filename.m4])
@@ -1672,7 +1713,9 @@ m4_include([import/m4/size_max.m4])
 m4_include([import/m4/sleep.m4])
 m4_include([import/m4/snprintf.m4])
 m4_include([import/m4/socketlib.m4])
+m4_include([import/m4/sockets.m4])
 m4_include([import/m4/socklen.m4])
+m4_include([import/m4/sockpfaf.m4])
 m4_include([import/m4/spawn_h.m4])
 m4_include([import/m4/sprintf-posix.m4])
 m4_include([import/m4/ssize_t.m4])
@@ -1680,23 +1723,38 @@ m4_include([import/m4/stat-size.m4])
 m4_include([import/m4/stat-time.m4])
 m4_include([import/m4/stat.m4])
 m4_include([import/m4/stdalign.m4])
+m4_include([import/m4/stdbit_h.m4])
+m4_include([import/m4/stdckdint_h.m4])
+m4_include([import/m4/stdcountof_h.m4])
 m4_include([import/m4/stddef_h.m4])
 m4_include([import/m4/stdint.m4])
 m4_include([import/m4/stdint_h.m4])
 m4_include([import/m4/stdio_h.m4])
 m4_include([import/m4/stdlib_h.m4])
+m4_include([import/m4/stpcpy.m4])
+m4_include([import/m4/stpncpy.m4])
+m4_include([import/m4/strcasecmp.m4])
+m4_include([import/m4/strcasestr.m4])
+m4_include([import/m4/strchrnul.m4])
+m4_include([import/m4/strcspn.m4])
 m4_include([import/m4/strdup.m4])
+m4_include([import/m4/streq.m4])
 m4_include([import/m4/strerror.m4])
 m4_include([import/m4/strerror_r.m4])
 m4_include([import/m4/strftime-fixes.m4])
 m4_include([import/m4/string_h.m4])
 m4_include([import/m4/strings_h.m4])
+m4_include([import/m4/strncasecmp.m4])
 m4_include([import/m4/strncat.m4])
+m4_include([import/m4/strncpy.m4])
 m4_include([import/m4/strndup.m4])
 m4_include([import/m4/strnlen.m4])
 m4_include([import/m4/strpbrk.m4])
+m4_include([import/m4/strsep.m4])
+m4_include([import/m4/strsignal.m4])
 m4_include([import/m4/strstr.m4])
 m4_include([import/m4/strtok_r.m4])
+m4_include([import/m4/sys_cdefs_h.m4])
 m4_include([import/m4/sys_file_h.m4])
 m4_include([import/m4/sys_ioctl_h.m4])
 m4_include([import/m4/sys_random_h.m4])
@@ -1719,6 +1777,7 @@ m4_include([import/m4/time_h.m4])
 m4_include([import/m4/time_r.m4])
 m4_include([import/m4/time_rz.m4])
 m4_include([import/m4/timegm.m4])
+m4_include([import/m4/tls.m4])
 m4_include([import/m4/towctrans.m4])
 m4_include([import/m4/tzset.m4])
 m4_include([import/m4/uchar_h.m4])
@@ -1728,6 +1787,7 @@ m4_include([import/m4/unictype_h.m4])
 m4_include([import/m4/uninorm_h.m4])
 m4_include([import/m4/unistd-safer.m4])
 m4_include([import/m4/unistd_h.m4])
+m4_include([import/m4/unitypes_h.m4])
 m4_include([import/m4/unlink-busy.m4])
 m4_include([import/m4/unlink.m4])
 m4_include([import/m4/usleep.m4])
@@ -1738,7 +1798,6 @@ m4_include([import/m4/vfprintf-posix.m4])
 m4_include([import/m4/visibility.m4])
 m4_include([import/m4/warn-on-use.m4])
 m4_include([import/m4/wchar_h.m4])
-m4_include([import/m4/wchar_t.m4])
 m4_include([import/m4/wcrtomb.m4])
 m4_include([import/m4/wcscat.m4])
 m4_include([import/m4/wcslen.m4])

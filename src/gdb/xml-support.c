@@ -30,7 +30,7 @@ static int debug_xml;
 
 /* The contents of this file are only useful if XML support is
    available.  */
-#ifdef HAVE_LIBEXPAT
+#if defined(HAVE_LIBEXPAT) && HAVE_LIBEXPAT
 
 #include "gdb_expat.h"
 
@@ -890,9 +890,16 @@ fetch_xml_builtin (const char *filename)
 {
   const char *(*p)[2];
 
+  /* features/feature_to_c.sh is supposed to generate xml_builtin, but I refuse
+   * to figure that out at the moment, so instead just ifdef this out: */
+#ifdef HAVE_XML_BUILTIN
   for (p = xml_builtin; (*p)[0]; p++)
     if (strcmp ((*p)[0], filename) == 0)
       return (*p)[1];
+#else
+  (void)p;
+  (void)filename;
+#endif /* HAVE_XML_BUILTIN */
 
   return NULL;
 }
@@ -921,8 +928,8 @@ xml_builtin_xfer_partial (const char *filename,
   if (offset >= len_avail)
     return 0;
 
-  if (len > len_avail - offset)
-    len = len_avail - offset;
+  if (len > (len_avail - offset))
+    len = (len_avail - offset);
   memcpy (readbuf, buf + offset, len);
   return len;
 }
@@ -964,7 +971,7 @@ xml_escape_text (const char *text)
       }
 
   /* Expand the result.  */
-  result = xmalloc (i + special + 1);
+  result = (char *)xmalloc(i + special + 1UL);
   for (i = 0, special = 0; text[i] != '\0'; i++)
     switch (text[i])
       {
@@ -1020,11 +1027,15 @@ obstack_xml_printf (struct obstack *obstack, const char *format, ...)
                char *a = va_arg (ap, char *);
                obstack_grow (obstack, prev, f - prev - 1);
                p = xml_escape_text (a);
-               obstack_grow_str (obstack, p);
+#ifdef HAVE_OBSTACK_GROW_STR
+               obstack_grow_str(obstack, p);
+#endif /* HAVE_OBSTACK_GROW_STR */
                xfree (p);
                prev = f + 1;
              }
              break;
+	   default:
+	     break;
            }
          percent = 0;
        }
@@ -1032,14 +1043,16 @@ obstack_xml_printf (struct obstack *obstack, const char *format, ...)
        percent = 1;
     }
 
-  obstack_grow_str (obstack, prev);
+#ifdef HAVE_OBSTACK_GROW_STR
+  obstack_grow_str(obstack, prev);
+#endif /* HAVE_OBSTACK_GROW_STR */
   va_end (ap);
 }
 
 char *
 xml_fetch_content_from_file (const char *filename, void *baton)
 {
-  const char *dirname = baton;
+  const char *dirname = (const char *)baton;
   FILE *file;
   struct cleanup *back_to;
   char *text;
@@ -1059,12 +1072,16 @@ xml_fetch_content_from_file (const char *filename, void *baton)
   if (file == NULL)
     return NULL;
 
-  back_to = make_cleanup_fclose (file);
+#ifdef HAVE_MAKE_CLEANUP_FCLOSE
+  back_to = make_cleanup_fclose(file);
+#else
+  back_to = NULL;
+#endif /* HAVE_MAKE_CLEANUP_FCLOSE */
 
   /* Read in the whole file, one chunk at a time.  */
   len = 4096;
   offset = 0;
-  text = xmalloc (len);
+  text = (char *)xmalloc(len);
   make_cleanup (free_current_contents, &text);
   while (1)
     {
@@ -1086,7 +1103,7 @@ xml_fetch_content_from_file (const char *filename, void *baton)
 	break;
 
       len = len * 2;
-      text = xrealloc (text, len);
+      text = (char *)xrealloc(text, len);
     }
 
   fclose (file);

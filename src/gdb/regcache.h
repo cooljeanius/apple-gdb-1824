@@ -25,8 +25,12 @@
 
 #include "ansidecl.h"
 
+#include "common/common-regcache.h"
+
 struct regcache;
+struct regset;
 struct gdbarch;
+struct address_space;
 
 extern struct regcache *current_regcache;
 

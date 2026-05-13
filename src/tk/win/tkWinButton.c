@@ -1,4 +1,4 @@
-/* 
+/*
  * tkWinButton.c --
  *
  *	This file implements the Windows specific portion of the button
@@ -61,12 +61,12 @@ enum {
 };
 
 /*
- * Cached information about the boxes bitmap, and the default border 
- * width for a button in string form for use in Tk_OptionSpec for 
+ * Cached information about the boxes bitmap, and the default border
+ * width for a button in string form for use in Tk_OptionSpec for
  * the various button widget classes.
  */
 
-typedef struct ThreadSpecificData { 
+typedef struct ThreadSpecificData {
     BITMAPINFOHEADER *boxesPtr;   /* Information about the bitmap. */
     DWORD *boxesPalette;	  /* Pointer to color palette. */
     LPSTR boxesBits;		  /* Pointer to bitmap data. */
@@ -89,7 +89,7 @@ static void		InitBoxes _ANSI_ARGS_((void));
  * The class procedure table for the button widgets.
  */
 
-Tk_ClassProcs tkpButtonProcs = { 
+Tk_ClassProcs tkpButtonProcs = {
     sizeof(Tk_ClassProcs),	/* size */
     TkButtonWorldChanged,	/* worldChangedProc */
     CreateProc,			/* createProc */
@@ -101,12 +101,12 @@ Tk_ClassProcs tkpButtonProcs = {
  *
  * InitBoxes --
  *
- *	This function load the Tk 3d button bitmap.  "buttons" is a 16 
- *	color bitmap that is laid out such that the top row contains 
- *	the 4 checkbox images, and the bottom row contains the radio 
- *	button images. Note that the bitmap is stored in bottom-up 
- *	format.  Also, the first seven palette entries are used to 
- *	identify the different parts of the bitmaps so we can do the 
+ *	This function load the Tk 3d button bitmap.  "buttons" is a 16
+ *	color bitmap that is laid out such that the top row contains
+ *	the 4 checkbox images, and the bottom row contains the radio
+ *	button images. Note that the bitmap is stored in bottom-up
+ *	format.  Also, the first seven palette entries are used to
+ *	identify the different parts of the bitmaps so we can do the
  *	appropriate color mappings based on the current button colors.
  *
  * Results:
@@ -119,7 +119,7 @@ Tk_ClassProcs tkpButtonProcs = {
  */
 
 static void
-InitBoxes()
+InitBoxes (void)
 {
     /*
      * For DLLs like Tk, the HINSTANCE is the same as the HMODULE.
@@ -130,7 +130,7 @@ InitBoxes()
     HGLOBAL hblk;
     LPBITMAPINFOHEADER newBitmap;
     DWORD size;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     hrsrc = FindResource(module, "buttons", RT_BITMAP);
@@ -145,14 +145,14 @@ InitBoxes()
 
     if (tsdPtr->boxesPtr != NULL && !(tsdPtr->boxesPtr->biWidth % 4)
 	    && !(tsdPtr->boxesPtr->biHeight % 2)) {
-	size = tsdPtr->boxesPtr->biSize + (1 << tsdPtr->boxesPtr->biBitCount) 
+	size = tsdPtr->boxesPtr->biSize + (1 << tsdPtr->boxesPtr->biBitCount)
                 * sizeof(RGBQUAD) + tsdPtr->boxesPtr->biSizeImage;
 	newBitmap = (LPBITMAPINFOHEADER) ckalloc(size);
 	memcpy(newBitmap, tsdPtr->boxesPtr, size);
 	tsdPtr->boxesPtr = newBitmap;
 	tsdPtr->boxWidth = tsdPtr->boxesPtr->biWidth / 4;
 	tsdPtr->boxHeight = tsdPtr->boxesPtr->biHeight / 2;
-	tsdPtr->boxesPalette = (DWORD*) (((LPSTR) tsdPtr->boxesPtr) 
+	tsdPtr->boxesPalette = (DWORD*) (((LPSTR) tsdPtr->boxesPtr)
                 + tsdPtr->boxesPtr->biSize);
 	tsdPtr->boxesBits = ((LPSTR) tsdPtr->boxesPalette)
 	    + ((1 << tsdPtr->boxesPtr->biBitCount) * sizeof(RGBQUAD));
@@ -186,7 +186,7 @@ TkpButtonSetDefaults(specPtr)
 				 * TK_OPTION_END. */
 {
     int width;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     if (tsdPtr->defWidth[0] == 0) {
@@ -357,7 +357,7 @@ TkpDisplayButton(clientData)
 					   * compound buttons and focus ring */
     DWORD *boxesPalette;
 
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     boxesPalette= tsdPtr->boxesPalette;
@@ -461,7 +461,7 @@ TkpDisplayButton(clientData)
     }
 
     haveText = (butPtr->textWidth != 0 && butPtr->textHeight != 0);
-    
+
     if (butPtr->compound != COMPOUND_NONE && haveImage && haveText) {
 	int imageXOffset, imageYOffset, fullWidth,
 	    fullHeight;
@@ -471,7 +471,7 @@ TkpDisplayButton(clientData)
 	fullHeight = 0;
 
 	switch ((enum compound) butPtr->compound) {
-	    case COMPOUND_TOP: 
+	    case COMPOUND_TOP:
 	    case COMPOUND_BOTTOM: {
 		/* Image is above or below text */
 		if (butPtr->compound == COMPOUND_TOP) {
@@ -542,7 +542,7 @@ TkpDisplayButton(clientData)
 		    y + imageYOffset, 1);
 	    XSetClipOrigin(butPtr->display, gc, 0, 0);
 	}
-	
+
 	Tk_DrawTextLayout(butPtr->display, pixmap, gc, butPtr->textLayout,
 		x + textXOffset, y + textYOffset, 0, -1);
 	Tk_UnderlineTextLayout(butPtr->display, pixmap, gc,
@@ -555,7 +555,7 @@ TkpDisplayButton(clientData)
 	    TkComputeAnchor(butPtr->anchor, tkwin, 0, 0,
 		    butPtr->indicatorSpace + width, height, &x, &y);
 	    x += butPtr->indicatorSpace;
-	    
+
 	    if (relief == TK_RELIEF_SUNKEN) {
 		x += offset;
 		y += offset;
@@ -575,14 +575,14 @@ TkpDisplayButton(clientData)
 			(unsigned int) width, (unsigned int) height, x, y, 1);
 		XSetClipOrigin(butPtr->display, gc, 0, 0);
 	    }
-		        
+
 	} else {
 	    TkComputeAnchor(butPtr->anchor, tkwin, butPtr->padX, butPtr->padY,
 		    butPtr->indicatorSpace + butPtr->textWidth,
 		    butPtr->textHeight,	&x, &y);
 
 	    x += butPtr->indicatorSpace;
-	    
+
 	    if (relief == TK_RELIEF_SUNKEN) {
 		x += offset;
 		y += offset;
@@ -603,7 +603,7 @@ TkpDisplayButton(clientData)
      * around the text.  The text offsets are only non-zero when this
      * is a compound button.
      */
-    
+
     if (drawRing && butPtr->flags & GOT_FOCUS && butPtr->type != TYPE_LABEL) {
 	dc = TkWinGetDrawableDC(butPtr->display, pixmap, &state);
 	if (butPtr->type == TYPE_BUTTON || !butPtr->indicatorOn) {
@@ -624,7 +624,7 @@ TkpDisplayButton(clientData)
     }
 
     y += height/2;
-    
+
     /*
      * Draw the indicator for check buttons and radio buttons.  At this
      * point x and y refer to the top-left corner of the text or image
@@ -643,7 +643,7 @@ TkpDisplayButton(clientData)
 	    xSrc += tsdPtr->boxWidth*2;
 	}
 	ySrc = (butPtr->type == TYPE_RADIO_BUTTON) ? 0 : tsdPtr->boxHeight;
-		
+
 	/*
 	 * Update the palette in the boxes bitmap to reflect the current
 	 * button colors.  Note that this code relies on the layout of the
@@ -675,9 +675,9 @@ TkpDisplayButton(clientData)
 		border, TK_3D_FLAT_GC));
 
 	dc = TkWinGetDrawableDC(butPtr->display, pixmap, &state);
-	StretchDIBits(dc, x, y, tsdPtr->boxWidth, tsdPtr->boxHeight, 
-                xSrc, ySrc, tsdPtr->boxWidth, tsdPtr->boxHeight, 
-                tsdPtr->boxesBits, (LPBITMAPINFO) tsdPtr->boxesPtr, 
+	StretchDIBits(dc, x, y, tsdPtr->boxWidth, tsdPtr->boxHeight,
+                xSrc, ySrc, tsdPtr->boxWidth, tsdPtr->boxHeight,
+                tsdPtr->boxesBits, (LPBITMAPINFO) tsdPtr->boxesPtr,
                 DIB_RGB_COLORS, SRCCOPY);
 	TkWinReleaseDrawableDC(pixmap, dc, &state);
     }
@@ -780,8 +780,8 @@ TkpComputeButtonGeometry(butPtr)
     /* Vertical and horizontal dialog units size in pixels. */
     double vDLU, hDLU;
     Tk_FontMetrics fm;
-    
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
 	Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     if (butPtr->highlightWidth < 0) {
@@ -808,7 +808,7 @@ TkpComputeButtonGeometry(butPtr)
 	haveImage = 0;
     }
 
-    /* 
+    /*
      * Figure out font metrics (even if we don't have text because we need
      * DLUs (based on font, not text) for some spacing calculations below).
      */
@@ -848,13 +848,13 @@ TkpComputeButtonGeometry(butPtr)
     switch (butPtr->type) {
         case TYPE_BUTTON: {
 	    /*
-	     * First compute the minimum width of the button in 
+	     * First compute the minimum width of the button in
 	     * characters.	MWUE says that the button should be
 	     * 50 DLUs.  We allow 6 DLUs padding left and right.
 	     * (There is no rule but this is consistent with the
 	     * fact that button text is 8 DLUs high and buttons
 	     * are 14 DLUs high.)
-	     * 
+	     *
 	     * The width is specified in characters.  A character
 	     * is, by definition, 4 DLUs wide.  11 char * 4 DLU
 	     * is 44 DLU + 6 DLU padding = 50 DLU.	Therefore,
@@ -867,14 +867,14 @@ TkpComputeButtonGeometry(butPtr)
 		width = avgWidth * minWidth;
 		/* Add for padding */
 		width += (int)(0.5 + (6 * hDLU));
-	    } 
+	    }
 
 	    /*
 	     * If shrink-wrapping was requested (width = 0) or
 	     * if the text is wider than the default button width,
-	     * adjust the button width up to suit.	
+	     * adjust the button width up to suit.
 	     */
-	    if (butPtr->width == 0 
+	    if (butPtr->width == 0
 		    || (txtWidth + (int)(0.5 + (6 * hDLU)) > width)) {
 		width = txtWidth + (int)(0.5 + (6 * hDLU));
 	    }
@@ -888,9 +888,9 @@ TkpComputeButtonGeometry(butPtr)
 
 	    /*
 	     * The above includes 6 DLUs of padding which should include
-	     * defaults of 1 pixel of highlightwidth, 2 pixels of 
-	     * borderwidth, 1 pixel of padding and 1 pixel of extra inset 
-	     * on each side.  Those will be added later so reduce width 
+	     * defaults of 1 pixel of highlightwidth, 2 pixels of
+	     * borderwidth, 1 pixel of padding and 1 pixel of extra inset
+	     * on each side.  Those will be added later so reduce width
 	     * and height now to compensate.
 	     */
 	    width  -= 10;
@@ -938,15 +938,15 @@ TkpComputeButtonGeometry(butPtr)
              * multi-line text and 8 DLU/line.
              */
             height = txtHeight + (int)(0.5 + (2.0 * vDLU));
-            
+
             /*
              * The above includes 2 DLUs of padding which should include
-             * defaults of 1 pixel of highlightwidth, 0 pixels of 
+             * defaults of 1 pixel of highlightwidth, 0 pixels of
              * borderwidth, and 1 pixel of padding on each side.  Those
              * will be added later so reduce height now to compensate.
              */
             height -= 4;
-            
+
             /*
              * Extra inset for the focus ring.
              */
@@ -1071,7 +1071,7 @@ TkpComputeButtonGeometry(butPtr)
 		}
 	    }
 	}
-	    
+
 	width  += 2 * butPtr->padX;
 	height += 2 * butPtr->padY;
     }
@@ -1082,7 +1082,7 @@ TkpComputeButtonGeometry(butPtr)
 	if (butPtr->indicatorOn) {
 	    butPtr->indicatorDiameter = tsdPtr->boxHeight;
 
-            /* 
+            /*
              * Make sure we can see the whole indicator, even if the text
              * or image is very small.
              */
@@ -1182,10 +1182,10 @@ ButtonProc(hwnd, message, wParam, lParam)
 
 	    /*
 	     * Special note: must cancel any existing idle handler
-	     * for TkpDisplayButton;  it's no longer needed, and
+	     * for TkpDisplayButton; it's no longer needed, and
 	     * TkpDisplayButton cleared the REDRAW_PENDING flag.
 	     */
-           
+
 	    Tcl_CancelIdleCall(TkpDisplayButton, (ClientData)butPtr);
 	    return 0;
 	}

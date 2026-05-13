@@ -1,4 +1,4 @@
-/* 
+/*
  * winMain.c --
  *
  *	Main entry point for wish and other Tk-based applications.
@@ -46,12 +46,12 @@ static BOOL consoleRequired = TRUE;
  * of rewriting this entire file.  The #if checks for that
  * #define and uses Tcl_AppInit if it doesn't exist.
  */
-    
+
 #ifndef TK_LOCAL_APPINIT
-#define TK_LOCAL_APPINIT Tcl_AppInit    
+#define TK_LOCAL_APPINIT Tcl_AppInit
 #endif
 extern int TK_LOCAL_APPINIT _ANSI_ARGS_((Tcl_Interp *interp));
-    
+
 /*
  * The following #if block allows you to change how Tcl finds the startup
  * script, prime the library or encoding paths, fiddle with the argv,
@@ -60,7 +60,7 @@ extern int TK_LOCAL_APPINIT _ANSI_ARGS_((Tcl_Interp *interp));
 
 #ifdef TK_LOCAL_MAIN_HOOK
 extern int TK_LOCAL_MAIN_HOOK _ANSI_ARGS_((int *argc, char ***argv));
-#endif
+#endif /* TK_LOCAL_MAIN_HOOK */
 
 
 /*
@@ -72,7 +72,7 @@ extern int TK_LOCAL_MAIN_HOOK _ANSI_ARGS_((int *argc, char ***argv));
  *
  * Results:
  *	Returns false if initialization fails, otherwise it never
- *	returns. 
+ *	returns.
  *
  * Side effects:
  *	Just about anything, since from here we call arbitrary Tcl code.
@@ -216,7 +216,7 @@ WishPanic TCL_VARARGS_DEF(CONST char *,arg1)
     va_list argList;
     char buf[1024];
     CONST char *format;
-    
+
     format = TCL_VARARGS_START(CONST char *,arg1,argList);
     vsprintf(buf, format, argList);
 
@@ -234,7 +234,7 @@ WishPanic TCL_VARARGS_DEF(CONST char *,arg1)
  * setargv --
  *
  *	Parse the Windows command line string into argc/argv.  Done here
- *	because we don't trust the builtin argument parser in crt0.  
+ *	because we don't trust the builtin argument parser in crt0.
  *	Windows applications are responsible for breaking their command
  *	line into arguments.
  *
@@ -256,14 +256,15 @@ WishPanic TCL_VARARGS_DEF(CONST char *,arg1)
  */
 
 static void
-setargv(argcPtr, argvPtr)
-    int *argcPtr;		/* Filled with number of argument strings. */
-    char ***argvPtr;		/* Filled with argument strings (malloc'd). */
+setargv (
+    int *argcPtr,		/* Filled with number of argument strings. */
+    char ***argvPtr		/* Filled with argument strings (malloc'd). */
+)
 {
     char *cmdLine, *p, *arg, *argSpace;
     char **argv;
     int argc, size, inquote, copy, slashes;
-    
+
     cmdLine = GetCommandLine();	/* INTL: BUG */
 
     /*

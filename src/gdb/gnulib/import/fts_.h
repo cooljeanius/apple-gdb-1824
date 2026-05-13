@@ -1,18 +1,19 @@
+/* DO NOT EDIT! GENERATED AUTOMATICALLY! */
 /* Traverse a file hierarchy.
 
-   Copyright (C) 2004-2023 Free Software Foundation, Inc.
+   Copyright (C) 2004-2026 Free Software Foundation, Inc.
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+   This file is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as
+   published by the Free Software Foundation; either version 2.1 of the
+   License, or (at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
+   This file is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+   GNU Lesser General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
+   You should have received a copy of the GNU Lesser General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /*
@@ -62,17 +63,46 @@
 #   define __FLEXIBLE_ARRAY_MEMBER
 #  endif
 # else
+#  if 0
+#   include <sys/cdefs.h>
+#  endif
 #  define __FLEXIBLE_ARRAY_MEMBER FLEXIBLE_ARRAY_MEMBER
-#  undef __THROW
-#  define __THROW
-#  undef __BEGIN_DECLS
-#  undef __END_DECLS
-#  ifdef __cplusplus
-#   define __BEGIN_DECLS extern "C" {
-#   define __END_DECLS }
-#  else
-#   define __BEGIN_DECLS
-#   define __END_DECLS
+#  if defined __clang__
+  /* clang really only groks GNU C 4.2, regardless of its value of __GNUC__.  */
+#   undef __GNUC_PREREQ
+#   define __GNUC_PREREQ(maj, min) ((maj) < 4 + ((min) <= 2))
+#  endif
+#  ifndef __GNUC_PREREQ
+#   if defined __GNUC__ && defined __GNUC_MINOR__
+#    define __GNUC_PREREQ(maj, min) ((maj) < __GNUC__ + ((min) <= __GNUC_MINOR__))
+#   else
+#    define __GNUC_PREREQ(maj, min) 0
+#   endif
+#  endif
+#  ifndef __THROW
+#   if defined __cplusplus && (__GNUC_PREREQ (2,8) || __clang_major__ >= 4)
+#    if __cplusplus >= 201103L
+#     define __THROW      noexcept (true)
+#    else
+#     define __THROW      throw ()
+#    endif
+#   else
+#    define __THROW
+#   endif
+#  endif
+#  ifndef __BEGIN_DECLS
+#   ifdef __cplusplus
+#    define __BEGIN_DECLS extern "C" {
+#   else
+#    define __BEGIN_DECLS /* nothing */
+#   endif
+#  endif
+#  ifndef __END_DECLS
+#   ifdef __cplusplus
+#    define __END_DECLS }
+#   else
+#    define __END_DECLS /* nothing */
+#   endif
 #  endif
 # endif
 
@@ -157,11 +187,12 @@ typedef struct {
   /* Use this flag to disable stripping of trailing slashes
      from input path names during fts_open initialization.  */
 # define FTS_VERBATIM   0x0800
+# define FTS_MOUNT      0x1000          /* skip other devices */
 
-# define FTS_OPTIONMASK 0x0fff          /* valid user option mask */
+# define FTS_OPTIONMASK 0x1fff          /* valid user option mask */
 
-# define FTS_NAMEONLY   0x1000          /* (private) child names only */
-# define FTS_STOP       0x2000          /* (private) unrecoverable error */
+# define FTS_NAMEONLY   0x2000          /* (private) child names only */
+# define FTS_STOP       0x4000          /* (private) unrecoverable error */
         int fts_options;                /* fts_open options, global flags */
 
         /* Map a directory's device number to a boolean.  The boolean is
@@ -273,6 +304,7 @@ FTSENT  *fts_read (FTS *) __THROW;
 int      fts_set (FTS *, FTSENT *, int) __THROW;
 
 #if GNULIB_FTS_DEBUG
+extern bool fts_debug;
 void     fts_cross_check (FTS const *);
 #endif
 __END_DECLS

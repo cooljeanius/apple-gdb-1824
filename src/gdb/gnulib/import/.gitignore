@@ -30,6 +30,8 @@ float.h
 float.h-t
 fnmatch.h
 fnmatch.h-t
+fts.h
+fts.h-t
 glob.h
 glob.h-t
 iconv.h
@@ -50,12 +52,16 @@ monetary.h
 monetary.h-t
 netdb.h
 netdb.h-t
+netinet/in.h
+netinet/in.h-t
 ./arg-nonnull.h
 arg-nonnull.h-t
 ./c++defs.h
 c++defs.h-t
 ./warn-on-use.h
 warn-on-use.h-t
+obstack.h
+obstack.h-t
 poll.h
 poll.h-t
 pthread.h

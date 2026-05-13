@@ -6,7 +6,7 @@ dnl#	to configure the system for the local environment.
 # RCS: @(#) $Id: configure.ac,v 1.82 2002/09/27 18:09:53 dgp Exp $
 
 m4_include([../../config/warnings.m4])
-AC_INIT([tcl-unix],[8.4.1],[BUG-REPORT-ADDRESS])
+AC_INIT([tk-unix],[8.4.1],[BUG-REPORT-ADDRESS])
 AC_CONFIG_SRCDIR([../generic/tk.h])
 AC_PREREQ([2.13])
 
@@ -102,7 +102,8 @@ AC_PROG_INSTALL
 # I am not sure why these need to come before all of the other tests
 #------------------------------------------------------------------------
 
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h netinet/in.h sys/file.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h netinet/in.h sys/file.h \
+                  X11/Xlib.h])dnl
 
 #------------------------------------------------------------------------
 # Threads support

@@ -1,6 +1,6 @@
 /* General bitsets.
 
-   Copyright (C) 2002-2006, 2009-2015, 2018-2023 Free Software Foundation, Inc.
+   Copyright (C) 2002-2006, 2009-2015, 2018-2026 Free Software Foundation, Inc.
 
    Contributed by Michael Hayes (m.hayes@elec.canterbury.ac.nz).
 
@@ -94,7 +94,7 @@ bitset_init (bitset bset, bitset_bindex n_bits, enum bitset_type type)
    specified by ATTR.  For variable size bitsets, N_BITS is only a
    hint and may be zero.  */
 enum bitset_type
-bitset_type_choose (MAYBE_UNUSED bitset_bindex n_bits, unsigned attr)
+bitset_type_choose (bitset_bindex UNNAMED (n_bits), unsigned attr)
 {
   /* Check attributes.  */
   if (attr & BITSET_FIXED && attr & BITSET_VARIABLE)
@@ -367,12 +367,13 @@ bitset_count_ (bitset src)
 bool
 bitset_copy_ (bitset dst, bitset src)
 {
-  bitset_bindex i;
-  bitset_iterator iter;
-
   /* Convert bitset types.  We assume that the DST bitset
      is large enough to hold the SRC bitset.  */
+
   bitset_zero (dst);
+
+  bitset_bindex i;
+  bitset_iterator iter;
   BITSET_FOR_EACH (iter, src, i, 0)
     bitset_set (dst, i);
 

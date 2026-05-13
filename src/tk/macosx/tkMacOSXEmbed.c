@@ -1,4 +1,4 @@
-/* 
+/*
  * tkMacOSXEmbed.c --
  *
  *        This file contains platform-specific procedures for theMac to provide
@@ -33,20 +33,20 @@
  */
 
 typedef struct Container {
-    Window parent;                /* The Mac Drawable for the parent of
+    Window parent;              /* The Mac Drawable for the parent of
                                  * the pair (the container). */
     TkWindow *parentPtr;        /* Tk's information about the container,
                                  * or NULL if the container isn't
                                  * in this process. */
-    Window embedded;                /* The MacDrawable for the embedded
+    Window embedded;            /* The MacDrawable for the embedded
                                  * window.  Starts off as None, but
                                  * gets filled in when the window is
                                  * eventually created. */
-    TkWindow *embeddedPtr;        /* Tk's information about the embedded
+    TkWindow *embeddedPtr;      /* Tk's information about the embedded
                                  * window, or NULL if the
                                  * embedded application isn't in
                                  * this process. */
-    struct Container *nextPtr;        /* Next in list of all containers in
+    struct Container *nextPtr;  /* Next in list of all containers in
                                  * this process. */
 } Container;
 
@@ -67,7 +67,7 @@ static void                ContainerEventProc _ANSI_ARGS_((
                             ClientData clientData, XEvent *eventPtr));
 static void                EmbeddedEventProc _ANSI_ARGS_((
                             ClientData clientData, XEvent *eventPtr));
-static void                EmbedActivateProc _ANSI_ARGS_((ClientData clientData, 
+static void                EmbedActivateProc _ANSI_ARGS_((ClientData clientData,
                             XEvent *eventPtr));
 static void                EmbedFocusProc _ANSI_ARGS_((ClientData clientData,
                             XEvent *eventPtr));
@@ -85,7 +85,7 @@ static void                EmbedWindowDeleted _ANSI_ARGS_((TkWindow *winPtr));
  *
  * Tk_MacOSXSetEmbedHandler --
  *
- *        Registers a handler for an in process form of embedding, like 
+ *        Registers a handler for an in process form of embedding, like
  *        Netscape plugins, where Tk is loaded into the process, but does
  *        not control the main window
  *
@@ -112,7 +112,7 @@ Tk_MacOSXSetEmbedHandler(
     gMacEmbedHandler->getPortProc = getPortProc;
     gMacEmbedHandler->containerExistProc = containerExistProc;
     gMacEmbedHandler->getClipProc = getClipProc;
-    gMacEmbedHandler->getOffsetProc = getOffsetProc;    
+    gMacEmbedHandler->getOffsetProc = getOffsetProc;
 }
 
 
@@ -145,15 +145,15 @@ TkpMakeWindow(
      * the window structure should have already been
      * created in the TkpUseWindow function.
      */
-    
+
     if (Tk_IsEmbedded(winPtr)) {
         return (Window) winPtr->privatePtr;
     }
-    
+
     /*
      * Allocate sub window
      */
-    
+
     macWin = (MacDrawable *) ckalloc(sizeof(MacDrawable));
     if (macWin == NULL) {
         winPtr->privatePtr = NULL;
@@ -167,12 +167,12 @@ TkpMakeWindow(
     macWin->flags = TK_CLIP_INVALID;
 
     if (Tk_IsTopLevel(macWin->winPtr)) {
-        
+
         /*
          *This will be set when we are mapped.
          */
-        
-        macWin->grafPtr  = NULL;  
+
+        macWin->grafPtr  = NULL;
         macWin->toplevel = macWin;
         macWin->xOff = 0;
         macWin->yOff = 0;
@@ -188,14 +188,14 @@ TkpMakeWindow(
     }
 
     macWin->toplevel->referenceCount++;
-    
-    /* 
+
+    /*
      * TODO: need general solution for visibility events.
      */
     event.xany.serial = Tk_Display(winPtr)->request;
     event.xany.send_event = False;
     event.xany.display = Tk_Display(winPtr);
-        
+
     event.xvisibility.type = VisibilityNotify;
     event.xvisibility.window = (Window) macWin;
     event.xvisibility.state = VisibilityUnobscured;
@@ -244,9 +244,9 @@ TkpUseWindow(
     if (winPtr->window != None) {
         panic("TkpUseWindow: X window already assigned");
     }
-    
+
     /*
-     * Decode the container pointer, and look for it among the 
+     * Decode the container pointer, and look for it among the
      *list of available containers.
      *
      * N.B. For now, we are limiting the containers to be in the same Tk
@@ -254,7 +254,7 @@ TkpUseWindow(
      * of containers.
      *
      */
-     
+
     if (Tcl_GetInt(interp, string, &result) != TCL_OK) {
         return TCL_ERROR;
     }
@@ -264,7 +264,7 @@ TkpUseWindow(
     /*
      * Save information about the container and the embedded window
      * in a Container structure.  Currently, there must already be an existing
-     * Container structure, since we only allow the case where both container 
+     * Container structure, since we only allow the case where both container
      * and embedded app. are in the same process.
      */
 
@@ -276,9 +276,9 @@ TkpUseWindow(
             break;
         }
     }
-    
+
     /*
-     * Make the embedded window.  
+     * Make the embedded window.
      */
 
     macWin = (MacDrawable *) ckalloc(sizeof(MacDrawable));
@@ -286,15 +286,15 @@ TkpUseWindow(
         winPtr->privatePtr = NULL;
         return TCL_ERROR;
     }
-    
+
     macWin->winPtr = winPtr;
     winPtr->privatePtr = macWin;
 
     /*
      * The grafPtr will be NULL for a Tk in Tk embedded window.
      * It is none of our business what it is for a Tk not in Tk embedded window,
-     * but we will initialize it to NULL, and let the registerWinProc 
-     * set it.  In any case, you must always use TkMacOSXGetDrawablePort 
+     * but we will initialize it to NULL, and let the registerWinProc
+     * set it.  In any case, you must always use TkMacOSXGetDrawablePort
      * to get the portPtr.  It will correctly find the container's port.
      */
 
@@ -306,36 +306,36 @@ TkpUseWindow(
     macWin->flags = TK_CLIP_INVALID;
     macWin->toplevel = macWin;
     macWin->toplevel->referenceCount++;
-   
+
     winPtr->flags |= TK_EMBEDDED;
-    
-    
+
+
     /*
      * Make a copy of the TK_EMBEDDED flag, since sometimes
      * we need this to get the port after the TkWindow structure
      * has been freed.
      */
-     
+
     macWin->flags |= TK_EMBEDDED;
-    
+
     /*
      * Now check whether it is embedded in another Tk widget.  If not (the first
      * case below) we see if there is an in-process embedding handler registered,
      * and if so, let that fill in the rest of the macWin.
      */
-    
+
     if (containerPtr == NULL) {
         /*
-         * If someone has registered an in process embedding handler, then 
+         * If someone has registered an in process embedding handler, then
          * see if it can handle this window...
          */
-        
+
         if (gMacEmbedHandler == NULL ||
                 gMacEmbedHandler->registerWinProc(result, (Tk_Window) winPtr) != TCL_OK) {
             Tcl_AppendResult(interp, "The window ID ", string,
                     " does not correspond to a valid Tk Window.",
                      (char *) NULL);
-            return TCL_ERROR;        
+            return TCL_ERROR;
         } else {
             containerPtr = (Container *) ckalloc(sizeof(Container));
 
@@ -344,27 +344,27 @@ TkpUseWindow(
             containerPtr->embeddedPtr = macWin->winPtr;
             containerPtr->nextPtr = firstContainerPtr;
             firstContainerPtr = containerPtr;
-            
-        }    
+
+        }
     } else {
-        
-        /* 
+
+        /*
          * The window is embedded in another Tk window.
-         */ 
-        
+         */
+
         macWin->xOff = parent->winPtr->privatePtr->xOff +
                 parent->winPtr->changes.border_width +
                 winPtr->changes.x;
         macWin->yOff = parent->winPtr->privatePtr->yOff +
                 parent->winPtr->changes.border_width +
                 winPtr->changes.y;
-    
-    
+
+
         /*
-         * Finish filling up the container structure with the embedded window's 
+         * Finish filling up the container structure with the embedded window's
          * information.
          */
-     
+
         containerPtr->embedded = (Window) macWin;
         containerPtr->embeddedPtr = macWin->winPtr;
 
@@ -378,34 +378,34 @@ TkpUseWindow(
 
     }
 
-   /* 
+   /*
      * TODO: need general solution for visibility events.
      */
-     
+
 
     event.xany.serial = Tk_Display(winPtr)->request;
     event.xany.send_event = False;
     event.xany.display = Tk_Display(winPtr);
-        
+
     event.xvisibility.type = VisibilityNotify;
     event.xvisibility.window = (Window) macWin;;
     event.xvisibility.state = VisibilityUnobscured;
     Tk_QueueWindowEvent(&event, TCL_QUEUE_TAIL);
 
-    
-    /* 
+
+    /*
      * TODO: need general solution for visibility events.
      */
-     
+
     event.xany.serial = Tk_Display(winPtr)->request;
     event.xany.send_event = False;
     event.xany.display = Tk_Display(winPtr);
-        
+
     event.xvisibility.type = VisibilityNotify;
     event.xvisibility.window = (Window) macWin;;
     event.xvisibility.state = VisibilityUnobscured;
     Tk_QueueWindowEvent(&event, TCL_QUEUE_TAIL);
-     
+
     return TCL_OK;
 }
 
@@ -451,7 +451,7 @@ TkpMakeContainer(
     containerPtr->nextPtr = firstContainerPtr;
     firstContainerPtr = containerPtr;
     winPtr->flags |= TK_CONTAINER;
-    
+
     /*
      * Request SubstructureNotify events so that we can find out when
      * the embedded application creates its window or attempts to
@@ -469,7 +469,7 @@ TkpMakeContainer(
             (ClientData) containerPtr);
     Tk_CreateEventHandler(tkwin, FocusChangeMask, EmbedFocusProc,
             (ClientData) containerPtr);
-         
+
 }
 
 /*
@@ -538,7 +538,7 @@ TkMacOSXGetHostToplevel(
         /*
          * NOTE: Here we should handle out of process embedding.
          */
-        
+
         if (contWinPtr != NULL) {
             return TkMacOSXGetHostToplevel(contWinPtr);
         } else {
@@ -586,7 +586,7 @@ TkpClaimFocus(
             containerPtr = containerPtr->nextPtr) {
         /* Empty loop body. */
     }
-    
+
 
     event.xfocus.type = FocusIn;
     event.xfocus.serial = LastKnownRequestProcessed(topLevelPtr->display);
@@ -740,7 +740,7 @@ TkpGetOtherWindow(
     if (!(winPtr->flags & TK_BOTH_HALVES)) {
         return NULL;
     }
-    
+
     for (containerPtr = firstContainerPtr; containerPtr != NULL;
             containerPtr = containerPtr->nextPtr) {
         if (containerPtr->embeddedPtr == winPtr) {
@@ -942,7 +942,7 @@ EmbedStructureProc(clientData, eventPtr)
  *
  *        This procedure is invoked by the Tk event dispatcher when
  *        Activate and Deactivate events occur for a container window owned
- *        by this application.  It is responsible for forwarding an activate 
+ *        by this application.  It is responsible for forwarding an activate
  *      event down into the embedded toplevel.
  *
  * Results:
@@ -960,13 +960,13 @@ EmbedActivateProc(clientData, eventPtr)
     XEvent *eventPtr;                        /* ResizeRequest event. */
 {
     Container *containerPtr = (Container *) clientData;
-    
+
     if (containerPtr->embeddedPtr != NULL) {
         if (eventPtr->type == ActivateNotify) {
             TkGenerateActivateEvents(containerPtr->embeddedPtr,1);
         } else if (eventPtr->type == DeactivateNotify) {
             TkGenerateActivateEvents(containerPtr->embeddedPtr,0);
-        }        
+        }
     }
 }
 
@@ -1005,16 +1005,16 @@ EmbedFocusProc(clientData, eventPtr)
         event.xfocus.send_event = false;
         event.xfocus.display = display;
         event.xfocus.mode = NotifyNormal;
-        event.xfocus.window = containerPtr->embedded; 
-        
+        event.xfocus.window = containerPtr->embedded;
+
     if (eventPtr->type == FocusIn) {
         /*
          * The focus just arrived at the container.  Change the X focus
-         * to move it to the embedded application, if there is one. 
+         * to move it to the embedded application, if there is one.
          * Ignore X errors that occur during this operation (it's
          * possible that the new focus window isn't mapped).
          */
-    
+
             event.xfocus.detail = NotifyNonlinear;
             event.xfocus.type = FocusIn;
 
@@ -1022,13 +1022,13 @@ EmbedFocusProc(clientData, eventPtr)
         /* When the container gets a FocusOut event, it has to  tell the embedded app
          * that it has lost the focus.
          */
-         
+
             event.xfocus.type = FocusOut;
             event.xfocus.detail = NotifyNonlinear;
          }
-         
+
         Tk_QueueWindowEvent(&event, TCL_QUEUE_MARK);
-    } 
+    }
 }
 
 /*
@@ -1057,9 +1057,11 @@ EmbedFocusProc(clientData, eventPtr)
  */
 
 static void
-EmbedGeometryRequest(containerPtr, width, height)
-    Container *containerPtr;        /* Information about the embedding. */
-    int width, height;                /* Size that the child has requested. */
+EmbedGeometryRequest (
+    Container *containerPtr,        /* Information about the embedding. */
+    int width,
+    int height                /* Size that the child has requested. */
+)
 {
     TkWindow *winPtr = containerPtr->parentPtr;
 
@@ -1106,8 +1108,9 @@ EmbedGeometryRequest(containerPtr, width, height)
  */
 
 static void
-EmbedSendConfigure(containerPtr)
-    Container *containerPtr;        /* Information about the embedding. */
+EmbedSendConfigure (
+    Container *containerPtr        /* Information about the embedding. */
+)
 {
 }
 
@@ -1151,26 +1154,26 @@ EmbedWindowDeleted(winPtr)
              * We also have to destroy our parent, to clean up the container.
              * Fabricate an event to do this.
              */
-             
+
             if (containerPtr->parentPtr != NULL &&
                     containerPtr->parentPtr->flags & TK_BOTH_HALVES) {
                 XEvent event;
-                
-                event.xany.serial = 
+
+                event.xany.serial =
                     Tk_Display(containerPtr->parentPtr)->request;
                     event.xany.send_event = False;
                     event.xany.display = Tk_Display(containerPtr->parentPtr);
-        
+
                     event.xany.type = DestroyNotify;
                     event.xany.window = containerPtr->parent;
                     event.xdestroywindow.event = containerPtr->parent;
                     Tk_QueueWindowEvent(&event, TCL_QUEUE_HEAD);
 
             }
-            
+
             containerPtr->embedded = None;
             containerPtr->embeddedPtr = NULL;
-            
+
             break;
         }
         if (containerPtr->parentPtr == winPtr) {

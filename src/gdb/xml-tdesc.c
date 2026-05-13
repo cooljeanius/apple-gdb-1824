@@ -1,4 +1,4 @@
-/* XML target description support for GDB.
+/* xml-tdesc.c: XML target description support for GDB.
 
    Copyright (C) 2006, 2008, 2009 Free Software Foundation, Inc.
 
@@ -30,7 +30,11 @@
 
 #include "gdb_assert.h"
 
-#if !defined(HAVE_LIBEXPAT)
+#ifdef HAVE_LIBGEN_H
+# include <libgen.h>
+#endif /* HAVE_LIBGEN_H */
+
+#if !defined(HAVE_LIBEXPAT) || !HAVE_LIBEXPAT
 
 /* Parse DOCUMENT into a target description.  Or don't, since we don't have
    an XML parser.  */
@@ -428,30 +432,33 @@ tdesc_parse_xml (const char *document, xml_fetch_another fetcher,
 
 /* Read an XML target description from FILENAME.  Parse it, and return
    the parsed description.  */
-
 const struct target_desc *
-file_read_description_xml (const char *filename)
+file_read_description_xml(const char *filename)
 {
   struct target_desc *tdesc;
   char *tdesc_str;
   struct cleanup *back_to;
-  char *dirname;
+  char *mydirname;
 
-  tdesc_str = xml_fetch_content_from_file (filename, NULL);
+  tdesc_str = xml_fetch_content_from_file(filename, NULL);
   if (tdesc_str == NULL)
     {
-      warning (_("Could not open \"%s\""), filename);
+      warning(_("Could not open \"%s\""), filename);
       return NULL;
     }
 
-  back_to = make_cleanup (xfree, tdesc_str);
+  back_to = make_cleanup(xfree, tdesc_str);
 
-  dirname = ldirname (filename);
-  if (dirname != NULL)
-    make_cleanup (xfree, dirname);
+#ifdef HAVE_LDIRNAME
+  mydirname = ldirname(filename);
+#else
+  mydirname = dirname((char *)filename);
+#endif /* HAVE_LDIRNAME */
+  if (mydirname != NULL)
+    make_cleanup(xfree, mydirname);
 
-  tdesc = tdesc_parse_xml (tdesc_str, xml_fetch_content_from_file, dirname);
-  do_cleanups (back_to);
+  tdesc = tdesc_parse_xml(tdesc_str, xml_fetch_content_from_file, mydirname);
+  do_cleanups(back_to);
 
   return tdesc;
 }
@@ -466,13 +473,15 @@ file_read_description_xml (const char *filename)
 static char *
 fetch_available_features_from_target (const char *name, void *baton_)
 {
-  struct target_ops *ops = baton_;
+  struct target_ops *ops = (struct target_ops *)baton_;
 
+#ifdef TARGET_OBJECT_AVAILABLE_FEATURES
   /* Read this object as a string.  This ensures that a NUL
      terminator is added.  */
-  return target_read_stralloc (ops,
-			       TARGET_OBJECT_AVAILABLE_FEATURES,
-			       name);
+  return target_read_stralloc(ops, TARGET_OBJECT_AVAILABLE_FEATURES, name);
+#else
+  return (char *)ops->to_doc;
+#endif /* TARGET_OBJECT_AVAILABLE_FEATURES */
 }
 
 

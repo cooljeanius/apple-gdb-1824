@@ -1,5 +1,5 @@
 /* Convert multibyte character to 32-bit wide character.
-   Copyright (C) 2020-2023 Free Software Foundation, Inc.
+   Copyright (C) 2020-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
@@ -30,7 +30,7 @@
 # include "lc-charset-unicode.h"
 #endif
 
-#if GNULIB_defined_mbstate_t /* AIX, IRIX */
+#if GNULIB_defined_mbstate_t /* AIX */
 /* Implement mbrtoc32() on top of mbtowc() for the non-UTF-8 locales
    and directly for the UTF-8 locales.  */
 
@@ -41,7 +41,11 @@
      branch below.
    They are equivalent.  */
 
-# if defined _WIN32 && !defined __CYGWIN__
+# if AVOID_ANY_THREADS
+
+/* The option '--disable-threads' explicitly requests no locking.  */
+
+# elif defined _WIN32 && !defined __CYGWIN__
 
 #  define WIN32_LEAN_AND_MEAN  /* avoid including junk */
 #  include <windows.h>
@@ -83,7 +87,7 @@ mbrtoc32 (char32_t *pwc, const char *s, size_t n, mbstate_t *ps)
 # include <wchar.h>
 
 # include "localcharset.h"
-# include "streq.h"
+# include "streq-opt.h"
 
 # if MBRTOC32_IN_C_LOCALE_MAYBE_EILSEQ
 #  include "hard-locale.h"
@@ -113,7 +117,7 @@ mbrtoc32 (char32_t *pwc, const char *s, size_t n, mbstate_t *ps)
   if (ps == NULL)
     ps = &internal_state;
 
-# if HAVE_WORKING_MBRTOC32
+# if HAVE_WORKING_MBRTOC32 && HAVE_WORKING_C32RTOMB && !MBRTOC32_MULTIBYTE_LOCALE_BUG
   /* mbrtoc32() may produce different values for wc than mbrtowc().  Therefore
      use mbrtoc32().  */
 
@@ -161,7 +165,6 @@ mbrtoc32 (char32_t *pwc, const char *s, size_t n, mbstate_t *ps)
       char buf[4];
       const char *p;
       size_t m;
-      int res;
 
       switch (nstate)
         {
@@ -194,6 +197,7 @@ mbrtoc32 (char32_t *pwc, const char *s, size_t n, mbstate_t *ps)
 
       /* Here m > 0.  */
 
+      int res;
       {
 #  define FITS_IN_CHAR_TYPE(wc)  1
 #  include "mbrtowc-impl-utf8.h"
@@ -255,6 +259,14 @@ mbrtoc32 (char32_t *pwc, const char *s, size_t n, mbstate_t *ps)
   /* char32_t and wchar_t are equivalent.  Use mbrtowc().  */
   wchar_t wc;
   size_t ret = mbrtowc (&wc, s, n, ps);
+
+#  if GNULIB_MBRTOC32_REGULAR
+  /* Ensure that mbrtoc32 is regular.  */
+  if (ret < (size_t) -2 && ! mbsinit (ps))
+    /* This occurs on glibc 2.12.  */
+    mbszero (ps);
+#  endif
+
 #  if GL_CHAR32_T_IS_UNICODE && GL_CHAR32_T_VS_WCHAR_T_NEEDS_CONVERSION
   if (ret < (size_t) -2 && wc != 0)
     {

@@ -285,6 +285,17 @@ extern LONGEST target_write (struct target_ops *ops,
 			     const char *annex, const gdb_byte *buf,
 			     ULONGEST offset, LONGEST len);
 
+/* Read OBJECT/ANNEX using OPS.  The result is NUL-terminated and
+   returned as a string, allocated using xmalloc.  If an error occurs
+   or the transfer is unsupported, NULL is returned.  Empty objects
+   are returned as allocated but empty strings.  A warning is issued
+   if the result contains any embedded NUL bytes.  */
+
+extern char *target_read_stralloc (struct target_ops *ops,
+				   enum target_object object,
+				   const char *annex);
+/* TODO: copy over implementation into target.c */
+
 /* Wrappers to target read/write that perform memory transfers.  They
    throw an error if the memory transfer fails.
 
@@ -1425,6 +1436,9 @@ extern struct target_ops **target_structs;
 extern unsigned int target_struct_size;
 extern unsigned int target_struct_index;
 extern unsigned int target_struct_allocsize;
+
+/* */
+extern const struct target_desc *target_read_description(struct target_ops *);
 
 #endif /* !defined(TARGET_H) */
 

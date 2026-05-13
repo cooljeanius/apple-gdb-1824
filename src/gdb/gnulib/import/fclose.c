@@ -1,5 +1,5 @@
 /* fclose replacement.
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
+   Copyright (C) 2008-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
@@ -58,11 +58,9 @@ int
 rpl_fclose (FILE *fp)
 {
   int saved_errno = 0;
-  int fd;
-  int result = 0;
 
   /* Don't change behavior on memstreams.  */
-  fd = fileno (fp);
+  int fd = fileno (fp);
   if (fd < 0)
     return fclose_nothrow (fp);
 
@@ -72,6 +70,8 @@ rpl_fclose (FILE *fp)
   if ((!freading (fp) || lseek (fileno (fp), 0, SEEK_CUR) != -1)
       && fflush (fp))
     saved_errno = errno;
+
+  int result = 0;
 
   /* fclose() calls close(), but we need to also invoke all hooks that our
      overridden close() function invokes.  See lib/close.c.  */

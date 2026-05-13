@@ -4022,11 +4022,12 @@ Tcl_UpvarObjCmd(dummy, interp, objc, objv)
  */
 
 void
-DisposeTraceResult(flags, result)
-    int flags;			/* Indicates type of result to determine
+DisposeTraceResult (
+    int flags,			/* Indicates type of result to determine
 				 * proper disposal method */
-    char *result;		/* The result returned from a trace
+    char *result 		/* The result returned from a trace
 				 * procedure to be disposed */
+)
 {
     if (flags & TCL_TRACE_RESULT_DYNAMIC) {
 	ckfree(result);

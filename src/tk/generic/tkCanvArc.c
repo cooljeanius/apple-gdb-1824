@@ -1,4 +1,4 @@
-/* 
+/*
  * tkCanvArc.c --
  *
  *	This file implements arc items for canvas widgets.
@@ -400,7 +400,7 @@ ArcCoords(interp, canvas, itemPtr, objc, objv)
 		return TCL_ERROR;
 	    } else if (objc != 4) {
 		char buf[64 + TCL_INTEGER_SPACE];
-	
+
 		sprintf(buf, "wrong # coordinates: expected 4, got %d", objc);
 		Tcl_SetResult(interp, buf, TCL_VOLATILE);
 		return TCL_ERROR;
@@ -419,7 +419,7 @@ ArcCoords(interp, canvas, itemPtr, objc, objv)
 	ComputeArcBbox(canvas, arcPtr);
     } else {
 	char buf[64 + TCL_INTEGER_SPACE];
-	
+
 	sprintf(buf, "wrong # coordinates: expected 0 or 4, got %d", objc);
 	Tcl_SetResult(interp, buf, TCL_VOLATILE);
 	return TCL_ERROR;
@@ -1706,14 +1706,18 @@ ComputeArcOutline(canvas,arcPtr)
  */
 
 static int
-HorizLineToArc(x1, x2, y, rx, ry, start, extent)
-    double x1, x2;		/* X-coords of endpoints of line segment. 
+HorizLineToArc (
+    double x1,
+    double x2,  		/* X-coords of endpoints of line segment.
 				 * X1 must be <= x2. */
-    double y;			/* Y-coordinate of line segment. */
-    double rx, ry;		/* These x- and y-radii define an oval
+    double y,			/* Y-coordinate of line segment. */
+    double rx,
+    double ry,  		/* These x- and y-radii define an oval
 				 * centered at the origin. */
-    double start, extent;	/* Angles that define extent of arc, in
+    double start,
+    double extent       	/* Angles that define extent of arc, in
 				 * the standard fashion for this module. */
+)
 {
     double tmp;
     double tx, ty;		/* Coordinates of intersection point in
@@ -1770,14 +1774,18 @@ HorizLineToArc(x1, x2, y, rx, ry, start, extent)
  */
 
 static int
-VertLineToArc(x, y1, y2, rx, ry, start, extent)
-    double x;			/* X-coordinate of line segment. */
-    double y1, y2;		/* Y-coords of endpoints of line segment. 
+VertLineToArc (
+    double x,			/* X-coordinate of line segment. */
+    double y1,
+    double y2,  		/* Y-coords of endpoints of line segment.
 				 * Y1 must be <= y2. */
-    double rx, ry;		/* These x- and y-radii define an oval
+    double rx,
+    double ry,  		/* These x- and y-radii define an oval
 				 * centered at the origin. */
-    double start, extent;	/* Angles that define extent of arc, in
+    double start,
+    double extent       	/* Angles that define extent of arc, in
 				 * the standard fashion for this module. */
+)
 {
     double tmp;
     double tx, ty;		/* Coordinates of intersection point in
@@ -1834,11 +1842,13 @@ VertLineToArc(x, y1, y2, rx, ry, start, extent)
  */
 
 static int
-AngleInRange(x, y, start, extent)
-    double x, y;		/* Coordinate of point;  angle measured
+AngleInRange (
+    double x,
+    double y,   		/* Coordinate of point;  angle measured
 				 * from origin to here, relative to x-axis. */
-    double start;		/* First angle, degrees, >=0, <=360. */
-    double extent;		/* Size of arc in degrees >=-360, <=360. */
+    double start,		/* First angle, degrees, >=0, <=360. */
+    double extent		/* Size of arc in degrees >=-360, <=360. */
+)
 {
     double diff;
 

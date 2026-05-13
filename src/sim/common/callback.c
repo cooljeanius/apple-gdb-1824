@@ -24,27 +24,35 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning callback.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning callback.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 #include "ansidecl.h"
 #if defined(ANSI_PROTOTYPES) || defined(PROTOTYPES) || defined(__PROTOTYPES)
 # ifdef HAVE_STDARG_H
 #  include <stdarg.h>
 # else
-#  warning callback.c expects <stdarg.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "callback.c expects <stdarg.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_STDARG_H */
 #else
 # ifdef HAVE_VARARGS_H
 #  include <varargs.h>
 # else
-#  warning callback.c expects <varargs.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "callback.c expects <varargs.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_VARARGS_H */
 #endif /* ANSI_PROTOTYPES || PROTOTYPES || __PROTOTYPES */
 #include <stdio.h>
 #if defined(HAVE_STDLIB_H) || defined(__STDC__)
 # include <stdlib.h>
 #else
-# warning callback.c expects <stdlib.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "callback.c expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H || __STDC__ */
 #ifdef HAVE_STRING_H
 # include <string.h>
@@ -52,33 +60,45 @@
 # ifdef HAVE_STRINGS_H
 #  include <strings.h>
 # else
-#  warning callback.c expects a string-related header to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "callback.c expects a string-related header to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_STRINGS_H */
 #endif /* HAVE_STRING_H */
 #ifdef HAVE_ERRNO_H
 # include <errno.h>
 #else
-# warning callback.c expects <errno.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "callback.c expects <errno.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_ERRNO_H */
 #ifdef HAVE_FCNTL_H
 # include <fcntl.h>
 #else
-# warning callback.c expects <fcntl.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "callback.c expects <fcntl.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_FCNTL_H */
 #ifdef HAVE_TIME_H
 # include <time.h>
 #else
-# warning callback.c expects <time.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "callback.c expects <time.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_TIME_H */
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning callback.c expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "callback.c expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #else
-# warning callback.c expects <sys/stat.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "callback.c expects <sys/stat.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_STAT_H */
 #include "gdb/callback.h"
 #include "targ-vals.h"
@@ -86,10 +106,12 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning callback.c expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "callback.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
-/* ??? sim_cb_printf should be cb_printf, but until the callback support is
+/* ???: sim_cb_printf should be cb_printf, but until the callback support is
    broken out of the simulator directory, these are here to not require
    sim-utils.h.  */
 void sim_cb_printf PARAMS ((host_callback *, const char *, ...));
@@ -758,11 +780,12 @@ cb_target_to_host_open (cb, target_val)
    stat struct.  */
 
 static void
-store (p, size, val, big_p)
-     char *p;
-     int size;
-     long val; /* ??? must be as big as target word size */
-     int big_p;
+store (
+    char *p,
+    int size,
+    long val, /* ??? must be as big as target word size */
+    int big_p
+)
 {
   if (big_p)
     {

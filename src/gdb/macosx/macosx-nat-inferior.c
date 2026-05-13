@@ -22,7 +22,8 @@
    Boston, MA 02111-1307, USA.  */
 
 /* define this because of a libxml header out of our control: */
-#if !defined(NO_POISON) && defined(HAVE_LIBXML2)
+#if !defined(NO_POISON) && \
+    (defined(HAVE_LIBXML2) || (defined(LIBXML2_IS_USABLE) && LIBXML2_IS_USABLE))
 # define NO_POISON 1
 #endif /* !NO_POISON && HAVE_LIBXML2 */
 #include "defs.h"
@@ -124,7 +125,7 @@
 #include <mach/mach_vm.h>
 
 /* FIXME: redefines ATTRIBUTE_PRINTF on us: */
-#if defined(LIBXML2_IS_USABLE) && LIBXML2_IS_USABLE
+#if defined(LIBXML2_IS_USABLE) && LIBXML2_IS_USABLE && defined(HAVE_LIBXML2)
 /* try to prevent C++ headers from being dragged in via icu headers; our
  * our definition of min() and max() macros breaks them: */
 # ifdef U_HAVE_STD_STRING
@@ -136,7 +137,7 @@
 # endif /* __cplusplus && !__STD_STRING_H__ */
 # include <libxml/parser.h>
 # include <libxml/tree.h>
-#endif /* LIBXML2_IS_USABLE */
+#endif /* LIBXML2_IS_USABLE && HAVE_LIBXML2 */
 
 #ifndef EXC_SOFT_SIGNAL
 # define EXC_SOFT_SIGNAL 0
@@ -308,9 +309,9 @@ static int pid_present_on_pidlist(pid_t pid, struct pid_list *proclist);
 /*@unused@*/static const char *get_bundle_executable_from_plist(const char *pnm)
   ATTRIBUTE_USED;
 
-#if defined(LIBXML2_IS_USABLE) && LIBXML2_IS_USABLE
+#if defined(LIBXML2_IS_USABLE) && LIBXML2_IS_USABLE && defined(HAVE_LIBXML2)
 static const char *find_executable_name_in_xml_tree(xmlNode * a_node);
-#endif /* LIBXML2_IS_USABLE */
+#endif /* LIBXML2_IS_USABLE && HAVE_LIBXML2 */
 
 /* static */ void cpfork_info(const char *args, int from_tty);
 
@@ -3615,7 +3616,7 @@ fork_memcache_put(struct checkpoint *cp)
 static ATTRIBUTE_USED const char *
 get_bundle_executable_from_plist(const char *pathname)
 {
-#if !defined(LIBXML2_IS_USABLE) || !LIBXML2_IS_USABLE
+#if !defined(LIBXML2_IS_USABLE) || !LIBXML2_IS_USABLE || !defined(HAVE_LIBXML2)
   return NULL;
 #else
   xmlDoc *doc = NULL;
@@ -3650,7 +3651,7 @@ get_bundle_executable_from_plist(const char *pathname)
   xmlCleanupParser();
 
   return exe_name;
-#endif /* !LIBXML2_IS_USABLE */
+#endif /* !LIBXML2_IS_USABLE || !HAVE_LIBXML2 */
 }
 
 /* Step through a libxml2 XML tree to find a CFBundleExecutable
@@ -3658,7 +3659,7 @@ get_bundle_executable_from_plist(const char *pathname)
  * application bundle.  It would be nice if there were a higher
  * level way of doing this, but I do NOT want to add any
  * dependencies on Foundation-like things... */
-#if defined(LIBXML2_IS_USABLE) && LIBXML2_IS_USABLE
+#if defined(LIBXML2_IS_USABLE) && LIBXML2_IS_USABLE && defined(HAVE_LIBXML2)
 static const char *
 find_executable_name_in_xml_tree(xmlNode * a_node)
 {
@@ -3691,7 +3692,7 @@ find_executable_name_in_xml_tree(xmlNode * a_node)
     }
   return (NULL);
 }
-#endif /* LIBXML2_IS_USABLE */
+#endif /* LIBXML2_IS_USABLE && HAVE_LIBXML2 */
 
 #if defined(GDB_RC_VERSION) && (GDB_RC_VERSION < 1461)
 static struct cached_value *dlerror_function;

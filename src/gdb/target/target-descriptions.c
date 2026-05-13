@@ -92,35 +92,38 @@ typedef struct tdesc_type_field
 } tdesc_type_field;
 DEF_VEC_O(tdesc_type_field);
 
+/* Identify the kind of this type.  */
+typedef enum
+{
+  /* Predefined types.  */
+  TDESC_TYPE_INT8,
+  TDESC_TYPE_INT16,
+  TDESC_TYPE_INT32,
+  TDESC_TYPE_INT64,
+  TDESC_TYPE_INT128,
+  TDESC_TYPE_UINT8,
+  TDESC_TYPE_UINT16,
+  TDESC_TYPE_UINT32,
+  TDESC_TYPE_UINT64,
+  TDESC_TYPE_UINT128,
+  TDESC_TYPE_CODE_PTR,
+  TDESC_TYPE_DATA_PTR,
+  TDESC_TYPE_IEEE_SINGLE,
+  TDESC_TYPE_IEEE_DOUBLE,
+  TDESC_TYPE_ARM_FPA_EXT,
+
+  /* Types defined by a target feature.  */
+  TDESC_TYPE_VECTOR,
+  TDESC_TYPE_UNION
+} tdesc_kind_t;
+
 typedef struct tdesc_type
 {
   /* The name of this type.  */
-  char *name;
+  const char *name;
 
   /* Identify the kind of this type.  */
-  enum
-  {
-    /* Predefined types.  */
-    TDESC_TYPE_INT8,
-    TDESC_TYPE_INT16,
-    TDESC_TYPE_INT32,
-    TDESC_TYPE_INT64,
-    TDESC_TYPE_INT128,
-    TDESC_TYPE_UINT8,
-    TDESC_TYPE_UINT16,
-    TDESC_TYPE_UINT32,
-    TDESC_TYPE_UINT64,
-    TDESC_TYPE_UINT128,
-    TDESC_TYPE_CODE_PTR,
-    TDESC_TYPE_DATA_PTR,
-    TDESC_TYPE_IEEE_SINGLE,
-    TDESC_TYPE_IEEE_DOUBLE,
-    TDESC_TYPE_ARM_FPA_EXT,
-
-    /* Types defined by a target feature.  */
-    TDESC_TYPE_VECTOR,
-    TDESC_TYPE_UNION
-  } kind;
+  tdesc_kind_t kind;
 
   /* Kind-specific data.  */
   union
@@ -252,10 +255,12 @@ target_find_description (void)
   if (target_desc_fetched)
     return;
 
+#ifdef HAVE_GDBARCH_TARGET_DESC
   /* The current architecture should not have any target description
      specified.  It should have been cleared, e.g. when we
      disconnected from the previous target.  */
   gdb_assert (gdbarch_target_desc (target_gdbarch) == NULL);
+#endif /* HAVE_GDBARCH_TARGET_DESC */
 
   /* First try to fetch an XML description from the user-specified
      file.  */
@@ -280,15 +285,18 @@ target_find_description (void)
     {
       struct gdbarch_info info;
 
-      gdbarch_info_init (&info);
+      gdbarch_info_init(&info);
+#ifdef HAVE_STRUCT_GDBARCH_INFO_TARGET_DESC
       info.target_desc = current_target_desc;
+#endif /* HAVE_STRUCT_GDBARCH_INFO_TARGET_DESC */
       if (!gdbarch_update_p (info))
 	warning (_("Architecture rejected target-supplied description"));
       else
 	{
 	  struct tdesc_arch_data *data;
 
-	  data = gdbarch_data (target_gdbarch, tdesc_data);
+	  data = (struct tdesc_arch_data *)new_gdbarch_data(current_gdbarch,
+							    tdesc_data);
 	  if (tdesc_has_registers (current_target_desc)
 	      && data->arch_regs == NULL)
 	    warning (_("Target-supplied registers are not supported "
@@ -443,6 +451,11 @@ tdesc_feature_name (const struct tdesc_feature *feature)
   return feature->name;
 }
 
+#if defined(__GNUC__) && (__GNUC__ > 5)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif /* GCC > 5 */
+
 /* Predefined types.  */
 static struct tdesc_type tdesc_predefined_types[] =
 {
@@ -462,6 +475,10 @@ static struct tdesc_type tdesc_predefined_types[] =
   { "ieee_double", TDESC_TYPE_IEEE_DOUBLE },
   { "arm_fpa_ext", TDESC_TYPE_ARM_FPA_EXT }
 };
+
+#if defined(__GNUC__) && (__GNUC__ > 5)
+# pragma GCC diagnostic pop
+#endif /* GCC > 5 */
 
 /* Return the type associated with ID in the context of FEATURE, or
    NULL if none.  */
@@ -573,17 +590,27 @@ tdesc_gdb_type (struct gdbarch *gdbarch, struct tdesc_type *tdesc_type)
 	    /* If any of the children of this union are vectors, flag the
 	       union as a vector also.  This allows e.g. a union of two
 	       vector types to show up automatically in "info vector".  */
-	    if (TYPE_VECTOR (field_type))
-	      TYPE_VECTOR (type) = 1;
+	    if (TYPE_VECTOR(field_type))
+	      {
+#if defined(TYPE_VECTOR) && defined(ALLOW_WEIRD_LVALUES)
+	        TYPE_VECTOR(type) = 1;
+#else
+		gdb_assert(type != NULL);
+#endif /* TYPE_VECTOR && ALLOW_WEIRD_LVALUES */
+	      }
 	  }
 
 	return type;
       }
+
+    default:
+      break;
     }
 
-  internal_error (__FILE__, __LINE__,
-		  "Type \"%s\" has an unknown kind %d",
-		  tdesc_type->name, tdesc_type->kind);
+  internal_error(__FILE__, __LINE__,
+		 "Type \"%s\" has an unknown kind %d",
+		 tdesc_type->name, tdesc_type->kind);
+  return NULL; /*NOTREACHED*/
 }
 
 
@@ -592,11 +619,12 @@ tdesc_gdb_type (struct gdbarch *gdbarch, struct tdesc_type *tdesc_type)
 /* Construct the per-gdbarch data.  */
 
 static void *
-tdesc_data_init (struct obstack *obstack)
+tdesc_data_init(struct obstack *obstack)
 {
   struct tdesc_arch_data *data;
 
-  data = OBSTACK_ZALLOC (obstack, struct tdesc_arch_data);
+  data = (struct tdesc_arch_data *)OBSTACK_ZALLOC(obstack,
+  						  struct tdesc_arch_data);
   return data;
 }
 
@@ -604,9 +632,9 @@ tdesc_data_init (struct obstack *obstack)
    initialization.  */
 
 struct tdesc_arch_data *
-tdesc_data_alloc (void)
+tdesc_data_alloc(void)
 {
-  return XZALLOC (struct tdesc_arch_data);
+  return XZALLOC(struct tdesc_arch_data);
 }
 
 /* Free something allocated by tdesc_data_alloc, if it is not going
@@ -614,12 +642,12 @@ tdesc_data_alloc (void)
    architecture).  */
 
 void
-tdesc_data_cleanup (void *data_untyped)
+tdesc_data_cleanup(void *data_untyped)
 {
-  struct tdesc_arch_data *data = data_untyped;
+  struct tdesc_arch_data *data = (struct tdesc_arch_data *)data_untyped;
 
-  VEC_free (tdesc_arch_reg, data->arch_regs);
-  xfree (data);
+  VEC_free(tdesc_arch_reg, data->arch_regs);
+  xfree(data);
 }
 
 /* Search FEATURE for a register named NAME.  */
@@ -712,10 +740,9 @@ tdesc_register_size (const struct tdesc_feature *feature,
 static struct tdesc_arch_reg *
 tdesc_find_arch_register (struct gdbarch *gdbarch, int regno)
 {
-  struct tdesc_arch_reg *reg;
   struct tdesc_arch_data *data;
 
-  data = gdbarch_data (gdbarch, tdesc_data);
+  data = (struct tdesc_arch_data *)new_gdbarch_data(gdbarch, tdesc_data);
   if (regno < VEC_length (tdesc_arch_reg, data->arch_regs))
     return VEC_index (tdesc_arch_reg, data->arch_regs, regno);
   else
@@ -732,8 +759,8 @@ tdesc_find_register (struct gdbarch *gdbarch, int regno)
 /* Return the name of register REGNO, from the target description or
    from an architecture-provided pseudo_register_name method.  */
 
-const char *
-tdesc_register_name (struct gdbarch *gdbarch, int regno)
+static const char *
+tdesc_register_name_1(struct gdbarch *gdbarch, int regno)
 {
   struct tdesc_reg *reg = tdesc_find_register (gdbarch, regno);
   int num_regs = gdbarch_num_regs (gdbarch);
@@ -744,12 +771,23 @@ tdesc_register_name (struct gdbarch *gdbarch, int regno)
 
   if (regno >= num_regs && regno < num_regs + num_pseudo_regs)
     {
-      struct tdesc_arch_data *data = gdbarch_data (gdbarch, tdesc_data);
-      gdb_assert (data->pseudo_register_name != NULL);
-      return data->pseudo_register_name (gdbarch, regno);
+      struct tdesc_arch_data *data;
+      data = (struct tdesc_arch_data *)new_gdbarch_data(gdbarch, tdesc_data);
+      gdb_assert(data->pseudo_register_name != NULL);
+#ifdef P_R_N_TAKES_TWO_ARGS
+      return data->pseudo_register_name(gdbarch, regno);
+#else
+      return data->pseudo_register_name(regno);
+#endif /* P_R_N_TAKES_TWO_ARGS */
     }
 
   return "";
+}
+
+const char *
+tdesc_register_name(int regno)
+{
+  return tdesc_register_name_1(current_gdbarch, regno);
 }
 
 struct type *
@@ -762,7 +800,8 @@ tdesc_register_type (struct gdbarch *gdbarch, int regno)
 
   if (reg == NULL && regno >= num_regs && regno < num_regs + num_pseudo_regs)
     {
-      struct tdesc_arch_data *data = gdbarch_data (gdbarch, tdesc_data);
+      struct tdesc_arch_data *data;
+      data = (struct tdesc_arch_data *)new_gdbarch_data(gdbarch, tdesc_data);
       gdb_assert (data->pseudo_register_type != NULL);
       return data->pseudo_register_type (gdbarch, regno);
     }
@@ -825,6 +864,7 @@ tdesc_register_type (struct gdbarch *gdbarch, int regno)
   return arch_reg->type;
 }
 
+#ifdef HAVE_SET_GDBARCH_REMOTE_REGISTER_NUMBER
 static int
 tdesc_remote_register_number (struct gdbarch *gdbarch, int regno)
 {
@@ -835,6 +875,7 @@ tdesc_remote_register_number (struct gdbarch *gdbarch, int regno)
   else
     return -1;
 }
+#endif /* HAVE_SET_GDBARCH_REMOTE_REGISTER_NUMBER */
 
 /* Check whether REGNUM is a member of REGGROUP.  Registers from the
    target description may be classified as general, float, or vector.
@@ -899,7 +940,8 @@ tdesc_register_reggroup_p (struct gdbarch *gdbarch, int regno,
 
   if (regno >= num_regs && regno < num_regs + num_pseudo_regs)
     {
-      struct tdesc_arch_data *data = gdbarch_data (gdbarch, tdesc_data);
+      struct tdesc_arch_data *data;
+      data = (struct tdesc_arch_data *)new_gdbarch_data(gdbarch, tdesc_data);
       if (data->pseudo_register_reggroup_p != NULL)
 	return data->pseudo_register_reggroup_p (gdbarch, regno, reggroup);
       /* Otherwise fall through to the default reggroup_p.  */
@@ -919,7 +961,8 @@ void
 set_tdesc_pseudo_register_name (struct gdbarch *gdbarch,
 				gdbarch_register_name_ftype *pseudo_name)
 {
-  struct tdesc_arch_data *data = gdbarch_data (gdbarch, tdesc_data);
+  struct tdesc_arch_data *data;
+  data = (struct tdesc_arch_data *)new_gdbarch_data(gdbarch, tdesc_data);
 
   data->pseudo_register_name = pseudo_name;
 }
@@ -928,7 +971,8 @@ void
 set_tdesc_pseudo_register_type (struct gdbarch *gdbarch,
 				gdbarch_register_type_ftype *pseudo_type)
 {
-  struct tdesc_arch_data *data = gdbarch_data (gdbarch, tdesc_data);
+  struct tdesc_arch_data *data;
+  data = (struct tdesc_arch_data *)new_gdbarch_data(gdbarch, tdesc_data);
 
   data->pseudo_register_type = pseudo_type;
 }
@@ -938,7 +982,8 @@ set_tdesc_pseudo_register_reggroup_p
   (struct gdbarch *gdbarch,
    gdbarch_register_reggroup_p_ftype *pseudo_reggroup_p)
 {
-  struct tdesc_arch_data *data = gdbarch_data (gdbarch, tdesc_data);
+  struct tdesc_arch_data *data;
+  data = (struct tdesc_arch_data *)new_gdbarch_data(gdbarch, tdesc_data);
 
   data->pseudo_register_reggroup_p = pseudo_reggroup_p;
 }
@@ -951,7 +996,7 @@ tdesc_use_registers (struct gdbarch *gdbarch,
 		     struct tdesc_arch_data *early_data)
 {
   int num_regs = gdbarch_num_regs (gdbarch);
-  int i, ixf, ixr;
+  int ixf, ixr;
   struct tdesc_feature *feature;
   struct tdesc_reg *reg;
   struct tdesc_arch_data *data;
@@ -964,7 +1009,7 @@ tdesc_use_registers (struct gdbarch *gdbarch,
      included.  */
   gdb_assert (tdesc_has_registers (target_desc));
 
-  data = gdbarch_data (gdbarch, tdesc_data);
+  data = (struct tdesc_arch_data *)new_gdbarch_data(gdbarch, tdesc_data);
   data->arch_regs = early_data->arch_regs;
   xfree (early_data);
 
@@ -1019,8 +1064,10 @@ tdesc_use_registers (struct gdbarch *gdbarch,
   set_gdbarch_num_regs (gdbarch, num_regs);
   set_gdbarch_register_name (gdbarch, tdesc_register_name);
   set_gdbarch_register_type (gdbarch, tdesc_register_type);
+#ifdef HAVE_SET_GDBARCH_REMOTE_REGISTER_NUMBER
   set_gdbarch_remote_register_number (gdbarch,
 				      tdesc_remote_register_number);
+#endif /* HAVE_SET_GDBARCH_REMOTE_REGISTER_NUMBER */
   set_gdbarch_register_reggroup_p (gdbarch, tdesc_register_reggroup_p);
 }
 
@@ -1081,8 +1128,8 @@ tdesc_free_type (struct tdesc_type *type)
       break;
     }
 
-  xfree (type->name);
-  xfree (type);
+  xfree((void *)type->name);
+  xfree(type);
 }
 
 struct tdesc_type *
@@ -1163,9 +1210,9 @@ allocate_target_description (void)
 }
 
 static void
-free_target_description (void *arg)
+free_target_description(void *arg)
 {
-  struct target_desc *target_desc = arg;
+  struct target_desc *target_desc = (struct target_desc *)arg;
   struct tdesc_feature *feature;
   struct property *prop;
   int ix;
@@ -1260,35 +1307,37 @@ static struct cmd_list_element *tdesc_unset_cmdlist;
 /* Helper functions for the CLI commands.  */
 
 static void
-set_tdesc_cmd (char *args, int from_tty)
+set_tdesc_cmd(const char *args, int from_tty)
 {
-  help_list (tdesc_set_cmdlist, "set tdesc ", -1, gdb_stdout);
+  help_list(tdesc_set_cmdlist, "set tdesc ", (enum command_class)-1,
+	    gdb_stdout);
 }
 
 static void
-show_tdesc_cmd (char *args, int from_tty)
+show_tdesc_cmd(const char *args, int from_tty)
 {
-  cmd_show_list (tdesc_show_cmdlist, from_tty, "");
+  cmd_show_list(tdesc_show_cmdlist, from_tty, "");
 }
 
 static void
-unset_tdesc_cmd (char *args, int from_tty)
+unset_tdesc_cmd(const char *args, int from_tty)
 {
-  help_list (tdesc_unset_cmdlist, "unset tdesc ", -1, gdb_stdout);
+  help_list(tdesc_unset_cmdlist, "unset tdesc ", (enum command_class)-1,
+	    gdb_stdout);
 }
 
 static void
-set_tdesc_filename_cmd (char *args, int from_tty,
-			struct cmd_list_element *c)
+set_tdesc_filename_cmd(const char *args, int from_tty,
+		       struct cmd_list_element *c)
 {
-  target_clear_description ();
-  target_find_description ();
+  target_clear_description();
+  target_find_description();
 }
 
 static void
-show_tdesc_filename_cmd (struct ui_file *file, int from_tty,
-			 struct cmd_list_element *c,
-			 const char *value)
+show_tdesc_filename_cmd(struct ui_file *file, int from_tty,
+			struct cmd_list_element *c,
+			const char *value)
 {
   if (value != NULL && *value != '\0')
     printf_filtered (_("\
@@ -1300,7 +1349,7 @@ The target description will be read from the target.\n"));
 }
 
 static void
-unset_tdesc_filename_cmd (char *args, int from_tty)
+unset_tdesc_filename_cmd(const char *args, int from_tty)
 {
   xfree (target_description_filename);
   target_description_filename = NULL;
@@ -1309,7 +1358,7 @@ unset_tdesc_filename_cmd (char *args, int from_tty)
 }
 
 static void
-maint_print_c_tdesc_cmd (char *args, int from_tty)
+maint_print_c_tdesc_cmd(const char *args, int from_tty)
 {
   const struct target_desc *tdesc;
   const struct bfd_arch_info *compatible;
@@ -1334,7 +1383,7 @@ maint_print_c_tdesc_cmd (char *args, int from_tty)
     error (_("The current target description did not come from an XML file."));
 
   filename = lbasename (target_description_filename);
-  function = alloca (strlen (filename) + 1);
+  function = (char *)alloca(strlen(filename) + 1UL);
   for (inp = filename, outp = function; *inp != '\0'; inp++)
     if (*inp == '.')
       break;
@@ -1490,3 +1539,5 @@ GDB will read the description from the target."),
 Print the current target description as a C source file."),
 	   &maintenanceprintlist);
 }
+
+/* EOF */

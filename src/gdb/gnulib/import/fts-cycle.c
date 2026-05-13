@@ -1,20 +1,20 @@
 /* Detect cycles in file tree walks.
 
-   Copyright (C) 2003-2006, 2009-2023 Free Software Foundation, Inc.
+   Copyright (C) 2003-2006, 2009-2026 Free Software Foundation, Inc.
 
    Written by Jim Meyering.
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+   This file is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as
+   published by the Free Software Foundation; either version 2.1 of the
+   License, or (at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
+   This file is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+   GNU Lesser General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
+   You should have received a copy of the GNU Lesser General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #include "cycle-check.h"
@@ -75,13 +75,11 @@ enter_dir (FTS *fts, FTSENT *ent)
 {
   if (fts->fts_options & (FTS_TIGHT_CYCLE_CHECK | FTS_LOGICAL))
     {
-      struct stat const *st = ent->fts_statp;
       struct Active_dir *ad = malloc (sizeof *ad);
-      struct Active_dir *ad_from_table;
-
       if (!ad)
         return false;
 
+      struct stat const *st = ent->fts_statp;
       ad->dev = st->st_dev;
       ad->ino = st->st_ino;
       ad->fts_ent = ent;
@@ -89,7 +87,7 @@ enter_dir (FTS *fts, FTSENT *ent)
       /* See if we've already encountered this directory.
          This can happen when following symlinks as well as
          with a corrupted directory hierarchy. */
-      ad_from_table = hash_insert (fts->fts_cycle.ht, ad);
+      struct Active_dir *ad_from_table = hash_insert (fts->fts_cycle.ht, ad);
 
       if (ad_from_table != ad)
         {
@@ -128,10 +126,9 @@ leave_dir (FTS *fts, FTSENT *ent)
   if (fts->fts_options & (FTS_TIGHT_CYCLE_CHECK | FTS_LOGICAL))
     {
       struct Active_dir obj;
-      void *found;
       obj.dev = st->st_dev;
       obj.ino = st->st_ino;
-      found = hash_remove (fts->fts_cycle.ht, &obj);
+      void *found = hash_remove (fts->fts_cycle.ht, &obj);
       if (!found)
         abort ();
       free (found);

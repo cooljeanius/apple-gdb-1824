@@ -83,7 +83,7 @@ static struct tm *ThreadSafeLocalTime _ANSI_ARGS_(( CONST time_t* ));
  */
 
 unsigned long
-TclpGetSeconds()
+TclpGetSeconds (void)
 {
     return (unsigned long)time((time_t *)NULL);
 }
@@ -108,7 +108,7 @@ TclpGetSeconds()
  */
 
 unsigned long
-TclpGetClicks()
+TclpGetClicks (void)
 {
     unsigned long now;
 #ifdef NO_GETTOD
@@ -148,8 +148,7 @@ TclpGetClicks()
  */
 
 int
-TclpGetTimeZone (currentTime)
-    unsigned long  currentTime;
+TclpGetTimeZone (unsigned long currentTime)
 {
     /*
      * Determine how a timezone is obtained from "struct tm". If there is no
@@ -454,3 +453,5 @@ ThreadSafeLocalTime(timePtr)
 #endif
     return tmPtr;
 }
+
+/* EOF */

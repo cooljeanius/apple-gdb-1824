@@ -1929,11 +1929,21 @@ extern struct cleanup *start_timer(int *timer_var, const char *timer_name,
 #  undef realloc
 # endif /* realloc */
 /* gdbint.texinfo says to avoid these ones: */
-# pragma GCC poison malloc realloc calloc strdup sprintf
+# pragma GCC poison calloc strdup sprintf
 /* poisoning this can break too many headers: */
 # ifdef POISON_FREE_TOO
 #  pragma GCC poison free
 # endif /* POISON_FREE_TOO */
+/* poisoning these can break libxml2 specifically: */
+# if !defined(xmlMemMalloc) && !defined(xmlMallocLoc)
+#   pragma GCC poison malloc
+# endif /* !xmlMemMalloc && !xmlMallocLoc */
+# if !defined(xmlMemRealloc) && !defined(xmlReallocLoc)
+#  pragma GCC poison realloc
+# endif /* !xmlMemRealloc && !xmlReallocLoc */
+# if !defined(xmlMemoryStrdup) && !defined(xmlMemStrdupLoc)
+#  pragma GCC poison strdup
+# endif /* !xmlMemoryStrdup && !xmlMemStrdupLoc */
 /* for similar reasons, such as libiberty also providing replacements: */
 # pragma GCC poison strndup memdup vsprintf vasprintf
 # ifndef strerror

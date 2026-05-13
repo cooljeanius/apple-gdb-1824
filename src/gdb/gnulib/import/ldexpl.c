@@ -1,13 +1,9 @@
-/* Emulation for ldexpl.
-   Contributed by Paolo Bonzini
-
-   Copyright 2002-2003, 2007-2023 Free Software Foundation, Inc.
-
-   This file is part of gnulib.
+/* Multiply a 'float' by a power of 2.
+   Copyright 2002-2003, 2007-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation, either version 3 of the
+   published by the Free Software Foundation; either version 2.1 of the
    License, or (at your option) any later version.
 
    This file is distributed in the hope that it will be useful,
@@ -18,10 +14,17 @@
    You should have received a copy of the GNU Lesser General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
+/* Written by Paolo Bonzini and Bruno Haible.  */
+
 #include <config.h>
 
 /* Specification.  */
 #include <math.h>
+
+/* Avoid some warnings from "gcc -Wshadow".
+   This file doesn't use the exp() function.  */
+#undef exp
+#define exp exponent
 
 #if HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
 
@@ -33,47 +36,8 @@ ldexpl (long double x, int exp)
 
 #else
 
-# include <float.h>
-# include "fpucw.h"
-
-long double
-ldexpl (long double x, int exp)
-{
-  long double factor;
-  int bit;
-  DECL_LONG_DOUBLE_ROUNDING
-
-  BEGIN_LONG_DOUBLE_ROUNDING ();
-
-  /* Check for zero, nan and infinity. */
-  if (!(isnanl (x) || x + x == x))
-    {
-      if (exp < 0)
-        {
-          exp = -exp;
-          factor = 0.5L;
-        }
-      else
-        factor = 2.0L;
-
-      if (exp > 0)
-        for (bit = 1;;)
-          {
-            /* Invariant: Here bit = 2^i, factor = 2^-2^i or = 2^2^i,
-               and bit <= exp.  */
-            if (exp & bit)
-              x *= factor;
-            bit <<= 1;
-            if (bit > exp)
-              break;
-            factor = factor * factor;
-          }
-    }
-
-  END_LONG_DOUBLE_ROUNDING ();
-
-  return x;
-}
+# define USE_LONG_DOUBLE
+# include "ldexp.c"
 
 #endif
 
@@ -82,8 +46,7 @@ int
 main (void)
 {
   long double x;
-  int y;
-  for (y = 0; y < 29; y++)
+  for (int y = 0; y < 29; y++)
     printf ("%5d %.16Lg %.16Lg\n", y, ldexpl (0.8L, y), ldexpl (0.8L, -y) * ldexpl (0.8L, y));
 }
 #endif

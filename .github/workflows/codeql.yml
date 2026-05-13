@@ -54,7 +54,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ['c-cpp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby']
+        language: ['actions', 'c-cpp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby']
         # CodeQL supports the following languages:
         # 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript',
         # 'python', 'ruby', 'swift'
@@ -116,7 +116,10 @@ jobs:
     - name: Dependencies
       run: |
         sudo apt-get -qq update
-        if test ${{ matrix.language }} == 'c-cpp'; then \
+        if test ${{ matrix.language }} == 'actions'; then \
+          sync && echo "TODO: find way to install actionlint and/or zizmor on runner"; \
+          sync && sleep 1; \
+        elif test ${{ matrix.language }} == 'c-cpp'; then \
           sudo apt-get -y install autopoint gobjc clang autogen curl \
             guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev \
             guile-3.0-libs libguile-ssh14 libiconv-hook1 libiconv-hook-dev \
@@ -302,6 +305,14 @@ jobs:
             sync && stat "$(which autopep8)" && autopep8 --version && sleep 1; \
           else \
             sync && echo "autopep8 missing or unusable; skipping..."; \
+          fi; \
+        elif test ${{ matrix.language }} == 'actions'; then \
+          if test -x "$(which actionlint)"; then \
+            actionlint; \
+          elif test -x "$(which zizmor)"; then \
+            zizmor .github; \
+          else \
+            sync && echo "TODO: please install actionlint and/or zizmor!"; \
           fi; \
         else \
           sync && echo "unhandled case for syntax check step!"; \

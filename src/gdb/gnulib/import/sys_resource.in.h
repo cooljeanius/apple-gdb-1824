@@ -1,5 +1,5 @@
 /* Substitute for <sys/resource.h>.
-   Copyright (C) 2012-2023 Free Software Foundation, Inc.
+   Copyright (C) 2012-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
@@ -110,13 +110,12 @@ struct rusage
 
 #if @GNULIB_GETRUSAGE@
 # if !@HAVE_GETRUSAGE@
-_GL_FUNCDECL_SYS (getrusage, int, (int who, struct rusage *usage_p)
+_GL_FUNCDECL_SYS (getrusage, int, (int who, struct rusage *usage_p),
                                   _GL_ARG_NONNULL ((2)));
 # endif
 _GL_CXXALIAS_SYS (getrusage, int, (int who, struct rusage *usage_p));
 _GL_CXXALIASWARN (getrusage);
 #elif defined GNULIB_POSIXCHECK
-# undef getrusage
 # if HAVE_RAW_DECL_GETRUSAGE
 _GL_WARN_ON_USE (getrusage, "getrusage is unportable - "
                  "use gnulib module getrusage for portability");

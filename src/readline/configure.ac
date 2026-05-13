@@ -70,7 +70,16 @@ AC_USE_SYSTEM_EXTENSIONS
 if test -n "${HOST_ARCHITECTURE}"; then
   ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],[C_ARCHFLAGS])
   test -n "${C_ARCHFLAGS}" && export C_ARCHFLAGS
-  AC_SUBST([C_ARCHFLAGS])
+  AC_SUBST([C_ARCHFLAGS])dnl
+  ## TODO: find a way to test what archflags ${SHOBJ_LD} accepts;
+  ## it chokes on aarch64, for instance:
+  if test "x${C_ARCHFLAGS}" = "xaarch64"; then
+    export CCLD_ARCHFLAGS=""
+  else
+    export CCLD_ARCHFLAGS="${C_ARCHFLAGS}"
+  fi
+  AC_SUBST([CCLD_ARCHFLAGS])dnl
+  ## dummy comment
 fi
 
 AC_PROG_MAKE_SET
@@ -80,7 +89,7 @@ if test "x${CC}" = "x"; then
 else
   test -n "${CC}" && export CC
   AC_SUBST([CC])dnl
-  ## dummy
+  ## dummy comment
 fi
 XORG_PROG_RAWCPP
 XORG_LD_WRAP
@@ -435,7 +444,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.6 dejagnu foreign std-options subdir-objects -Wno-obsolete])
+AM_INIT_AUTOMAKE([1.18.1 dejagnu foreign std-options subdir-objects -Wno-obsolete])
 AM_MAINTAINER_MODE
 m4_ifdef([AC_REQUIRE_AUX_FILE],[
   AC_REQUIRE_AUX_FILE([compile])dnl
@@ -515,8 +524,8 @@ AC_MSG_CHECKING([libtool-related things])
 AC_MSG_RESULT([ ])
 LT_INIT([static disable-shared])dnl
 LT_LANG([C])dnl
-dnl# temporarily set this while I update everything libtool-related:
-LT_PREREQ([2.4.7])dnl
+dnl# https://lists.gnu.org/archive/html/libtool/2026-01/msg00001.html
+LT_PREREQ([2.5.4])dnl
 
 # Some final things:
 AC_MSG_NOTICE([finishing up...])

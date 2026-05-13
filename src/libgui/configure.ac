@@ -6,7 +6,7 @@ AC_INIT([libgui],[0.0],[/dev/null])
 AC_CONFIG_SRCDIR([src/subcommand.h])
 AC_CONFIG_AUX_DIR([..])
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.11.6 gnits no-dependencies no-dist dejagnu])
+AM_INIT_AUTOMAKE([1.18.1 gnits no-dependencies no-dist dejagnu])
 AC_CONFIG_HEADERS([config.h])
 AM_MAINTAINER_MODE
 
@@ -16,11 +16,15 @@ if test -e `pwd`/config.cache; then
   echo "hacking `pwd`/config.cache"
   sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" `pwd`/config.cache
   sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_set|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS_value|g" `pwd`/config.cache
   sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
 elif test -e ./config.cache; then
   echo "hacking ./config.cache"
   sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" ./config.cache
   sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_set|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS_value|g" ./config.cache
   sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
 else
   echo "config.cache is missing, which means we can skip attempts to hack it"
@@ -40,7 +44,7 @@ AC_CHECK_PROG([ITCL_SH],[itcl_sh],[itcl_sh],
 	[\$\$here/\$(top_builddir)/../itcl/itcl/unix/itcl_sh\$(EXEEXT)])
 
 # Checks for libraries.
-AC_PATH_X
+AC_PATH_XTRA
 
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
@@ -49,7 +53,7 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
 AC_REQUIRE_HEADER_STDC
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([ctype.h getopt.h fcntl.h sys/file.h])
+AC_CHECK_HEADERS([ctype.h getopt.h fcntl.h sys/file.h X11/Xlib.h])
 
 if test "x${ac_cv_header_inttypes_h}" = "x"; then
   test -z "${ac_cv_header_inttypes_h}" || unset ac_cv_header_inttypes_h

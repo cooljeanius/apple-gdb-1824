@@ -1,8 +1,10 @@
-# ldd.m4 serial 1
-dnl Copyright (C) 2006, 2009-2023 Free Software Foundation, Inc.
+# ldd.m4
+# serial 3
+dnl Copyright (C) 2006, 2009-2026 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
+dnl This file is offered as-is, without any warranty.
 
 # Sets LDDPROG to a command and LDDPOSTPROC to a filter command, such that
 #   $LDDPROG program $LDDPOSTPROC
@@ -152,36 +154,12 @@ changequote(,)dnl
           dnl
           LDDPOSTPROC="2>/dev/null | sed -e '1,/shared library list:/d' -e '/shared library binding:/,\$d' | sed -e 's,^.*[ 	]\\([^ 	][^ 	]*\\)\$,\\1,' | sed -e 's,^.*/,,'"
           ;;
-        irix*)
-          LDDPROG="elfdump -Dl"
-          dnl The output of "elfdump -Dl program" looks like this:
-          dnl
-          dnl program:
-          dnl
-          dnl                    **** MIPS LIBLIST INFORMATION ****
-          dnl .liblist :
-          dnl [INDEX] Timestamp               Checksum        Flags   Name            Version
-          dnl [1]     Oct  2 05:19:12 1999    0x867bf7a8      -----   libc.so.1       sgi1.0
-          dnl
-          LDDPOSTPROC="2>/dev/null | sed -n -e 's,^[[][0-9]*[]].*	0x[^	]*	[^	][^	]*	\\([^	][^	]*\\).*\$,\\1,p' | sed -e 's,^.*/,,'"
-          ;;
         linux* | gnu* | kfreebsd*-gnu | knetbsd*-gnu) # glibc-based systems
           LDDPROG="ldd"
           dnl The output of "ldd program" looks like this:
           dnl         libc.so.6 => /lib/libc.so.6 (0x4002d000)
           dnl         /lib/ld-linux.so.2 (0x40000000)
           LDDPOSTPROC="2>/dev/null | sed -n -e 's,^	\\([^ 	][^ 	]*\\).*\$,\\1,p' | sed -e 's,^.*/,,'"
-          ;;
-        osf*)
-          LDDPROG="odump -Dl"
-          dnl The output of "odump -Dl program" looks like this:
-          dnl
-          dnl                         ***LIBRARY LIST SECTION***
-          dnl         Name             Time-Stamp        CheckSum   Flags Version
-          dnl program:
-          dnl         libc.so      Dec 30 00:09:30 1997 0x5e955f9b     0 osf.1
-          dnl
-          LDDPOSTPROC="2>/dev/null | sed -n -e 's,^	\\([^ 	][^ 	]*\\).*,\\1,p' | sed -e '/^Name\$/d' | sed -e 's,^.*/,,'"
           ;;
         solaris*)
           LDDPROG="ldd"

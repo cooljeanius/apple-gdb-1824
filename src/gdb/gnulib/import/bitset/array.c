@@ -1,6 +1,6 @@
 /* Array bitsets.
 
-   Copyright (C) 2002-2003, 2006, 2009-2015, 2018-2023 Free Software
+   Copyright (C) 2002-2003, 2006, 2009-2015, 2018-2026 Free Software
    Foundation, Inc.
 
    Contributed by Michael Hayes (m.hayes@elec.canterbury.ac.nz).
@@ -84,7 +84,7 @@ abitset_small_list (bitset src, bitset_bindex *list,
 
 /* Set bit BITNO in bitset DST.  */
 static void
-abitset_set (MAYBE_UNUSED bitset dst, MAYBE_UNUSED bitset_bindex bitno)
+abitset_set (bitset UNNAMED (dst), bitset_bindex UNNAMED (bitno))
 {
   /* This should never occur for abitsets since we should always hit
      the cache.  It is likely someone is trying to access outside the
@@ -95,8 +95,7 @@ abitset_set (MAYBE_UNUSED bitset dst, MAYBE_UNUSED bitset_bindex bitno)
 
 /* Reset bit BITNO in bitset DST.  */
 static void
-abitset_reset (MAYBE_UNUSED bitset dst,
-               MAYBE_UNUSED bitset_bindex bitno)
+abitset_reset (bitset UNNAMED (dst), bitset_bindex UNNAMED (bitno))
 {
   /* This should never occur for abitsets since we should always hit
      the cache.  It is likely someone is trying to access outside the
@@ -106,8 +105,7 @@ abitset_reset (MAYBE_UNUSED bitset dst,
 
 /* Test bit BITNO in bitset SRC.  */
 static bool
-abitset_test (MAYBE_UNUSED bitset src,
-              MAYBE_UNUSED bitset_bindex bitno)
+abitset_test (bitset UNNAMED (src), bitset_bindex UNNAMED (bitno))
 {
   /* This should never occur for abitsets since we should always
      hit the cache.  */
@@ -226,23 +224,23 @@ abitset_list (bitset src, bitset_bindex *list,
   for (; windex < size; windex++, bitoff += BITSET_WORD_BITS)
     {
       bitset_word word = srcp[windex];
-      if (!word)
-        continue;
-
-      /* Is there enough room to avoid checking in each iteration? */
-      if ((count + BITSET_WORD_BITS) < num)
-        BITSET_FOR_EACH_BIT (pos, word)
-          list[count++] = bitoff + pos;
-      else
-        BITSET_FOR_EACH_BIT (pos, word)
-          {
-            list[count++] = bitoff + pos;
-            if (count >= num)
+      if (word)
+        {
+          /* Is there enough room to avoid checking in each iteration? */
+          if ((count + BITSET_WORD_BITS) < num)
+            BITSET_FOR_EACH_BIT (pos, word)
+              list[count++] = bitoff + pos;
+          else
+            BITSET_FOR_EACH_BIT (pos, word)
               {
-                *next = bitoff + pos + 1;
-                return count;
+                list[count++] = bitoff + pos;
+                if (count >= num)
+                  {
+                    *next = bitoff + pos + 1;
+                    return count;
+                  }
               }
-          }
+        }
     }
 
   *next = bitoff;
@@ -625,7 +623,7 @@ abitset_copy (bitset dst, bitset src)
 
 
 /* Vector of operations for single word bitsets.  */
-struct bitset_vtable abitset_small_vtable = {
+static struct bitset_vtable abitset_small_vtable = {
   abitset_set,
   abitset_reset,
   bitset_toggle_,
@@ -663,7 +661,7 @@ struct bitset_vtable abitset_small_vtable = {
 
 
 /* Vector of operations for multiple word bitsets.  */
-struct bitset_vtable abitset_vtable = {
+static struct bitset_vtable abitset_vtable = {
   abitset_set,
   abitset_reset,
   bitset_toggle_,

@@ -33,7 +33,7 @@
  * a script "init.tcl" that is compatible with this version of Tcl.  The
  * init.tcl script does all of the real work of initialization.
  */
- 
+
 static char initCmd[] = "if {[info proc tclInit]==\"\"} {\n\
 proc tclInit {} {\n\
 global tcl_pkgPath env\n\
@@ -72,17 +72,17 @@ rename sourcePath {}\n\
 tclInit";
 
 /*
- * The following structures are used to map the script/language codes of a 
+ * The following structures are used to map the script/language codes of a
  * font to the name that should be passed to Tcl_GetEncoding() to obtain
- * the encoding for that font.  The set of numeric constants is fixed and 
+ * the encoding for that font.  The set of numeric constants is fixed and
  * defined by Apple.
  */
- 
+
 typedef struct Map {
     int numKey;
     char *strKey;
 } Map;
- 
+
 static Map scriptMap[] = {
     {smRoman,		"macRoman"},
     {smJapanese,	"macJapan"},
@@ -117,7 +117,7 @@ static Map scriptMap[] = {
     {smVietnamese,	"macVietnam"},
     {smExtArabic,	"macSindhi"},
     {NULL,		NULL}
-};    
+};
 
 static Map romanMap[] = {
     {langCroatian,	"macCroatian"},
@@ -170,13 +170,13 @@ GetFinderFont(int *finderID)
     static AppleEvent outgoingAevt = {typeNull, NULL};
     AppleEvent returnAevt;
     AEAddressDesc fndrAddress;
-    AEDesc nullContainer = {typeNull, NULL}, 
-           tempDesc = {typeNull, NULL}, 
-           tempDesc2 = {typeNull, NULL}, 
+    AEDesc nullContainer = {typeNull, NULL},
+           tempDesc = {typeNull, NULL},
+           tempDesc2 = {typeNull, NULL},
            finalDesc = {typeNull, NULL};
     const OSType finderSignature = 'MACS';
-    
-    
+
+
     if (outgoingAevt.descriptorType == typeNull) {
         if ((Gestalt(gestaltSystemVersion, &result) != noErr)
 	        || (result >= sys8Mask)) {
@@ -184,37 +184,37 @@ GetFinderFont(int *finderID)
         } else {
 	    finderPrefs = 'pvwp';
         }
-        
+
         AECreateDesc(typeApplSignature, &finderSignature,
 		sizeof(finderSignature), &fndrAddress);
-            
-        err = AECreateAppleEvent(kAECoreSuite, kAEGetData, &fndrAddress, 
+
+        err = AECreateAppleEvent(kAECoreSuite, kAEGetData, &fndrAddress,
                 kAutoGenerateReturnID, kAnyTransactionID, &outgoingAevt);
-                
+
         AEDisposeDesc(&fndrAddress);
-    
+
         /*
          * The structure is:
          * the property view font ('vfnt')
          *    of the property view preferences ('pvwp')
-         *        of the Null Container (i.e. the Finder itself). 
+         *        of the Null Container (i.e. the Finder itself).
          */
-         
+
         AECreateDesc(typeType, &finderPrefs, sizeof(finderPrefs), &tempDesc);
         err = CreateObjSpecifier(typeType, &nullContainer, formPropertyID,
 		&tempDesc, true, &tempDesc2);
         AECreateDesc(typeType, &viewFont, sizeof(viewFont), &tempDesc);
         err = CreateObjSpecifier(typeType, &tempDesc2, formPropertyID,
 		&tempDesc, true, &finalDesc);
-    
+
         AEPutKeyDesc(&outgoingAevt, keyDirectObject, &finalDesc);
         AEDisposeDesc(&finalDesc);
     }
-             
+
     err = AESend(&outgoingAevt, &returnAevt, kAEWaitReply, kAEHighPriority,
 	    kAEDefaultTimeout, NULL, NULL);
     if (err == noErr) {
-        err = AEGetKeyPtr(&returnAevt, keyDirectObject, typeInteger, 
+        err = AEGetKeyPtr(&returnAevt, keyDirectObject, typeInteger,
                 &returnType, (void *) finderID, sizeof(int), &returnSize);
         if (err == noErr) {
             return TCL_OK;
@@ -243,7 +243,7 @@ GetFinderFont(int *finderID)
  *
  *---------------------------------------------------------------------------
  */
- 
+
 char *
 TclMacGetFontEncoding(
     int fontId)
@@ -251,8 +251,8 @@ TclMacGetFontEncoding(
     int script, lang;
     char *name;
     Map *mapPtr;
-    
-    script = FontToScript(fontId);    
+
+    script = FontToScript(fontId);
     lang = GetScriptVariable(script, smScriptLang);
     name = NULL;
     if (script == smRoman) {
@@ -301,7 +301,7 @@ TclMacGetFontEncoding(
  */
 
 void
-TclpInitPlatform()
+TclpInitPlatform (void)
 {
     tclPlatform = TCL_PLATFORM_MAC;
 }
@@ -356,11 +356,11 @@ TclpInitLibraryPath(argv0)
     Tcl_Obj *objPtr, *pathPtr;
     CONST char *str;
     Tcl_DString ds;
-    
+
     TclMacCreateEnv();
 
     pathPtr = Tcl_NewObj();
-    
+
     /*
      * Look for the library relative to default encoding dir.
      */
@@ -376,17 +376,17 @@ TclpInitLibraryPath(argv0)
 	/*
 	 * If TCL_LIBRARY is set, search there.
 	 */
-	 
+
 	objPtr = Tcl_NewStringObj(str, Tcl_DStringLength(&ds));
 	Tcl_ListObjAppendElement(NULL, pathPtr, objPtr);
 	Tcl_DStringFree(&ds);
     }
-    
+
     objPtr = TclGetLibraryPath();
     if (objPtr != NULL) {
         Tcl_ListObjAppendList(NULL, pathPtr, objPtr);
     }
-    
+
     /*
      * lappend path [file join $env(EXT_FOLDER) \
      *      "Tool Command Language" "tcl[info version]"
@@ -396,9 +396,9 @@ TclpInitLibraryPath(argv0)
     if ((str != NULL) && (str[0] != '\0')) {
 	    Tcl_DString libPath, path;
 	    CONST char *argv[3];
-	    
+
 	    argv[0] = str;
-	    argv[1] = "Tool Command Language";	    
+	    argv[1] = "Tool Command Language";
 	    Tcl_DStringInit(&libPath);
 	    Tcl_DStringAppend(&libPath, "tcl", -1);
 	    argv[2] = Tcl_DStringAppend(&libPath, TCL_VERSION, -1);
@@ -409,7 +409,7 @@ TclpInitLibraryPath(argv0)
 	    Tcl_DStringFree(&ds);
 	    Tcl_DStringFree(&libPath);
 	    Tcl_DStringFree(&path);
-    }    
+    }
     TclSetLibraryPath(pathPtr);
 }
 
@@ -438,31 +438,31 @@ TclpInitLibraryPath(argv0)
  */
 
 void
-TclpSetInitialEncodings()
+TclpSetInitialEncodings (void)
 {
     CONST char *encoding;
     Tcl_Obj *pathPtr;
     int fontId, err;
-    
+
     fontId = 0;
     GetFinderFont(&fontId);
     encoding = TclMacGetFontEncoding(fontId);
     if (encoding == NULL) {
         encoding = "macRoman";
     }
-    
+
     err = Tcl_SetSystemEncoding(NULL, encoding);
 
     if (err == TCL_OK && libraryPathEncodingFixed == 0) {
-	
+
     /*
      * Until the system encoding was actually set, the library path was
      * actually in the native multi-byte encoding, and not really UTF-8
      * as advertised.  We cheated as follows:
      *
-     * 1. It was safe to allow the Tcl_SetSystemEncoding() call to 
-     * append the ASCII chars that make up the encoding's filename to 
-     * the names (in the native encoding) of directories in the library 
+     * 1. It was safe to allow the Tcl_SetSystemEncoding() call to
+     * append the ASCII chars that make up the encoding's filename to
+     * the names (in the native encoding) of directories in the library
      * path, since all Unix multi-byte encodings have ASCII in the
      * beginning.
      *
@@ -472,8 +472,8 @@ TclpSetInitialEncodings()
      *
      * Now that the system encoding was actually successfully set,
      * translate all the names in the library path to UTF-8.  That way,
-     * next time we search the library path, we'll translate the names 
-     * from UTF-8 to the system encoding which will be the native 
+     * next time we search the library path, we'll translate the names
+     * from UTF-8 to the system encoding which will be the native
      * encoding.
      */
 
@@ -481,7 +481,7 @@ TclpSetInitialEncodings()
     if (pathPtr != NULL) {
     	int i, objc;
 	Tcl_Obj **objv;
-	
+
 	objc = 0;
 	Tcl_ListObjGetElements(NULL, pathPtr, &objc, &objv);
 	for (i = 0; i < objc; i++) {
@@ -491,7 +491,7 @@ TclpSetInitialEncodings()
 
 	    string = Tcl_GetStringFromObj(objv[i], &length);
 	    Tcl_ExternalToUtfDString(NULL, string, length, &ds);
-	    Tcl_SetStringObj(objv[i], Tcl_DStringValue(&ds), 
+	    Tcl_SetStringObj(objv[i], Tcl_DStringValue(&ds),
 		    Tcl_DStringLength(&ds));
 	    Tcl_DStringFree(&ds);
 	}
@@ -499,7 +499,7 @@ TclpSetInitialEncodings()
     }
 	libraryPathEncodingFixed = 1;
     }
-    
+
     /* This is only ever called from the startup thread */
     if (binaryEncoding == NULL) {
 	/*
@@ -508,7 +508,7 @@ TclpSetInitialEncodings()
 	 */
 	binaryEncoding = Tcl_GetEncoding(NULL, "iso8859-1");
     }
-}   
+}
 
 /*
  *---------------------------------------------------------------------------
@@ -550,11 +550,11 @@ TclpSetVariables(interp)
         }
     }
     Tcl_SetVar(interp, "tcl_library", str, TCL_GLOBAL_ONLY);
-    
+
     if (pathPtr != NULL) {
         Tcl_SetVar2Ex(interp, "tcl_pkgPath", NULL, pathPtr, TCL_GLOBAL_ONLY);
     }
-    
+
     Tcl_SetVar2(interp, "tcl_platform", "platform", "macintosh",
 	    TCL_GLOBAL_ONLY);
     Tcl_SetVar2(interp, "tcl_platform", "os", "MacOS", TCL_GLOBAL_ONLY);
@@ -605,7 +605,7 @@ TclpSetVariables(interp)
  */
 
 int
-TclpCheckStackSpace()
+TclpCheckStackSpace (void)
 {
     return StackSpace() > TCL_MAC_STACK_THRESHOLD;
 }
@@ -615,7 +615,7 @@ TclpCheckStackSpace()
  *
  * TclpFindVariable --
  *
- *	Locate the entry in environ for a given name.  On Unix and Macthis 
+ *	Locate the entry in environ for a given name.  On Unix and Macthis
  *	routine is case sensitive, on Windows this matches mixed case.
  *
  * Results:
@@ -657,10 +657,10 @@ TclpFindVariable(name, lengthPtr)
 	    result = i;
 	    goto done;
 	}
-	
+
 	Tcl_DStringFree(&envString);
     }
-    
+
     *lengthPtr = i;
 
     done:
@@ -800,3 +800,5 @@ Tcl_SourceRCFile(
 	}
     }
 }
+
+/* EOF */

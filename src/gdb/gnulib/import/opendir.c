@@ -1,5 +1,5 @@
 /* Start reading the entries of a directory.
-   Copyright (C) 2006-2023 Free Software Foundation, Inc.
+   Copyright (C) 2006-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
@@ -42,11 +42,6 @@
 
 #if REPLACE_FCHDIR
 # include <unistd.h>
-#endif
-
-#ifdef __KLIBC__
-# include <io.h>
-# include <fcntl.h>
 #endif
 
 #if defined _WIN32 && ! defined __CYGWIN__
@@ -93,30 +88,7 @@ opendir (const char *dir_name)
     return NULL;
 # endif
 
-# ifdef __KLIBC__
-  {
-    int fd = open (dir_name, O_RDONLY);
-    if (fd == -1 || _gl_register_dirp_fd (fd, dirp))
-      {
-        int saved_errno = errno;
-
-        close (fd);
-        closedir (dirp);
-
-        errno = saved_errno;
-
-        return NULL;
-      }
-  }
-# endif
-
 #else
-
-  char dir_name_mask[MAX_PATH + 1 + 1 + 1];
-  int status;
-  HANDLE current;
-  WIN32_FIND_DATA entry;
-  struct gl_directory *dirp;
 
   if (dir_name[0] == '\0')
     {
@@ -127,6 +99,7 @@ opendir (const char *dir_name)
   /* Make the dir_name absolute, so that we continue reading the same
      directory if the current directory changed between this opendir()
      call and a subsequent rewinddir() call.  */
+  char dir_name_mask[MAX_PATH + 1 + 1 + 1];
   if (!GetFullPathName (dir_name, MAX_PATH, dir_name_mask, NULL))
     {
       errno = EINVAL;
@@ -138,7 +111,7 @@ opendir (const char *dir_name)
   {
     char *p;
 
-    p = dir_name_mask + strlen (dir_name_mask);
+    p = strnul (dir_name_mask);
     if (p > dir_name_mask && !ISSLASH (p[-1]))
       *p++ = '\\';
     *p++ = '*';
@@ -146,8 +119,9 @@ opendir (const char *dir_name)
   }
 
   /* Start searching the directory.  */
-  status = -1;
-  current = FindFirstFile (dir_name_mask, &entry);
+  int status = -1;
+  WIN32_FIND_DATA entry;
+  HANDLE current = FindFirstFile (dir_name_mask, &entry);
   if (current == INVALID_HANDLE_VALUE)
     {
       switch (GetLastError ())
@@ -171,7 +145,7 @@ opendir (const char *dir_name)
     }
 
   /* Allocate the result.  */
-  dirp =
+  struct gl_directory *dirp =
     (struct gl_directory *)
     malloc (offsetof (struct gl_directory, dir_name_mask[0])
             + strlen (dir_name_mask) + 1);

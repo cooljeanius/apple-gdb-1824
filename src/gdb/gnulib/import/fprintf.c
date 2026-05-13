@@ -1,5 +1,5 @@
 /* Formatted output to a stream.
-   Copyright (C) 2004, 2006-2023 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2006-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
@@ -24,50 +24,24 @@
 #include <errno.h>
 #include <limits.h>
 #include <stdarg.h>
-#include <stdlib.h>
 
 #include "fseterr.h"
-#include "vasnprintf.h"
+#include "intprops.h"
 
-/* Print formatted output to the stream FP.
-   Return string length of formatted string.  On error, return a negative
-   value.  */
 int
 fprintf (FILE *fp, const char *format, ...)
 {
-  char buf[2000];
-  char *output;
-  size_t len;
-  size_t lenbuf = sizeof (buf);
   va_list args;
-
   va_start (args, format);
-  output = vasnprintf (buf, &lenbuf, format, args);
-  len = lenbuf;
+  off64_t ret = vfzprintf (fp, format, args);
   va_end (args);
 
-  if (!output)
+  if (TYPE_MAXIMUM (off64_t) > INT_MAX && ret > INT_MAX)
     {
       fseterr (fp);
-      return -1;
-    }
-
-  if (fwrite (output, 1, len, fp) < len)
-    {
-      if (output != buf)
-        free (output);
-      return -1;
-    }
-
-  if (output != buf)
-    free (output);
-
-  if (len > INT_MAX)
-    {
       errno = EOVERFLOW;
-      fseterr (fp);
       return -1;
     }
 
-  return len;
+  return ret;
 }

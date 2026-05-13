@@ -1764,6 +1764,10 @@ void bfd_section_list_clear (bfd *);
 
 asection *bfd_get_section_by_name (bfd *abfd, const char *name);
 
+asection *bfd_get_next_section_by_name (bfd *ibfd, asection *sec);
+
+asection *bfd_get_linker_section (bfd *abfd, const char *name);
+
 asection *bfd_get_section_by_name_if
    (bfd *abfd,
     const char *name,
@@ -3281,6 +3285,13 @@ not stored in the instruction.  The 2nd lowest bit comes from a 1 bit
 field in the instruction.  */
   BFD_RELOC_THUMB_PCREL_BLX,
 
+/* ARM 26-bit pc-relative branch for an unconditional BL or BLX
+instruction.  */
+  BFD_RELOC_ARM_PCREL_CALL,
+
+/* ARM 26-bit pc-relative branch for B or conditional BL instruction.  */
+  BFD_RELOC_ARM_PCREL_JUMP,
+
 /* Thumb 7-, 9-, 12-, 20-, 23-, and 25-bit pc-relative branches.
 The lowest bit must be zero and is not stored in the instruction.
 Note that the corresponding ELF R_ARM_THM_JUMPnn constant has an
@@ -3316,6 +3327,16 @@ pc-relative or some form of GOT-indirect relocation.  */
 
 /* 31-bit PC relative address.  */
   BFD_RELOC_ARM_PREL31,
+
+/* Low and High halfword relocations for MOVW and MOVT instructions.  */
+  BFD_RELOC_ARM_MOVW,
+  BFD_RELOC_ARM_MOVT,
+  BFD_RELOC_ARM_MOVW_PCREL,
+  BFD_RELOC_ARM_MOVT_PCREL,
+  BFD_RELOC_ARM_THUMB_MOVW,
+  BFD_RELOC_ARM_THUMB_MOVT,
+  BFD_RELOC_ARM_THUMB_MOVW_PCREL,
+  BFD_RELOC_ARM_THUMB_MOVT_PCREL,
 
 /* Relocations for setting up GOTs and PLTs for shared libraries.  */
   BFD_RELOC_ARM_JUMP_SLOT,
@@ -6402,6 +6423,13 @@ struct bfd
   /* A field used by _bfd_generic_link_add_archive_symbols.  This will
      be used only for archive elements.  */
   int archive_pass;
+
+  union {
+    /* For input BFDs, a chain of BFDs involved in a link.  */
+    struct bfd *next;
+    /* For output BFD, the linker hash table.  */
+    struct bfd_link_hash_table *hash;
+  } link;
 
   /* Used by the back end to hold private data.  */
   union

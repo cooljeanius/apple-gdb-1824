@@ -1,7 +1,7 @@
-/* 
+/*
  * tclMacBOAAppInit.c --
  *
- *	Provides a version of the Tcl_AppInit procedure for a 
+ *	Provides a version of the Tcl_AppInit procedure for a
  *      Macintosh Background Only Application.
  *
  * Copyright (c) 1997 Sun Microsystems, Inc.
@@ -36,7 +36,7 @@ short InstallConsole _ANSI_ARGS_((short fd));
 #endif
 
 void TkMacInitAppleEvents(Tcl_Interp *interp);
-int HandleHighLevelEvents(EventRecord *eventPtr);	
+int HandleHighLevelEvents(EventRecord *eventPtr);
 
 #ifdef TCL_TEST
 EXTERN int		TclObjTest_Init _ANSI_ARGS_((Tcl_Interp *interp));
@@ -62,7 +62,7 @@ static int		MacintoshInit _ANSI_ARGS_((void));
  *	it's done.
  *
  * Side effects:
- *	This procedure initializes the Macintosh world and then 
+ *	This procedure initializes the Macintosh world and then
  *	calls Tcl_Main.  Tcl_Main will never return except to exit.
  *
  *----------------------------------------------------------------------
@@ -74,7 +74,7 @@ main(
     char **argv)			/* Array of argument strings. */
 {
     char *newArgv[3];
-    
+
     if (MacintoshInit()  != TCL_OK) {
 	Tcl_Exit(1);
     }
@@ -110,7 +110,7 @@ Tcl_AppInit(
     Tcl_Interp *interp)		/* Interpreter for application. */
 {
     Tcl_Channel tempChan;
-    
+
     if (Tcl_Init(interp) == TCL_ERROR) {
 	return TCL_ERROR;
     }
@@ -157,15 +157,15 @@ Tcl_AppInit(
     /* Tcl_SetVar(interp, "tcl_rcFileName", "~/.tclshrc", TCL_GLOBAL_ONLY); */
 
     /*
-     * We have to support at least the quit Apple Event. 
+     * We have to support at least the quit Apple Event.
      */
-    
+
     TkMacInitAppleEvents(interp);
-    
-    /* 
-     * Open a file channel to put stderr, stdin, stdout... 
+
+    /*
+     * Open a file channel to put stderr, stdin, stdout...
      */
-    
+
     tempChan = Tcl_OpenFileChannel(interp, ":temp.in", "a+", 0);
     Tcl_SetStdChannel(tempChan,TCL_STDIN);
     Tcl_RegisterChannel(interp, tempChan);
@@ -183,8 +183,8 @@ Tcl_AppInit(
     Tcl_RegisterChannel(interp, tempChan);
     Tcl_SetChannelOption(NULL, tempChan, "-translation", "cr");
     Tcl_SetChannelOption(NULL, tempChan, "-buffering", "none");
-   
-    
+
+
     return TCL_OK;
 }
 
@@ -198,7 +198,7 @@ Tcl_AppInit(
  *	have a stdout & stderr by default.
  *
  * Results:
- *	Returns TCL_OK if everything went fine.  If it didn't the 
+ *	Returns TCL_OK if everything went fine.  If it didn't the
  *	application should probably fail.
  *
  * Side effects:
@@ -208,17 +208,17 @@ Tcl_AppInit(
  */
 
 static int
-MacintoshInit()
+MacintoshInit (void)
 {
     THz theZone = GetZone();
     SysEnvRec   sys;
 
-    
+
     /*
      * There is a bug in systems earlier that 7.5.5, where a second BOA will
      * get a corrupted heap.  This is the fix from TechNote 1070
      */
-     
+
     SysEnvirons(1, &sys);
 
     if (sys.systemVersion < 0x0755)
@@ -227,14 +227,14 @@ MacintoshInit()
             LMSetHeapEnd(theZone->bkLim);
         }
     }
-    
+
 #if GENERATING68K && !GENERATINGCFM
     SetApplLimit(GetApplLimit() - (TCL_MAC_68K_STACK_GROWTH));
 #endif
     MaxApplZone();
 
     InitGraf((Ptr)&qd.thePort);
-    		    
+
     /* No problems with initialization */
     Tcl_MacSetEventProc(HandleHighLevelEvents);
 
@@ -246,12 +246,14 @@ HandleHighLevelEvents(
     EventRecord *eventPtr)
 {
     int eventFound = false;
-    
+
     if (eventPtr->what == kHighLevelEvent) {
 	AEProcessAppleEvent(eventPtr);
         eventFound = true;
     } else if (eventPtr->what == nullEvent) {
         eventFound = true;
     }
-    return eventFound;    
+    return eventFound;
 }
+
+/* EOF */

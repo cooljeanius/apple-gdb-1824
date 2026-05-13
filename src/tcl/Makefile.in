@@ -22,14 +22,15 @@ BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
 HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
 TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 C_ARCHFLAGS = @C_ARCHFLAGS@
-CFLAGS = @CFLAGS@ $(C_ARCHFLAGS)
+CFLAGS_WARNING = @CFLAGS_WARNING@
+CFLAGS = @CFLAGS@ $(C_ARCHFLAGS) $(CFLAGS_WARNING)
 
 TIMEOUT = @TIMEOUT@
 
 @SET_MAKE@
 
 all: $(CONFIGDIR)/Makefile
-	@cd $(CONFIGDIR) && $(MAKE) $@ CFLAGS="@CFLAGS@ $(C_ARCHFLAGS)"
+	@cd $(CONFIGDIR) && $(MAKE) $@ CFLAGS="@CFLAGS@ $(C_ARCHFLAGS) $(CFLAGS_WARNING)"
 	@test x"$(CONFIGDIR2)" = x"" || (cd "$(CONFIGDIR2)" && $(MAKE) $@)
 
 $(CONFIGDIR)/Makefile: $(CONFIGDIR)/config.status
@@ -131,6 +132,7 @@ Makefile: Makefile.in config.status
 config.status: configure
 	if test -n "$${CPP}"; then unset CPP; fi; $(SHELL) config.status --recheck
 
+# So that we can use automake in subdirectories:
 am--refresh:
 	@true
 .PHONY: am--refresh

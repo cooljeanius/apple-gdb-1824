@@ -1,4 +1,4 @@
-/* 
+/*
  * tclAsync.c --
  *
  *	This file provides low-level support needed to invoke signal
@@ -66,7 +66,7 @@ typedef struct ThreadSpecificData {
 
     /*
      * The variable below indicates whether Tcl_AsyncInvoke is currently
-     * working.  If so then we won't set asyncReady again until
+     * working.  If so, then we won't set asyncReady again until
      * Tcl_AsyncInvoke returns.
      */
 
@@ -87,7 +87,7 @@ static Tcl_ThreadDataKey dataKey;
  *	async subsystem.
  *
  * Results:
- *	None.	
+ *	None.
  *
  * Side effects:
  *	Forgets knowledge of the mutex should it have been created.
@@ -96,7 +96,7 @@ static Tcl_ThreadDataKey dataKey;
  */
 
 void
-TclFinalizeAsync()
+TclFinalizeAsync (void)
 {
     ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
 
@@ -326,7 +326,7 @@ Tcl_AsyncDelete(async)
  */
 
 int
-Tcl_AsyncReady()
+Tcl_AsyncReady (void)
 {
     ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
     return tsdPtr->asyncReady;

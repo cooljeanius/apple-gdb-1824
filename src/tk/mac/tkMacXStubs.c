@@ -1,4 +1,4 @@
-/* 
+/*
  * tkMacXStubs.c --
  *
  *	This file contains most of the X calls called by Tk.  Many of
@@ -39,7 +39,7 @@
 #ifndef TCL_DEBUG
 #   define Debugger()
 #endif
- 
+
 #define ROOT_ID 10
 
 /*
@@ -47,8 +47,7 @@
  */
 
 static TkDisplay *gMacDisplay = NULL; /* Macintosh display. */
-static char *macScreenName = ":0";
-				/* Default name of macintosh display. */
+static char *macScreenName = ":0"; /* Default name of macintosh display. */
 
 /*
  * Forward declarations of procedures used in this file.
@@ -66,7 +65,7 @@ int TkMacXDestroyImage _ANSI_ARGS_((XImage *image));
 unsigned long TkMacXGetPixel _ANSI_ARGS_((XImage *image, int x, int y));
 int TkMacXPutPixel _ANSI_ARGS_((XImage *image, int x, int y,
 	unsigned long pixel));
-XImage *TkMacXSubImage _ANSI_ARGS_((XImage *image, int x, int y, 
+XImage *TkMacXSubImage _ANSI_ARGS_((XImage *image, int x, int y,
 	unsigned int width, unsigned int height));
 int TkMacXAddPixel _ANSI_ARGS_((XImage *image, long value));
 int _XInitImageFuncPtrs _ANSI_ARGS_((XImage *image));
@@ -115,16 +114,16 @@ TkpOpenDisplay(
     display->screens = screen;
     display->display_name = macScreenName;
     display->qlen = 0;
-    
+
     screen->root = ROOT_ID;
     screen->display = display;
     screen->root_depth = (*(*graphicsDevice)->gdPMap)->cmpSize *
-                               (*(*graphicsDevice)->gdPMap)->cmpCount;	
+                               (*(*graphicsDevice)->gdPMap)->cmpCount;
     screen->height = (*graphicsDevice)->gdRect.bottom -
 	(*graphicsDevice)->gdRect.top;
     screen->width = (*graphicsDevice)->gdRect.right -
 	(*graphicsDevice)->gdRect.left;
-    
+
     screen->mwidth = (screen->width * 254 + 360) / 720;
     screen->mheight = (screen->height * 254 + 360) / 720;
     screen->black_pixel = 0x00000000;
@@ -387,11 +386,11 @@ XAllocSizeHints()
      * Always return NULL.  Tk code checks to see if NULL
      * is returned & does nothing if it is.
      */
-    
+
     return NULL;
 }
 
-XImage * 
+XImage *
 XCreateImage(
     Display* display,
     Visual* visual,
@@ -403,7 +402,7 @@ XCreateImage(
     unsigned int height,
     int bitmap_pad,
     int bytes_per_line)
-{ 
+{
     XImage *ximage;
 
     display->request++;
@@ -525,7 +524,7 @@ XQueryColors(
 {
 }
 
-int   
+int
 XQueryTree(display, w, root_return, parent_return, children_return,
         nchildren_return)
     Display* display;
@@ -561,13 +560,13 @@ XGetWindowProperty(
 }
 
 void
-XRefreshKeyboardMapping()
+XRefreshKeyboardMapping (void)
 {
     /* used by tkXEvent.c */
     Debugger();
 }
 
-void 
+void
 XSetIconName(
     Display* display,
     Window w,
@@ -579,13 +578,13 @@ XSetIconName(
     display->request++;
 }
 
-void 
+void
 XForceScreenSaver(
     Display* display,
     int mode)
 {
-    /* 
-     * This function is just a no-op.  It is defined to 
+    /*
+     * This function is just a no-op.  It is defined to
      * reset the screen saver.  However, there is no real
      * way to do this on a Mac.  Let me know if there is!
      */
@@ -635,10 +634,10 @@ TkGetServerInfo(
 	    buffer2, (char *) NULL);
 }
 /*
- * Image stuff 
+ * Image stuff
  */
 
-int 
+int
 TkMacXDestroyImage(
     XImage *image)
 {
@@ -646,7 +645,7 @@ TkMacXDestroyImage(
     return 0;
 }
 
-unsigned long 
+unsigned long
 TkMacXGetPixel(
     XImage *image,
     int x,
@@ -656,7 +655,7 @@ TkMacXGetPixel(
     return 0;
 }
 
-int 
+int
 TkMacXPutPixel(
     XImage *image,
     int x,
@@ -679,7 +678,7 @@ TkMacXSubImage(
     return NULL;
 }
 
-int 
+int
 TkMacXAddPixel(
     XImage *image,
     long value)
@@ -716,7 +715,7 @@ XChangeWindowAttributes(
 {
 }
 
-void 
+void
 XSetWindowBackground(
 	Display *display,
 	Window window,
@@ -765,24 +764,24 @@ XSetWindowColormap(
     Debugger();
 }
 
-Status		
+Status
 XStringListToTextProperty(
-    char** list, 
-    int count, 
+    char** list,
+    int count,
     XTextProperty* text_prop_return)
 {
     Debugger();
     return (Status) 0;
 }
-void		
+void
 XSetWMClientMachine(
-    Display* display, 
-    Window w, 
+    Display* display,
+    Window w,
     XTextProperty* text_prop)
 {
     Debugger();
 }
-XIC		
+XIC
 XCreateIC(
     void)
 {

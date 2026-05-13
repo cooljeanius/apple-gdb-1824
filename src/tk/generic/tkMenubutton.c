@@ -1,4 +1,4 @@
-/* 
+/*
  * tkMenubutton.c --
  *
  *	This module implements button-like widgets that are used
@@ -18,8 +18,8 @@
 #include "default.h"
 
 /*
- * The following table defines the legal values for the -direction 
- * option.  It is used together with the "enum direction" declaration 
+ * The following table defines the legal values for the -direction
+ * option.  It is used together with the "enum direction" declaration
  * in tkMenubutton.h.
  */
 
@@ -51,15 +51,15 @@ static char *compoundStrings[] = {
 
 static Tk_OptionSpec optionSpecs[] = {
     {TK_OPTION_BORDER, "-activebackground", "activeBackground", "Foreground",
-        DEF_MENUBUTTON_ACTIVE_BG_COLOR, -1, 
-        Tk_Offset(TkMenuButton, activeBorder), 0, 
+        DEF_MENUBUTTON_ACTIVE_BG_COLOR, -1,
+        Tk_Offset(TkMenuButton, activeBorder), 0,
         (ClientData) DEF_MENUBUTTON_ACTIVE_BG_MONO, 0},
     {TK_OPTION_COLOR, "-activeforeground", "activeForeground", "Background",
-	DEF_MENUBUTTON_ACTIVE_FG_COLOR, -1, 
+	DEF_MENUBUTTON_ACTIVE_FG_COLOR, -1,
          Tk_Offset(TkMenuButton, activeFg),
          0, (ClientData) DEF_MENUBUTTON_ACTIVE_FG_MONO, 0},
     {TK_OPTION_ANCHOR, "-anchor", "anchor", "Anchor",
-	DEF_MENUBUTTON_ANCHOR, -1, 
+	DEF_MENUBUTTON_ANCHOR, -1,
         Tk_Offset(TkMenuButton, anchor), 0, 0, 0},
     {TK_OPTION_BORDER, "-background", "background", "Background",
 	DEF_MENUBUTTON_BG_COLOR, -1, Tk_Offset(TkMenuButton, normalBorder),
@@ -72,13 +72,13 @@ static Tk_OptionSpec optionSpecs[] = {
 	DEF_MENUBUTTON_BITMAP, -1, Tk_Offset(TkMenuButton, bitmap),
 	TK_OPTION_NULL_OK, 0, 0},
     {TK_OPTION_PIXELS, "-borderwidth", "borderWidth", "BorderWidth",
-	DEF_MENUBUTTON_BORDER_WIDTH, -1, 
+	DEF_MENUBUTTON_BORDER_WIDTH, -1,
         Tk_Offset(TkMenuButton, borderWidth), 0, 0, 0},
     {TK_OPTION_CURSOR, "-cursor", "cursor", "Cursor",
 	DEF_MENUBUTTON_CURSOR, -1, Tk_Offset(TkMenuButton, cursor),
 	TK_OPTION_NULL_OK, 0, 0},
     {TK_OPTION_STRING_TABLE, "-direction", "direction", "Direction",
-    	DEF_MENUBUTTON_DIRECTION, -1, Tk_Offset(TkMenuButton, direction), 
+    	DEF_MENUBUTTON_DIRECTION, -1, Tk_Offset(TkMenuButton, direction),
 	0, (ClientData) directionStrings, 0},
     {TK_OPTION_COLOR, "-disabledforeground", "disabledForeground",
 	"DisabledForeground", DEF_MENUBUTTON_DISABLED_FG_COLOR,
@@ -91,19 +91,19 @@ static Tk_OptionSpec optionSpecs[] = {
     {TK_OPTION_COLOR, "-foreground", "foreground", "Foreground",
 	DEF_MENUBUTTON_FG, -1, Tk_Offset(TkMenuButton, normalFg), 0, 0, 0},
     {TK_OPTION_STRING, "-height", "height", "Height",
-	DEF_MENUBUTTON_HEIGHT, -1, Tk_Offset(TkMenuButton, heightString), 
+	DEF_MENUBUTTON_HEIGHT, -1, Tk_Offset(TkMenuButton, heightString),
         0, 0, 0},
     {TK_OPTION_COLOR, "-highlightbackground", "highlightBackground",
 	"HighlightBackground", DEF_MENUBUTTON_HIGHLIGHT_BG_COLOR,
 	-1, Tk_Offset(TkMenuButton, highlightBgColorPtr), 0, 0, 0},
     {TK_OPTION_COLOR, "-highlightcolor", "highlightColor", "HighlightColor",
-	DEF_MENUBUTTON_HIGHLIGHT, -1, 
+	DEF_MENUBUTTON_HIGHLIGHT, -1,
         Tk_Offset(TkMenuButton, highlightColorPtr),	0, 0, 0},
     {TK_OPTION_PIXELS, "-highlightthickness", "highlightThickness",
 	"HighlightThickness", DEF_MENUBUTTON_HIGHLIGHT_WIDTH,
 	-1, Tk_Offset(TkMenuButton, highlightWidth), 0, 0, 0},
     {TK_OPTION_STRING, "-image", "image", "Image",
-	DEF_MENUBUTTON_IMAGE, -1, Tk_Offset(TkMenuButton, imageString), 
+	DEF_MENUBUTTON_IMAGE, -1, Tk_Offset(TkMenuButton, imageString),
 	TK_OPTION_NULL_OK, 0, 0},
     {TK_OPTION_BOOLEAN, "-indicatoron", "indicatorOn", "IndicatorOn",
 	DEF_MENUBUTTON_INDICATOR, -1, Tk_Offset(TkMenuButton, indicatorOn),
@@ -111,7 +111,7 @@ static Tk_OptionSpec optionSpecs[] = {
     {TK_OPTION_JUSTIFY, "-justify", "justify", "Justify",
 	DEF_BUTTON_JUSTIFY, -1, Tk_Offset(TkMenuButton, justify), 0, 0, 0},
     {TK_OPTION_STRING, "-menu", "menu", "Menu",
-	DEF_MENUBUTTON_MENU, -1, Tk_Offset(TkMenuButton, menuName), 
+	DEF_MENUBUTTON_MENU, -1, Tk_Offset(TkMenuButton, menuName),
 	TK_OPTION_NULL_OK, 0, 0},
     {TK_OPTION_PIXELS, "-padx", "padX", "Pad",
 	DEF_MENUBUTTON_PADX, -1, Tk_Offset(TkMenuButton, padX),
@@ -120,7 +120,7 @@ static Tk_OptionSpec optionSpecs[] = {
 	DEF_MENUBUTTON_PADY, -1, Tk_Offset(TkMenuButton, padY),
 	0, 0, 0},
     {TK_OPTION_RELIEF, "-relief", "relief", "Relief",
-	DEF_MENUBUTTON_RELIEF, -1, Tk_Offset(TkMenuButton, relief), 
+	DEF_MENUBUTTON_RELIEF, -1, Tk_Offset(TkMenuButton, relief),
         0, 0, 0},
     {TK_OPTION_STRING_TABLE, "-compound", "compound", "Compound",
          DEF_BUTTON_COMPOUND, -1, Tk_Offset(TkMenuButton, compound), 0,
@@ -129,18 +129,18 @@ static Tk_OptionSpec optionSpecs[] = {
 	DEF_MENUBUTTON_STATE, -1, Tk_Offset(TkMenuButton, state),
 	0, (ClientData) stateStrings, 0},
     {TK_OPTION_STRING, "-takefocus", "takeFocus", "TakeFocus",
-	DEF_MENUBUTTON_TAKE_FOCUS, -1, 
+	DEF_MENUBUTTON_TAKE_FOCUS, -1,
         Tk_Offset(TkMenuButton, takeFocus), TK_OPTION_NULL_OK, 0, 0},
     {TK_OPTION_STRING, "-text", "text", "Text",
 	DEF_MENUBUTTON_TEXT, -1, Tk_Offset(TkMenuButton, text), 0, 0, 0},
     {TK_OPTION_STRING, "-textvariable", "textVariable", "Variable",
-	DEF_MENUBUTTON_TEXT_VARIABLE, -1, 
+	DEF_MENUBUTTON_TEXT_VARIABLE, -1,
         Tk_Offset(TkMenuButton, textVarName), TK_OPTION_NULL_OK, 0, 0},
     {TK_OPTION_INT, "-underline", "underline", "Underline",
 	DEF_MENUBUTTON_UNDERLINE, -1, Tk_Offset(TkMenuButton, underline),
          0, 0, 0},
     {TK_OPTION_STRING, "-width", "width", "Width",
-	DEF_MENUBUTTON_WIDTH, -1, Tk_Offset(TkMenuButton, widthString), 
+	DEF_MENUBUTTON_WIDTH, -1, Tk_Offset(TkMenuButton, widthString),
         0, 0, 0},
     {TK_OPTION_PIXELS, "-wraplength", "wrapLength", "WrapLength",
 	DEF_MENUBUTTON_WRAP_LENGTH, -1, Tk_Offset(TkMenuButton, wrapLength),
@@ -150,8 +150,8 @@ static Tk_OptionSpec optionSpecs[] = {
 };
 
 /*
- * The following tables define the menubutton widget commands and map the 
- * indexes into the string tables into a single enumerated type used 
+ * The following tables define the menubutton widget commands and map the
+ * indexes into the string tables into a single enumerated type used
  * to dispatch the scale widget command.
  */
 
@@ -178,10 +178,10 @@ static char *		MenuButtonTextVarProc _ANSI_ARGS_((
 			    ClientData clientData, Tcl_Interp *interp,
 			    CONST char *name1, CONST char *name2, int flags));
 static int		MenuButtonWidgetObjCmd _ANSI_ARGS_((
-                            ClientData clientData, Tcl_Interp *interp, 
+                            ClientData clientData, Tcl_Interp *interp,
 			    int objc, Tcl_Obj *CONST objv[]));
 static int		ConfigureMenuButton _ANSI_ARGS_((Tcl_Interp *interp,
-			    TkMenuButton *mbPtr, int objc, 
+			    TkMenuButton *mbPtr, int objc,
                             Tcl_Obj *CONST objv[]));
 static void		DestroyMenuButton _ANSI_ARGS_((char *memPtr));
 
@@ -248,8 +248,8 @@ Tk_MenubuttonObjCmd(clientData, interp, objc, objv)
     mbPtr->tkwin = tkwin;
     mbPtr->display = Tk_Display (tkwin);
     mbPtr->interp = interp;
-    mbPtr->widgetCmd = Tcl_CreateObjCommand(interp, 
-            Tk_PathName(mbPtr->tkwin), MenuButtonWidgetObjCmd, 
+    mbPtr->widgetCmd = Tcl_CreateObjCommand(interp,
+            Tk_PathName(mbPtr->tkwin), MenuButtonWidgetObjCmd,
             (ClientData) mbPtr, MenuButtonCmdDeletedProc);
     mbPtr->optionTable = optionTable;
     mbPtr->menuName = NULL;
@@ -347,7 +347,7 @@ MenuButtonWidgetObjCmd(clientData, interp, objc, objv)
         Tcl_WrongNumArgs(interp, 1, objv, "option ?arg arg ...?");
 	return TCL_ERROR;
     }
-    result = Tcl_GetIndexFromObj(interp, objv[1], 
+    result = Tcl_GetIndexFromObj(interp, objv[1],
             commandNames, "option", 0, &index);
     if (result != TCL_OK) {
         return result;
@@ -383,7 +383,7 @@ MenuButtonWidgetObjCmd(clientData, interp, objc, objv)
 		    Tcl_SetObjResult(interp, objPtr);
 		}
 	    } else {
-		result = ConfigureMenuButton(interp, mbPtr, objc-2, 
+		result = ConfigureMenuButton(interp, mbPtr, objc-2,
 		        objv+2);
 	    }
 	    break;
@@ -417,8 +417,9 @@ MenuButtonWidgetObjCmd(clientData, interp, objc, objv)
  */
 
 static void
-DestroyMenuButton(memPtr)
-    char *memPtr;		/* Info about button widget. */
+DestroyMenuButton (
+    char *memPtr		/* Info about button widget. */
+)
 {
     register TkMenuButton *mbPtr = (TkMenuButton *) memPtr;
     TkpDestroyMenuButton(mbPtr);
@@ -487,9 +488,9 @@ DestroyMenuButton(memPtr)
 static int
 ConfigureMenuButton(interp, mbPtr, objc, objv)
     Tcl_Interp *interp;		/* Used for error reporting. */
-    register TkMenuButton *mbPtr;	
+    register TkMenuButton *mbPtr;
                                 /* Information about widget;  may or may
-				 * not already have values for some 
+				 * not already have values for some
 				 * fields. */
     int objc;			/* Number of valid entries in objv. */
     Tcl_Obj *CONST objv[];	/* Arguments. */
@@ -500,12 +501,12 @@ ConfigureMenuButton(interp, mbPtr, objc, objv)
     Tk_Image image;
 
     /*
-     * Eliminate any existing trace on variables monitored by the 
+     * Eliminate any existing trace on variables monitored by the
      * menubutton.
      */
 
     if (mbPtr->textVarName != NULL) {
-	Tcl_UntraceVar(interp, mbPtr->textVarName, 
+	Tcl_UntraceVar(interp, mbPtr->textVarName,
 		TCL_GLOBAL_ONLY|TCL_TRACE_WRITES|TCL_TRACE_UNSETS,
 		MenuButtonTextVarProc, (ClientData) mbPtr);
     }
@@ -570,7 +571,7 @@ ConfigureMenuButton(interp, mbPtr, objc, objv)
 
 	if (mbPtr->imageString != NULL) {
 	    image = Tk_GetImage(mbPtr->interp, mbPtr->tkwin,
-		    mbPtr->imageString, MenuButtonImageProc, 
+		    mbPtr->imageString, MenuButtonImageProc,
 		    (ClientData) mbPtr);
 	    if (image == NULL) {
 	        return TCL_ERROR;
@@ -621,7 +622,7 @@ ConfigureMenuButton(interp, mbPtr, objc, objv)
 	    && (mbPtr->textVarName != NULL)) {
 
       /*
-       * The menubutton displays the value of a variable.  
+       * The menubutton displays the value of a variable.
        * Set up a trace to watch for any changes in it, create
        * the variable if it doesn't exist, and fetch its
        * current value.
@@ -672,7 +673,7 @@ ConfigureMenuButton(interp, mbPtr, objc, objv)
  *
  *---------------------------------------------------------------------------
  */
- 
+
 void
 TkMenuButtonWorldChanged(instanceData)
     ClientData instanceData;	/* Information about widget. */
@@ -946,3 +947,5 @@ MenuButtonImageProc(clientData, x, y, width, height, imgWidth, imgHeight)
 	}
     }
 }
+
+/* EOF */

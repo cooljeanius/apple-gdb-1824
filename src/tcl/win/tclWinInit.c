@@ -1,4 +1,4 @@
-/* 
+/*
  * tclWinInit.c --
  *
  *	Contains the Windows-specific interpreter initialization functions.
@@ -42,7 +42,7 @@ typedef struct {
 #ifndef PROCESSOR_ARCHITECTURE_PPC
 #define PROCESSOR_ARCHITECTURE_PPC   3
 #endif
-#ifndef PROCESSOR_ARCHITECTURE_SHX  
+#ifndef PROCESSOR_ARCHITECTURE_SHX
 #define PROCESSOR_ARCHITECTURE_SHX   4
 #endif
 #ifndef PROCESSOR_ARCHITECTURE_ARM
@@ -114,19 +114,19 @@ static int		ToUtf(CONST WCHAR *wSrc, char *dst);
  */
 
 void
-TclpInitPlatform()
+TclpInitPlatform (void)
 {
     tclPlatform = TCL_PLATFORM_WINDOWS;
 
     /*
-     * The following code stops Windows 3.X and Windows NT 3.51 from 
-     * automatically putting up Sharing Violation dialogs, e.g, when 
-     * someone tries to access a file that is locked or a drive with no 
-     * disk in it.  Tcl already returns the appropriate error to the 
-     * caller, and they can decide to put up their own dialog in response 
-     * to that failure.  
+     * The following code stops Windows 3.X and Windows NT 3.51 from
+     * automatically putting up Sharing Violation dialogs, e.g, when
+     * someone tries to access a file that is locked or a drive with no
+     * disk in it.  Tcl already returns the appropriate error to the
+     * caller, and they can decide to put up their own dialog in response
+     * to that failure.
      *
-     * Under 95 and NT 4.0, this is a NOOP because the system doesn't 
+     * Under 95 and NT 4.0, this is a NOOP because the system doesn't
      * automatically put up dialogs when the above operations fail.
      */
 
@@ -148,10 +148,10 @@ TclpInitPlatform()
  *
  * TclpInitLibraryPath --
  *
- *	Initialize the library path at startup.  
+ *	Initialize the library path at startup.
  *
- *	This call sets the library path to strings in UTF-8. Any 
- *	pre-existing library path information is assumed to have been 
+ *	This call sets the library path to strings in UTF-8. Any
+ *	pre-existing library path information is assumed to have been
  *	in the native multibyte encoding.
  *
  *	Called at process initialization time.
@@ -229,7 +229,7 @@ TclpInitLibraryPath(path)
      */
 
     AppendDllPath(pathPtr, TclWinGetTclInstance(), installLib);
-    
+
 
     /*
      * Look for the library relative to the executable.  This algorithm
@@ -250,7 +250,7 @@ TclpInitLibraryPath(path)
      *	<bindir>/../../../<developLib>
      *	   (e.g. /usr/src/tcl8.4.0/unix/solaris-sparc/../../../tcl8.4.0/library)
      */
-     
+
     /*
      * The variable path holds an absolute path.  Take care not to
      * overwrite pathv[0] since that might produce a relative path.
@@ -366,7 +366,7 @@ AppendEnvironment(
      * The "L" preceeding the TCL_LIBRARY string is used to tell VC++
      * that this is a unicode string.
      */
-    
+
     if (GetEnvironmentVariableW(L"TCL_LIBRARY", wBuf, MAX_PATH) == 0) {
         buf[0] = '\0';
 	GetEnvironmentVariableA("TCL_LIBRARY", buf, MAX_PATH);
@@ -381,7 +381,7 @@ AppendEnvironment(
 	TclWinNoBackslash(buf);
 	Tcl_SplitPath(buf, &pathc, &pathv);
 
-	/* 
+	/*
 	 * The lstrcmpi() will work even if pathv[pathc - 1] is random
 	 * UTF-8 chars because I know lib is ascii.
 	 */
@@ -395,7 +395,7 @@ AppendEnvironment(
 	     * removing the old "tclX.Y" and substituting the current
 	     * version string.
 	     */
-	    
+
 	    pathv[pathc - 1] = (lib + 4);
 	    Tcl_DStringInit(&ds);
 	    str = Tcl_JoinPath(pathc, pathv, &ds);
@@ -426,9 +426,9 @@ AppendEnvironment(
  *---------------------------------------------------------------------------
  */
 
-static void 
+static void
 AppendDllPath(
-    Tcl_Obj *pathPtr, 
+    Tcl_Obj *pathPtr,
     HMODULE hModule,
     CONST char *lib)
 {
@@ -461,7 +461,7 @@ AppendDllPath(
  *
  * ToUtf --
  *
- *	Convert a char string to a UTF string.  
+ *	Convert a char string to a UTF string.
  *
  * Results:
  *	None.
@@ -514,7 +514,7 @@ ToUtf(
  */
 
 void
-TclpSetInitialEncodings()
+TclpSetInitialEncodings (void)
 {
     CONST char *encoding;
     char buf[4 + TCL_INTEGER_SPACE];
@@ -523,7 +523,7 @@ TclpSetInitialEncodings()
 	int platformId;
 	platformId = TclWinGetPlatformId();
 	TclWinSetInterfaces(platformId == VER_PLATFORM_WIN32_NT);
-	
+
 	wsprintfA(buf, "cp%d", GetACP());
 	Tcl_SetSystemEncoding(NULL, buf);
 
@@ -532,7 +532,7 @@ TclpSetInitialEncodings()
 	    if (pathPtr != NULL) {
 		int i, objc;
 		Tcl_Obj **objv;
-		
+
 		objc = 0;
 		Tcl_ListObjGetElements(NULL, pathPtr, &objc, &objv);
 		for (i = 0; i < objc; i++) {
@@ -542,13 +542,13 @@ TclpSetInitialEncodings()
 
 		    string = Tcl_GetStringFromObj(objv[i], &length);
 		    Tcl_ExternalToUtfDString(NULL, string, length, &ds);
-		    Tcl_SetStringObj(objv[i], Tcl_DStringValue(&ds), 
+		    Tcl_SetStringObj(objv[i], Tcl_DStringValue(&ds),
 			    Tcl_DStringLength(&ds));
 		    Tcl_DStringFree(&ds);
 		}
 	    }
 	}
-	
+
 	libraryPathEncodingFixed = 1;
     } else {
 	wsprintfA(buf, "cp%d", GetACP());
@@ -586,8 +586,8 @@ TclpSetInitialEncodings()
 
 void
 TclpSetVariables(interp)
-    Tcl_Interp *interp;		/* Interp to initialize. */	
-{	    
+    Tcl_Interp *interp;		/* Interp to initialize. */
+{
     CONST char *ptr;
     char buffer[TCL_INTEGER_SPACE * 2];
     SYSTEM_INFO sysInfo;
@@ -623,7 +623,7 @@ TclpSetVariables(interp)
     /*
      * The existence of the "debug" element of the tcl_platform array indicates
      * that this particular Tcl shell has been compiled with debug information.
-     * Using "info exists tcl_platform(debug)" a Tcl script can direct the 
+     * Using "info exists tcl_platform(debug)" a Tcl script can direct the
      * interpreter to load debug versions of DLLs with the load command.
      */
 
@@ -676,7 +676,7 @@ TclpSetVariables(interp)
  *
  * TclpFindVariable --
  *
- *	Locate the entry in environ for a given name.  On Unix this 
+ *	Locate the entry in environ for a given name.  On Unix this
  *	routine is case sensetive, on Windows this matches mioxed case.
  *
  * Results:
@@ -715,7 +715,7 @@ TclpFindVariable(name, lengthPtr)
     nameUpper = (char *) ckalloc((unsigned) length+1);
     memcpy((VOID *) nameUpper, (VOID *) name, (size_t) length+1);
     Tcl_UtfToUpper(nameUpper);
-    
+
     Tcl_DStringInit(&envString);
     for (i = 0, env = environ[i]; env != NULL; i++, env = environ[i]) {
 	/*
@@ -723,7 +723,7 @@ TclpFindVariable(name, lengthPtr)
 	 * the name to all upper case, so we do not have to convert
 	 * all the characters after the equal sign.
 	 */
-	
+
 	envUpper = Tcl_ExternalToUtfDString(NULL, env, -1, &envString);
 	p1 = strchr(envUpper, '=');
 	if (p1 == NULL) {
@@ -743,10 +743,10 @@ TclpFindVariable(name, lengthPtr)
 	    result = i;
 	    goto done;
 	}
-	
+
 	Tcl_DStringFree(&envString);
     }
-    
+
     *lengthPtr = i;
 
     done:
@@ -855,3 +855,5 @@ Tcl_SourceRCFile(interp)
         Tcl_DStringFree(&temp);
     }
 }
+
+/* EOF */

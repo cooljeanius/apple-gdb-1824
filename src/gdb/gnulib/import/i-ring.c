@@ -1,9 +1,9 @@
 /* a simple ring buffer
-   Copyright (C) 2006, 2009-2023 Free Software Foundation, Inc.
+   Copyright (C) 2006, 2009-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation, either version 3 of the
+   published by the Free Software Foundation; either version 2.1 of the
    License, or (at your option) any later version.
 
    This file is distributed in the hope that it will be useful,
@@ -24,11 +24,10 @@
 void
 i_ring_init (I_ring *ir, int default_val)
 {
-  int i;
   ir->ir_empty = true;
   ir->ir_front = 0;
   ir->ir_back = 0;
-  for (i = 0; i < I_RING_SIZE; i++)
+  for (int i = 0; i < I_RING_SIZE; i++)
     ir->ir_data[i] = default_val;
   ir->ir_default_val = default_val;
 }
@@ -55,10 +54,9 @@ i_ring_push (I_ring *ir, int val)
 int
 i_ring_pop (I_ring *ir)
 {
-  int top_val;
   if (i_ring_empty (ir))
     abort ();
-  top_val = ir->ir_data[ir->ir_front];
+  int top_val = ir->ir_data[ir->ir_front];
   ir->ir_data[ir->ir_front] = ir->ir_default_val;
   if (ir->ir_front == ir->ir_back)
     ir->ir_empty = true;

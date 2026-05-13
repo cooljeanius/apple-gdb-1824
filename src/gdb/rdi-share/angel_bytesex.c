@@ -20,19 +20,17 @@
 
 static int reversing_bytes = 0;
 
-void bytesex_reverse(yes_or_no)
-  int yes_or_no;
+void bytesex_reverse(int yes_or_no)
 {
   reversing_bytes = yes_or_no;
 }
 
-int bytesex_reversing()
+int bytesex_reversing(void)
 {
   return reversing_bytes;
 }
 
-int32 bytesex_hostval(v)
-  int32 v;
+int32 bytesex_hostval(int32 v)
 { /* Return v with the same endian-ness as the host */
   /* This mess generates better ARM code than the more obvious mess */
   /* and may eventually peephole to optimal code...                 */
@@ -48,8 +46,7 @@ int32 bytesex_hostval(v)
   return v;
 }
 
-int32 bytesex_hostval_16(v)
-  int32 v;
+int32 bytesex_hostval_16(int32 v)
 {
   if (reversing_bytes) {
     v = ((v >> 8) & 0xff) | ((v << 8) & 0xff00);

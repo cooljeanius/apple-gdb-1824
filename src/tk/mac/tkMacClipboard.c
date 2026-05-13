@@ -28,7 +28,7 @@
  *	Retrieve the specified selection from another process.  For
  *	now, only fetching XA_STRING from CLIPBOARD is supported.
  *	Eventually other types should be allowed.
- * 
+ *
  * Results:
  *	The return value is a standard Tcl return value.
  *	If an error occurs (such as no selection exists)
@@ -60,7 +60,7 @@ TkSelGetSelection(
 
     if ((selection == Tk_InternAtom(tkwin, "CLIPBOARD"))
 	    && (target == XA_STRING)) {
-	/* 
+	/*
 	 * Get the scrap from the Macintosh global clipboard.
 	 */
 	handle = NewHandle(1);
@@ -81,10 +81,10 @@ TkSelGetSelection(
 	    DisposeHandle(handle);
 	    return result;
 	}
-	
+
 	DisposeHandle(handle);
     }
-    
+
     Tcl_AppendResult(interp, Tk_GetAtomName(tkwin, selection),
 	" selection doesn't exist or form \"", Tk_GetAtomName(tkwin, target),
 	"\" not defined", (char *) NULL);
@@ -164,6 +164,7 @@ TkSelUpdateClipboard(
     TkWindow *winPtr,			/* Window associated with clipboard. */
     TkClipboardTarget *targetPtr)	/* Info about the content. */
 {
+  return;
 }
 
 /*
@@ -172,7 +173,7 @@ TkSelUpdateClipboard(
  * TkSelEventProc --
  *
  *	This procedure is invoked whenever a selection-related
- *	event occurs. 
+ *	event occurs.
  *
  * Results:
  *	None.
@@ -238,7 +239,7 @@ TkSelPropProc(
  */
 
 void
-TkSuspendClipboard()
+TkSuspendClipboard (void)
 {
     TkClipboardTarget *targetPtr;
     TkClipboardBuffer *cbPtr;
@@ -294,7 +295,7 @@ TkSuspendClipboard()
      */
 
     if (TkGetMainInfoList() != NULL) {
-	Tk_ClearSelection((Tk_Window) TkGetMainInfoList()->winPtr, 
+	Tk_ClearSelection((Tk_Window) TkGetMainInfoList()->winPtr,
 		Tk_InternAtom((Tk_Window) TkGetMainInfoList()->winPtr,
 			"CLIPBOARD"));
     }

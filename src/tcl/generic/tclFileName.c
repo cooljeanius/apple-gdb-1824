@@ -99,7 +99,7 @@ static Tcl_Obj*		SplitUnixPath _ANSI_ARGS_((CONST char *path));
  */
 
 static void
-FileNameInit()
+FileNameInit (void)
 {
     ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
     if (!tsdPtr->initialized) {
@@ -1404,8 +1404,9 @@ Tcl_TranslateFileName(interp, name, bufferPtr)
  */
 
 char *
-TclGetExtension(name)
-    char *name;			/* File name to parse. */
+TclGetExtension (
+    char *name			/* File name to parse. */
+)
 {
     char *p, *lastSep;
 
@@ -2198,9 +2199,10 @@ TclGlob(interp, pattern, unquotedPrefix, globFlags, types)
  */
 
 static int
-SkipToChar(stringPtr, match)
-    char **stringPtr;			/* Pointer string to check. */
-    char *match;			/* Pointer to character to find. */
+SkipToChar (
+    char **stringPtr,			/* Pointer string to check. */
+    char *match			/* Pointer to character to find. */
+)
 {
     int quoted, level;
     register char *p;
@@ -2700,6 +2702,6 @@ TclFileDirname(interp, pathPtr)
  */
 
 Tcl_StatBuf *
-Tcl_AllocStatBuf() {
+Tcl_AllocStatBuf(void) {
     return (Tcl_StatBuf *) ckalloc(sizeof(Tcl_StatBuf));
 }

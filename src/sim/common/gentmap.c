@@ -3,13 +3,17 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning gentmap.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning gentmap.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning gentmap.c expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning gentmap.c expects <stdio.h> to be included.
+# endif /*__GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 
 struct tdefs {
@@ -39,7 +43,7 @@ static struct tdefs open_tdefs[] = {
 };
 
 static void
-gen_targ_vals_h ()
+gen_targ_vals_h (void)
 {
   struct tdefs *t;
 
@@ -68,7 +72,7 @@ gen_targ_vals_h ()
 }
 
 static void
-gen_targ_map_c ()
+gen_targ_map_c (void)
 {
   struct tdefs *t;
 
@@ -118,9 +122,7 @@ gen_targ_map_c ()
 }
 
 int
-main (argc, argv)
-     int argc;
-     char *argv[];
+main (int argc, char *argv[])
 {
   if (argc != 2)
     abort ();

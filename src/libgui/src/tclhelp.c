@@ -346,7 +346,7 @@ help_display_file_command (ClientData cd, Tcl_Interp *interp, int argc, char **a
 /* Initialize the help command structure.  */
 
 struct help_command_data *
-hdata_initialize ()
+hdata_initialize (void)
 {
   struct help_command_data *hdata;
 
@@ -565,7 +565,7 @@ help_display_file_command (ClientData cd, Tcl_Interp *interp, int argc, char **a
 /* Initialize the help command structure.  */
 
 struct help_command_data *
-hdata_initialize ()
+hdata_initialize (void)
 {
   struct help_command_data *hdata;
 

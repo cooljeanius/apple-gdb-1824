@@ -227,7 +227,11 @@ modify_trace_bit(thread_t thread, int value)
 
 ULONGEST read_memory_unsigned_integer(CORE_ADDR memaddr, int len);
 
+# ifdef TARGET_AARCH64
+extern aarch64_macosx_tdep_inf_status_t arm_macosx_tdep_inf_status;
+# else
 extern arm_macosx_tdep_inf_status_t arm_macosx_tdep_inf_status;
+# endif /* TARGET_AARCH64 */
 
 kern_return_t
 modify_trace_bit(thread_t thread, int value)

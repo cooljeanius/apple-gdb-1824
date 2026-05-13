@@ -1,5 +1,5 @@
 /* integer_length_l - find most significant bit in an 'unsigned long'.
-   Copyright (C) 2011-2023 Free Software Foundation, Inc.
+   Copyright (C) 2011-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
@@ -84,9 +84,7 @@ FUNC (TYPE x)
   if (sizeof (TYPE) > 2 * sizeof (unsigned int))
     {
       /* Generic loop.  */
-      size_t i;
-
-      for (i = (sizeof (TYPE) - 1) / sizeof (unsigned int); i >= 2; i--)
+      for (size_t i = (sizeof (TYPE) - 1) / sizeof (unsigned int); i >= 2; i--)
         {
           unsigned int y = x >> (i * sizeof (unsigned int) * CHAR_BIT);
           if (y != 0)

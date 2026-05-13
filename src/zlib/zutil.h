@@ -13,6 +13,10 @@
 #ifndef ZUTIL_H
 #define ZUTIL_H
 
+#ifndef __has_include
+# define __has_include(foo) 0
+#endif /* !__has_include */
+
 #ifdef HAVE_HIDDEN
 #  define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
 #else
@@ -33,7 +37,7 @@
 #  endif
 #  include <string.h>
 #  include <stdlib.h>
-#endif
+#endif /* defined(STDC) && !defined(Z_SOLO) */
 
 #ifdef Z_SOLO
    typedef long ptrdiff_t;  /* guess -- will be caught if guess is wrong */
@@ -122,20 +126,29 @@ extern z_const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #  if defined(M_I86) && !defined(Z_SOLO)
 #    include <malloc.h>
 #  endif
-#endif
+#endif /* OS2 */
 
 #if defined(MACOS) || defined(TARGET_OS_MAC)
-#  define OS_CODE  0x07
-#  ifndef Z_SOLO
-#    if defined(__MWERKS__) && __dest_os != __be_os && __dest_os != __win32_os
-#      include <unix.h> /* for fdopen */
-#    else
-#      ifndef fdopen
-#        define fdopen(fd,mode) NULL /* No fdopen() */
-#      endif
-#    endif
-#  endif
-#endif
+# define OS_CODE  0x07
+# ifndef Z_SOLO
+#  if (defined(__MWERKS__) && defined(__dest_os) && (__dest_os != __be_os) && \
+       (__dest_os != __win32_os)) || \
+      defined(HAVE_UNIX_H) || __has_include(<unix.h>)
+#   include <unix.h> /* for fdopen */
+#  else
+#   if defined(__STDC__) || defined(STDC_HEADERS) || defined(HAVE_STDIO_H) || \
+       __has_include(<stdio.h>)
+#    include <stdio.h>
+#   else
+#    if !defined(fdopen) && !defined(HAVE_FDOPEN) && \
+        (!defined(HAVE_DECL_FDOPEN) || !HAVE_DECL_FDOPEN) && \
+        (!defined(__DARWIN_C_LEVEL) || (__DARWIN_C_LEVEL < 198808L))
+#     define fdopen(fd,mode) NULL /* No fdopen() */
+#    endif /* !fdopen && !HAVE_FDOPEN && !HAVE_DECL_FDOPEN */
+#   endif /* __STDC__ || STDC_HEADERS || HAVE_STDIO_H */
+#  endif /* __MWERKS__ || HAVE_UNIX_H */
+# endif /* !Z_SOLO */
+#endif /* MACOS || TARGET_OS_MAC */
 
 #ifdef TOPS20
 #  define OS_CODE  0x0a
