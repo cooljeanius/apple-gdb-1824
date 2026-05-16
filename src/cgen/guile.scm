@@ -8,45 +8,39 @@
 
 ; eval takes a module argument in 1.6 and later, but not 2.2.4
 
-(if (or 
-    (and (= *guile-major-version* 2) (< *guile-minor-version* 2))
-	(and (= *guile-major-version* 1) (>= *guile-minor-version* 6)))
-    (define (eval1 expr)
-      (eval expr (current-module)))
-    (define (eval1 expr)
-      (eval expr))
-)
+(define (eval1 expr)
+  (if (or
+       (> *guile-major-version* 2)
+       (and (= *guile-major-version* 2) (< *guile-minor-version* 2))
+       (and (= *guile-major-version* 1) (>= *guile-minor-version* 6)))
+      (eval expr (current-module))
+      (eval expr)))
 
 ; symbol-bound? is deprecated in 1.6
 
 (if (or (> *guile-major-version* 1)
 	(>= *guile-minor-version* 6))
-    (define (symbol-bound? table s)
-      (if table
-	  (error "must pass #f for symbol-bound? first arg"))
-      ; FIXME: Not sure this is 100% correct.
-      (module-defined? (current-module) s))
-)
+    (eval1
+     '(define (symbol-bound? table s)
+	(if table
+	    (error "must pass #f for symbol-bound? first arg"))
+	; FIXME: Not sure this is 100% correct.
+	(module-defined? (current-module) s))))
 
 (if (symbol-bound? #f 'load-from-path)
-    (begin
-      (define (load file)
+    (eval1
+     '(define (load file)
 	(begin
 	  ;(load-from-path file)
 	  (primitive-load-path file)
-	  ))
-      )
-)
+	  ))))
 
 ; FIXME: to be deleted
 (define =? =)
 (define >=? >=)
 
 (if (not (symbol-bound? #f '%stat))
-    (begin
-      (define %stat stat)
-      )
-)
+    (eval1 '(define %stat stat)))
 
 (if (symbol-bound? #f 'debug-enable)
     (debug-enable 'backtrace)
@@ -56,8 +50,7 @@
 ; CGEN uses reverse!
 (if (and (not (symbol-bound? #f 'reverse!))
 	 (symbol-bound? #f 'list-reverse!))
-    (define reverse! list-reverse!)
-)
+    (eval1 '(define reverse! list-reverse!)))
 
 (define (debug-write . objs)
   (map (lambda (o)

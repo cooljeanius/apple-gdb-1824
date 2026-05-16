@@ -1318,8 +1318,8 @@
 ; FIXME: Need deep copier instead.
 
 (if (defined? 'vector-copy)
-    (define -object-vector-copy vector-copy)
-    (define (-object-vector-copy v) (list->vector (vector->list v)))
+    (eval1 '(define -object-vector-copy vector-copy))
+    (eval1 '(define (-object-vector-copy v) (list->vector (vector->list v))))
 )
 
 ; Profiling support
