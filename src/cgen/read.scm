@@ -90,7 +90,7 @@
 ; If this is set to #f, the file is always loaded.
 ; Don't override any current setting, e.g. from dev.scm.
 (if (not (defined? 'CHECK-LOADED?))
-    (define CHECK-LOADED? #t))
+    (eval1 '(define CHECK-LOADED? #t)))
 
 ; Unlink file if we're reloaded (say in an interactive session).
 ; Dynamic loading is enabled by setting LIBCPU.SO to the pathname of the .so.
@@ -105,7 +105,7 @@
 ; List of loaded files.
 
 (if (not (defined? '-loaded-file-list))
-    (define -loaded-file-list '()))
+    (eval1 '(define -loaded-file-list '())))
 
 ; Return non-zero if FILE was loaded last time through.
 
