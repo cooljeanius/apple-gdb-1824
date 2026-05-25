@@ -87,8 +87,13 @@ jobs:
         if: "${{ failure() }}"
         run: |
           find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
-          if test -x /usr/bin/texi2dvi; then /usr/bin/texi2dvi --version; fi
-          which guile && guile --version
+          if test -x /usr/bin/texi2dvi; then \
+            sync && echo "texi2dvi version is:"; \
+            sync && /usr/bin/texi2dvi --version; \
+          else \
+            sync && echo "skipping texi2dvi version check..."; \
+          fi
+          sync && echo "guile is:" && sync && which guile && guile --version
     strategy:
       fail-fast: false
       matrix:
