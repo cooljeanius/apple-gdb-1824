@@ -1,0 +1,699 @@
+<! Architecture documentation for arm.
+
+THIS FILE IS MACHINE GENERATED WITH CGEN.
+
+See the input .cpu file(s) for copyright information.
+
+This file is part of CGEN.
+
+
+>
+
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="description" content="ARM Architecture Documentation">
+  <meta name="language" content="en-us">
+  <meta name="owner" content="dje@sebabeach.org (Doug Evans)">
+  <meta name="reply-to" content="dje@sebabeach.org (Doug Evans)">
+  <title>ARM Architecture Documentation</title>
+</head>
+<body bgcolor="#F0F0F0" TEXT="#003333" LINK="#FF0000" VLINK="#444444" alink="#000000">
+<h1>
+ARM Architecture Documentation</h1>
+
+<br>
+DISCLAIMER: This documentation is derived from the cgen cpu description
+of this architecture, and does not represent official documentation
+of the chip maker.
+<p><hr><p>
+
+<ul>
+<li><a href="#arch">Architecture</a></li>
+<li><a href="#machines">Machine variants</a></li>
+<li><a href="#models">Model variants</a></li>
+<li><a href="#registers">Registers</a></li>
+<li><a href="arm-insn.html#insns">Instructions</a></li>
+<li><a href="arm-insn.html#macro-insns">Macro instructions</a></li>
+<li><a href="#assembler">Assembler supplemental</a></li>
+</ul>
+<br>
+In cgen-parlance, an architecture consists of machines and models.
+A `machine' is the specification of a variant of the architecture,
+and a `model' is the implementation of that specification.
+Typically there is a one-to-one correspondance between machine and model.
+The distinction allows for separation of what application programs see
+(the machine), and how to tune for the chip (what the compiler sees).
+<br>
+A "cpu family" is a cgen concoction to help organize the generated code.
+Chip variants that are quite dissimilar can be treated separately by the
+generated code even though they're both members of the same architecture.
+
+<hr>
+<a name="arch"></a>
+<h2>ARM Architecture</h2>
+<p>
+This section describes various things about the cgen description of
+the ARM architecture.  Familiarity with cgen cpu descriptions
+is assumed.
+<p>
+Bit number orientation (arch.lsb0?): lsb = 0
+<p>
+<h3>ISA description</h3>
+<p>
+<ul>
+<li>
+arm - ARM instruction set (32 bit insns)
+<br>
+<ul>
+<li>default-insn-word-bitsize: 32</li>
+<br>
+<li>default-insn-bitsize: 32</li>
+<br>
+<li>base-insn-bitsize: 32</li>
+<br>
+<li>decode-assist:  27 26 25 24 23 22 21</li>
+<br>
+<li>decode-splits: </li>
+<br>
+<li>condition-field: f-cond</li>
+<br>
+<li>condition:
+<font size=+2>
+<pre>(c-call BI "eval_cond" cond-code pc)
+</pre></font>
+</li>
+<br>
+<li>setup-semantics:
+<font size=+2>
+<pre>((reg h-gr 15)
+ (add pc (attr (current-insn) R15-OFFSET)))
+</pre></font>
+</li>
+<br>
+</ul>
+</li>
+<li>
+thumb - ARM Thumb instruction set (16 bit insns)
+<br>
+<ul>
+<li>default-insn-word-bitsize: 16</li>
+<br>
+<li>default-insn-bitsize: 16</li>
+<br>
+<li>base-insn-bitsize: 16</li>
+<br>
+<li>decode-assist:  15 14 13 12 11 10 9 8</li>
+<br>
+<li>decode-splits: </li>
+<br>
+<li>setup-semantics:
+<font size=+2>
+<pre>((reg h-gr 15) (add pc 4))
+</pre></font>
+</li>
+<br>
+</ul>
+</li>
+</ul>
+<p>
+<h3>CPU Families</h3>
+<ul>
+<li>
+arm7f - ARM7
+<br>
+<br>
+Machines:
+<ul>
+<li>
+arm7tdmi - ARM 7TDMI core
+<br>
+<br>
+Models:
+<ul>
+<li>
+arm710 - ARM 710 microprocessor
+<br>
+</li>
+</ul>
+</li>
+<br>
+</ul>
+</li>
+<br>
+</ul>
+
+<hr>
+<a name="machines"></a>
+<h2>Machine variants</h2>
+<ul>
+<li><a href="#mach-arm7tdmi">arm7tdmi - ARM 7TDMI core</a>
+</li>
+</ul>
+<a name="mach-arm7tdmi"></a>
+<h3>arm7tdmi - ARM 7TDMI core</h3>
+<ul>
+<li>
+bfd-name: arm7tdmi
+</li>
+<li>
+isas:  arm thumb
+</li>
+</ul>
+
+<hr>
+<a name="models"></a>
+<h2>Model variants</h2>
+<ul>
+<li><a href="#model-arm710">arm710 - ARM 710 microprocessor</a>
+</li>
+</ul>
+<a name="model-arm710"></a>
+<h3>arm710 - ARM 710 microprocessor</h3>
+<ul>
+</ul>
+
+<hr>
+<a name="registers"></a>
+<h2>Registers</h2>
+<ul>
+<li><a href="#reg-h-cbit">h-cbit - carry bit</a>
+</li>
+<li><a href="#reg-h-cpsr">h-cpsr - Current Program Status Register</a>
+</li>
+<li><a href="#reg-h-fbit">h-fbit - fiq disable bit</a>
+</li>
+<li><a href="#reg-h-gr">h-gr - General purpose registers</a>
+</li>
+<li><a href="#reg-h-gr-abt">h-gr-abt - abort mode r13-r14 regs</a>
+</li>
+<li><a href="#reg-h-gr-fiq">h-gr-fiq - fiq mode r8-r14 regs</a>
+</li>
+<li><a href="#reg-h-gr-irq">h-gr-irq - irq mode r13-r14 regs</a>
+</li>
+<li><a href="#reg-h-gr-svc">h-gr-svc - supervisor mode r13-r14 regs</a>
+</li>
+<li><a href="#reg-h-gr-t">h-gr-t - Thumb's general purpose registers</a>
+</li>
+<li><a href="#reg-h-gr-und">h-gr-und - undefined mode r13-r14 regs</a>
+</li>
+<li><a href="#reg-h-gr-usr">h-gr-usr - user/system mode r8-r14 holding buffer</a>
+</li>
+<li><a href="#reg-h-hiregs">h-hiregs - High registers (R8-R15)</a>
+</li>
+<li><a href="#reg-h-ibit">h-ibit - irq disable bit</a>
+</li>
+<li><a href="#reg-h-lr-t">h-lr-t - Thumb's access to the LR register</a>
+</li>
+<li><a href="#reg-h-mbits">h-mbits - m4,m3,m2,m1,m0</a>
+</li>
+<li><a href="#reg-h-nbit">h-nbit - negative bit</a>
+</li>
+<li><a href="#reg-h-pc">h-pc - ARM program counter (h-gr reg 15)</a>
+</li>
+<li><a href="#reg-h-sp-t">h-sp-t - Thumb's access to the SP register</a>
+</li>
+<li><a href="#reg-h-spsr">h-spsr - virtual spsr</a>
+</li>
+<li><a href="#reg-h-spsr-abt">h-spsr-abt - Saved Process Status Register during Abort</a>
+</li>
+<li><a href="#reg-h-spsr-fiq">h-spsr-fiq - Saved Process Status Register during FIQ</a>
+</li>
+<li><a href="#reg-h-spsr-irq">h-spsr-irq - Saved Process Status Register during IRQ</a>
+</li>
+<li><a href="#reg-h-spsr-svc">h-spsr-svc - Saved Process Status Register during SVC</a>
+</li>
+<li><a href="#reg-h-spsr-und">h-spsr-und - Saved Process Status Register during Undefined</a>
+</li>
+<li><a href="#reg-h-tbit">h-tbit - thumb bit</a>
+</li>
+<li><a href="#reg-h-vbit">h-vbit - overflow bit</a>
+</li>
+<li><a href="#reg-h-zbit">h-zbit - zerobit</a>
+</li>
+</ul>
+<a name="reg-h-cbit"></a>
+<h3>h-cbit - carry bit</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 1
+</li>
+</ul>
+<a name="reg-h-cpsr"></a>
+<h3>h-cpsr - Current Program Status Register</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+</ul>
+<a name="reg-h-fbit"></a>
+<h3>h-fbit - fiq disable bit</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 1
+</li>
+</ul>
+<a name="reg-h-gr"></a>
+<h3>h-gr - General purpose registers</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+<li>
+array: [16]
+<br>
+names:
+<br>
+<table frame=border border=2>
+<tr>
+<tr>
+<td>pc</td>
+<td>15</td>
+</tr>
+<tr>
+<td>r0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>r1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>r2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>r3</td>
+<td>3</td>
+</tr>
+<tr>
+<td>r4</td>
+<td>4</td>
+</tr>
+<tr>
+<td>r5</td>
+<td>5</td>
+</tr>
+<tr>
+<td>r6</td>
+<td>6</td>
+</tr>
+<tr>
+<td>r7</td>
+<td>7</td>
+</tr>
+<tr>
+<td>r8</td>
+<td>8</td>
+</tr>
+<tr>
+<td>r9</td>
+<td>9</td>
+</tr>
+<tr>
+<td>r10</td>
+<td>10</td>
+</tr>
+<tr>
+<td>r11</td>
+<td>11</td>
+</tr>
+<tr>
+<td>r12</td>
+<td>12</td>
+</tr>
+<tr>
+<td>r13</td>
+<td>13</td>
+</tr>
+<tr>
+<td>r14</td>
+<td>14</td>
+</tr>
+<tr>
+<td>r15</td>
+<td>15</td>
+</tr>
+<tr>
+<td>sp</td>
+<td>13</td>
+</tr>
+<tr>
+<td>lr</td>
+<td>14</td>
+</tr>
+</li>
+</ul>
+<a name="reg-h-gr-abt"></a>
+<h3>h-gr-abt - abort mode r13-r14 regs</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+<li>
+array: [2]
+</li>
+</ul>
+<a name="reg-h-gr-fiq"></a>
+<h3>h-gr-fiq - fiq mode r8-r14 regs</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+<li>
+array: [7]
+</li>
+</ul>
+<a name="reg-h-gr-irq"></a>
+<h3>h-gr-irq - irq mode r13-r14 regs</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+<li>
+array: [2]
+</li>
+</ul>
+<a name="reg-h-gr-svc"></a>
+<h3>h-gr-svc - supervisor mode r13-r14 regs</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+<li>
+array: [2]
+</li>
+</ul>
+<a name="reg-h-gr-t"></a>
+<h3>h-gr-t - Thumb's general purpose registers</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+<li>
+array: [8]
+<br>
+names:
+<br>
+<table frame=border border=2>
+<tr>
+<tr>
+<td>r0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>r1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>r2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>r3</td>
+<td>3</td>
+</tr>
+<tr>
+<td>r4</td>
+<td>4</td>
+</tr>
+<tr>
+<td>r5</td>
+<td>5</td>
+</tr>
+<tr>
+<td>r6</td>
+<td>6</td>
+</tr>
+<tr>
+<td>r7</td>
+<td>7</td>
+</tr>
+</li>
+</ul>
+<a name="reg-h-gr-und"></a>
+<h3>h-gr-und - undefined mode r13-r14 regs</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+<li>
+array: [2]
+</li>
+</ul>
+<a name="reg-h-gr-usr"></a>
+<h3>h-gr-usr - user/system mode r8-r14 holding buffer</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+<li>
+array: [7]
+</li>
+</ul>
+<a name="reg-h-hiregs"></a>
+<h3>h-hiregs - High registers (R8-R15)</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+<li>
+array: [8]
+<br>
+names:
+<br>
+<table frame=border border=2>
+<tr>
+<tr>
+<td>r8</td>
+<td>0</td>
+</tr>
+<tr>
+<td>r9</td>
+<td>1</td>
+</tr>
+<tr>
+<td>r10</td>
+<td>2</td>
+</tr>
+<tr>
+<td>r11</td>
+<td>3</td>
+</tr>
+<tr>
+<td>r12</td>
+<td>4</td>
+</tr>
+<tr>
+<td>r13</td>
+<td>5</td>
+</tr>
+<tr>
+<td>r14</td>
+<td>6</td>
+</tr>
+<tr>
+<td>r15</td>
+<td>7</td>
+</tr>
+</li>
+</ul>
+<a name="reg-h-ibit"></a>
+<h3>h-ibit - irq disable bit</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 1
+</li>
+</ul>
+<a name="reg-h-lr-t"></a>
+<h3>h-lr-t - Thumb's access to the LR register</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+</ul>
+<a name="reg-h-mbits"></a>
+<h3>h-mbits - m4,m3,m2,m1,m0</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 5
+</li>
+</ul>
+<a name="reg-h-nbit"></a>
+<h3>h-nbit - negative bit</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 1
+</li>
+</ul>
+<a name="reg-h-pc"></a>
+<h3>h-pc - ARM program counter (h-gr reg 15)</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+</ul>
+<a name="reg-h-sp-t"></a>
+<h3>h-sp-t - Thumb's access to the SP register</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+</ul>
+<a name="reg-h-spsr"></a>
+<h3>h-spsr - virtual spsr</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+</ul>
+<a name="reg-h-spsr-abt"></a>
+<h3>h-spsr-abt - Saved Process Status Register during Abort</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+</ul>
+<a name="reg-h-spsr-fiq"></a>
+<h3>h-spsr-fiq - Saved Process Status Register during FIQ</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+</ul>
+<a name="reg-h-spsr-irq"></a>
+<h3>h-spsr-irq - Saved Process Status Register during IRQ</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+</ul>
+<a name="reg-h-spsr-svc"></a>
+<h3>h-spsr-svc - Saved Process Status Register during SVC</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+</ul>
+<a name="reg-h-spsr-und"></a>
+<h3>h-spsr-und - Saved Process Status Register during Undefined</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 32
+</li>
+</ul>
+<a name="reg-h-tbit"></a>
+<h3>h-tbit - thumb bit</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 1
+</li>
+</ul>
+<a name="reg-h-vbit"></a>
+<h3>h-vbit - overflow bit</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 1
+</li>
+</ul>
+<a name="reg-h-zbit"></a>
+<h3>h-zbit - zerobit</h3>
+<ul>
+<li>
+machines:  base
+</li>
+<li>
+bitsize: 1
+</li>
+</ul>
+
+<hr>
+<a name="assembler"></a>
+<h2>Assembler supplemental</h2>
+
+<p><hr><p>
+This documentation was machine generated from the cgen cpu description
+files for this architecture.
+<br>
+<a href="http://sources.redhat.com/cgen/">http://sources.redhat.com/cgen/</a>
+</body>
+</html>
