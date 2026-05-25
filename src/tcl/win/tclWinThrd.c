@@ -1,4 +1,4 @@
-/* 
+/*
  * tclWinThread.c --
  *
  *	This file implements the Windows-specific thread operations.
@@ -53,12 +53,12 @@ static Tcl_Mutex allocLockPtr = (Tcl_Mutex) &allocLock;
 static CRITICAL_SECTION joinLock;
 
 /*
- * Condition variables are implemented with a combination of a 
+ * Condition variables are implemented with a combination of a
  * per-thread Windows Event and a per-condition waiting queue.
  * The idea is that each thread has its own Event that it waits
  * on when it is doing a ConditionWait; it uses the same event for
  * all condition variables because it only waits on one at a time.
- * Each condition variable has a queue of waiting threads, and a 
+ * Each condition variable has a queue of waiting threads, and a
  * mutex used to serialize access to this queue.
  *
  * Special thanks to David Nichols and
@@ -84,7 +84,7 @@ static Tcl_ThreadDataKey dataKey;
  * WIN_THREAD_RUNNING		Running, not waiting.
  * WIN_THREAD_BLOCKED		Waiting, or trying to wait.
  * WIN_THREAD_DEAD		Dying - no per-thread event anymore.
- */ 
+ */
 
 #define WIN_THREAD_UNINIT	0x0
 #define WIN_THREAD_RUNNING	0x1
@@ -205,8 +205,7 @@ Tcl_JoinThread(id, result)
  */
 
 void
-TclpThreadExit(status)
-    int status;
+TclpThreadExit (int status)
 {
     EnterCriticalSection(&joinLock);
     TclSignalExitThread (Tcl_GetCurrentThread (), status);
@@ -263,7 +262,7 @@ Tcl_GetCurrentThread()
  */
 
 void
-TclpInitLock()
+TclpInitLock (void)
 {
     if (!init) {
 	/*
@@ -299,7 +298,7 @@ TclpInitLock()
  */
 
 void
-TclpInitUnlock()
+TclpInitUnlock (void)
 {
     LeaveCriticalSection(&initLock);
 }
@@ -326,7 +325,7 @@ TclpInitUnlock()
  */
 
 void
-TclpMasterLock()
+TclpMasterLock (void)
 {
     if (!init) {
 	/*
@@ -403,7 +402,7 @@ static void FinalizeConditionEvent(ClientData data);
  */
 
 void
-TclpMasterUnlock()
+TclpMasterUnlock (void)
 {
     LeaveCriticalSection(&masterLock);
 }
@@ -414,7 +413,7 @@ TclpMasterUnlock()
  *
  * Tcl_MutexLock --
  *
- *	This procedure is invoked to lock a mutex.  This is a self 
+ *	This procedure is invoked to lock a mutex.  This is a self
  *	initializing mutex that is automatically finalized during
  *	Tcl_Finalize.
  *
@@ -436,7 +435,7 @@ Tcl_MutexLock(mutexPtr)
     if (*mutexPtr == NULL) {
 	MASTER_LOCK;
 
-	/* 
+	/*
 	 * Double inside master lock check to avoid a race.
 	 */
 
@@ -732,7 +731,7 @@ Tcl_ConditionWait(condPtr, mutexPtr, timePtr)
     if (tsdPtr->flags == WIN_THREAD_UNINIT) {
 	MASTER_LOCK;
 
-	/* 
+	/*
 	 * Create the per-thread event and queue pointers.
 	 */
 
@@ -754,7 +753,7 @@ Tcl_ConditionWait(condPtr, mutexPtr, timePtr)
 	     * ThreadSpecificData, and initializing that may drop
 	     * back into the Master Lock.
 	     */
-	    
+
 	    Tcl_CreateThreadExitHandler(FinalizeConditionEvent,
 		    (ClientData) tsdPtr);
 	}
@@ -811,7 +810,7 @@ Tcl_ConditionWait(condPtr, mutexPtr, timePtr)
      * the locking protocol wrong and are masking a deadlock,
      * or you are using conditions to pause your thread.
      */
-    
+
     LeaveCriticalSection(csPtr);
     timeout = 0;
     while (!timeout && (tsdPtr->flags & WIN_THREAD_BLOCKED)) {
@@ -827,7 +826,7 @@ Tcl_ConditionWait(condPtr, mutexPtr, timePtr)
      * Be careful on timeouts because the signal might arrive right around
      * time time limit and someone else could have taken us off the queue.
      */
-    
+
     if (timeout) {
 	if (tsdPtr->flags & WIN_THREAD_RUNNING) {
 	    timeout = 0;
@@ -1042,3 +1041,5 @@ TclWinFreeAllocCache(void)
 
 #endif /* USE_THREAD_ALLOC */
 #endif /* TCL_THREADS */
+
+/* EOF */

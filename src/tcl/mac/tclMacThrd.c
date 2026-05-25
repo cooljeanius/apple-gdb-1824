@@ -1,4 +1,4 @@
-/* 
+/*
  * tclMacThrd.c --
  *
  *	This file implements the Mac-specific thread support.
@@ -31,7 +31,7 @@ typedef struct TclMacThrdData {
  * This is an array of the Thread Data Keys.  It is a process-wide table.
  * Its size is originally set to 32, but it can grow if needed.
  */
- 
+
 static TclMacThrdData **tclMacDataKeyArray;
 #define TCL_MAC_INITIAL_KEYSIZE 32
 
@@ -39,16 +39,16 @@ static TclMacThrdData **tclMacDataKeyArray;
  * These two bits of data store the current maximum number of keys
  * and the keyCounter (which is the number of occupied slots in the
  * KeyData array.
- * 
+ *
  */
- 
+
 static int maxNumKeys = 0;
 static int keyCounter = 0;
 
 /*
  * Prototypes for functions used only in this file
  */
- 
+
 TclMacThrdData *GetThreadDataStruct(Tcl_ThreadDataKey keyVal);
 TclMacThrdData *RemoveThreadDataStruct(Tcl_ThreadDataKey keyVal);
 
@@ -81,7 +81,7 @@ TclMacHaveThreads(void)
     static int tclMacHaveThreads = false;
     long response = 0;
     OSErr err = noErr;
-    
+
     if (!initialized) {
 	err = Gestalt(gestaltThreadMgrAttr, &response);
 	if (err == noErr) {
@@ -130,14 +130,14 @@ Tcl_CreateThread(idPtr, proc, clientData, stackSize, flags)
     {
         ThreadEntryProcPtr entryProc;
         entryProc = NewThreadEntryUPP(proc);
-        
-        NewThread(kCooperativeThread, entryProc, (void *) clientData, 
+
+        NewThread(kCooperativeThread, entryProc, (void *) clientData,
             stackSize, kCreateIfNeeded, NULL, (ThreadID *) idPtr);
     }
 #else
-    NewThread(kCooperativeThread, proc, (void *) clientData, 
+    NewThread(kCooperativeThread, proc, (void *) clientData,
         stackSize, kCreateIfNeeded, NULL, (ThreadID *) idPtr);
-#endif        
+#endif
     if ((ThreadID) *idPtr == kNoThreadID) {
         return TCL_ERROR;
     } else {
@@ -198,15 +198,14 @@ Tcl_JoinThread(id, result)
  */
 
 void
-TclpThreadExit(status)
-    int status;
+TclpThreadExit (int status)
 {
     ThreadID curThread;
-    
+
     if (!TclMacHaveThreads()) {
         return;
     }
-    
+
     GetCurrentThread(&curThread);
     TclSignalExitThread ((Tcl_ThreadId) curThread, status);
 
@@ -268,7 +267,7 @@ Tcl_GetCurrentThread()
  */
 
 void
-TclpInitLock()
+TclpInitLock (void)
 {
 #ifdef TCL_THREADS
     /* There is nothing to do on the Mac. */;
@@ -294,7 +293,7 @@ TclpInitLock()
  */
 
 void
-TclpInitUnlock()
+TclpInitUnlock (void)
 {
 #ifdef TCL_THREADS
     /* There is nothing to do on the Mac */;
@@ -324,7 +323,7 @@ TclpInitUnlock()
  */
 
 void
-TclpMasterLock()
+TclpMasterLock (void)
 {
 #ifdef TCL_THREADS
     /* There is nothing to do on the Mac */;
@@ -350,7 +349,7 @@ TclpMasterLock()
  */
 
 void
-TclpMasterUnlock()
+TclpMasterUnlock (void)
 {
 #ifdef TCL_THREADS
     /* There is nothing to do on the Mac */
@@ -481,7 +480,7 @@ TclpFinalizeMutex(mutexPtr)
  *	the key fills in the pointer to the key.  The key should be
  *	a process-wide static.
  *
- *      There is no system-wide support for thread specific data on the 
+ *      There is no system-wide support for thread specific data on the
  *	Mac.  So we implement this as an array of pointers.  The keys are
  *	allocated sequentially, and each key maps to a slot in the table.
  *      The table element points to a linked list of the instances of
@@ -503,32 +502,32 @@ TclpThreadDataKeyInit(keyPtr)
     Tcl_ThreadDataKey *keyPtr;	/* Identifier for the data chunk,
 				 * really (pthread_key_t **) */
 {
-            
+
     if (*keyPtr == NULL) {
         keyCounter += 1;
 	*keyPtr = (Tcl_ThreadDataKey) keyCounter;
 	if (keyCounter > maxNumKeys) {
 	    TclMacThrdData **newArray;
 	    int i, oldMax = maxNumKeys;
-	     
+
 	    maxNumKeys = maxNumKeys + TCL_MAC_INITIAL_KEYSIZE;
-	     
-	    newArray = (TclMacThrdData **) 
+
+	    newArray = (TclMacThrdData **)
 	            ckalloc(maxNumKeys * sizeof(TclMacThrdData *));
-	     
+
 	    for (i = 0; i < oldMax; i++) {
 	        newArray[i] = tclMacDataKeyArray[i];
 	    }
 	    for (i = oldMax; i < maxNumKeys; i++) {
 	        newArray[i] = NULL;
 	    }
-	     
+
 	    if (tclMacDataKeyArray != NULL) {
 		ckfree((char *) tclMacDataKeyArray);
 	    }
 	    tclMacDataKeyArray = newArray;
-	     
-	}             
+
+	}
 	/* TclRememberDataKey(keyPtr); */
     }
 }
@@ -556,9 +555,9 @@ TclpThreadDataKeyGet(keyPtr)
 				 * really (pthread_key_t **) */
 {
     TclMacThrdData *dataPtr;
-    
+
     dataPtr = GetThreadDataStruct(*keyPtr);
-    
+
     if (dataPtr == NULL) {
         return NULL;
     } else {
@@ -592,14 +591,14 @@ TclpThreadDataKeySet(keyPtr, data)
 {
     TclMacThrdData *dataPtr;
     ThreadID curThread;
-    
+
     dataPtr = GetThreadDataStruct(*keyPtr);
-    
-    /* 
+
+    /*
      * Is it legal to reset the thread data like this?
      * And if so, who owns the memory?
      */
-     
+
     if (dataPtr != NULL) {
         dataPtr->data = data;
     } else {
@@ -634,10 +633,10 @@ TclpFinalizeThreadData(keyPtr)
     Tcl_ThreadDataKey *keyPtr;
 {
     TclMacThrdData *dataPtr;
-    
+
     if (*keyPtr != NULL) {
         dataPtr = RemoveThreadDataStruct(*keyPtr);
-        
+
 	if ((dataPtr != NULL) && (dataPtr->data != NULL)) {
 	    ckfree((char *) dataPtr->data);
 	    ckfree((char *) dataPtr);
@@ -700,28 +699,28 @@ GetThreadDataStruct(keyVal)
 {
     ThreadID curThread;
     TclMacThrdData *dataPtr;
-    
+
     /*
      * The keyPtr will only be greater than keyCounter is someone
-     * has passed us a key without getting the value from 
+     * has passed us a key without getting the value from
      * TclpInitDataKey.
      */
-     
+
     if ((int) keyVal <= 0)  {
         return NULL;
     } else if ((int) keyVal > keyCounter) {
         panic("illegal data key value");
     }
-    
+
     GetCurrentThread(&curThread);
-    
+
     for (dataPtr = tclMacDataKeyArray[(int) keyVal - 1]; dataPtr != NULL;
             dataPtr = dataPtr->next) {
         if (dataPtr->threadID ==  curThread) {
             break;
         }
     }
-    
+
     return dataPtr;
 }
 
@@ -735,7 +734,7 @@ GetThreadDataStruct(keyVal)
  *      keyVal for the current process from the list kept for keyVal.
  *
  * Results:
- *	The requested key data is removed from the list, and a pointer 
+ *	The requested key data is removed from the list, and a pointer
  *      to it is returned.
  *
  * Side effects:
@@ -750,24 +749,24 @@ RemoveThreadDataStruct(keyVal)
 {
     ThreadID curThread;
     TclMacThrdData *dataPtr, *prevPtr;
-    
-     
+
+
     if ((int) keyVal <= 0)  {
         return NULL;
     } else if ((int) keyVal > keyCounter) {
         panic("illegal data key value");
     }
-    
+
     GetCurrentThread(&curThread);
-    
-    for (dataPtr = tclMacDataKeyArray[(int) keyVal - 1], prevPtr = NULL; 
+
+    for (dataPtr = tclMacDataKeyArray[(int) keyVal - 1], prevPtr = NULL;
             dataPtr != NULL;
             prevPtr = dataPtr, dataPtr = dataPtr->next) {
         if (dataPtr->threadID == curThread) {
             break;
         }
     }
-    
+
     if (dataPtr == NULL) {
         /* No body */
     } else if ( prevPtr == NULL) {
@@ -775,8 +774,8 @@ RemoveThreadDataStruct(keyVal)
     } else {
         prevPtr->next = dataPtr->next;
     }
-    
-    return dataPtr; 
+
+    return dataPtr;
 }
 
 /*
@@ -786,7 +785,7 @@ RemoveThreadDataStruct(keyVal)
  *
  *	This procedure is invoked to wait on a condition variable.
  *	On the Mac, mutexes are no-ops, and we just yield.  After
- *	all, it is the application's job to loop till the condition 
+ *	all, it is the application's job to loop till the condition
  *	variable is changed...
  *
  *
@@ -865,7 +864,6 @@ TclpFinalizeCondition(condPtr)
     /* Nothing to do on the Mac */
 }
 
-
-
 #endif /* TCL_THREADS */
 
+/* EOF */

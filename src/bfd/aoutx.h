@@ -118,8 +118,8 @@ DESCRIPTION
 
 #define KEEPIT udata.i
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "safe-ctype.h"
 #include "bfdlink.h"
 

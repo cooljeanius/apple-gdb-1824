@@ -100,6 +100,18 @@ extern int errno;
 
 #ifdef HAVE_ICONV_H
 # include <iconv.h>
+#else
+# ifdef HAVE_PHP_ICONV_H
+#  include <php_iconv.h>
+# else
+#  ifdef HAVE_UNICONV_H
+#   include <uniconv.h>
+#  else
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "dcigettext.c expects an iconv-related header to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
+#  endif /* HAVE_UNICONV_H */
+# endif /* HAVE_PHP_ICONV_H */
 #endif /* HAVE_ICONV_H */
 
 #include "gettextP.h"
@@ -889,8 +901,12 @@ _nl_find_msg(struct loaded_l10nfile *domain_file,
 #  ifdef _LIBC
 #   define CONV_TYPE __gconv_t
 #  else
-#   if HAVE_ICONV
-#    define CONV_TYPE iconv_t
+#   if defined(HAVE_ICONV) && HAVE_ICONV
+#    if defined(HAVE_ICONV_T) || defined(_ICONV_T)
+#     define CONV_TYPE iconv_t
+#    else
+#     define CONV_TYPE void *
+#    endif /* HAVE_ICONV_T || _ICONV_T */
 #   else
 #    define CONV_TYPE int
 #    if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -974,7 +990,7 @@ _nl_find_msg(struct loaded_l10nfile *domain_file,
 
 	      inbuf = result;
 # else
-#  if HAVE_ICONV
+#  if defined(HAVE_ICONV) && HAVE_ICONV
 	      const char *inptr = (const char *)inbuf;
 	      size_t inleft = resultlen;
 	      char *outptr = (char *)outbuf;

@@ -63,8 +63,8 @@
 # define COFF_WITH_XX
 #endif /* !COFF_WITH_XX */
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "libbfd.h"
 #include "coff/internal.h"
 

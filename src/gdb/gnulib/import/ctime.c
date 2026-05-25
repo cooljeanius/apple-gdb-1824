@@ -1,5 +1,5 @@
 /* Work around platform bugs in ctime.
-   Copyright (C) 2017-2023 Free Software Foundation, Inc.
+   Copyright (C) 2017-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
@@ -21,6 +21,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#if defined _WIN32 && ! defined __CYGWIN__
+# include <wchar.h>
+#endif
 
 #undef ctime
 
@@ -52,7 +55,28 @@ rpl_ctime (const time_t *tp)
      responsibility.  */
   const char *tz = getenv ("TZ");
   if (tz != NULL && strchr (tz, '/') != NULL)
-    _putenv ("TZ=");
+    {
+      /* Neutralize it, in a way that is multithread-safe.
+         (If we were to use _putenv ("TZ="), it would free the memory allocated
+         for the environment variable "TZ", and thus other threads that are
+         using the previously fetched value of getenv ("TZ") could crash.)  */
+      char **env = _environ;
+      wchar_t **wenv = _wenviron;
+      if (env != NULL)
+        for (char **ep = env; *ep != NULL; ep++)
+          {
+            char *s = *ep;
+            if (s[0] == 'T' && s[1] == 'Z' && s[2] == '=')
+              s[0] = '$';
+          }
+      if (wenv != NULL)
+        for (wchar_t **wep = wenv; *wep != NULL; wep++)
+          {
+            wchar_t *ws = *wep;
+            if (ws[0] == L'T' && ws[1] == L'Z' && ws[2] == L'=')
+              ws[0] = L'$';
+          }
+    }
 #endif
 
   return ctime (tp);

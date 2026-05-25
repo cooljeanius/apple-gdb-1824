@@ -42,8 +42,8 @@ SECTION
 
 */
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "libbfd.h"
 
 /* IMPORT from targets.c.  */

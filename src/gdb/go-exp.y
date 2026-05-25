@@ -1586,33 +1586,33 @@ yylex (void)
       VEC_safe_push (token_and_value, token_fifo, &next);
     }
 
-  /* If we arrive here we don't have a package-qualified name.  */
-
+  /* If we arrive here, then we do NOT have a package-qualified name: */
   popping = 1;
   yylval = current.value;
-  return classify_name (expression_context_block);
+  return classify_name(expression_context_block);
 }
 
+/* */
 int
-go_parse (void)
+go_parse(void)
 {
   int result;
-  struct cleanup *back_to = make_cleanup (null_cleanup, NULL);
+  struct cleanup *back_to = make_cleanup(null_cleanup, NULL);
 
-  make_cleanup_restore_integer (&yydebug);
+  make_cleanup_restore_integer(&yydebug);
   yydebug = parser_debug;
 
-  /* Initialize some state used by the lexer.  */
+  /* Initialize some state used by the lexer: */
   last_was_structop = 0;
   saw_name_at_eof = 0;
 
-  VEC_free (token_and_value, token_fifo);
+  VEC_free(token_and_value, token_fifo);
   popping = 0;
-  obstack_init (&name_obstack);
-  make_cleanup_obstack_free (&name_obstack);
+  obstack_init(&name_obstack);
+  make_cleanup_obstack_free(&name_obstack);
 
-  result = yyparse ();
-  do_cleanups (back_to);
+  result = yyparse();
+  do_cleanups(back_to);
   return result;
 }
 
@@ -1622,7 +1622,8 @@ yyerror(const char *msg)
   if (prev_lexptr)
     lexptr = prev_lexptr;
 
-  error(_("A %s in expression, near `%s'."), (msg ? msg : "error"), lexptr);
+  error(_("A %s in expression, near '%s'."), (msg ? msg : "error"),
+  	(lexptr ? lexptr ""));
 }
 
 /* End of go-exp.y */

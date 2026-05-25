@@ -40,6 +40,7 @@
 
 #include "complaints.h"
 #include "dwarf2-frame.h"
+#include "dwarf2-frame-tailcall.h"
 
 /* Call Frame Information (CFI).  */
 
@@ -1256,6 +1257,19 @@ static const struct frame_unwind dwarf2_signal_frame_unwind =
   (frame_sniffer_ftype *)NULL,
   (frame_prev_pc_ftype *)NULL
 };
+
+/* Append the DWARF-2 frame unwinders to GDBARCH's list.  */
+
+void
+dwarf2_append_unwinders(struct gdbarch *gdbarch)
+{
+  /* TAILCALL_FRAME must be first to find the record by
+     dwarf2_tailcall_sniffer_first.  */
+  frame_unwind_append_unwinder(gdbarch, &dwarf2_tailcall_frame_unwind);
+
+  frame_unwind_append_unwinder(gdbarch, &dwarf2_frame_unwind);
+  frame_unwind_append_unwinder(gdbarch, &dwarf2_signal_frame_unwind);
+}
 
 const struct frame_unwind *
 dwarf2_frame_sniffer(struct frame_info *next_frame)

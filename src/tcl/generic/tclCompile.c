@@ -1924,9 +1924,10 @@ TclInitCompiledLocals(interp, framePtr, nsPtr)
  */
 
 void
-TclExpandCodeArray(envArgPtr)
-    void *envArgPtr;		/* Points to the CompileEnv whose code array
+TclExpandCodeArray (
+    void *envArgPtr		/* Points to the CompileEnv whose code array
 				 * must be enlarged. */
+)
 {
     CompileEnv *envPtr = (CompileEnv*) envArgPtr;	/* Points to the CompileEnv whose code array
 							 * must be enlarged. */
@@ -2530,7 +2531,7 @@ TclFixupForwardJump(envPtr, jumpFixupPtr, jumpDist, distThreshold)
  */
 
 void * /* == InstructionDesc* == */
-TclGetInstructionTable()
+TclGetInstructionTable (void)
 {
     return &tclInstructionTable[0];
 }
@@ -2646,7 +2647,7 @@ TclGetAuxDataType(typeName)
  */
 
 void
-TclInitAuxDataTypeTable()
+TclInitAuxDataTypeTable (void)
 {
     /*
      * The table mutex must already be held before this routine is invoked.
@@ -2682,7 +2683,7 @@ TclInitAuxDataTypeTable()
  */
 
 void
-TclFinalizeAuxDataTypeTable()
+TclFinalizeAuxDataTypeTable (void)
 {
     Tcl_MutexLock(&tableMutex);
     if (auxDataTypeTableInitialized) {

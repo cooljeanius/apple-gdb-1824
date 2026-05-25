@@ -60,6 +60,7 @@ extern int yyinunput(void);
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))
 #  pragma GCC diagnostic ignored "-Wswitch-default"
 #  pragma GCC diagnostic ignored "-Wold-style-definition"
+#  pragma GCC diagnostic ignored "-Wsign-compare"
 # endif /* gcc 4.2+ */
 #endif /* any gcc */
 

@@ -27,7 +27,8 @@
 
 
 
-void match_init()
+void 
+match_init (void)
 {
 }
 

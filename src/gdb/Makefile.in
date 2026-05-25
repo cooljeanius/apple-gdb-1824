@@ -78,7 +78,9 @@ aclocal_m4_deps = \
 	../config/zlib.m4 \
 	../libiberty/m4/libiberty.m4 \
 	m4/build-with-cxx.m4 \
+	m4/codeset.m4 \
 	../lcmessage.m4 \
+	../progtest.m4 \
 	../gettext.m4 \
 	m4/ccstdc.m4
 
@@ -392,6 +394,9 @@ MIG_CHECKING = @MIG_CHECKING@
 # APPLE LOCAL: 64 bit MIG generates files with mach_ as a prefix.
 MACH_EXC_SERVER_PREFACE = @MACH_EXC_SERVER_PREFACE@
 
+# APPLE LOCAL: MIG might need to include defs from the SDKROOT:
+SDKROOT = @SDKROOT@
+
 # APPLE LOCAL: Encode the Info.plist in the binary for the security
 # framework's benefit.
 ADD_INFO_PLIST = -sectcreate __TEXT __info_plist $(srcdir)/Info.plist
@@ -602,6 +607,7 @@ CONFIG_UNINSTALL = @CONFIG_UNINSTALL@
 
 # ${acl_cv_wp}-I. for config files.
 # ${acl_cv_wp}-I$(srcdir) for gdb internal headers.
+# ${acl_cv_wp}-I$(srcdir)/common for headers shared between gdb and others.
 # ${acl_cv_wp}-I$(srcdir)/config for more generic config files.
 
 # It is also possible that you will need to add ${acl_cv_wp}-I/usr/include/sys
@@ -858,7 +864,7 @@ TARGET_FLAGS_TO_PASS = \
 # SFILES is used in building the distribution archive.
 
 # APPLE LOCAL begin subroutine inlining:
-SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c  \
+SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c \
   ax-general.c ax-gdb.c \
   bcache.c \
   bfd-target.c \
@@ -870,7 +876,7 @@ SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c  \
   cp-name-parser.y \
   dbxread.c demangle.c dictionary.c disasm.c doublest.c dummy-frame.c \
   dwarfread.c dwarf2expr.c dwarf2loc.c dwarf2read.c dwarf2read-repository.c \
-  dwarf2-frame.c \
+  dwarf2-frame.c dwarf2-frame-tailcall.c \
   elfread.c environ.c eval.c event-loop.c event-top.c expprint.c \
   f-exp.y f-lang.c f-typeprint.c f-valprint.c findvar.c frame.c \
   frame-base.c \
@@ -892,6 +898,7 @@ SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c  \
   objc-exp.y objc-lang.c \
   objfiles.c osabi.c observer.c \
   p-exp.y p-lang.c p-typeprint.c p-valprint.c parse.c printcmd.c \
+  prologue-value.c \
   regcache.c reggroups.c remote.c remote-fileio.c \
   scm-exp.c scm-lang.c scm-valprint.c \
   sentinel-frame.c \
@@ -899,14 +906,17 @@ SFILES = ada-exp.y ada-lang.c ada-typeprint.c ada-valprint.c  \
   solib.c solib-null.c source.c \
   stabsread.c stack.c std-regs.c symfile.c symfile-mem.c symmisc.c \
   symtab.c \
-  target/target.c thread.c top.c tracepoint.c \
+  target/target.c target/target-descriptions.c thread.c top.c tracepoint.c \
   trad-frame.c \
   tramp-frame.c \
   typeprint.c \
   ui-out.c utils.c ui-file.h ui-file.c \
   user-regs.c \
-  valarith.c valops.c valprint.c value.c varobj.c \
-  wrapper.c target/i386-amd64-shared-tdep.c target/x86-shared-tdep.c
+  valarith.c valops.c valprint.c value.c varobj.c vec.c \
+  wrapper.c \
+  xml-tdesc.c xml-support.c \
+  target/i386-amd64-shared-tdep.c target/x86-shared-tdep.c \
+  xmodem.c @MAINT@@APPLE_MAINT@@EXTRA_YFLAGS_SEP@ go-exp.y
 # APPLE LOCAL end subroutine inlining
 
 LINTFILES = $(SFILES) $(YYFILES) $(CONFIG_SRCS) init.c
@@ -1051,6 +1061,7 @@ doublest_h = doublest.h $(ansidecl_h) $(floatformat_h)
 dummy_frame_h = dummy-frame.h
 dwarf2expr_h = dwarf2expr.h $(dwarf2loc_h)
 dwarf2_frame_h = dwarf2-frame.h
+dwarf2_frame_tailcall_h = dwarf2-frame-tailcall.h
 dwarf2loc_h = dwarf2loc.h $(dwarf2read_h)
 dwarf2read_h = dwarf2read.h $(bfd_h) $(buildsym_h) $(elf_dwarf2_h) \
   $(hashtab_h) $(db_access_functions_h)
@@ -1067,7 +1078,7 @@ f_lang_h = f-lang.h $(language_h)
 fix_and_continue_h = fix-and-continue.h
 fork_child_h = fork-child.h
 frame_base_h = frame-base.h
-frame_h = frame.h
+frame_h = frame.h unwind_stop_reasons.def
 frame_unwind_h = frame-unwind.h $(frame_h) $(value_h)
 frv_tdep_h = frv-tdep.h
 gdbarch_h = gdbarch.h
@@ -1094,6 +1105,7 @@ gdb_wait_h = gdb_wait.h
 glibc_tdep_h = glibc-tdep.h
 gnu_nat_h = gnu-nat.h
 gnu_v2_abi_h = gnu-v2-abi.h $(gdbtypes_h) $(cp_abi_h)
+go_lang_h = go-lang.h $(gdbtypes_h) $(symtab_h) $(value_h)
 gregset_h = gregset.h
 hpacc_abi_h = hpacc-abi.h $(cp_abi_h)
 hppa_tdep_h = hppa-tdep.h
@@ -1115,6 +1127,7 @@ inf_ttrace_h = inf-ttrace.h
 # APPLE LOCAL begin subroutine inlining:
 inlining_h = inlining.h $(frame_h) $(bfd_h)
 # APPLE LOCAL end subroutine inlining
+interpreter_h = interpreter.h
 interps_h = interps.h $(exceptions_h)
 jv_lang_h = jv-lang.h $(parser_defs_h) $(language_h)
 kod_h = kod.h
@@ -1156,7 +1169,7 @@ ppcobsd_tdep_h = ppcobsd-tdep.h
 ppc_tdep_h = ppc-tdep.h
 printcmd_h = printcmd.h
 proc_utils_h = proc-utils.h
-regcache_h = regcache.h $(ansidecl_h)
+regcache_h = regcache.h $(ansidecl_h) $(common_common_regcache_h)
 reggroups_h = reggroups.h
 regset_h = regset.h
 remote_fileio_h = remote-fileio.h
@@ -1213,6 +1226,7 @@ wrapper_h = wrapper.h $(gdb_h) $(varobj_h)
 x86_shared_tdep_h = x86-shared-tdep.h
 # END APPLE LOCAL header
 xcoffsolib_h = xcoffsolib.h
+xmodem_h = xmodem.h
 
 #
 # gdb/cli/ headers
@@ -1233,6 +1247,7 @@ cli_utils_h = $(cli_srcdir)/cli-utils.h
 #
 
 common_srcdir = $(srcdir)/common
+common_common_regcache_h = $(common_srcdir)/common-regcache.h
 common_print_utils_h = $(common_srcdir)/print-utils.h
 
 ###
@@ -1381,15 +1396,16 @@ HFILES_NO_SRCDIR = bcache.h buildsym.h call-cmds.h coff-solib.h defs.h \
   environ.h $(gdbcmd_h) gdb.h gdbcore.h \
   gdb-stabs.h $(inferior_h) language.h minimon.h monitor.h \
   objfiles.h parser-defs.h serial.h solib.h \
-  symfile.h symfile-mem.h stabsread.h target.h terminal.h typeprint.h \
-  xcoffsolib.h \
+  symfile.h symfile-mem.h stabsread.h \
+  target.h target/target-descriptions.h terminal.h typeprint.h \
+  xcoffsolib.h xml-support.h xml-tdesc.h \
   macrotab.h macroexp.h macroscope.h \
   ada-lang.h c-lang.h f-lang.h \
   jv-lang.h \
   m2-lang.h p-lang.h \
-  complaints.h valprint.h \
-  gdbthread.h \
-  dcache.h remote-utils.h top.h solib-som.h
+  complaints.h valprint.h vec.h \
+  gdbthread.h dwarf2-frame.h dwarf2-frame-tailcall.h \
+  dcache.h remote-utils.h top.h solib-som.h prologue-value.h
 
 # Header files that already have srcdir in them, or which are in objdir.
 
@@ -1450,10 +1466,11 @@ BASE_OBS = \
   dbxread.o coffread.o coff-pe-read.o elfread.o \
   dwarfread.o dwarf2read.o dwarf2read-repository.o mipsread.o stabsread.o \
   corefile.o \
-  dwarf2expr.o dwarf2loc.o dwarf2-frame.o \
+  dwarf2expr.o dwarf2loc.o dwarf2-frame.o dwarf2-frame-tailcall.o \
   ada-lang.o c-lang.o f-lang.o objc-lang.o \
   ui-out.o cli-out.o \
-  varobj.o wrapper.o \
+  varobj.o vec.o \
+  wrapper.o \
   jv-lang.o jv-valprint.o jv-typeprint.o \
   m2-lang.o p-lang.o p-typeprint.o p-valprint.o \
   scm-exp.o scm-lang.o scm-valprint.o \
@@ -1474,8 +1491,11 @@ BASE_OBS = \
   fix-and-continue.o \
   checkpoint.o \
   solib.o solib-null.o \
+  prologue-value.o \
   i386-amd64-shared-tdep.o \
-  x86-shared-tdep.o
+  x86-shared-tdep.o \
+  target-descriptions.o \
+  xml-support.o xml-tdesc.o
 # APPLE LOCAL end subroutine inlining
 
 TSOBS = inflow.o
@@ -1499,13 +1519,17 @@ YYFILES = c-exp.c \
 	objc-exp.c \
 	ada-exp.c \
 	jv-exp.c \
-	f-exp.c m2-exp.c p-exp.c
+	f-exp.c \
+	m2-exp.c \
+	p-exp.c @MAINT@@APPLE_MAINT@@EXTRA_YFLAGS_SEP@ go-exp.c
 YYOBJ = c-exp.o \
 	cp-name-parser.o \
 	objc-exp.o \
 	ada-exp.o \
 	jv-exp.o \
-	f-exp.o m2-exp.o p-exp.o
+	f-exp.o \
+	m2-exp.o \
+	p-exp.o @MAINT@@APPLE_MAINT@@EXTRA_YFLAGS_SEP@ go-exp.o
 
 # Things which need to be built when making a distribution.
 
@@ -2024,12 +2048,9 @@ realclean: maintainer-clean
 local-maintainer-clean: mostlyclean @MAINT@ clean-tui clean-gdbtk
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
-	rm -f c-exp.c \
-		cp-name-parser.c \
-		ada-lex.c ada-exp.c \
-	        objc-exp.c \
-		jv-exp.tab \
-		f-exp.c m2-exp.c p-exp.c
+	rm -f c-exp.c cp-name-parser.c ada-lex.c ada-exp.c \
+	  objc-exp.c jv-exp.tab f-exp.c m2-exp.c \
+	  p-exp.c @MAINT@@APPLE_MAINT@@EXTRA_YFLAGS_SEP@ go-exp.c
 	rm -f $(AM_V_v) TAGS $(INFOFILES)
 	rm -f $(AM_V_v) $(YYFILES)
 	rm -f nm.h tm.h xm.h
@@ -2471,11 +2492,19 @@ v850ice.o: $(srcdir)/v850ice.c @MAINT@ $(defs_h)
 # development builds.
 ADA_EXP_C = `if test -f ada-exp.c; then echo ada-exp.c; else echo $(srcdir)/ada-exp.c; fi`
 
+# likewise with go-exp.c:
+GO_EXP_C = `if test -f go-exp.c; then echo go-exp.c; else echo $(srcdir)/go-exp.c; fi`
+
 # Some versions of flex give output that triggers
 # -Wold-style-definition.
 ada-exp.o: ada-exp.c
 	$(AM_V_COMPILER)$(COMPILE.pre) $(INTERNAL_CFLAGS) \
 	  $(GDB_WARN_CFLAGS_NO_DEFS) $(COMPILE.post) $(ADA_EXP_C)
+	$(POSTCOMPILE)
+
+go-exp.o: go-exp.c
+	$(AM_V_COMPILER)$(COMPILE.pre) $(INTERNAL_CFLAGS) \
+	  $(GDB_WARN_CFLAGS_NO_DEFS) $(COMPILE.post) $(GO_EXP_C)
 	$(POSTCOMPILE)
 
 # Message files.  Based on code in gcc/Makefile.in.
@@ -2614,6 +2643,7 @@ po/$(PACKAGE).pot: force
 .PRECIOUS: m2-exp.c
 .PRECIOUS: objc-exp.c
 .PRECIOUS: p-exp.c
+.PRECIOUS: go-exp.c
 
 #
 # gdb/ dependencies
@@ -2880,7 +2910,12 @@ dwarf2expr.o: dwarf2expr.c $(defs_h) $(symtab_h) $(gdbtypes_h) $(value_h) \
 dwarf2-frame.o: dwarf2-frame.c $(defs_h) $(dwarf2expr_h) $(elf_dwarf2_h) \
   $(frame_h) $(frame_base_h) $(frame_unwind_h) $(gdbcore_h) $(gdbtypes_h) \
   $(symtab_h) $(objfiles_h) $(regcache_h) $(value_h) $(dwarf2read_h) \
-  $(gdb_assert_h) $(gdb_string_h) $(complaints_h) $(dwarf2_frame_h)
+  $(gdb_assert_h) $(gdb_string_h) $(complaints_h) $(dwarf2_frame_h) \
+  $(dwarf2_frame_tailcall_h)
+dwarf2-frame-tailcall.o: dwarf2-frame-tailcall.c $(defs_h) $(gdb_assert_h) \
+  $(frame_h) $(dwarf2_frame_tailcall_h) $(dwarf2loc_h) $(frame_unwind_h) \
+  $(block_h) $(hashtab_h) $(exceptions_h) $(gdbtypes_h) $(regcache_h) \
+  $(value_h) $(dwarf2_frame_h)
 dwarf2loc.o: dwarf2loc.c $(defs_h) $(ui_out_h) $(value_h) $(frame_h) \
   $(gdbcore_h) $(target_h) $(inferior_h) $(ax_h) $(ax_gdb_h) \
   $(regcache_h) $(objfiles_h) $(exceptions_h) $(elf_dwarf2_h) \
@@ -2956,7 +2991,8 @@ frame.o: frame.c $(defs_h) $(frame_h) $(target_h) $(value_h) \
   $(frame_base_h) $(command_h) $(gdbcmd_h) $(observer_h) $(objfiles_h) \
   $(exceptions_h) $(inlining_h) $(top_h)
 frame-unwind.o: frame-unwind.c $(defs_h) $(frame_h) $(frame_unwind_h) \
-  $(gdb_assert_h) $(dummy_frame_h) $(gdb_obstack_h) $(inlining_h)
+  $(gdb_assert_h) $(dummy_frame_h) $(value_h) $(regcache_h) \
+  $(gdb_obstack_h) $(target_h) $(inlining_h)
 # APPLE LOCAL end subroutine inlining
 frv-linux-tdep.o: frv-linux-tdep.c $(defs_h) $(target_h) $(frame_h) \
   $(osabi_h) $(elf_bfd_h) $(elf_frv_h) $(frv_tdep_h) $(trad_frame_h) \
@@ -2995,6 +3031,9 @@ gnu-v2-abi.o: gnu-v2-abi.c $(defs_h) $(gdb_string_h) $(symtab_h) \
   $(gnu_v2_abi_h)
 gnu-v3-abi.o: gnu-v3-abi.c $(defs_h) $(value_h) $(cp_abi_h) \
   $(cp_support_h) $(demangle_h) $(gdb_assert_h) $(gdb_string_h)
+go-exp.o: go-exp.c $(defs_h) $(gdb_assert_h) $(gdb_string_h) \
+  $(expression_h) $(value_h) $(parser_defs_h) $(language_h) $(c_lang_h) \
+  $(go_lang_h) $(bfd_h) $(symfile_h) $(objfiles_h) $(charset_h) $(block_h) 
 go32-nat.o: go32-nat.c $(defs_h) $(inferior_h) $(gdb_wait_h) $(gdbcore_h) \
   $(command_h) $(gdbcmd_h) $(floatformat_h) $(buildsym_h) $(i387_tdep_h) \
   $(i386_tdep_h) $(value_h) $(regcache_h) $(gdb_string_h) $(top_h)
@@ -3155,6 +3194,9 @@ inlining.o: inlining.c $(defs_h) $(symtab_h) $(frame_h) $(breakpoint_h) \
   $(frame_unwind_h) $(annotate_h) $(ui_out_h) $(inlining_h) $(objfiles_h) \
   $(gdbthread_h) $(complaints_h) $(buildsym_h)
 # APPLE LOCAL end subroutine inlining
+interpreter.o: interpreter.c $(defs_h) $(gdbcmd_h) $(ui_out_h) \
+  $(event_loop_h) $(event_top_h) $(interpreter_h) $(wrapper_h) \
+  $(cli_cmds_h) $(cli_decode_h) $(exceptions_h) $(ui_out_h)
 interps.o: interps.c $(defs_h) $(gdbcmd_h) $(ui_out_h) $(event_loop_h) \
   $(event_top_h) $(interps_h) $(completer_h) $(gdb_string_h) \
   $(gdb_events_h) $(gdb_assert_h) $(top_h) $(exceptions_h)
@@ -3777,6 +3819,8 @@ vax-tdep.o: vax-tdep.c $(defs_h) $(arch_utils_h) $(dis_asm_h) $(frame_h) \
   $(frame_base_h) $(frame_unwind_h) $(gdbcore_h) $(gdbtypes_h) $(osabi_h) \
   $(regcache_h) $(regset_h) $(trad_frame_h) $(value_h) $(gdb_string_h) \
   $(vax_tdep_h)
+w89k-rom.o: w89k-rom.c $(defs_h) $(bfd_h) $(gdbcore_h) $(target_h) \
+  $(monitor_h) $(serial_h) $(xmodem_h) $(regcache_h)
 win32-nat.o: win32-nat.c $(defs_h) $(frame_h) $(inferior_h) $(target_h) \
   $(exceptions_h) $(gdbcore_h) $(command_h) $(completer_h) $(regcache_h) \
   $(top_h) $(buildsym_h) $(symfile_h) $(objfiles_h) $(gdb_string_h) \
@@ -3802,6 +3846,7 @@ xcoffread.o: xcoffread.c $(defs_h) $(bfd_h) $(gdb_string_h) $(gdb_stat_h) \
   $(gdb_stabs_h) $(aout_stab_gnu_h)
 xcoffsolib.o: xcoffsolib.c $(defs_h) $(bfd_h) $(xcoffsolib_h) \
   $(inferior_h) $(gdbcmd_h) $(symfile_h) $(frame_h) $(gdb_regex_h)
+xmodem.o: xmodem.c $(defs_h) $(serial_h) $(target_h) $(xmodem_h)
 xstormy16-tdep.o: xstormy16-tdep.c $(defs_h) $(frame_h) $(frame_base_h) \
   $(frame_unwind_h) $(dwarf2_frame_h) $(symtab_h) $(gdbtypes_h) \
   $(gdbcmd_h) $(gdbcore_h) $(value_h) $(dis_asm_h) $(inferior_h) \

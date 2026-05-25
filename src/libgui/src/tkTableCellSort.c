@@ -136,9 +136,11 @@ TableCellSort(Table *tablePtr, char *str)
  *----------------------------------------------------------------------
  */
 
-static int
-DictionaryCompare(left, right)
-    char *left, *right;          /* The strings to compare */
+static int 
+DictionaryCompare (
+    char *left,
+    char *right          /* The strings to compare */
+)
 {
     int diff, zeros;
     int secondaryDiff = 0;
@@ -251,11 +253,12 @@ DictionaryCompare(left, right)
  */
 
 static SortElement *
-MergeLists(leftPtr, rightPtr)
-    SortElement *leftPtr;               /* First list to be merged; may be
+MergeLists (
+    SortElement *leftPtr,               /* First list to be merged; may be
 					 * NULL. */
-    SortElement *rightPtr;              /* Second list to be merged; may be
+    SortElement *rightPtr              /* Second list to be merged; may be
 					 * NULL. */
+)
 {
     SortElement *headPtr;
     SortElement *tailPtr;
@@ -314,8 +317,9 @@ MergeLists(leftPtr, rightPtr)
  */
 
 static SortElement *
-MergeSort(headPtr)
-    SortElement *headPtr;               /* First element on the list */
+MergeSort (
+    SortElement *headPtr               /* First element on the list */
+)
 {
     /*
      * The subList array below holds pointers to temporary lists built

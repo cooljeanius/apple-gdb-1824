@@ -173,7 +173,7 @@ AC_ARG_ENABLE([pedantic],
   [AS_HELP_STRING([--enable-pedantic],[enable pedantic warnings])],
   [case "${enableval}" in
      yes | y) PEDANTIC_WARNINGS="yes" ;;
-     no | n)  PEDANTIC_WARNINGS="no" ;;
+     no | n) PEDANTIC_WARNINGS="no" ;;
      *) AC_MSG_ERROR([bad value ${enableval} for --enable-pedantic]) ;;
    esac])dnl
 
@@ -209,8 +209,8 @@ if test "x${PEDANTIC_WARNINGS}" = "xyes"; then
       WARN_CFLAGS="${WARN_CFLAGS} -Wexpansion-to-defined"
     fi
     ## fake the '-ansi' flag; actually using it has additional effects:
-    WARN_CFLAGS="${WARN_CFLAGS} -D__STRICT_ANSI__"
-    WARN_DEFS="${WARN_DEFS} -D__STRICT_ANSI__"
+    WARN_CFLAGS="${WARN_CFLAGS} -D__STRICT_ANSI__ -D__PEDANTIC__"
+    WARN_DEFS="${WARN_DEFS} -D__STRICT_ANSI__ -DPEDANTIC_WARNINGS"
 else
     AC_MSG_NOTICE([skipping enablement of pedantic warnings])
 fi

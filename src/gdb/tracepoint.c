@@ -1232,7 +1232,7 @@ collect_symbol(struct collection_list *collect,
 	  char tmp[40];
 
 	  snprintf_vma(tmp, sizeof(tmp), offset);
-	  printf_filtered("LOC_STATIC %s: collect %ld bytes at %s.\n",
+	  printf_filtered("LOC_STATIC %s: collect %zu bytes at %s.\n",
 			  DEPRECATED_SYMBOL_NAME(sym), len,
 			  tmp /* address */);
 	}
@@ -1261,7 +1261,7 @@ collect_symbol(struct collection_list *collect,
       offset = (frame_offset + SYMBOL_VALUE(sym));
       if (info_verbose)
 	{
-	  printf_filtered("LOC_LOCAL %s: Collect %ld bytes at offset ",
+	  printf_filtered("LOC_LOCAL %s: Collect %zu bytes at offset ",
 			  DEPRECATED_SYMBOL_NAME(sym), len);
 	  printf_vma(offset);
 	  printf_filtered(" from frame ptr reg %d\n", reg);
@@ -1273,7 +1273,7 @@ collect_symbol(struct collection_list *collect,
       offset = 0;
       if (info_verbose)
 	{
-	  printf_filtered("LOC_REGPARM_ADDR %s: Collect %ld bytes at offset ",
+	  printf_filtered("LOC_REGPARM_ADDR %s: Collect %zu bytes at offset ",
 			  DEPRECATED_SYMBOL_NAME(sym), len);
 	  printf_vma(offset);
 	  printf_filtered(" from reg %d\n", reg);
@@ -1286,7 +1286,7 @@ collect_symbol(struct collection_list *collect,
       offset = (frame_offset + SYMBOL_VALUE(sym));
       if (info_verbose)
 	{
-	  printf_filtered("LOC_LOCAL %s: Collect %lu bytes at offset ",
+	  printf_filtered("LOC_LOCAL %s: Collect %zu bytes at offset ",
 			  DEPRECATED_SYMBOL_NAME(sym), len);
 	  printf_vma(offset);
 	  printf_filtered(" from frame ptr reg %d\n", reg);

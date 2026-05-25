@@ -60,7 +60,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, moving it aside])
   mv -vf ${srcdir}/config.status ${srcdir}/config.status~
 fi
-AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu no-dist info-in-builddir -Wno-obsolete])dnl
+AM_INIT_AUTOMAKE([1.18.1 gnits dejagnu no-dist info-in-builddir -Wno-obsolete])dnl
 AM_SANITY_CHECK
 AC_SUBST([am_aux_dir])dnl
 
@@ -75,25 +75,35 @@ if test -e `pwd`/config.cache; then
   sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" `pwd`/config.cache
   sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" `pwd`/config.cache
   sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" `pwd`/config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
 elif test -e ./config.cache; then
   echo "hacking ./config.cache"
   sed -i.bak -e "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
   sed -i.bak -e "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
   sed -i.bak -e "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_set|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP_value|g" ./config.cache
+  sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
 else
   echo "config.cache is missing, which means we can skip attempts to hack it"
 fi
+AC_SUBST([GCC])dnl
 
 # Libtool checks:
 AC_MSG_CHECKING([libtool stuff])
 AC_MSG_RESULT([ ])
 AC_PROG_CXX
+if test -d conftest.dSYM; then
+  rm -rf conftest.dSYM 2>/dev/null || rmdir conftest.dSYM 2>/dev/null
+fi
 LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])dnl
 LT_LANG([C])dnl
 LT_LANG([C++])dnl
 LT_LANG([Windows Resource])dnl
-dnl# temporarily set this while I update everything libtool-related:
-LT_PREREQ([2.4.7])dnl
+dnl# https://lists.gnu.org/archive/html/libtool/2026-01/msg00001.html
+LT_PREREQ([2.5.4])dnl
 dnl# (largefile check is done farther below)
 
 # flags:
@@ -312,7 +322,7 @@ if test "x${RANLIB}" = "x" && test "x${ac_cv_prog_ac_ct_RANLIB}" = "x"; then
   test -z "${RANLIB}" && test -z "${ac_cv_prog_ac_ct_RANLIB}"
   AC_PROG_RANLIB
 else
-  test ! -z "${RANLIB}"
+  test -n "${RANLIB}" && echo "RANLIB is '${RANLIB}'"
   test -n "${ac_cv_prog_ac_ct_RANLIB}"
 fi
 AC_PROG_INSTALL
@@ -337,7 +347,7 @@ AC_DEFUN([AM_REQUIRE_EXTRA_AUTOMAKE_CHECKS],[
   AC_REQUIRE([AC_PROG_AWK])dnl
   AC_REQUIRE([AC_PROG_CPP])dnl
 ])dnl
-AM_REQUIRE_EXTRA_AUTOMAKE_CHECKS
+AM_REQUIRE_EXTRA_AUTOMAKE_CHECKS dnl# just in case...
 
 BFD_CC_FOR_BUILD
 
@@ -420,19 +430,21 @@ AC_GETTEXT_SUBCHECKS
 dnl# I forget, why am I not just using AM\_GNU\_GETTEXT?
 dnl# Anyways... continuing with library checks:
 AC_CHECK_LIB([c],[printf])
-AC_CHECK_LIB([ssp],[__chk_fail],[],[
-  AC_CHECK_LIB([ssp],[__memcpy_chk],[],[
-    AC_CHECK_LIB([ssp],[__strcpy_chk],[],[])
-  ])
-])
-# check arch when "main()" is the only function for which we check:
+AS_IF([test "x${GCC}" = "xyes" && test "x${CC}" != "xclang"],[
+  AC_CHECK_LIB([ssp],[__chk_fail],[],[
+    AC_CHECK_LIB([ssp],[__memcpy_chk],[],[
+      AC_CHECK_LIB([ssp],[__strcpy_chk],[],[])dnl
+    ])dnl
+  ])dnl
+])dnl
+  ## check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-# FIXME: Replace `main' with a function in `-lcc_dynamic':
+# OK to use 'main' here:
 AC_CHECK_LIB([cc_dynamic],[main])
-# FIXME: Replace `main' with a function in `-lgcc':
+# OK to use 'main' here:
 AC_CHECK_LIB([gcc],[main])
-# FIXME: Replace `main' with a function in `-lcurses':
+# OK to use 'main' here:
 AC_CHECK_LIB([curses],[main])
   ## reset these:
 LDFLAGS="${ARCHLESS_LDFLAGS}"

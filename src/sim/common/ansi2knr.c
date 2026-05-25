@@ -233,10 +233,8 @@ int test1();
 int convert1();
 
 /* The main program */
-int
-main(argc, argv)
-    int argc;
-    char *argv[];
+int 
+main (int argc, char *argv[])
 {	FILE *in = stdin;
 	FILE *out = stdout;
 	char *filename = 0;
@@ -383,8 +381,7 @@ wl:			fputs(buf, out);
  * Skip forward or backward over one or more preprocessor directives.
  */
 char *
-ppdirforward(p)
-    char *p;
+ppdirforward (char *p)
 {
     for (; *p == '#'; ++p) {
 	for (; *p != '\r' && *p != '\n'; ++p)
@@ -396,9 +393,7 @@ ppdirforward(p)
     return p;
 }
 char *
-ppdirbackward(p, limit)
-    char *p;
-    char *limit;
+ppdirbackward (char *p, char *limit)
 {
     char *np = p;
 
@@ -418,9 +413,10 @@ ppdirbackward(p, limit)
  * in either direction.
  */
 char *
-skipspace(p, dir)
-    char *p;
-    int dir;			/* 1 for forward, -1 for backward */
+skipspace (
+    char *p,
+    int dir			/* 1 for forward, -1 for backward */
+)
 {
     for ( ; ; ) {
 	while ( is_space(*p) )
@@ -440,9 +436,7 @@ skipspace(p, dir)
 
 /* Scan over a quoted string, in either direction. */
 char *
-scanstring(p, dir)
-    char *p;
-    int dir;
+scanstring (char *p, int dir)
 {
     for (p += dir; ; p += dir)
 	if (*p == '"' && p[-dir] != '\\')
@@ -453,10 +447,8 @@ scanstring(p, dir)
  * Write blanks over part of a string.
  * Do NOT overwrite end-of-line characters.
  */
-int
-writeblanks(start, end)
-    char *start;
-    char *end;
+int 
+writeblanks (char *start, char *end)
 {	char *p;
 	for ( p = start; p < end; p++ )
 	  if ( *p != '\r' && *p != '\n' )
@@ -477,9 +469,8 @@ writeblanks(start, end)
  * Ghostscript's declaration-generating macros look too much like
  * prototypes, and confuse the algorithms.
  */
-int
-test1(buf)
-    char *buf;
+int 
+test1 (char *buf)
 {	char *p = buf;
 	char *bend;
 	char *endfn;

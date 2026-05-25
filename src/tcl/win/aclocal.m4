@@ -1,6 +1,6 @@
-# generated automatically by aclocal 1.17 -*- Autoconf -*-
+# generated automatically by aclocal 1.18.1 -*- Autoconf -*-
 
-# Copyright (C) 1996-2024 Free Software Foundation, Inc.
+# Copyright (C) 1996-2025 Free Software Foundation, Inc.
 
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -12,7 +12,7 @@
 # PARTICULAR PURPOSE.
 
 m4_ifndef([AC_CONFIG_MACRO_DIRS], [m4_defun([_AM_CONFIG_MACRO_DIRS], [])m4_defun([AC_CONFIG_MACRO_DIRS], [_AM_CONFIG_MACRO_DIRS($@)])])
-# Copyright (C) 2011-2024 Free Software Foundation, Inc.
+# Copyright (C) 2011-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -76,7 +76,7 @@ AC_SUBST([AR])dnl
 
 # AM_AUX_DIR_EXPAND                                         -*- Autoconf -*-
 
-# Copyright (C) 2001-2024 Free Software Foundation, Inc.
+# Copyright (C) 2001-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -128,7 +128,7 @@ am_aux_dir=`cd "$ac_aux_dir" && pwd`
 
 # Check to make sure that the build environment is sane.    -*- Autoconf -*-
 
-# Copyright (C) 1996-2024 Free Software Foundation, Inc.
+# Copyright (C) 1996-2025 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -297,10 +297,12 @@ am_lf='
 '
 case `pwd` in
   *[[\\\"\#\$\&\'\`$am_lf]]*)
+    AC_MSG_RESULT([no])
     AC_MSG_ERROR([unsafe absolute working directory name]);;
 esac
 case $srcdir in
   *[[\\\"\#\$\&\'\`$am_lf\ \	]]*)
+    AC_MSG_RESULT([no])
     AC_MSG_ERROR([unsafe srcdir value: '$srcdir']);;
 esac
 

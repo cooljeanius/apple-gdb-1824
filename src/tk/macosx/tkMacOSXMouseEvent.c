@@ -64,7 +64,7 @@ typedef struct {
     WindowRef      activeNonFloating;
     WindowPartCode windowPart;
     Point          global;
-    Point          local;   
+    Point          local;
     unsigned int   state;
     long           delta;
 } MouseEventData;
@@ -102,7 +102,7 @@ extern void TkMacOSXSetEatButtonUp(int f);
  *
  *----------------------------------------------------------------------
  */
- 
+
 int
 TkMacOSXProcessMouseEvent(TkMacOSXEvent *eventPtr, MacEventStatus * statusPtr)
 {
@@ -129,9 +129,9 @@ TkMacOSXProcessMouseEvent(TkMacOSXEvent *eventPtr, MacEventStatus * statusPtr)
             break;
     }
     statusPtr->handledByTk = 1;
-    status = GetEventParameter(eventPtr->eventRef, 
+    status = GetEventParameter(eventPtr->eventRef,
             kEventParamMouseLocation,
-            typeQDPoint, NULL, 
+            typeQDPoint, NULL,
             sizeof(where), NULL,
             &where);
     if (status != noErr) {
@@ -140,7 +140,7 @@ TkMacOSXProcessMouseEvent(TkMacOSXEvent *eventPtr, MacEventStatus * statusPtr)
     }
     medPtr->state = 0;
     GetKeys(keyMap);
-    if (keyMap[1] & 2) { 
+    if (keyMap[1] & 2) {
         medPtr->state |= LockMask;
     }
     if (keyMap[1] & 1) {
@@ -155,7 +155,7 @@ TkMacOSXProcessMouseEvent(TkMacOSXEvent *eventPtr, MacEventStatus * statusPtr)
     if (keyMap[1] & 4) {
         medPtr->state |= Mod2Mask;              /* option key */
     }
-    if (eventPtr->eKind == kEventMouseDown 
+    if (eventPtr->eKind == kEventMouseDown
             || eventPtr->eKind== kEventMouseDragged ) {
         EventMouseButton mouseButton;
         if ((status=GetEventParameter(eventPtr->eventRef,
@@ -175,7 +175,7 @@ TkMacOSXProcessMouseEvent(TkMacOSXEvent *eventPtr, MacEventStatus * statusPtr)
         statusPtr->handledByTk = 0;
         return 0;
     }
-    
+
     frontWindow = FrontWindow();
     medPtr->activeNonFloating = ActiveNonFloatingWindow();
 
@@ -204,33 +204,33 @@ TkMacOSXProcessMouseEvent(TkMacOSXEvent *eventPtr, MacEventStatus * statusPtr)
              return false;
          }
     }
-    
+
     dispPtr = TkGetDisplayList();
     tkwin = Tk_IdToWindow(dispPtr->display, window);
 
     if (eventPtr->eKind != kEventMouseDown ) {
-        /* 
-         * MouseMoved, MouseDragged or kEventMouseWheelMoved 
+        /*
+         * MouseMoved, MouseDragged or kEventMouseWheelMoved
          */
-         
+
         medPtr->global = where;
         medPtr->local = where;
-	/* 
+	/*
 	 * We must set the port to the right window -- the one
 	 * we are actually going to use -- before finding
 	 * the local coordinates, otherwise we will have completely
 	 * wrong local x,y!
-	 * 
+	 *
 	 * I'm pretty sure this window is medPtr->whichWin, unless
 	 * perhaps there is a grab.  Certainly 'frontWindow' or
 	 * 'medPtr->activeNonFloating' are wrong.
-	 */ 
+	 */
 	SetPortWindowPort(medPtr->whichWin);
         GlobalToLocal(&medPtr->local);
         if (eventPtr->eKind == kEventMouseWheelMoved ) {
-            return GenerateMouseWheelEvent(medPtr); 
+            return GenerateMouseWheelEvent(medPtr);
         } else {
-            return GeneratePollingEvents(medPtr); 
+            return GeneratePollingEvents(medPtr);
         }
     }
 
@@ -242,7 +242,7 @@ TkMacOSXProcessMouseEvent(TkMacOSXEvent *eventPtr, MacEventStatus * statusPtr)
             statusPtr->err = 1;
             return 1;
         }
-        
+
         GetCurrentProcess(&ourPsn);
         if ((err=SameProcess(&frontPsn, &ourPsn, &flag))!=noErr) {
             fprintf(stderr, "SameProcess failed, %d\n", err);
@@ -268,7 +268,7 @@ TkMacOSXProcessMouseEvent(TkMacOSXEvent *eventPtr, MacEventStatus * statusPtr)
          * the corresponding mouse-up to be reported to the application
          * or else it will mess up some Tk scripts.
          */
-         
+
          if (!(TkpIsWindowFloating(medPtr->whichWin))
              && (medPtr->whichWin != medPtr->activeNonFloating)) {
              Tk_Window grabWin = TkMacOSXGetCapture();
@@ -276,7 +276,7 @@ TkMacOSXProcessMouseEvent(TkMacOSXEvent *eventPtr, MacEventStatus * statusPtr)
                  TkWindow * tkw, * grb;
                  tkw = (TkWindow *)tkwin;
                  grb = (TkWindow *)grabWin;
-                 SysBeep(1);  
+                 SysBeep(1);
                  return false;
              }
              TkMacOSXSetEatButtonUp(true);
@@ -301,13 +301,13 @@ TkMacOSXProcessMouseEvent(TkMacOSXEvent *eventPtr, MacEventStatus * statusPtr)
             return true;
             break;
         case inContent:
-            return TkGenerateButtonEvent(where.h, where.v, 
+            return TkGenerateButtonEvent(where.h, where.v,
                     window, medPtr->state);
             break;
         case inGrow:
-            /*      
+            /*
              * Generally the content region is the domain of Tk
-             * sub-windows.  However, one exception is the grow   
+             * sub-windows.  However, one exception is the grow
              * region.  A button down in this area will be handled
              * by the window manager.  Note: this means that Tk
              * may not get button down events in this area!
@@ -337,11 +337,11 @@ TkMacOSXProcessMouseEvent(TkMacOSXEvent *eventPtr, MacEventStatus * statusPtr)
                 GetKeys(theKeys);
                 oldMode = Tcl_SetServiceMode(TCL_SERVICE_ALL);
                 TkMacOSXClearMenubarActive();
-                
+
                 /*
                  * Handle -postcommand
                  */
-                 
+
                 TkMacOSXPreprocessMenu();
                 TkMacOSXHandleMenuSelect(MenuSelect(where),
                         theKeys[1] & 4);
@@ -351,7 +351,7 @@ TkMacOSXProcessMouseEvent(TkMacOSXEvent *eventPtr, MacEventStatus * statusPtr)
             break;
         case inZoomIn:
         case inZoomOut:
-            if (TkMacOSXZoomToplevel(medPtr->whichWin, where, 
+            if (TkMacOSXZoomToplevel(medPtr->whichWin, where,
                     medPtr->windowPart) == true) {
                 return true;
             } else {
@@ -382,7 +382,7 @@ TkMacOSXProcessMouseEvent(TkMacOSXEvent *eventPtr, MacEventStatus * statusPtr)
  *        time.
  *
  * Results:
- *        True if event(s) are generated - false otherwise.  
+ *        True if event(s) are generated - false otherwise.
  *
  * Side effects:
  *        Additional events may be place on the Tk event queue.
@@ -399,7 +399,7 @@ GeneratePollingEvents(MouseEventData * medPtr)
     int local_x, local_y;
     TkDisplay *dispPtr;
 
-    /* 
+    /*
      * I really do not understand this complicated logic.  Surely the event
      * should be to either: (1) medPtr->whichWin, the window under the mouse
      * (from which we then obviously extract the correct Tk subwindow), or
@@ -407,7 +407,7 @@ GeneratePollingEvents(MouseEventData * medPtr)
      * relevant.
      */
 #if 0
-    if ((!TkpIsWindowFloating(medPtr->whichWin) 
+    if ((!TkpIsWindowFloating(medPtr->whichWin)
             && (medPtr->activeNonFloating != medPtr->whichWin))) {
         tkwin = NULL;
     } else {
@@ -417,12 +417,12 @@ GeneratePollingEvents(MouseEventData * medPtr)
         if (rootwin == NULL) {
             tkwin = NULL;
         } else {
-            tkwin = Tk_TopCoordsToWindow(rootwin, 
-                    medPtr->local.h, medPtr->local.v, 
+            tkwin = Tk_TopCoordsToWindow(rootwin,
+                    medPtr->local.h, medPtr->local.v,
                     &local_x, &local_y);
         }
     }
-    
+
     /*
      * The following call will generate the appropiate X events and
      * adjust any state that Tk must remember.
@@ -444,15 +444,15 @@ GeneratePollingEvents(MouseEventData * medPtr)
 	if (rootwin == NULL) {
 	    tkwin = NULL;
 	} else {
-	    tkwin = Tk_TopCoordsToWindow(rootwin, 
-		    medPtr->local.h, medPtr->local.v, 
+	    tkwin = Tk_TopCoordsToWindow(rootwin,
+		    medPtr->local.h, medPtr->local.v,
 		    &local_x, &local_y);
 	}
     }
 #endif
     Tk_UpdatePointer(tkwin, medPtr->global.h, medPtr->global.v,
             medPtr->state);
-    
+
 
     TkMacOSXInstallCursor(0);
 
@@ -460,26 +460,26 @@ GeneratePollingEvents(MouseEventData * medPtr)
 }
 
 
-/*           
+/*
  *----------------------------------------------------------------------
  *
  * BringWindowForward --
- *           
+ *
  *      Bring this background window to the front.  We also set state
  *      so Tk thinks the button is currently up.
  *
  * Results:
  *      None.
- *      
+ *
  * Side effects:
  *      The window is brought forward.
- *          
+ *
  *----------------------------------------------------------------------
- */         
-  
-static void     
+ */
+
+static void
 BringWindowForward(WindowRef wRef)
-{           
+{
     if (!TkpIsWindowFloating(wRef)) {
         if (IsValidWindowPtr(wRef))
         SelectWindow(wRef);
@@ -496,7 +496,7 @@ GenerateMouseWheelEvent(MouseEventData * medPtr)
     TkWindow  *winPtr;
     XEvent     xEvent;
 
-    if ((!TkpIsWindowFloating(medPtr->whichWin) 
+    if ((!TkpIsWindowFloating(medPtr->whichWin)
             && (medPtr->activeNonFloating != medPtr->whichWin))) {
         tkwin = NULL;
     } else {
@@ -506,12 +506,12 @@ GenerateMouseWheelEvent(MouseEventData * medPtr)
         if (rootwin == NULL) {
             tkwin = NULL;
         } else {
-            tkwin = Tk_TopCoordsToWindow(rootwin, 
-                    medPtr->local.h, medPtr->local.v, 
+            tkwin = Tk_TopCoordsToWindow(rootwin,
+                    medPtr->local.h, medPtr->local.v,
                     &local_x, &local_y);
         }
     }
-    
+
     /*
      * The following call will generate the appropiate X events and
      * adjust any state that Tk must remember.
@@ -552,7 +552,7 @@ GenerateMouseWheelEvent(MouseEventData * medPtr)
  *----------------------------------------------------------------------
  */
 int
-TkMacOSXGetEatButtonUp()
+TkMacOSXGetEatButtonUp (void)
 {
     return gEatButtonUp;
 }
@@ -593,7 +593,7 @@ TkMacOSXSetEatButtonUp(int f)
  */
 
 unsigned int
-TkMacOSXButtonKeyState()
+TkMacOSXButtonKeyState (void)
 {
     unsigned int state = 0;
     KeyMap theKeys;
@@ -668,7 +668,7 @@ XQueryPointer(
 
     *root_x_return = where.h;
     *root_y_return = where.v;
-    *mask_return = TkMacOSXButtonKeyState();    
+    *mask_return = TkMacOSXButtonKeyState();
     return True;
 }
 
@@ -678,8 +678,8 @@ XQueryPointer(
  *
  * TkGenerateButtonEvent --
  *
- *        Given a global x & y position and the button key status this 
- *        procedure generates the appropiate X button event.  It also 
+ *        Given a global x & y position and the button key status this
+ *        procedure generates the appropiate X button event.  It also
  *        handles the state changes needed to implement implicit grabs.
  *
  * Results:
@@ -705,19 +705,19 @@ TkGenerateButtonEvent(
     int dummy;
     TkDisplay *dispPtr;
 
-    /* 
+    /*
      * ButtonDown events will always occur in the front
      * window.  ButtonUp events, however, may occur anywhere
      * on the screen.  ButtonUp events should only be sent
      * to Tk if in the front window or during an implicit grab.
      */
-     
+
     where.h = x;
     where.v = y;
     FindWindow(where, &whichWin);
     frontWin = FrontNonFloatingWindow();
-                        
-    if (0 && ((frontWin == NULL) || ((!(TkpIsWindowFloating(whichWin)) 
+
+    if (0 && ((frontWin == NULL) || ((!(TkpIsWindowFloating(whichWin))
             && (frontWin != whichWin))
             && TkMacOSXGetCapture() == NULL))) {
         return false;
@@ -725,12 +725,12 @@ TkGenerateButtonEvent(
 
     dispPtr = TkGetDisplayList();
     tkwin = Tk_IdToWindow(dispPtr->display, window);
-    
+
     /* SetPortWindowPort(ActiveNonFloatingWindow()); */
     SetPortWindowPort(whichWin);
     GlobalToLocal(&where);
     if (tkwin != NULL) {
-        tkwin = Tk_TopCoordsToWindow(tkwin, where.h, where.v, 
+        tkwin = Tk_TopCoordsToWindow(tkwin, where.h, where.v,
                 &dummy, &dummy);
     }
 
@@ -738,3 +738,5 @@ TkGenerateButtonEvent(
 
     return true;
 }
+
+/* EOF */

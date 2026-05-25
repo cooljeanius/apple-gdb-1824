@@ -1,4 +1,4 @@
-/* 
+/*
  * tclMacBGMain.c --
  *
  *	Main program for Macintosh Background Only Application shells.
@@ -54,7 +54,7 @@ static Tcl_Interp *interp;	/* Interpreter for application. */
  */
 
 void TclMacDoNotification(char *mssg);
-void TclMacNotificationResponse(NMRecPtr nmRec); 
+void TclMacNotificationResponse(NMRecPtr nmRec);
 int Tcl_MacBGNotifyObjCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const *objv);
 
 
@@ -125,7 +125,7 @@ Tcl_Main(argc, argv, appInitProc)
     tty = isatty(0);
     Tcl_SetVar(interp, "tcl_interactive",
 	    ((fileName == NULL) && tty) ? "1" : "0", TCL_GLOBAL_ONLY);
-    
+
     /*
      * Invoke application-specific initialization.
      */
@@ -146,12 +146,12 @@ Tcl_Main(argc, argv, appInitProc)
     /*
      * Install the BGNotify command:
      */
-    
+
     if ( Tcl_CreateObjCommand(interp, "bgnotify", Tcl_MacBGNotifyObjCmd, NULL,
              (Tcl_CmdDeleteProc *) NULL) == NULL) {
         goto done;
     }
-    
+
     /*
      * If a script file was specified then just source that file
      * and quit.  In this Mac BG Application version, we will try the
@@ -161,7 +161,7 @@ Tcl_Main(argc, argv, appInitProc)
     if (fileName != NULL) {
         Str255 resName;
         Handle resource;
-        
+
         strcpy((char *) resName + 1, fileName);
         resName[0] = strlen(fileName);
         resource = GetNamedResource('TEXT',resName);
@@ -170,10 +170,10 @@ Tcl_Main(argc, argv, appInitProc)
         } else {
             code = Tcl_EvalFile(interp, fileName);
         }
-        
+
 	if (code != TCL_OK) {
             Tcl_DString errStr;
-            
+
             Tcl_DStringInit(&errStr);
             Tcl_DStringAppend(&errStr, " Error sourcing resource or file: ", -1);
             Tcl_DStringAppend(&errStr, fileName, -1);
@@ -220,15 +220,14 @@ Tcl_Main(argc, argv, appInitProc)
  *
  *----------------------------------------------------------------------
  */
-void 
-TclMacDoNotification(mssg)
-    char *mssg;
+void
+TclMacDoNotification (char *mssg)
 {
     NMRec errorNot;
     EventRecord *theEvent = NULL;
     OSErr err;
     char *ptr;
-    
+
     errorNot.qType = nmType;
     errorNot.nmMark = 0;
     errorNot.nmIcon = 0;
@@ -239,66 +238,66 @@ TclMacDoNotification(mssg)
             *ptr = '\r';
         }
     }
-        
+
     c2pstr(mssg);
     errorNot.nmStr = (StringPtr) mssg;
 
     errorNot.nmResp = NewNMProc(TclMacNotificationResponse);
     errorNot.nmRefCon = SetCurrentA5();
-    
+
     NotificationIsDone = 0;
-    
+
     /*
      * Cycle while waiting for the user to click on the
      * notification box.  Don't take any events off the event queue,
      * since we want Tcl to do this but we want to block till the notification
      * has been handled...
      */
-    
+
     err = NMInstall(&errorNot);
-    if (err == noErr) { 
+    if (err == noErr) {
         while (!NotificationIsDone) {
             WaitNextEvent(0, theEvent, 20, NULL);
         }
         NMRemove(&errorNot);
     }
-    	
+
     p2cstr((unsigned char *) mssg);
 }
 
-void 
-TclMacNotificationResponse(nmRec) 
+void
+TclMacNotificationResponse(nmRec)
     NMRecPtr nmRec;
 {
     int curA5;
-    
+
     curA5 = SetCurrentA5();
     SetA5(nmRec->nmRefCon);
-    
+
     NotificationIsDone = 1;
-    
+
     SetA5(curA5);
-    
 }
 
-int 
+int
 Tcl_MacBGNotifyObjCmd(clientData, interp, objc, objv)
     ClientData clientData;
     Tcl_Interp *interp;
     int objc;
-    Tcl_Obj **objv;	
+    Tcl_Obj **objv;
 {
     Tcl_Obj *resultPtr;
-    
+
     resultPtr = Tcl_GetObjResult(interp);
-    
+
     if ( objc != 2 ) {
         Tcl_WrongNumArgs(interp, 1, objv, "message");
         return TCL_ERROR;
     }
-    
+
     TclMacDoNotification(Tcl_GetString(objv[1]));
     return TCL_OK;
-           
+
 }
 
+/* EOF */

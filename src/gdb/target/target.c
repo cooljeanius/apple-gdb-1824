@@ -1412,6 +1412,20 @@ target_async_mask(int mask)
   return saved_async_masked_status;
 }
 
+/* Look for a target which can describe architectural features, starting
+   from TARGET.  If we find one, return its description.  */
+
+const struct target_desc *
+target_read_description(struct target_ops *target)
+{
+#ifdef HAVE_STRUCT_TARGET_TO_READ_DESCRIPTION
+  return target->to_read_description(target);
+#else
+  (void)target;
+  return NULL;
+#endif /* HAVE_STRUCT_TARGET_TO_READ_DESCRIPTION */
+}
+
 /* APPLE LOCAL begin async */
 void
 gdb_set_async_override(void *on)

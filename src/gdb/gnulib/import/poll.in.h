@@ -1,7 +1,7 @@
 /* Header for poll(2) emulation
    Contributed by Paolo Bonzini.
 
-   Copyright 2001-2003, 2007, 2009-2023 Free Software Foundation, Inc.
+   Copyright 2001-2003, 2007, 2009-2026 Free Software Foundation, Inc.
 
    This file is part of gnulib.
 
@@ -108,17 +108,16 @@ typedef unsigned long nfds_t;
 #   undef poll
 #   define poll rpl_poll
 #  endif
-_GL_FUNCDECL_RPL (poll, int, (struct pollfd *pfd, nfds_t nfd, int timeout));
+_GL_FUNCDECL_RPL (poll, int, (struct pollfd *pfd, nfds_t nfd, int timeout), );
 _GL_CXXALIAS_RPL (poll, int, (struct pollfd *pfd, nfds_t nfd, int timeout));
 # else
 #  if !@HAVE_POLL@
-_GL_FUNCDECL_SYS (poll, int, (struct pollfd *pfd, nfds_t nfd, int timeout));
+_GL_FUNCDECL_SYS (poll, int, (struct pollfd *pfd, nfds_t nfd, int timeout), );
 #  endif
 _GL_CXXALIAS_SYS (poll, int, (struct pollfd *pfd, nfds_t nfd, int timeout));
 # endif
 _GL_CXXALIASWARN (poll);
 #elif defined GNULIB_POSIXCHECK
-# undef poll
 # if HAVE_RAW_DECL_POLL
 _GL_WARN_ON_USE (poll, "poll is unportable - "
                  "use gnulib module poll for portability");

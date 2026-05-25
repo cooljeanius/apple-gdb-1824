@@ -331,13 +331,11 @@ check_bits (int call,
       tests ++;
     }
   return errors;
-}     
+}
 
 
 int
-main (argc, argv)
-     int argc;
-     char **argv;
+main (int argc, char **argv)
 {
   int errors = 0;
 
@@ -388,21 +386,21 @@ main (argc, argv)
   errors += check_sext (32, WITH_TARGET_WORD_MSB, "SEXT32", "MASK32", "MSMASK32");
   errors += check_sext (64, WITH_TARGET_WORD_MSB, "SEXT64", "MASK64", "MSMASK64");
   errors += check_sext (64, WITH_TARGET_WORD_MSB, "SEXT",   "MASK",   "MSMASK");
-  
+
   printf ("Checking LSSEXT*\n");
   errors += check_sext ( 8,  8 - 1, "LSSEXT8",  "LSMASK8",  "MSMASK8");
   errors += check_sext (16, 16 - 1, "LSSEXT16", "LSMASK16", "MSMASK16");
   errors += check_sext (32, 32 - 1, "LSSEXT32", "LSMASK32", "MSMASK32");
   errors += check_sext (64, 64 - 1, "LSSEXT64", "LSMASK64", "MSMASK64");
   errors += check_sext (64, WITH_TARGET_WORD_BITSIZE - 1, "LSSEXT",   "LSMASK",   "MSMASK");
-  
+
   printf ("Checking MSSEXT*\n");
   errors += check_sext (8,   0, "MSSEXT8",  "MSMASK8",  "MSMASK8");
   errors += check_sext (16,  0, "MSSEXT16", "MSMASK16", "MSMASK16");
   errors += check_sext (32,  0, "MSSEXT32", "MSMASK32", "MSMASK32");
   errors += check_sext (64,  0, "MSSEXT64", "MSMASK64", "MSMASK64");
   errors += check_sext (64,  0, "MSSEXT",   "MSMASK",   "MSMASK");
-  
+
   printf ("Checking ROT*\n");
   errors += check_rot (16, "ROT16", "MASK16");
   errors += check_rot (32, "ROT32", "MASK32");

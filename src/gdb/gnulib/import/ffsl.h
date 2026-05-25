@@ -1,5 +1,5 @@
 /* ffsl.h -- find the first set bit in a word.
-   Copyright (C) 2011-2023 Free Software Foundation, Inc.
+   Copyright (C) 2011-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
@@ -71,8 +71,6 @@ FUNC (TYPE i)
 
   if (chunk_count > 1)
     {
-      size_t k;
-
       /* It is tempting to write  if (!j)  here, but if we do this,
          Solaris 10/x86 "cc -O" miscompiles the code.  */
       if (!i)
@@ -81,7 +79,7 @@ FUNC (TYPE i)
       if ((unsigned int) j)
         return ffs ((unsigned int) j);
       /* Generic loop.  */
-      for (k = 1; k < chunk_count - 1; k++)
+      for (size_t k = 1; k < chunk_count - 1; k++)
         if ((unsigned int) (j >> (k * chunk_bits)) != 0)
           return k * chunk_bits + ffs ((unsigned int) (j >> (k * chunk_bits)));
     }

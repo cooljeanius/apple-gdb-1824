@@ -63,10 +63,10 @@
 	8) termination record
 
   The data can come out of order, and may be discontigous. This is a
-  serial protocol, so big files are unlikely, so we keep a list of 8k chunks.  */
+  serial protocol, so big files are unlikely, so we keep a list of 8k chunks. */
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "libbfd.h"
 #include "libiberty.h"
 

@@ -1,6 +1,6 @@
 /* ialloc.h -- malloc with idx_t rather than size_t
 
-   Copyright 2021-2023 Free Software Foundation, Inc.
+   Copyright 2021-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
@@ -65,9 +65,7 @@ IALLOC_INLINE
 void *
 irealloc (void *p, idx_t s)
 {
-  /* Work around GNU realloc glitch by treating a zero size as if it
-     were 1, so that returning NULL is equivalent to failing.  */
-  return s <= SIZE_MAX ? realloc (p, s | !s) : _gl_alloc_nomem ();
+  return s <= SIZE_MAX ? realloc (p, s) : _gl_alloc_nomem ();
 }
 
 /* icalloc (num, size) is like calloc (num, size).
@@ -99,10 +97,6 @@ icalloc (idx_t n, idx_t s)
 IALLOC_INLINE void *
 ireallocarray (void *p, idx_t n, idx_t s)
 {
-  /* Work around GNU reallocarray glitch by treating a zero size as if
-     it were 1, so that returning NULL is equivalent to failing.  */
-  if (n == 0 || s == 0)
-    n = s = 1;
   return (n <= SIZE_MAX && s <= SIZE_MAX
           ? reallocarray (p, n, s)
           : _gl_alloc_nomem ());

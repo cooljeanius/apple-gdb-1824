@@ -438,3 +438,7 @@ David Carlton					carlton@bactrian.org
 
 (*) Indicates folks that don't have a Kerberos/SSH account in the GDB
 group.
+
+;; Local Variables:
+;; coding: utf-8
+;; End:

@@ -1186,7 +1186,8 @@ yyerror(const char *msg)
   if (prev_lexptr)
     lexptr = prev_lexptr;
 
-  error("A %s in expression, near `%s'.", (msg ? msg : "error"), lexptr);
+  error("A %s in expression, near '%s'.", (msg ? msg : "error"),
+        (lexptr ? lexptr : "lexptr"));
 }
 
 /* End of f-exp.y */

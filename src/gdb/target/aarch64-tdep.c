@@ -1,4 +1,4 @@
-/* Common target dependent code for GDB on AArch64 systems.
+/* aarch64-tdep.c: Common target dependent code for GDB on AArch64 systems.
 
    Copyright (C) 2009-2013 Free Software Foundation, Inc.
    Contributed by ARM Ltd.
@@ -48,6 +48,8 @@
 #include "user-regs.h"
 #include "language.h"
 #include "infcall.h"
+#include "ax.h"
+#include "ax-gdb.h"
 
 #include "aarch64-tdep.h"
 
@@ -56,6 +58,9 @@
 
 #include "gdb_assert.h"
 #include "vec.h"
+
+#include "record.h"
+#include "record-full.h"
 
 #include "features/aarch64.c"
 
@@ -226,8 +231,8 @@ decode_add_sub_imm (CORE_ADDR addr, uint32_t insn, unsigned *rd, unsigned *rn,
 {
   if ((insn & 0x9f000000) == 0x91000000)
     {
-      unsigned shift;
-      unsigned op_is_sub;
+      unsigned int shift;
+      unsigned int op_is_sub;
 
       *rd = (insn >> 0) & 0x1f;
       *rn = (insn >> 5) & 0x1f;
@@ -658,13 +663,11 @@ decode_tb (CORE_ADDR addr,
 /* Analyze a prologue, looking for a recognizable stack frame
    and frame pointer.  Scan until we encounter a store that could
    clobber the stack frame unexpectedly, or an unknown instruction.  */
-
 static CORE_ADDR
-aarch64_analyze_prologue (struct gdbarch *gdbarch,
-			  CORE_ADDR start, CORE_ADDR limit,
-			  struct aarch64_prologue_cache *cache)
+aarch64_analyze_prologue(struct gdbarch *gdbarch,
+			 CORE_ADDR start, CORE_ADDR limit,
+			 struct aarch64_prologue_cache *cache)
 {
-  enum bfd_endian byte_order_for_code = gdbarch_byte_order_for_code (gdbarch);
   int i;
   pv_t regs[AARCH64_X_REGISTER_COUNT];
   struct pv_area *stack;
@@ -678,22 +681,21 @@ aarch64_analyze_prologue (struct gdbarch *gdbarch,
   for (; start < limit; start += 4)
     {
       uint32_t insn;
-      unsigned rd;
-      unsigned rn;
-      unsigned rm;
-      unsigned rt;
-      unsigned rt1;
-      unsigned rt2;
-      int op_is_sub;
+      unsigned int rd;
+      unsigned int rn;
+      unsigned int rm;
+      unsigned int rt;
+      unsigned int rt1;
+      unsigned int rt2;
       int32_t imm;
-      unsigned cond;
+      unsigned int cond;
       int is64;
-      unsigned is_link;
-      unsigned op;
-      unsigned bit;
+      unsigned int is_link;
+      unsigned int op;
+      unsigned int bit;
       int32_t offset;
 
-      insn = read_memory_unsigned_integer (start, 4, byte_order_for_code);
+      insn = (uint32_t)read_memory_unsigned_integer(start, 4);
 
       if (decode_add_sub_imm (start, insn, &rd, &rn, &imm))
 	regs[rd] = pv_add_constant (regs[rn], imm);
@@ -846,38 +848,34 @@ aarch64_analyze_prologue (struct gdbarch *gdbarch,
 /* Implement the "skip_prologue" gdbarch method.  */
 
 static CORE_ADDR
-aarch64_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
+aarch64_skip_prologue(struct gdbarch *gdbarch, CORE_ADDR pc)
 {
-  unsigned long inst;
-  CORE_ADDR skip_pc;
   CORE_ADDR func_addr, limit_pc;
-  struct symtab_and_line sal;
 
   /* See if we can determine the end of the prologue via the symbol
      table.  If so, then return either PC, or the PC after the
      prologue, whichever is greater.  */
-  if (find_pc_partial_function (pc, NULL, &func_addr, NULL))
+  if (find_pc_partial_function(pc, NULL, &func_addr, NULL))
     {
-      CORE_ADDR post_prologue_pc
-	= skip_prologue_using_sal (gdbarch, func_addr);
+      CORE_ADDR post_prologue_pc = skip_prologue_using_sal(func_addr);
 
       if (post_prologue_pc != 0)
-	return max (pc, post_prologue_pc);
+	return max(pc, post_prologue_pc);
     }
 
-  /* Can't determine prologue from the symbol table, need to examine
+  /* Cannot determine prologue from the symbol table, need to examine
      instructions.  */
 
   /* Find an upper limit on the function prologue using the debug
      information.  If the debug information could not be used to
      provide that bound, then use an arbitrary large number as the
      upper bound.  */
-  limit_pc = skip_prologue_using_sal (gdbarch, pc);
+  limit_pc = skip_prologue_using_sal(pc);
   if (limit_pc == 0)
-    limit_pc = pc + 128;	/* Magic.  */
+    limit_pc = (pc + 128); /* Magic.  */
 
-  /* Try disassembling prologue.  */
-  return aarch64_analyze_prologue (gdbarch, pc, limit_pc, NULL);
+  /* Try disassembling prologue: */
+  return aarch64_analyze_prologue(gdbarch, pc, limit_pc, NULL);
 }
 
 /* Scan the function prologue for THIS_FRAME and populate the prologue
@@ -919,11 +917,8 @@ aarch64_scan_prologue (struct frame_info *this_frame,
   else
     {
       CORE_ADDR frame_loc;
-      LONGEST saved_fp;
-      LONGEST saved_lr;
-      enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
 
-      frame_loc = get_frame_register_unsigned (this_frame, AARCH64_FP_REGNUM);
+      frame_loc = get_frame_register_unsigned(this_frame, AARCH64_FP_REGNUM);
       if (frame_loc == 0)
 	return;
 
@@ -979,8 +974,8 @@ aarch64_prologue_this_id (struct frame_info *this_frame,
   CORE_ADDR pc, func;
 
   if (*this_cache == NULL)
-    *this_cache = aarch64_make_prologue_cache (this_frame);
-  cache = *this_cache;
+    *this_cache = aarch64_make_prologue_cache(this_frame);
+  cache = *(struct aarch64_prologue_cache **)this_cache;
 
   /* This is meant to halt the backtrace at "_start".  */
   pc = get_frame_pc (this_frame);
@@ -996,18 +991,213 @@ aarch64_prologue_this_id (struct frame_info *this_frame,
   *this_id = id;
 }
 
-/* Implement the "prev_register" frame_unwind method.  */
+#if defined(__APPLE__) && (defined(MACOSX_DYLD) || defined(TM_NEXTSTEP))
+/* APPLE LOCAL BEGIN: fast stacks. */
 
-static struct value *
-aarch64_prologue_prev_register (struct frame_info *this_frame,
-				void **this_cache, int prev_regnum)
+/* (originally copied from arm-tdep.c, with minor tweaks for archname)
+ * This is set to the FAST_COUNT_STACK macro for aarch64. The return value
+ * is 1 if no errors were encountered traversing the stack, and 0 otherwise.
+ * It sets COUNT to the stack depth. If PRINT_FUN is non-null, then
+ * it will be passed the pc & fp for each frame as it is encountered.
+ */
+
+/*
+ * COUNT_LIMIT parameter sets a limit on the number of frames that
+ * will be counted by this function. -1 means unlimited.
+ *
+ * PRINT_LIMIT parameter sets a limit on the number of frames for
+ * which the full information is printed. -1 means unlimited.
+ */
+int
+aarch64_macosx_fast_show_stack(unsigned int count_limit,
+			       unsigned int print_start,
+			       unsigned int print_end,
+			       unsigned int *count,
+			       void (print_fun)(struct ui_out * uiout,
+                                            	int *frame_num,
+                                            	CORE_ADDR pc, CORE_ADDR fp))
 {
-  struct gdbarch *gdbarch = get_frame_arch (this_frame);
+  CORE_ADDR fp;
+  CORE_ADDR prev_fp = 0UL;
+  static CORE_ADDR sigtramp_start = 0UL;
+  static CORE_ADDR sigtramp_end = 0UL;
+  unsigned int i = 0U;
+  int more_frames;
+  int success = 1;
+  struct frame_info *fi;
+  ULONGEST next_fp = 0UL;
+  ULONGEST pc = 0UL;
+  int wordsize = 4; /* FIXME: find actual wordsize (this is a hack) */
+
+  more_frames = fast_show_stack_trace_prologue(count_limit, print_start,
+                                               print_end, wordsize,
+                                               &sigtramp_start,
+                                               &sigtramp_end, &i, &fi,
+                                               print_fun);
+
+  if (more_frames < 0)
+    {
+      /* An error occurred during the initial stack frames: */
+      success = 0;
+    }
+  else if (more_frames == 0)
+    {
+      /* We already have all the frames we need: */
+      success = 1;
+    }
+  else if (i < count_limit)
+    {
+      /* We got some stack frames and still need more: */
+      struct aarch64_prologue_cache *cache = aarch64_make_prologue_cache(fi);
+      int done;
+      fp = get_frame_register_unsigned(fi, (cache
+					    ? cache->framereg
+					    : AARCH64_FP_REGNUM));
+      prev_fp = fp;
+      done = (fp == 0);
+
+      while (!done && (i < count_limit))
+	{
+	  int add_frame = 0;
+	  CORE_ADDR next_fp_addr = 0;
+	  CORE_ADDR next_pc_addr = 0;
+	  if ((sigtramp_start <= pc) && (pc < sigtramp_end))
+	    {
+	      CORE_ADDR mcontext_addr = 0UL;
+	      CORE_ADDR gpr_addr = 0UL;
+#ifdef GP_REG_SIZE
+	      /* We are in signal trampoline: */
+	      mcontext_addr = read_memory_unsigned_integer((fp + 104),
+	                                                   GP_REG_SIZE);
+# ifdef EXC_STATE_SIZE
+	      gpr_addr = (mcontext_addr + EXC_STATE_SIZE);
+# else
+	      gpr_addr = (mcontext_addr + 0UL);
+# endif /* EXC_STATE_SIZE */
+	      next_fp_addr = (gpr_addr + (AARCH64_FP_REGNUM * GP_REG_SIZE));
+	      next_pc_addr = (gpr_addr + (AARCH64_PC_REGNUM * GP_REG_SIZE));
+#else
+	      if (gpr_addr == mcontext_addr) {
+		(void)mcontext_addr;
+		(void)gpr_addr;
+	      }
+#endif /* GP_REG_SIZE */
+	    }
+	  else
+	    {
+	      /* We have a normal frame: */
+	      next_fp_addr = fp;
+	      next_pc_addr = (fp + 4);
+	    }
+
+	  if ((next_fp_addr != 0) && (next_pc_addr != 0))
+	    {
+#ifdef GP_REG_SIZE
+	      /* Read the next FP by dereferencing the current FP: */
+	      if (safe_read_memory_unsigned_integer(next_fp_addr, GP_REG_SIZE,
+						    &next_fp))
+		{
+		  if (next_fp == 0)
+		    done = 1; /* normal end of our FP chain.  */
+		  else if (next_fp == fp)
+		    {
+		      warning(_("Frame ptr points back at the previous frame"));
+		      done = 1; /* Avoid infinite loop.  */
+		      success = 0;  /* This is not good, return error... */
+		    }
+		  else
+		    {
+		      /* Read the previous PC value: */
+		      if (safe_read_memory_unsigned_integer(next_pc_addr,
+							    GP_REG_SIZE, &pc))
+			{
+			  if (pc == 0)
+			    done = 1;
+			  else
+			    add_frame = 1;
+			}
+		      else
+			{
+			  done = 1; /* Could NOT read the previous PC.  */
+			}
+		    }
+		}
+	      else
+		{
+		  done = 1; /* Could NOT read the previous FP.  */
+		}
+#else
+	      warning(_("Missing GP_REG_SIZE"));
+	      done = 1;
+#endif /* GP_REG_SIZE */
+	    }
+	  else
+	    {
+	      done = 1; /* Invalid previous FP and PC addresses.  */
+	    }
+
+	  if (add_frame)
+	    {
+	      prev_fp = fp;
+	      fp = next_fp;
+	      /* Strip bit zero (thumb bit) for any return addresses since
+	         we read this from memory.  */
+	      pc = ADDR_BITS_REMOVE(pc);
+	      pc_set_load_state(pc, OBJF_SYM_ALL, 0);
+
+	      if (print_fun && ((i >= print_start) && (i < print_end)))
+		print_fun(uiout, (int *)&i, pc, fp);
+	      i++;
+
+	      if (!backtrace_past_main && addr_inside_main_func(pc))
+		done = 1;
+	    }
+	  else
+	    done = 1;
+	}
+    }
+
+  if (print_fun)
+    ui_out_end(uiout, ui_out_type_list);
+
+  if (prev_fp == INVALID_ADDRESS) {
+    ; /* do nothing; just silence '-Wunused-but-set-variable' */
+  }
+
+  *count = i;
+  return success;
+}
+#endif /* __APPLE__ && (MACOSX_DYLD || TM_NEXTSTEP) */
+
+#if defined(__GNUC__) && (__GNUC__ > 5)
+# if (defined(__STDC_VERSION__) && (__STDC_VERSION__ < 199901L)) || \
+     (defined(__STDC__) && (__STDC__ >= 1))
+#  pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+# endif /* !C99 */
+#elif defined(__clang__) && (__clang__ >= 1)
+# if (defined(__STDC_VERSION__) && (__STDC_VERSION__ < 199901L)) || \
+     (defined(__STDC__) && (__STDC__ < 1) && defined(ALMOST_STDC))
+#  pragma clang diagnostic ignored "-Wimplicit-function-declaration"
+#  pragma clang diagnostic ignored "-Wincompatible-pointer-types"
+#  pragma clang diagnostic ignored "-Wint-conversion"
+# endif /* !C99 */
+# pragma clang diagnostic ignored "-Wincompatible-function-pointer-types"
+# ifdef DEF_VEC_O
+#  pragma clang diagnostic ignored "-Wshorten-64-to-32"
+#  pragma clang diagnostic ignored "-Wunused-function"
+# endif /* DEF_VEC_O */
+#endif /* (GCC > 5) || clang */
+
+/* Implement the "prev_register" frame_unwind method: */
+static struct value *
+aarch64_prologue_prev_register(struct frame_info *this_frame,
+			       void **this_cache, int prev_regnum)
+{
   struct aarch64_prologue_cache *cache;
 
   if (*this_cache == NULL)
-    *this_cache = aarch64_make_prologue_cache (this_frame);
-  cache = *this_cache;
+    *this_cache = aarch64_make_prologue_cache(this_frame);
+  cache = *(struct aarch64_prologue_cache **)this_cache;
 
   /* If we are asked to unwind the PC, then we need to return the LR
      instead.  The prologue may save PC, but it will point into this
@@ -1016,8 +1206,8 @@ aarch64_prologue_prev_register (struct frame_info *this_frame,
     {
       CORE_ADDR lr;
 
-      lr = frame_unwind_register_unsigned (this_frame, AARCH64_LR_REGNUM);
-      return frame_unwind_got_constant (this_frame, prev_regnum, lr);
+      lr = frame_unwind_register_unsigned(this_frame, AARCH64_LR_REGNUM);
+      return frame_unwind_got_constant(this_frame, prev_regnum, lr);
     }
 
   /* SP is generally not saved to the stack, but this frame is
@@ -1036,11 +1226,12 @@ aarch64_prologue_prev_register (struct frame_info *this_frame,
          |          |<- SP
          +----------+  */
   if (prev_regnum == AARCH64_SP_REGNUM)
-    return frame_unwind_got_constant (this_frame, prev_regnum,
-				      cache->prev_sp);
+    return frame_unwind_got_constant(this_frame, prev_regnum,
+				     cache->prev_sp);
 
-  return trad_frame_get_prev_register (this_frame, cache->saved_regs,
-				       prev_regnum);
+  trad_frame_get_prev_register(this_frame, cache->saved_regs, prev_regnum,
+			       NULL, NULL, NULL, NULL, NULL);
+  return NULL;
 }
 
 /* AArch64 prologue unwinder.  */
@@ -1049,7 +1240,7 @@ struct frame_unwind aarch64_prologue_unwind =
   NORMAL_FRAME,
   default_frame_unwind_stop_reason,
   aarch64_prologue_this_id,
-  aarch64_prologue_prev_register,
+  (const struct frame_data *)aarch64_prologue_prev_register,
   NULL,
   default_frame_sniffer
 };
@@ -1060,9 +1251,7 @@ struct frame_unwind aarch64_prologue_unwind =
 static struct aarch64_prologue_cache *
 aarch64_make_stub_cache (struct frame_info *this_frame)
 {
-  int reg;
   struct aarch64_prologue_cache *cache;
-  CORE_ADDR unwound_fp;
 
   cache = FRAME_OBSTACK_ZALLOC (struct aarch64_prologue_cache);
   cache->saved_regs = trad_frame_alloc_saved_regs (this_frame);
@@ -1083,7 +1272,7 @@ aarch64_stub_this_id (struct frame_info *this_frame,
 
   if (*this_cache == NULL)
     *this_cache = aarch64_make_stub_cache (this_frame);
-  cache = *this_cache;
+  cache = *(struct aarch64_prologue_cache **)this_cache;
 
   *this_id = frame_id_build (cache->prev_sp, get_frame_pc (this_frame));
 }
@@ -1099,7 +1288,7 @@ aarch64_stub_unwind_sniffer (const struct frame_unwind *self,
   gdb_byte dummy[4];
 
   addr_in_block = get_frame_address_in_block (this_frame);
-  if (in_plt_section (addr_in_block)
+  if (in_plt_section(addr_in_block, NULL)
       /* We also use the stub winder if the target memory is unreadable
 	 to avoid having the prologue unwinder trying to read it.  */
       || target_read_memory (get_frame_pc (this_frame), dummy, 4) != 0)
@@ -1114,7 +1303,7 @@ struct frame_unwind aarch64_stub_unwind =
   NORMAL_FRAME,
   default_frame_unwind_stop_reason,
   aarch64_stub_this_id,
-  aarch64_prologue_prev_register,
+  (const struct frame_data *)aarch64_prologue_prev_register,
   NULL,
   aarch64_stub_unwind_sniffer
 };
@@ -1128,7 +1317,7 @@ aarch64_normal_frame_base (struct frame_info *this_frame, void **this_cache)
 
   if (*this_cache == NULL)
     *this_cache = aarch64_make_prologue_cache (this_frame);
-  cache = *this_cache;
+  cache = *(struct aarch64_prologue_cache **)this_cache;
 
   return cache->prev_sp - cache->framesize;
 }
@@ -1142,19 +1331,20 @@ struct frame_base aarch64_normal_base =
   aarch64_normal_frame_base
 };
 
+#ifdef HAVE_GDBARCH_DUMMY_ID
 /* Assuming THIS_FRAME is a dummy, return the frame ID of that
    dummy frame.  The frame ID's base needs to match the TOS value
    saved by save_dummy_frame_tos () and returned from
    aarch64_push_dummy_call, and the PC needs to match the dummy
    frame's breakpoint.  */
-
 static struct frame_id
-aarch64_dummy_id (struct gdbarch *gdbarch, struct frame_info *this_frame)
+aarch64_dummy_id(struct gdbarch *gdbarch, struct frame_info *this_frame)
 {
-  return frame_id_build (get_frame_register_unsigned (this_frame,
-						      AARCH64_SP_REGNUM),
-			 get_frame_pc (this_frame));
+  return frame_id_build(get_frame_register_unsigned(this_frame,
+						     AARCH64_SP_REGNUM),
+			get_frame_pc(this_frame));
 }
+#endif /* HAVE_GDBARCH_DUMMY_ID */
 
 /* Implement the "unwind_pc" gdbarch method.  */
 
@@ -1182,7 +1372,6 @@ static struct value *
 aarch64_dwarf2_prev_register (struct frame_info *this_frame,
 			      void **this_cache, int regnum)
 {
-  struct gdbarch *gdbarch = get_frame_arch (this_frame);
   CORE_ADDR lr;
 
   switch (regnum)
@@ -1212,6 +1401,8 @@ aarch64_dwarf2_frame_init_reg (struct gdbarch *gdbarch, int regnum,
       break;
     case AARCH64_SP_REGNUM:
       reg->how = DWARF2_FRAME_REG_CFA;
+      break;
+    default:
       break;
     }
 }
@@ -1357,7 +1548,7 @@ pass_in_x (struct gdbarch *gdbarch, struct regcache *regcache,
 	   struct aarch64_call_info *info, struct type *type,
 	   const bfd_byte *buf)
 {
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
   int len = TYPE_LENGTH (type);
   enum type_code typecode = TYPE_CODE (type);
   int regnum = AARCH64_X0_REGNUM + info->ngrn;
@@ -1366,10 +1557,8 @@ pass_in_x (struct gdbarch *gdbarch, struct regcache *regcache,
 
   while (len > 0)
     {
-      int partial_len = len < X_REGISTER_SIZE ? len : X_REGISTER_SIZE;
-      CORE_ADDR regval = extract_unsigned_integer (buf, partial_len,
-						   byte_order);
-
+      int partial_len = ((len < X_REGISTER_SIZE) ? len : X_REGISTER_SIZE);
+      CORE_ADDR regval = extract_unsigned_integer(buf, partial_len);
 
       /* Adjust sub-word struct/union args when big-endian.  */
       if (byte_order == BFD_ENDIAN_BIG
@@ -1435,7 +1624,7 @@ pass_on_stack (struct aarch64_call_info *info, struct type *type,
 
   /* PCS C.17 Stack should be aligned to the larger of 8 bytes or the
      Natural alignment of the argument's type.  */
-  align = align_up (align, 8);
+  align = (int)align_up(align, 8);
 
   /* The AArch64 PCS requires at most doubleword alignment.  */
   if (align > 16)
@@ -1511,10 +1700,7 @@ aarch64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 			 struct value **args, CORE_ADDR sp, int struct_return,
 			 CORE_ADDR struct_addr)
 {
-  int nstack = 0;
   int argnum;
-  int x_argreg;
-  int v_argreg;
   struct aarch64_call_info info;
   struct type *func_type;
   struct type *return_type;
@@ -1708,7 +1894,7 @@ aarch64_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
       stack_item_t *si = VEC_last (stack_item_t, info.si);
 
       sp -= si->len;
-      write_memory (sp, si->data, si->len);
+      write_memory(sp, (const gdb_byte *)si->data, si->len);
       VEC_pop (stack_item_t, info.si);
     }
 
@@ -1910,7 +2096,10 @@ aarch64_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR *pcptr,
 {
   struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
 
-  *lenptr = sizeof (aarch64_default_breakpoint);
+  if (tdep == NULL) {
+    ; /* ??? */
+  }
+  *lenptr = sizeof(aarch64_default_breakpoint);
   return aarch64_default_breakpoint;
 }
 
@@ -1923,7 +2112,7 @@ aarch64_extract_return_value (struct type *type, struct regcache *regs,
 			      gdb_byte *valbuf)
 {
   struct gdbarch *gdbarch = get_regcache_arch (regs);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
 
   if (TYPE_CODE (type) == TYPE_CODE_FLT)
     {
@@ -1952,9 +2141,16 @@ aarch64_extract_return_value (struct type *type, struct regcache *regs,
 	  /* By using store_unsigned_integer we avoid having to do
 	     anything special for small big-endian values.  */
 	  regcache_cooked_read_unsigned (regs, regno++, &tmp);
-	  store_unsigned_integer (valbuf,
-				  (len > X_REGISTER_SIZE
-				   ? X_REGISTER_SIZE : len), byte_order, tmp);
+#ifdef S_U_I_TAKES_FOUR_ARGS
+	  store_unsigned_integer(valbuf,
+				 ((len > X_REGISTER_SIZE)
+				  ? X_REGISTER_SIZE : len), byte_order, tmp);
+#else
+	  store_unsigned_integer(valbuf,
+				 ((len > X_REGISTER_SIZE)
+				  ? X_REGISTER_SIZE : len), tmp);
+	  (void)byte_order;
+#endif /* S_U_I_TAKES_FOUR_ARGS */
 	  len -= X_REGISTER_SIZE;
 	  valbuf += X_REGISTER_SIZE;
 	}
@@ -2023,9 +2219,6 @@ aarch64_extract_return_value (struct type *type, struct regcache *regs,
 static int
 aarch64_return_in_memory (struct gdbarch *gdbarch, struct type *type)
 {
-  int nRc;
-  enum type_code code;
-
   CHECK_TYPEDEF (type);
 
   /* In the AArch64 ABI, "integer" like aggregate types are returned
@@ -2058,7 +2251,7 @@ aarch64_store_return_value (struct type *type, struct regcache *regs,
 			    const gdb_byte *valbuf)
 {
   struct gdbarch *gdbarch = get_regcache_arch (regs);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
 
   if (TYPE_CODE (type) == TYPE_CODE_FLT)
     {
@@ -2082,7 +2275,12 @@ aarch64_store_return_value (struct type *type, struct regcache *regs,
 	  bfd_byte tmpbuf[X_REGISTER_SIZE];
 	  LONGEST val = unpack_long (type, valbuf);
 
-	  store_signed_integer (tmpbuf, X_REGISTER_SIZE, byte_order, val);
+#ifdef S_S_I_TAKES_FOUR_ARGS
+	  store_signed_integer(tmpbuf, X_REGISTER_SIZE, byte_order, val);
+#else
+	  store_signed_integer(tmpbuf, X_REGISTER_SIZE, val);
+	  (void)byte_order;
+#endif /* S_S_I_TAKES_FOUR_ARGS */
 	  regcache_cooked_write (regs, AARCH64_X0_REGNUM, tmpbuf);
 	}
       else
@@ -2151,8 +2349,6 @@ aarch64_return_value (struct gdbarch *gdbarch, struct value *func_value,
 		      struct type *valtype, struct regcache *regcache,
 		      gdb_byte *readbuf, const gdb_byte *writebuf)
 {
-  struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
-
   if (TYPE_CODE (valtype) == TYPE_CODE_STRUCT
       || TYPE_CODE (valtype) == TYPE_CODE_UNION
       || TYPE_CODE (valtype) == TYPE_CODE_ARRAY)
@@ -2186,7 +2382,7 @@ aarch64_get_longjmp_target (struct frame_info *frame, CORE_ADDR *pc)
   gdb_byte buf[X_REGISTER_SIZE];
   struct gdbarch *gdbarch = get_frame_arch (frame);
   struct gdbarch_tdep *tdep = new_gdbarch_tdep(gdbarch);
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  enum bfd_endian byte_order = (enum bfd_endian)gdbarch_byte_order(gdbarch);
 
   jb_addr = get_frame_register_unsigned (frame, AARCH64_X0_REGNUM);
 
@@ -2194,7 +2390,12 @@ aarch64_get_longjmp_target (struct frame_info *frame, CORE_ADDR *pc)
 			  X_REGISTER_SIZE))
     return 0;
 
-  *pc = extract_unsigned_integer (buf, X_REGISTER_SIZE, byte_order);
+#ifdef E_U_I_TAKES_THREE_ARGS
+  *pc = extract_unsigned_integer(buf, X_REGISTER_SIZE, byte_order);
+#else
+  *pc = extract_unsigned_integer(buf, X_REGISTER_SIZE);
+  (void)byte_order;
+#endif /* E_U_I_TAKES_THREE_ARGS */
   return 1;
 }
 
@@ -2337,8 +2538,8 @@ aarch64_pseudo_register_reggroup_p (struct gdbarch *gdbarch, int regnum,
   return group == all_reggroup;
 }
 
+#ifdef HAVE_SET_GDBARCH_PSEUDO_REGISTER_READ_VALUE
 /* Implement the "pseudo_register_read_value" gdbarch method.  */
-
 static struct value *
 aarch64_pseudo_read_value (struct gdbarch *gdbarch,
 			   struct regcache *regcache,
@@ -2348,87 +2549,67 @@ aarch64_pseudo_read_value (struct gdbarch *gdbarch,
   struct value *result_value;
   gdb_byte *buf;
 
-  result_value = allocate_value (register_type (gdbarch, regnum));
-  VALUE_LVAL (result_value) = lval_register;
-  VALUE_REGNUM (result_value) = regnum;
+  result_value = allocate_value(register_type(gdbarch, regnum));
+  VALUE_LVAL(result_value) = lval_register;
+  VALUE_REGNUM(result_value) = (short)regnum;
   buf = value_contents_raw (result_value);
 
-  regnum -= gdbarch_num_regs (gdbarch);
+  regnum -= gdbarch_num_regs(gdbarch);
 
-  if (regnum >= AARCH64_Q0_REGNUM && regnum < AARCH64_Q0_REGNUM + 32)
+  if ((regnum >= AARCH64_Q0_REGNUM) && (regnum < (AARCH64_Q0_REGNUM + 32)))
     {
-      enum register_status status;
       unsigned int v_regnum;
 
-      v_regnum = AARCH64_V0_REGNUM + regnum - AARCH64_Q0_REGNUM;
-      status = regcache_raw_read (regcache, v_regnum, reg_buf);
-      if (status != REG_VALID)
-	mark_value_bytes_unavailable (result_value, 0,
-				      TYPE_LENGTH (value_type (result_value)));
-      else
-	memcpy (buf, reg_buf, Q_REGISTER_SIZE);
+      v_regnum = (AARCH64_V0_REGNUM + regnum - AARCH64_Q0_REGNUM);
+      regcache_raw_read(regcache, v_regnum, reg_buf);
+      memcpy(buf, reg_buf, Q_REGISTER_SIZE);
       return result_value;
     }
 
-  if (regnum >= AARCH64_D0_REGNUM && regnum < AARCH64_D0_REGNUM + 32)
+  if ((regnum >= AARCH64_D0_REGNUM) && (regnum < (AARCH64_D0_REGNUM + 32)))
     {
-      enum register_status status;
       unsigned int v_regnum;
 
-      v_regnum = AARCH64_V0_REGNUM + regnum - AARCH64_D0_REGNUM;
-      status = regcache_raw_read (regcache, v_regnum, reg_buf);
-      if (status != REG_VALID)
-	mark_value_bytes_unavailable (result_value, 0,
-				      TYPE_LENGTH (value_type (result_value)));
-      else
-	memcpy (buf, reg_buf, D_REGISTER_SIZE);
+      v_regnum = (AARCH64_V0_REGNUM + regnum - AARCH64_D0_REGNUM);
+      regcache_raw_read(regcache, v_regnum, reg_buf);
+      memcpy(buf, reg_buf, D_REGISTER_SIZE);
       return result_value;
     }
 
-  if (regnum >= AARCH64_S0_REGNUM && regnum < AARCH64_S0_REGNUM + 32)
+  if ((regnum >= AARCH64_S0_REGNUM) && (regnum < (AARCH64_S0_REGNUM + 32)))
     {
-      enum register_status status;
       unsigned int v_regnum;
 
-      v_regnum = AARCH64_V0_REGNUM + regnum - AARCH64_S0_REGNUM;
-      status = regcache_raw_read (regcache, v_regnum, reg_buf);
-      memcpy (buf, reg_buf, S_REGISTER_SIZE);
+      v_regnum = (AARCH64_V0_REGNUM + regnum - AARCH64_S0_REGNUM);
+      regcache_raw_read(regcache, v_regnum, reg_buf);
+      memcpy(buf, reg_buf, S_REGISTER_SIZE);
       return result_value;
     }
 
-  if (regnum >= AARCH64_H0_REGNUM && regnum < AARCH64_H0_REGNUM + 32)
+  if ((regnum >= AARCH64_H0_REGNUM) && (regnum < (AARCH64_H0_REGNUM + 32)))
     {
-      enum register_status status;
       unsigned int v_regnum;
 
-      v_regnum = AARCH64_V0_REGNUM + regnum - AARCH64_H0_REGNUM;
-      status = regcache_raw_read (regcache, v_regnum, reg_buf);
-      if (status != REG_VALID)
-	mark_value_bytes_unavailable (result_value, 0,
-				      TYPE_LENGTH (value_type (result_value)));
-      else
-	memcpy (buf, reg_buf, H_REGISTER_SIZE);
+      v_regnum = (AARCH64_V0_REGNUM + regnum - AARCH64_H0_REGNUM);
+      regcache_raw_read(regcache, v_regnum, reg_buf);
+      memcpy(buf, reg_buf, H_REGISTER_SIZE);
       return result_value;
     }
 
-  if (regnum >= AARCH64_B0_REGNUM && regnum < AARCH64_B0_REGNUM + 32)
+  if ((regnum >= AARCH64_B0_REGNUM) && (regnum < (AARCH64_B0_REGNUM + 32)))
     {
-      enum register_status status;
       unsigned int v_regnum;
 
-      v_regnum = AARCH64_V0_REGNUM + regnum - AARCH64_B0_REGNUM;
-      status = regcache_raw_read (regcache, v_regnum, reg_buf);
-      if (status != REG_VALID)
-	mark_value_bytes_unavailable (result_value, 0,
-				      TYPE_LENGTH (value_type (result_value)));
-      else
-	memcpy (buf, reg_buf, B_REGISTER_SIZE);
+      v_regnum = (AARCH64_V0_REGNUM + regnum - AARCH64_B0_REGNUM);
+      regcache_raw_read(regcache, v_regnum, reg_buf);
+      memcpy(buf, reg_buf, B_REGISTER_SIZE);
       return result_value;
     }
 
   gdb_assert_not_reached("regnum out of bound");
   return NULL; /*NOTREACHED*/
 }
+#endif /* HAVE_SET_GDBARCH_PSEUDO_REGISTER_READ_VALUE */
 
 /* Implement the "pseudo_register_write" gdbarch method.  */
 
@@ -2509,11 +2690,13 @@ aarch64_pseudo_write (struct gdbarch *gdbarch, struct regcache *regcache,
 static struct value *
 value_of_aarch64_user_reg (struct frame_info *frame, const void *baton)
 {
-  const int *reg_p = baton;
+  const int *reg_p = (const int *)baton;
 
   return value_of_register (*reg_p, frame);
 }
 
+
+typedef const struct floatformat *cssf_t;
 
 /* Initialize the current architecture based on INFO.  If possible,
    re-use an architecture from ARCHES, which is a list of
@@ -2529,12 +2712,16 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   struct gdbarch *gdbarch;
   struct gdbarch_list *best_arch;
   struct tdesc_arch_data *tdesc_data = NULL;
+#ifdef HAVE_STRUCT_GDBARCH_INFO_TARGET_DESC
   const struct target_desc *tdesc = info.target_desc;
+#else
+  const struct target_desc *tdesc = NULL;
+#endif /* HAVE_STRUCT_GDBARCH_INFO_TARGET_DESC */
   size_t i;
   int have_fpa_registers = 1;
   int valid_p = 1;
   const struct tdesc_feature *feature;
-  int num_regs = 0;
+  size_t num_regs = 0UL;
   int num_pseudo_regs = 0;
 
   /* Ensure we always have a target descriptor.  */
@@ -2554,10 +2741,10 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
      and allocate their numbers.  */
   for (i = 0UL; i < ARRAY_SIZE(aarch64_r_register_names); i++)
     valid_p &=
-      tdesc_numbered_register (feature, tdesc_data, AARCH64_X0_REGNUM + i,
-			       aarch64_r_register_names[i]);
+      tdesc_numbered_register(feature, tdesc_data, (int)(AARCH64_X0_REGNUM + i),
+			      aarch64_r_register_names[i]);
 
-  num_regs = AARCH64_X0_REGNUM + i;
+  num_regs = (AARCH64_X0_REGNUM + i);
 
   /* Look for the V registers.  */
   feature = tdesc_find_feature (tdesc, "org.gnu.gdb.aarch64.fpu");
@@ -2567,10 +2754,11 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
          and allocate their numbers.  */
       for (i = 0UL; i < ARRAY_SIZE(aarch64_v_register_names); i++)
 	valid_p &=
-	  tdesc_numbered_register (feature, tdesc_data, AARCH64_V0_REGNUM + i,
-				   aarch64_v_register_names[i]);
+	  tdesc_numbered_register(feature, tdesc_data,
+	  			  (int)(AARCH64_V0_REGNUM + i),
+				  aarch64_v_register_names[i]);
 
-      num_regs = AARCH64_V0_REGNUM + i;
+      num_regs = (AARCH64_V0_REGNUM + i);
 
       num_pseudo_regs += 32;	/* add the Qn scalar register pseudos */
       num_pseudo_regs += 32;	/* add the Dn scalar register pseudos */
@@ -2585,8 +2773,10 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
       return NULL;
     }
 
+#ifdef HAVE_STRUCT_GDBARCH_INFO_BYTE_ORDER_FOR_CODE
   /* AArch64 code is always little-endian.  */
   info.byte_order_for_code = BFD_ENDIAN_LITTLE;
+#endif /* HAVE_STRUCT_GDBARCH_INFO_BYTE_ORDER_FOR_CODE */
 
   /* If there is already a candidate, use it.  */
   for (best_arch = gdbarch_list_lookup_by_info (arches, &info);
@@ -2594,7 +2784,7 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
        best_arch = gdbarch_list_lookup_by_info (best_arch->next, &info))
     {
       /* Found a match.  */
-      break;
+      break; /* FIXME: too early; see -Wunreachable-code-loop-increment */
     }
 
   if (best_arch != NULL)
@@ -2604,7 +2794,7 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
       return best_arch->gdbarch;
     }
 
-  tdep = xcalloc (1, sizeof (struct gdbarch_tdep));
+  tdep = (struct gdbarch_tdep *)xcalloc(1, sizeof(struct gdbarch_tdep));
   gdbarch = gdbarch_alloc (&info, tdep);
 
   /* This should be low enough for everything.  */
@@ -2616,7 +2806,9 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_frame_align (gdbarch, aarch64_frame_align);
 
   /* Frame handling.  */
+#ifdef HAVE_GDBARCH_DUMMY_ID
   set_gdbarch_dummy_id (gdbarch, aarch64_dummy_id);
+#endif /* HAVE_GDBARCH_DUMMY_ID */
   set_gdbarch_unwind_pc (gdbarch, aarch64_unwind_pc);
   set_gdbarch_unwind_sp (gdbarch, aarch64_unwind_sp);
 
@@ -2634,10 +2826,12 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   /* Information about registers, etc.  */
   set_gdbarch_sp_regnum (gdbarch, AARCH64_SP_REGNUM);
   set_gdbarch_pc_regnum (gdbarch, AARCH64_PC_REGNUM);
-  set_gdbarch_num_regs (gdbarch, num_regs);
+  set_gdbarch_num_regs(gdbarch, (int)num_regs);
 
   set_gdbarch_num_pseudo_regs (gdbarch, num_pseudo_regs);
+#ifdef HAVE_SET_GDBARCH_PSEUDO_REGISTER_READ_VALUE
   set_gdbarch_pseudo_register_read_value (gdbarch, aarch64_pseudo_read_value);
+#endif /* HAVE_SET_GDBARCH_PSEUDO_REGISTER_READ_VALUE */
   set_gdbarch_pseudo_register_write (gdbarch, aarch64_pseudo_write);
   set_tdesc_pseudo_register_name (gdbarch, aarch64_pseudo_register_name);
   set_tdesc_pseudo_register_type (gdbarch, aarch64_pseudo_register_type);
@@ -2645,18 +2839,18 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 					aarch64_pseudo_register_reggroup_p);
 
   /* ABI */
-  set_gdbarch_short_bit (gdbarch, 16);
-  set_gdbarch_int_bit (gdbarch, 32);
-  set_gdbarch_float_bit (gdbarch, 32);
-  set_gdbarch_double_bit (gdbarch, 64);
-  set_gdbarch_long_double_bit (gdbarch, 128);
-  set_gdbarch_long_bit (gdbarch, 64);
-  set_gdbarch_long_long_bit (gdbarch, 64);
-  set_gdbarch_ptr_bit (gdbarch, 64);
-  set_gdbarch_char_signed (gdbarch, 0);
-  set_gdbarch_float_format (gdbarch, floatformats_ieee_single);
-  set_gdbarch_double_format (gdbarch, floatformats_ieee_double);
-  set_gdbarch_long_double_format (gdbarch, floatformats_ia64_quad);
+  set_gdbarch_short_bit(gdbarch, 16);
+  set_gdbarch_int_bit(gdbarch, 32);
+  set_gdbarch_float_bit(gdbarch, 32);
+  set_gdbarch_double_bit(gdbarch, 64);
+  set_gdbarch_long_double_bit(gdbarch, 128);
+  set_gdbarch_long_bit(gdbarch, 64);
+  set_gdbarch_long_long_bit(gdbarch, 64);
+  set_gdbarch_ptr_bit(gdbarch, 64);
+  set_gdbarch_char_signed(gdbarch, 0);
+  set_gdbarch_float_format(gdbarch, (cssf_t)floatformats_ieee_single);
+  set_gdbarch_double_format(gdbarch, (cssf_t)floatformats_ieee_double);
+  set_gdbarch_long_double_format(gdbarch, (cssf_t)floatformats_ia64_quad);
 
   /* Internal <-> external register number maps.  */
   set_gdbarch_dwarf2_reg_to_regnum (gdbarch, aarch64_dwarf_reg_to_regnum);
@@ -2668,10 +2862,14 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_print_insn (gdbarch, aarch64_gdb_print_insn);
 
   /* Virtual tables.  */
+#ifdef HAVE_SET_GDBARCH_VBIT_IN_DELTA
   set_gdbarch_vbit_in_delta (gdbarch, 1);
+#endif /* HAVE_SET_GDBARCH_VBIT_IN_DELTA */
 
   /* Hook in the ABI-specific overrides, if they have been registered.  */
+#ifdef HAVE_STRUCT_GDBARCH_INFO_TARGET_DESC
   info.target_desc = tdesc;
+#endif /* HAVE_STRUCT_GDBARCH_INFO_TARGET_DESC */
   info.tdep_info = (struct gdbarch_tdep_info *)tdesc_data;
   gdbarch_init_osabi (info, gdbarch);
 
@@ -2693,10 +2891,16 @@ aarch64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   tdesc_use_registers (gdbarch, tdesc, tdesc_data);
 
   /* Add standard register aliases.  */
-  for (i = 0UL; i < ARRAY_SIZE(aarch64_register_aliases); i++)
-    user_reg_add (gdbarch, aarch64_register_aliases[i].name,
-		  value_of_aarch64_user_reg,
-		  &aarch64_register_aliases[i].regnum);
+  for (i = 0UL; i < ARRAY_SIZE(aarch64_register_aliases); i++) {
+#ifdef U_R_A_TAKES_FOUR_ARGS
+    user_reg_add(gdbarch, aarch64_register_aliases[i].name,
+		 value_of_aarch64_user_reg,
+		 &aarch64_register_aliases[i].regnum);
+#else
+    user_reg_add(gdbarch, aarch64_register_aliases[i].name,
+		 value_of_aarch64_user_reg);
+#endif /* U_R_A_TAKES_FOUR_ARGS */
+  }
 
   (void)have_fpa_registers;
   return gdbarch;
@@ -2734,3 +2938,9 @@ When on, AArch64 specific debugging is enabled."),
 			    show_aarch64_debug,
 			    &setdebuglist, &showdebuglist);
 }
+
+#if defined(STOP_BEFORE_WE_CAN_LINK)
+# error "stopping compilation here"
+#endif /* STOP_BEFORE_WE_CAN_LINK */
+
+/* EOF */

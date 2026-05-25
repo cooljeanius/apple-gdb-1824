@@ -38,10 +38,26 @@ static Cmd_Struct tagState_vals[]= {
     {"",	 0 }
 };
 
-static Tk_CustomOption tagStateOpt	= { Cmd_OptionSet, Cmd_OptionGet,
-					    (ClientData)(&tagState_vals) };
-static Tk_CustomOption tagBdOpt		= { TableOptionBdSet, TableOptionBdGet,
-					    (ClientData) BD_TABLE_TAG };
+#if defined(__GNUC__) && (__GNUC__ > 5)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+#elif defined(__clang__) && (__clang__ > 1)
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wincompatible-function-pointer-types"
+#endif /* (GCC > 5) || clang */
+
+static Tk_CustomOption tagStateOpt = { (Tk_OptionParseProc *)Cmd_OptionSet,
+				       (Tk_OptionPrintProc *)Cmd_OptionGet,
+				       (ClientData)(&tagState_vals) };
+static Tk_CustomOption tagBdOpt = { (Tk_OptionParseProc *)TableOptionBdSet,
+				    (Tk_OptionPrintProc *)TableOptionBdGet,
+				    (ClientData)BD_TABLE_TAG };
+
+#if defined(__GNUC__) && (__GNUC__ > 5)
+# pragma GCC diagnostic pop
+#elif defined(__clang__) && (__clang__ > 1)
+# pragma clang diagnostic pop
+#endif /* (GCC > 5) || clang */
 
 /*
  * The default specification for configuring tags

@@ -38,7 +38,7 @@ AC_SUBST([mkinstalldirs])dnl
 AC_REQUIRE_AUX_FILE([mkinstalldirs])dnl
 AC_REQUIRE_AUX_FILE([depcomp])dnl
 
-AM_INIT_AUTOMAKE([1.11.6 foreign dejagnu no-dist no-installinfo -Wno-obsolete])dnl
+AM_INIT_AUTOMAKE([1.18.1 foreign dejagnu no-dist no-installinfo -Wno-obsolete])dnl
 
 AM_MAINTAINER_MODE
 
@@ -104,18 +104,29 @@ if test "${ARFLAGS}" = "-o"; then
         unset am_cv_ar_interface
         unset ARFLAGS
     fi
+elif test "x${ARFLAGS}" = "x--" || test "x${ARFLAGS}" = "x."; then
+    AC_MSG_WARN([ARFLAGS are '${ARFLAGS}' (which might fail)])
 fi
 if test "x${ac_cv_path_SED}" = "x"; then
-  test -z "${ac_cv_path_SED}"
+  test -z "${ac_cv_path_SED}" || unset ac_cv_path_SED
   AC_PROG_SED
 fi
 if test -e ./config.cache; then
     echo "hacking ./config.cache"
     sed -i.bak -e "s|ac_cv_prog_AR|bad_AR|g" ./config.cache
     sed -i.bak -e "s|am_cv_ar_interface|bad_ar_interface|g" ./config.cache
+    sed -i.bak -e "s|lt_cv_ar_at_file|bad_ar_at_file|g" ./config.cache
     sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_status|g" ./config.cache
     sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP|g" ./config.cache
     sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
+elif test -e `pwd`/config.cache; then
+    echo "hacking `pwd`/config.cache"
+    sed -i.bak -e "s|ac_cv_prog_AR|bad_AR|g" `pwd`/config.cache
+    sed -i.bak -e "s|am_cv_ar_interface|bad_ar_interface|g" `pwd`/config.cache
+    sed -i.bak -e "s|lt_cv_ar_at_file|bad_ar_at_file|g" `pwd`/config.cache
+    sed -i.bak -e "s|ac_cv_env_CPP_set|bad_CPP_status|g" `pwd`/config.cache
+    sed -i.bak -e "s|ac_cv_env_CPP_value|bad_CPP|g" `pwd`/config.cache
+    sed -i.bak -e "s|ac_cv_prog_CPP|bad_CPP|g" `pwd`/config.cache
 fi
 AM_PROG_AR
 m4_ifdef([AC_PROG_AR],[
@@ -126,11 +137,13 @@ if test "x${AR}" = "x"; then
     test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
     AC_PROG_AR
   fi
+else
+  test -n "${AR}" && echo "AR set to '${AR}'"
 fi
 ])dnl
 AM_PROG_AS
 if test "x${ac_cv_prog_AWK}" = "x"; then
-  test -z "${ac_cv_prog_AWK}"
+  test -z "${ac_cv_prog_AWK}" || unset ac_cv_prog_AWK
   AC_PROG_AWK
 fi
 if test "x${CC}" = "x"; then
@@ -155,9 +168,13 @@ fi
 AC_LANG([C])dnl
 
 # libtool:
+if test -d conftest.dSYM; then
+  rm -rf conftest.dSYM 2>/dev/null || rmdir conftest.dSYM 2>/dev/null
+fi
 LT_INIT([win32-dll])dnl
 LT_LANG([C])dnl
-LT_PREREQ([2.4.6])dnl
+dnl# https://lists.gnu.org/archive/html/libtool/2026-01/msg00001.html
+LT_PREREQ([2.5.4])dnl
 
 # Find CPP now so that any conditional tests below will NOT do it and
 # thereby make the resulting definitions conditional:
@@ -168,7 +185,7 @@ AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LN_S
 if test "x${ac_cv_prog_make_make_set}" = "x"; then
-  test -z "${ac_cv_prog_make_make_set}"
+  test -z "${ac_cv_prog_make_make_set}" || unset ac_cv_prog_make_make_set
   AC_PROG_MAKE_SET
 fi
 AC_PROG_MKDIR_P
@@ -220,7 +237,7 @@ AC_CHECK_HEADERS([Carbon/Carbon.h CHUD/CHUD.h direct.h fcntl.h io.h \
                   mach/mach_error.h mach/mach_syscalls.h mach/mach_time.h \
                   mach/mach_types.h mach/message.h malloc.h \
                   malloc/malloc.h math.h stdarg.h stddef.h stdio.h \
-                  sys/sysctl.h sys/time.h utime.h windows.h])dnl
+                  sys/sysctl.h sys/time.h unix.h utime.h windows.h])dnl
   ## probably unnecessary:
 if test "x${ac_cv_header_stdint_h}" = "x"; then
   test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
@@ -283,7 +300,7 @@ if test "x${ac_cv_func_mmap}" = "x" && test "x${ac_cv_func_mmap_fixed_mapped}" =
   AC_FUNC_MMAP
 fi
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([access atexit chmod exit fprintf fseeko ftruncate \
+AC_CHECK_FUNCS([access atexit chmod exit fdopen fprintf fseeko ftruncate \
                 gettimeofday localeconv memchr memmove memset mkdir \
                 munmap snprintf sprintf strchr strdup strrchr strtol \
                 system utime vsnprintf vsprintf])dnl
@@ -292,6 +309,9 @@ if test "x${ac_cv_func_strerror}" = "x"; then
   test -z "${ac_cv_func_strerror}"
   AC_CHECK_FUNCS([strerror])
 fi
+
+# ...and their declarations:
+AC_CHECK_DECLS_ONCE([fdopen])dnl
 
 # Output.
 if test -n "${with_cross_host}" &&
@@ -336,7 +356,7 @@ AC_SUBST([PICFLAG])dnl
 ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings -Wpointer-arith \
 -Wfloat-conversion -Wstrict-prototypes -Wmissing-prototypes -Wimplicit \
 -Wnested-externs -Wmissing-parameter-type -Wabi -Wswitch -Wparentheses \
--Wzero-length-bounds -Wfatal-errors])
+-Wold-style-definition -Wzero-length-bounds -Wfatal-errors])
 ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-Wno-long-long])dnl
 
 # Only enable with --enable-werror-always until existing warnings are

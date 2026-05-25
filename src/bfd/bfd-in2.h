@@ -38,6 +38,14 @@ extern "C" {
 
 #include "ansidecl.h"
 #include "symcat.h"
+#include <stdint.h>
+#include <stdbool.h>
+#include <time.h>
+#include "diagnostics.h"
+#include <stdarg.h>
+#include <string.h>
+#include <sys/stat.h>
+
 #if defined(__STDC__) || defined(ALMOST_STDC) || defined(HAVE_STRINGIZE)
 # ifndef SABER
 /* This hack is to avoid a problem with some strict ANSI C preprocessors.
@@ -1756,6 +1764,10 @@ void bfd_section_list_clear (bfd *);
 
 asection *bfd_get_section_by_name (bfd *abfd, const char *name);
 
+asection *bfd_get_next_section_by_name (bfd *ibfd, asection *sec);
+
+asection *bfd_get_linker_section (bfd *abfd, const char *name);
+
 asection *bfd_get_section_by_name_if
    (bfd *abfd,
     const char *name,
@@ -1902,6 +1914,8 @@ enum bfd_architecture
 #define bfd_mach_spu           256
   bfd_arch_mips,      /* MIPS Rxxxx */
 #define bfd_mach_mips3000              3000
+#define bfd_mach_mips_loongson_2e      3001
+#define bfd_mach_mips_loongson_2f      3002
 #define bfd_mach_mips3900              3900
 #define bfd_mach_mips4000              4000
 #define bfd_mach_mips4010              4010
@@ -2221,6 +2235,42 @@ enum bfd_architecture
 #define bfd_mach_nios2r2       2
   bfd_arch_visium,     /* Visium */
 #define bfd_mach_visium        1
+  bfd_arch_wasm32,    /* WebAssembly.  */
+#define bfd_mach_wasm32        1
+  bfd_arch_pru,       /* PRU.  */
+#define bfd_mach_pru           0
+  bfd_arch_nfp,       /* Netronome Flow Processor */
+#define bfd_mach_nfp3200       0x3200
+#define bfd_mach_nfp6000       0x6000
+  bfd_arch_csky,      /* C-SKY.  */
+#define bfd_mach_ck_unknown    0
+#define bfd_mach_ck510         1
+#define bfd_mach_ck610         2
+#define bfd_mach_ck801         3
+#define bfd_mach_ck802         4
+#define bfd_mach_ck803         5
+#define bfd_mach_ck807         6
+#define bfd_mach_ck810         7
+#define bfd_mach_ck860         8
+  bfd_arch_loongarch,       /* LoongArch */
+#define bfd_mach_loongarch32   1
+#define bfd_mach_loongarch64   2
+  bfd_arch_amdgcn,     /* AMDGCN */
+#define bfd_mach_amdgcn_unknown 0x000
+#define bfd_mach_amdgcn_gfx900  0x02c
+#define bfd_mach_amdgcn_gfx904  0x02e
+#define bfd_mach_amdgcn_gfx906  0x02f
+#define bfd_mach_amdgcn_gfx908  0x030
+#define bfd_mach_amdgcn_gfx90a  0x03f
+#define bfd_mach_amdgcn_gfx1010 0x033
+#define bfd_mach_amdgcn_gfx1011 0x034
+#define bfd_mach_amdgcn_gfx1012 0x035
+#define bfd_mach_amdgcn_gfx1030 0x036
+#define bfd_mach_amdgcn_gfx1031 0x037
+#define bfd_mach_amdgcn_gfx1032 0x038
+#define bfd_mach_amdgcn_gfx1100 0x041
+#define bfd_mach_amdgcn_gfx1101 0x046
+#define bfd_mach_amdgcn_gfx1102 0x047
   bfd_arch_last
   };
 
@@ -2290,8 +2340,9 @@ unsigned int bfd_arch_mach_octets_per_byte
 /* Extracted from reloc.c.  */
 typedef enum bfd_reloc_status
 {
-  /* No errors detected.  */
-  bfd_reloc_ok,
+  /* No errors detected.  Note - the value 2 is used so that it
+     will not be mistaken for the boolean TRUE or FALSE values.  */
+  bfd_reloc_ok = 2,
 
   /* The relocation was performed, but there was an overflow.  */
   bfd_reloc_overflow,
@@ -2305,16 +2356,15 @@ typedef enum bfd_reloc_status
   /* Unsupported relocation size requested.  */
   bfd_reloc_notsupported,
 
-  /* Unused.  */
+  /* Target specific meaning.  */
   bfd_reloc_other,
 
   /* The symbol to relocate against was undefined.  */
   bfd_reloc_undefined,
 
-  /* The relocation was performed, but may not be ok - presently
-     generated only when linking i960 coff files with i960 b.out
-     symbols.  If this type is returned, the error_message argument
-     to bfd_perform_relocation will be set.  */
+  /* The relocation was performed, but may not be ok, for example, when
+     linking i960 coff files with i960 b.out.  If this type is returned,
+     the error_message argument to bfd_perform_relocation will be set.  */
   bfd_reloc_dangerous
  }
  bfd_reloc_status_type;
@@ -3235,6 +3285,13 @@ not stored in the instruction.  The 2nd lowest bit comes from a 1 bit
 field in the instruction.  */
   BFD_RELOC_THUMB_PCREL_BLX,
 
+/* ARM 26-bit pc-relative branch for an unconditional BL or BLX
+instruction.  */
+  BFD_RELOC_ARM_PCREL_CALL,
+
+/* ARM 26-bit pc-relative branch for B or conditional BL instruction.  */
+  BFD_RELOC_ARM_PCREL_JUMP,
+
 /* Thumb 7-, 9-, 12-, 20-, 23-, and 25-bit pc-relative branches.
 The lowest bit must be zero and is not stored in the instruction.
 Note that the corresponding ELF R_ARM_THM_JUMPnn constant has an
@@ -3270,6 +3327,16 @@ pc-relative or some form of GOT-indirect relocation.  */
 
 /* 31-bit PC relative address.  */
   BFD_RELOC_ARM_PREL31,
+
+/* Low and High halfword relocations for MOVW and MOVT instructions.  */
+  BFD_RELOC_ARM_MOVW,
+  BFD_RELOC_ARM_MOVT,
+  BFD_RELOC_ARM_MOVW_PCREL,
+  BFD_RELOC_ARM_MOVT_PCREL,
+  BFD_RELOC_ARM_THUMB_MOVW,
+  BFD_RELOC_ARM_THUMB_MOVT,
+  BFD_RELOC_ARM_THUMB_MOVW_PCREL,
+  BFD_RELOC_ARM_THUMB_MOVT_PCREL,
 
 /* Relocations for setting up GOTs and PLTs for shared libraries.  */
   BFD_RELOC_ARM_JUMP_SLOT,
@@ -6356,6 +6423,13 @@ struct bfd
   /* A field used by _bfd_generic_link_add_archive_symbols.  This will
      be used only for archive elements.  */
   int archive_pass;
+
+  union {
+    /* For input BFDs, a chain of BFDs involved in a link.  */
+    struct bfd *next;
+    /* For output BFD, the linker hash table.  */
+    struct bfd_link_hash_table *hash;
+  } link;
 
   /* Used by the back end to hold private data.  */
   union

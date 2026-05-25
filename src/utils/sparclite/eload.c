@@ -237,7 +237,7 @@ error(va_alist)
 
 int netfd;
 
-static int
+static ssize_t
 #if defined(ANSI_PROTOTYPES) || defined(__PROTOTYPES)
 recv_buf(int fd, unsigned char *buf, int len, int timeout)
 #else
@@ -247,7 +247,7 @@ recv_buf(fd, buf, len, timeout)
      int timeout;
 #endif /* ANSI_PROTOTYPES || __PROTOTYPES */
 {
-  int cc;
+  ssize_t cc;
   fd_set readfds;
 
   FD_ZERO(&readfds);
@@ -287,7 +287,7 @@ send_buf(fd, buf, len)
      unsigned char *buf;
 #endif /* ANSI_PROTOTYPES || __PROTOTYPES */
 {
-  int cc;
+  ssize_t cc;
 
   cc = send(fd, buf, (size_t)len, 0);
 
@@ -335,7 +335,8 @@ send_data(buffer, fd, addr, count)
      int count;
 #endif /* ANSI_PROTOTYPES || __PROTOTYPES */
 {
-  int cc, i;
+  ssize_t cc;
+  int i;
   static int pkt_num = 0;
   unsigned char snd_buf[2000];
   unsigned short checksum;
@@ -427,7 +428,8 @@ main(argc, argv)
      char **argv;
 #endif /* ANSI_PROTOTYPES || __PROTOTYPES */
 {
-  int cc, c;
+  ssize_t cc;
+  int c;
   unsigned char buf[10];
   asection *section;
   bfd *pbfd;

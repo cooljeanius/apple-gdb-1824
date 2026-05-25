@@ -86,8 +86,8 @@ int  main             OF((int argc, char *argv[]));
 /* ===========================================================================
  * Display error message and exit
  */
-void error(msg)
-    const char *msg;
+void 
+error (const char *msg)
 {
     fprintf(stderr, "%s: %s\n", prog, msg);
     exit(1);
@@ -192,9 +192,8 @@ void gz_uncompress(in, out)
  * Compress the given file: create a corresponding .gz file and remove the
  * original.
  */
-void file_compress(file, mode)
-    char  *file;
-    char  *mode;
+void 
+file_compress (char *file, char *mode)
 {
     local char outfile[MAX_NAME_LEN];
     FILE  *in;
@@ -222,8 +221,8 @@ void file_compress(file, mode)
 /* ===========================================================================
  * Uncompress the given file and remove the original.
  */
-void file_uncompress(file)
-    char  *file;
+void 
+file_uncompress (char *file)
 {
     local char buf[MAX_NAME_LEN];
     char *infile, *outfile;
@@ -267,9 +266,8 @@ void file_uncompress(file)
  *   -1 to -9 : compression level
  */
 
-int main(argc, argv)
-    int argc;
-    char *argv[];
+int 
+main (int argc, char *argv[])
 {
     int uncompr = 0;
     gzFile file;

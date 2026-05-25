@@ -52,6 +52,23 @@ typedef int (frame_sniffer_ftype) (const struct frame_unwind *self,
 				   struct frame_info *next_frame,
 				   void **this_prologue_cache);
 
+typedef enum unwind_stop_reason (frame_unwind_stop_reason_ftype)
+  (struct frame_info *this_frame, void **this_prologue_cache);
+
+/* A default frame sniffer which always accepts the frame.  Used by
+   fallback prologue unwinders.  */
+
+int default_frame_sniffer (const struct frame_unwind *self,
+			   struct frame_info *this_frame,
+			   void **this_prologue_cache);
+
+/* A default stop_reason callback which always claims the frame is
+   unwindable.  */
+
+enum unwind_stop_reason
+  default_frame_unwind_stop_reason (struct frame_info *this_frame,
+				    void **this_cache);
+
 /* Assuming the frame chain: (outer) prev <-> this <-> next (inner);
    use the NEXT frame, and its register unwind method, to determine
    the frame ID of THIS frame.
@@ -150,6 +167,13 @@ struct frame_unwind
 extern void frame_unwind_prepend_unwinder (struct gdbarch *gdbarch,
 					   const struct frame_unwind *unwinder);
 
+/* Add a frame sniffer to the list.  The predicates are polled in the
+   order that they are appended.  The initial list contains the dummy
+   frame sniffer.  */
+
+extern void frame_unwind_append_unwinder (struct gdbarch *gdbarch,
+					  const struct frame_unwind *unwinder);
+
 /* Given the NEXT frame, take a wiff of THIS frame's registers (namely
    the PC and attributes) and if it is the applicable unwinder return
    the unwind methods, or NULL if it is not.  */
@@ -168,5 +192,45 @@ extern void frame_unwind_append_sniffer (struct gdbarch *gdbarch,
 
 extern const struct frame_unwind *frame_unwind_find_by_frame (struct frame_info *next_frame,
 							      void **this_cache);
+
+/* Helper functions for value-based register unwinding.  These return
+   a (possibly lazy) value of the appropriate type.  */
+
+/* Return a value which indicates that FRAME did not save REGNUM.  */
+
+struct value *frame_unwind_got_optimized (struct frame_info *frame,
+					  int regnum);
+
+/* Return a value which indicates that FRAME copied REGNUM into
+   register NEW_REGNUM.  */
+
+struct value *frame_unwind_got_register (struct frame_info *frame, int regnum,
+					 int new_regnum);
+
+/* Return a value which indicates that FRAME saved REGNUM in memory at
+   ADDR.  */
+
+struct value *frame_unwind_got_memory (struct frame_info *frame, int regnum,
+				       CORE_ADDR addr);
+
+/* Return a value which indicates that FRAME's saved version of
+   REGNUM has a known constant (computed) value of VAL.  */
+
+struct value *frame_unwind_got_constant (struct frame_info *frame, int regnum,
+					 ULONGEST val);
+
+/* Return a value which indicates that FRAME's saved version of
+   REGNUM has a known constant (computed) value which is stored
+   inside BUF.  */
+
+struct value *frame_unwind_got_bytes (struct frame_info *frame, int regnum,
+                                      gdb_byte *buf);
+
+/* Return a value which indicates that FRAME's saved version of REGNUM
+   has a known constant (computed) value of ADDR.  Convert the
+   CORE_ADDR to a target address if necessary.  */
+
+struct value *frame_unwind_got_address (struct frame_info *frame, int regnum,
+					CORE_ADDR addr);
 
 #endif

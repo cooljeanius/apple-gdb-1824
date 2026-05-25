@@ -1,4 +1,4 @@
-/* 
+/*
  * tkMacOSXEvent.c --
  *
  * This file contains most of the X calls called by Tk.  Many of
@@ -36,22 +36,22 @@ enum {
     kEventClassUser = 'user',
     kEventClassCgs  = 'cgs ',
 };
- 
-/*  
- * The following are undocumented event kinds 
- * 
- */ 
+
+/*
+ * The following are undocumented event kinds
+ *
+ */
 enum {
     kEventMouse8 = 8,
-    kEventMouse9 = 9, 
+    kEventMouse9 = 9,
     kEventApp103 = 103
-};   
+};
 
 EventRef TkMacOSXCreateFakeEvent ();
 
-/*   
+/*
  * Forward declarations of procedures used in this file.
- */ 
+ */
 static int ReceiveAndProcessEvent _ANSI_ARGS_(());
 
 static EventTargetRef targetRef;
@@ -73,10 +73,10 @@ static EventTargetRef targetRef;
  */
 
 void
-tkMacOSXFlushWindows ()
+tkMacOSXFlushWindows (void)
 {
     WindowRef wRef = GetWindowList();
-    
+
     while (wRef) {
         CGrafPtr portPtr = GetWindowPort(wRef);
         if (QDIsPortBuffered(portPtr)) {
@@ -90,14 +90,14 @@ tkMacOSXFlushWindows ()
  *
  * TkMacOSXCountAndProcessMacEvents --
  *
- *      This routine receives any Carbon events that aare in the 
+ *      This routine receives any Carbon events that aare in the
  *      queue and converts them to tk events
  *      It is called by the event set-up and check routines
  * Results:
  *      The number of events in the queue.
  *
  * Side effects:
- *      Tells the Window Manager to deliver events to the event 
+ *      Tells the Window Manager to deliver events to the event
  *      queue of the current thread.
  *      Receives any Carbon events on the queue and converts them to tk events
  *
@@ -105,7 +105,7 @@ tkMacOSXFlushWindows ()
  */
 
 int
-TkMacOSXCountAndProcessMacEvents()
+TkMacOSXCountAndProcessMacEvents (void)
 {
     EventQueueRef qPtr;
     int           eventCount;
@@ -162,24 +162,24 @@ TkMacOSXProcessAppleEvent(TkMacOSXEvent * eventPtr, MacEventStatus * statusPtr)
     return 0;
 }
 
-/*      
+/*
  *----------------------------------------------------------------------
- *   
+ *
  * TkMacOSXProcessEvent --
- *   
+ *
  *      This dispatches a filtered Carbon event to the appropriate handler
  *
- * Results: 
+ * Results:
  *      0 on success
  *      -1 on failure
  *
  * Side effects:
  *      Converts a Carbon event to a Tk event
- *   
+ *
  *----------------------------------------------------------------------
  */
 
-static int  
+static int
 TkMacOSXProcessEvent(TkMacOSXEvent * eventPtr, MacEventStatus * statusPtr)
 {
     switch (eventPtr->eClass) {
@@ -188,7 +188,7 @@ TkMacOSXProcessEvent(TkMacOSXEvent * eventPtr, MacEventStatus * statusPtr)
             break;
         case kEventClassWindow:
             TkMacOSXProcessWindowEvent(eventPtr, statusPtr);
-            break;  
+            break;
         case kEventClassKeyboard:
             TkMacOSXProcessKeyboardEvent(eventPtr, statusPtr);
             break;
@@ -197,12 +197,12 @@ TkMacOSXProcessEvent(TkMacOSXEvent * eventPtr, MacEventStatus * statusPtr)
             break;
         case kEventClassAppleEvent:
             TkMacOSXProcessAppleEvent(eventPtr, statusPtr);
-            break;  
+            break;
         case kEventClassCgs:
         case kEventClassUser:
-        case kEventClassWish: 
+        case kEventClassWish:
             statusPtr->handledByTk = 1;
-            break;  
+            break;
         default:
 #ifdef TK_MAC_DEBUG
             if (0)
@@ -214,9 +214,9 @@ TkMacOSXProcessEvent(TkMacOSXEvent * eventPtr, MacEventStatus * statusPtr)
             }
 #endif
             break;
-    }   
+    }
     return 0;
-}   
+}
 
 /*
  *----------------------------------------------------------------------
@@ -237,19 +237,19 @@ TkMacOSXProcessEvent(TkMacOSXEvent * eventPtr, MacEventStatus * statusPtr)
  */
 
 static int
-ReceiveAndProcessEvent()
+ReceiveAndProcessEvent (void)
 {
     TkMacOSXEvent       macEvent;
     MacEventStatus   eventStatus;
     int              err;
-    char             buf [ 256 ];
+    char             buf[256];
 
     /*
      * This is a poll, since we have already counted the events coming
      * into this routine, and are guaranteed to have one waiting.
      */
-     
-    err=ReceiveNextEvent(0, NULL, kEventDurationNoWait, 
+
+    err=ReceiveNextEvent(0, NULL, kEventDurationNoWait,
             true, &macEvent.eventRef);
     if (err != noErr) {
         return err;
@@ -262,7 +262,7 @@ ReceiveAndProcessEvent()
             if (!targetRef) {
                 targetRef=GetEventDispatcherTarget();
             }
-            
+
             err= SendEventToEventTarget(macEvent.eventRef,targetRef);
             if (err != noErr /* && err != eventNotHandledErr */) {
                 fprintf(stderr,

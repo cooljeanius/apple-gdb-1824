@@ -16,22 +16,56 @@ updates:
       actions:
         patterns:
           - "*"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "maven"
     directory: "/src/zlib/contrib/java/jzlib-1.1.2"
     schedule:
       interval: "weekly"
+    labels:
+      - enhancement
+    groups:
+      maven:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "nuget"
     directory: "/src/zlib/contrib/dotzlib/DotZLib"
     schedule:
       interval: "weekly"
+    labels:
+      - enhancement
+    groups:
+      nuget:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "gomod"
     directory: "/src/gdb/testsuite/gdb.go"
     schedule:
       interval: "weekly"
+    labels:
+      - enhancement
+    groups:
+      gomod:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "pip"
     directory: "/src/gdb"
     schedule:
       interval: "weekly"
+    labels:
+      - enhancement
+    groups:
+      pip:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "bundler"
     directory: "/src/gdb/ruby"
     schedule:
@@ -42,10 +76,20 @@ updates:
       bundler:
         patterns:
           - "*"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
       interval: "weekly"
+    labels:
+      - enhancement
+    groups:
+      gradle:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "npm"
     directory: "/src/texinfo/js"
     schedule:
@@ -56,3 +100,5 @@ updates:
       npm:
         patterns:
           - "*"
+    cooldown:
+      default-days: 7

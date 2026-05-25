@@ -1,4 +1,4 @@
-/* 
+/*
  * tkWinEmbed.c --
  *
  *	This file contains platform specific procedures for Windows platforms
@@ -15,7 +15,6 @@
  */
 
 #include "tkWinInt.h"
-
 
 /*
  * One of the following structures exists for each container in this
@@ -76,9 +75,9 @@ CleanupContainerList(clientData)
     ClientData clientData;
 {
     Container *nextPtr;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
-    
+
     for (;
         tsdPtr->firstContainerPtr != (Container *) NULL;
         tsdPtr->firstContainerPtr = nextPtr) {
@@ -138,7 +137,7 @@ TkpTestembedCmd(clientData, interp, argc, argv)
  *----------------------------------------------------------------------
  */
 
-int 
+int
 TkpUseWindow(interp, tkwin, string)
     Tcl_Interp *interp;		/* If not NULL, used for error reporting
 				 * if string is bogus. */
@@ -152,7 +151,7 @@ TkpUseWindow(interp, tkwin, string)
     int id;
     HWND hwnd;
     Container *containerPtr;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     if (winPtr->window != None) {
@@ -210,7 +209,7 @@ TkpUseWindow(interp, tkwin, string)
     if (tsdPtr->firstContainerPtr == (Container *) NULL) {
         Tcl_CreateExitHandler(CleanupContainerList, (ClientData) NULL);
     }
-    
+
     /*
      * Save information about the container and the embedded window
      * in a Container structure.  If there is already an existing
@@ -218,7 +217,7 @@ TkpUseWindow(interp, tkwin, string)
      * app. are in the same process.
      */
 
-    for (containerPtr = tsdPtr->firstContainerPtr; 
+    for (containerPtr = tsdPtr->firstContainerPtr;
             containerPtr != NULL; containerPtr = containerPtr->nextPtr) {
 	if (containerPtr->parentHWnd == hwnd) {
 	    winPtr->flags |= TK_BOTH_HALVES;
@@ -275,7 +274,7 @@ TkpMakeContainer(tkwin)
 {
     TkWindow *winPtr = (TkWindow *) tkwin;
     Container *containerPtr;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     /*
@@ -286,7 +285,7 @@ TkpMakeContainer(tkwin)
     if (tsdPtr->firstContainerPtr == (Container *) NULL) {
         Tcl_CreateExitHandler(CleanupContainerList, (ClientData) NULL);
     }
-    
+
     /*
      * Register the window as a container so that, for example, we can
      * find out later if the embedded app. is in the same process.
@@ -377,7 +376,7 @@ TkWinEmbeddedEventProc(hwnd, message, wParam, lParam)
     LPARAM lParam;
 {
     Container *containerPtr;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     /*
@@ -436,12 +435,14 @@ TkWinEmbeddedEventProc(hwnd, message, wParam, lParam)
  */
 
 void
-EmbedGeometryRequest(containerPtr, width, height)
-    Container *containerPtr;	/* Information about the container window. */
-    int width, height;		/* Size that the child has requested. */
+EmbedGeometryRequest (
+    Container *containerPtr,	/* Information about the container window. */
+    int width,
+    int height		/* Size that the child has requested. */
+)
 {
     TkWindow * winPtr = containerPtr->parentPtr;
-    
+
     /*
      * Forward the requested size into our geometry management hierarchy
      * via the container window.  We need to send a Configure event back
@@ -529,7 +530,7 @@ TkpGetOtherWindow(winPtr)
 				 * embedded window. */
 {
     Container *containerPtr;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     for (containerPtr = tsdPtr->firstContainerPtr; containerPtr != NULL;
@@ -631,7 +632,7 @@ EmbedWindowDeleted(winPtr)
 				 * was deleted. */
 {
     Container *containerPtr, *prevPtr;
-    ThreadSpecificData *tsdPtr = (ThreadSpecificData *) 
+    ThreadSpecificData *tsdPtr = (ThreadSpecificData *)
             Tcl_GetThreadData(&dataKey, sizeof(ThreadSpecificData));
 
     /*

@@ -55,7 +55,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([${srcdir}/config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.6 no-dist gnits dejagnu -Wall -Wno-portability \
+AM_INIT_AUTOMAKE([1.18.1 no-dist gnits dejagnu -Wall -Wno-portability \
   -Wno-obsolete -Wno-override])dnl
   ## maintainer mode is used kind of hackishly in the Makefiles here:
 AM_MAINTAINER_MODE
@@ -134,8 +134,8 @@ AC_MSG_CHECKING([libtool things])
 AC_MSG_RESULT([ ])
 LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])dnl
 LT_LANG([C])dnl
-dnl# (temporarily) set this while I update everything libtool-related:
-LT_PREREQ([2.4.7])dnl
+dnl# https://lists.gnu.org/archive/html/libtool/2026-01/msg00001.html
+LT_PREREQ([2.5.4])dnl
 
 if test -z "${lt_cv_objdir}"; then
   AC_MSG_WARN([lt_cv_objdir somehow was left unset, setting to default])
@@ -200,9 +200,9 @@ AC_DEFUN([AX_LIBTOOL_FIXES],[
 ])dnl
   ## this libtool hack is probably unnecessary now:
 if test -x ${srcdir}/libtool; then
-  test -r libtool
+  test -r libtool && test -s libtool && stat libtool
   if test "x${USE_MAINTAINER_MODE}" = "xyes"; then
-    test ! -z "${USE_MAINTAINER_MODE}"
+    test -n "${USE_MAINTAINER_MODE}" && echo "fixing libtool for maintainer mode"
     AX_LIBTOOL_FIXES
   fi
 fi
@@ -549,15 +549,25 @@ fi
 # check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-# FIXME: Replace `main' with a function in `-lcc_dynamic':
+# OK to use 'main' here:
 AC_CHECK_LIB([cc_dynamic],[main],
            [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lcc_dynamic"])
-# FIXME: Replace `main' with a function in `-lgcc':
+# OK to use 'main' here:
 AC_CHECK_LIB([gcc],[main],
              [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lgcc"])dnl
-# FIXME: Replace `main' with a function in `-lSystem':
+# OK to use 'main' here:
 AC_CHECK_LIB([System],[main],
             [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lSystem"])dnl
+  ## In case those all failed:
+if test "x${SYSTEM_FRAMEWORK_LIBS}" = "x"; then
+  AC_CHECK_LIB([compiler_rt],[main],
+               [test -z "${SYSTEM_FRAMEWORK_LIBS}" && SYSTEM_FRAMEWORK_LIBS="-lcompiler_rt"])
+fi
+  ## 1 more:
+if test "x${SYSTEM_FRAMEWORK_LIBS}" = "x"; then
+  AC_CHECK_LIB([clang_rt],[main],
+               [test -z "${SYSTEM_FRAMEWORK_LIBS}" && SYSTEM_FRAMEWORK_LIBS="-lclang_rt"])
+fi
   ## reset these:
 LDFLAGS="${ARCHLESS_LDFLAGS}"
   ## TODO: might only want to make this an error depending on platform:
@@ -635,14 +645,15 @@ unset ac_cv_header_limits_h
 unset ac_cv_header_stdlib_h
 unset ac_cv_header_sys_param_h
 AC_CHECK_HEADERS([ctype.h errno.h fcntl.h gettext.h iconv.h libgen.h \
-                  libgettext.h libintl.h limits.h mach/mach.h \
+                  libgettext.h libintl.h limits.h mach.h mach/mach.h \
                   mach-o/loader.h malloca.h malloc/malloc.h math.h \
                   mingw/fcntl.h mingw/malloc.h mingw/sys/types.h \
                   realloc.h signal.h stdarg.h stddef.h stdio.h sys/acl.h \
-                  sys/core.h sys/errno.h sys/file.h sys/paccess.h \
-                  sys/param.h sys/region.h sys/resource.h sys/signal.h \
-                  sys/socket.h sys/time.h sys/user.h sys/utsname.h time.h \
-                  wchar.h wctype.h windef.h windows.h])dnl
+                  sys/core.h sys/errno.h sys/file.h sys/malloc.h \
+                  sys/paccess.h sys/param.h sys/region.h sys/resource.h \
+                  sys/signal.h sys/socket.h sys/time.h sys/user.h \
+                  sys/utsname.h time.h uniconv.h wchar.h wctype.h \
+                  windef.h windows.h])dnl
 GCC_HEADER_STDINT([bfd_stdint.h],[stdint.h])dnl
 AC_HEADER_TIME
 AC_HEADER_DIRENT
@@ -1434,7 +1445,7 @@ do
     armpe_little_vec) tb="${tb} pe-arm.lo peigen.lo cofflink.lo " ;;
     armpei_big_vec) tb="${tb} pei-arm.lo peigen.lo cofflink.lo " ;;
     armpei_little_vec) tb="${tb} pei-arm.lo peigen.lo cofflink.lo " ;;
-    arm_mach_o_vec) if test -n "${BREAK_MY_BUILD}"; then tb="${tb} mach-o-arm.lo"; fi ;;
+    arm_mach_o_vec) tb="${tb} mach-o-arm.lo" ;;
     avr_elf32_vec) tb="${tb} elf32-avr.lo elf32.lo ${elf}" ;;
     b_out_vec_big_host) tb="${tb} bout.lo aout32.lo" ;;
     b_out_vec_little_host) tb="${tb} bout.lo aout32.lo" ;;
@@ -1672,6 +1683,9 @@ do
     l1om_elf64_fbsd_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo $elf"; target_size=64 ;;
     lm32_elf32_vec) tb="${tb} elf32-lm32.lo elf32.lo ${elf}" ;;
     lm32_elf32_fdpic_vec) tb="${tb} elf32-lm32.lo elf32.lo ${elf}" ;;
+    loongarch_elf32_vec)	 tb="$tb elf32-loongarch.lo elfxx-loongarch.lo elf32.lo elf-ifunc.lo $elf" ;;
+    loongarch_elf64_vec)	 tb="$tb elf64-loongarch.lo elf64.lo elfxx-loongarch.lo elf32.lo elf-ifunc.lo $elf"; target_size=64 ;;
+    loongarch64_pei_vec)	 tb="$tb pei-loongarch64.lo pe-loongarch64igen.lo $coff"; target_size=64 ;;
     m32c_elf32_vec) tb="${tb} elf32-m32c.lo elf32.lo ${elf}" ;;
     m32r_elf32_vec) tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
     m32r_elf32_le_vec) tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;

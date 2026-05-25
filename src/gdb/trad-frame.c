@@ -22,6 +22,9 @@
 #include "defs.h"
 #include "frame.h"
 #include "trad-frame.h"
+#ifndef SKIP_REGISTER_STATUS
+# define SKIP_REGISTER_STATUS 1
+#endif /* !SKIP_REGISTER_STATUS */
 #include "regcache.h"
 /* APPLE LOCAL variable opt states.  */
 #include "value.h"

@@ -47,8 +47,8 @@ SECTION
 /* DO compile in the reloc_code name table from libbfd.h.  */
 #define _BFD_MAKE_TABLE_bfd_reloc_code_real
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "bfdlink.h"
 #include "libbfd.h"
 /*
@@ -65,8 +65,9 @@ CODE_FRAGMENT
 .
 .typedef enum bfd_reloc_status
 .{
-.  {* No errors detected.  *}
-.  bfd_reloc_ok,
+.  {* No errors detected.  Note - the value 2 is used so that it
+.     will not be mistaken for the boolean TRUE or FALSE values.  *}
+.  bfd_reloc_ok = 2,
 .
 .  {* The relocation was performed, but there was an overflow.  *}
 .  bfd_reloc_overflow,
@@ -80,16 +81,15 @@ CODE_FRAGMENT
 .  {* Unsupported relocation size requested.  *}
 .  bfd_reloc_notsupported,
 .
-.  {* Unused.  *}
+.  {* Target specific meaning.  *}
 .  bfd_reloc_other,
 .
 .  {* The symbol to relocate against was undefined.  *}
 .  bfd_reloc_undefined,
 .
-.  {* The relocation was performed, but may not be ok - presently
-.     generated only when linking i960 coff files with i960 b.out
-.     symbols.  If this type is returned, the error_message argument
-.     to bfd_perform_relocation will be set.  *}
+.  {* The relocation was performed, but may not be ok, for example, when
+.     linking i960 coff files with i960 b.out.  If this type is returned,
+.     the error_message argument to bfd_perform_relocation will be set.  *}
 .  bfd_reloc_dangerous
 . }
 . bfd_reloc_status_type;
@@ -2966,6 +2966,15 @@ ENUMDOC
   Thumb 22 bit pc-relative branch.  The lowest bit must be zero and is
   not stored in the instruction.  The 2nd lowest bit comes from a 1 bit
   field in the instruction.
+ENUM
+  BFD_RELOC_ARM_PCREL_CALL
+ENUMDOC
+  ARM 26-bit pc-relative branch for an unconditional BL or BLX
+  instruction.
+ENUM
+  BFD_RELOC_ARM_PCREL_JUMP
+ENUMDOC
+  ARM 26-bit pc-relative branch for B or conditional BL instruction.
 
 ENUM
   BFD_RELOC_THUMB_PCREL_BRANCH7
@@ -3019,6 +3028,24 @@ ENUM
   BFD_RELOC_ARM_PREL31
 ENUMDOC
   31-bit PC relative address.
+ENUM
+  BFD_RELOC_ARM_MOVW
+ENUMX
+  BFD_RELOC_ARM_MOVT
+ENUMX
+  BFD_RELOC_ARM_MOVW_PCREL
+ENUMX
+  BFD_RELOC_ARM_MOVT_PCREL
+ENUMX
+  BFD_RELOC_ARM_THUMB_MOVW
+ENUMX
+  BFD_RELOC_ARM_THUMB_MOVT
+ENUMX
+  BFD_RELOC_ARM_THUMB_MOVW_PCREL
+ENUMX
+  BFD_RELOC_ARM_THUMB_MOVT_PCREL
+ENUMDOC
+  Low and High halfword relocations for MOVW and MOVT instructions.
 
 ENUM
   BFD_RELOC_ARM_JUMP_SLOT

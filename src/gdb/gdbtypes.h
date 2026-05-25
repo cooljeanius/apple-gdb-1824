@@ -1089,15 +1089,22 @@ struct builtin_type
      (*) () can server as a generic function pointer.  */
   struct type *builtin_func_ptr;
 
+  /* * `function returning pointer to function (returning void)' type.
+     The final void return type is not significant for it.  */
+
+  struct type *builtin_func_func;
+
   /* The target CPU's address type.  This is the ISA address size.  */
   struct type *builtin_core_addr;
 
   /* Integral types.  */
 
-  /* We use this for the '/c' print format, because c_char is just a
-     one-byte integral type, which languages less laid back than C
-     will print as ... well, a one-byte integral type.  */
+  /* "True" character types.
+      We use these for the '/c' print format, because c_char is just a
+      one-byte integral type, which languages less laid back than C
+      will print as ... well, a one-byte integral type.  */
   struct type *builtin_true_char;
+  struct type *builtin_true_unsigned_char;
 
   /* Implicit size/sign (based on the the architecture's ABI).  */
   struct type *builtin_void;
@@ -1119,6 +1126,37 @@ struct builtin_type
   struct type *builtin_bool;
   struct type *builtin_long_long;
   struct type *builtin_unsigned_long_long;
+  struct type *builtin_decfloat;
+  struct type *builtin_decdouble;
+  struct type *builtin_declong;
+
+  /* Explicit sizes - see C9X <intypes.h> for naming scheme.  The "int0"
+     is for when an architecture needs to describe a register that has
+     no size.  */
+  struct type *builtin_int0;
+  struct type *builtin_int8;
+  struct type *builtin_uint8;
+  struct type *builtin_int16;
+  struct type *builtin_uint16;
+  struct type *builtin_int32;
+  struct type *builtin_uint32;
+  struct type *builtin_int64;
+  struct type *builtin_uint64;
+  struct type *builtin_int128;
+  struct type *builtin_uint128;
+
+  /* Wide character types.  */
+  struct type *builtin_char16;
+  struct type *builtin_char32;
+
+  /* Special-purpose types.  */
+
+  /* * This type is used to represent a GDB internal function.  */
+
+  struct type *internal_fn;
+
+  /* * This type is used to represent an xmethod.  */
+  struct type *xmethod;
 };
 
 /* Return the type table for the specified architecture.  */
@@ -1228,6 +1266,19 @@ extern struct type *builtin_type_ia64_spill_little;
 extern struct type *builtin_type_ia64_quad[BFD_ENDIAN_UNKNOWN];
 extern struct type *builtin_type_ia64_quad_big;
 extern struct type *builtin_type_ia64_quad_little;
+
+extern const struct floatformat *floatformats_ieee_half[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_ieee_single[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_ieee_double[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_ieee_double_littlebyte_bigword[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_i387_ext[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_m68881_ext[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_arm_ext[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_ia64_spill[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_ia64_quad[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_vax_f[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_vax_d[BFD_ENDIAN_UNKNOWN];
+extern const struct floatformat *floatformats_ibm_long_double[BFD_ENDIAN_UNKNOWN];
 
 /* We use this for the '/c' print format, because builtin_type_char is
    just a one-byte integral type, which languages less laid back than

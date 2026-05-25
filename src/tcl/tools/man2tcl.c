@@ -1,4 +1,4 @@
-/* 
+/*
  * man2tcl.c --
  *
  *	This file contains a program that turns a man page of the
@@ -25,8 +25,8 @@ static char sccsid[] = "@(#) man2tcl.c 1.3 95/08/12 17:34:08";
 #include <string.h>
 #include <ctype.h>
 #ifndef NO_ERRNO_H
-#include <errno.h>
-#endif
+# include <errno.h>
+#endif /* !NO_ERRNO_H */
 
 /*
  * Imported things that aren't defined in header files:
@@ -83,9 +83,10 @@ static void		QuoteText(char *string, int count);
  */
 
 int
-main(argc, argv)
-    int argc;			/* Number of command-line arguments. */
-    char **argv;		/* Values of command-line arguments. */
+main (
+    int argc,			/* Number of command-line arguments. */
+    char **argv 		/* Values of command-line arguments. */
+)
 {
     FILE *f;
 #define MAX_LINE_SIZE 1000
@@ -127,15 +128,15 @@ main(argc, argv)
 		}
 	    }
 	    lineNumber++;
-    
+
 	    if ((line[0] == '\'') && (line[1] == '\\') && (line[2] == '\"')) {
-		/* 
+		/*
 		 * This line is a comment.  Ignore it.
 		 */
-    
+
 		continue;
 	    }
-    
+
 	    if (strlen(line) >= MAX_LINE_SIZE -1) {
 		fprintf(stderr, "Too long line. Max is %d chars.\n",
 			MAX_LINE_SIZE - 1);
@@ -146,14 +147,14 @@ main(argc, argv)
 		/*
 		 * This line is a macro invocation.
 		 */
-    
+
 		DoMacro(line);
 	    } else {
 		/*
 		 * This line is text, possibly with formatting characters
 		 * embedded in it.
 		 */
-    
+
 		DoText(line);
 	    }
 	}
@@ -184,9 +185,10 @@ main(argc, argv)
  */
 
 static void
-DoMacro(line)
-    char *line;			/* The line of text that contains the
+DoMacro (
+    char *line			/* The line of text that contains the
 				 * macro invocation. */
+)
 {
     char *p, *end;
 
@@ -276,8 +278,9 @@ DoMacro(line)
  */
 
 static void
-DoText(line)
-    char *line;			/* The line of text. */
+DoText (
+    char *line			/* The line of text. */
+)
 {
     char *p, *end;
 
@@ -386,9 +389,10 @@ DoText(line)
  */
 
 static void
-QuoteText(string, count)
-    char *string;		/* The line of text. */
-    int count;			/* Number of characters to write from string. */
+QuoteText (
+    char *string,		/* The line of text. */
+    int count			/* Number of characters to write from string. */
+)
 {
     if (count == 0) {
 	if (writeOutput) {

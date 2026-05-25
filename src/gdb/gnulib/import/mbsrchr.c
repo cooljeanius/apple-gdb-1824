@@ -1,5 +1,5 @@
 /* Searching a string for the last occurrence of a character.
-   Copyright (C) 2007-2023 Free Software Foundation, Inc.
+   Copyright (C) 2007-2026 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2007.
 
    This file is free software: you can redistribute it and/or modify
@@ -20,7 +20,13 @@
 /* Specification.  */
 #include <string.h>
 
-#include "mbuiterf.h"
+#include <stdlib.h>
+
+#if GNULIB_MCEL_PREFER
+# include "mcel.h"
+#else
+# include "mbuiterf.h"
+#endif
 
 /* Locate the last single-byte character C in the character string STRING,
    and return a pointer to it.  Return NULL if C is not found in STRING.  */
@@ -35,6 +41,15 @@ mbsrchr (const char *string, int c)
     {
       const char *result = NULL;
 
+#if GNULIB_MCEL_PREFER
+      while (*string)
+        {
+          mcel_t g = mcel_scanz (string);
+          if (g.len == 1 && (unsigned char) *string == (unsigned char) c)
+            result = string;
+          string += g.len;
+        }
+#else
       mbuif_state_t state;
       const char *iter;
       for (mbuif_init (state), iter = string; mbuif_avail (state, iter); )
@@ -44,9 +59,10 @@ mbsrchr (const char *string, int c)
             result = iter;
           iter += mb_len (cur);
         }
+#endif
 
       return (char *) result;
     }
   else
-    return strrchr (string, c);
+    return (char *) strrchr (string, c);
 }

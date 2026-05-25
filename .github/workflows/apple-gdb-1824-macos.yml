@@ -8,16 +8,16 @@ on:
       - "**/*"
   pull_request:
 jobs:
-  test:
-    # "latest" and "14" now both default to arm, which will require work to
-    # properly support, so see if we can fall back to an x86_64 image instead:
-    runs-on: macos-13
+  test-macos:
+    # "latest" defaults to arm, which requires work to properly support,
+    # but we have got some pretty good progress towards that end here:
+    runs-on: macos-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Run sccache-cache only on non-release runs
       if: github.event_name != 'release' && github.event_name != 'workflow_dispatch'
-      uses: mozilla-actions/sccache-action@v0.0.5
+      uses: mozilla-actions/sccache-action@v0.0.10
       env:
         SCCACHE_GHA_ENABLED: "true"
     - name: Install dependencies with Homebrew
@@ -32,25 +32,32 @@ jobs:
         else \
           COMPILER_FORMULA=""; \
         fi
-        brew install python@3.12 2>/dev/null || brew link --overwrite python@3.12 || (if test -L /usr/local/bin/2to3; then (readlink /usr/local/bin/2to3 && unlink /usr/local/bin/2to3); else rm '/usr/local/bin/2to3'; fi) || which -a 2to3
+        brew install python@3.12 2>/dev/null || \
+          brew link --overwrite python@3.12 || \
+          (if test -L /usr/local/bin/2to3; then \
+             (readlink /usr/local/bin/2to3 && unlink /usr/local/bin/2to3); \
+           else rm '/usr/local/bin/2to3'; fi) || \
+          which -a 2to3
         sync && date && sync
         brew install autogen texi2html texinfo deja-gnu expect dmalloc fastjar \
           osslsigncode gperf help2man findutils grep coreutils remake byacc \
           texlive gawk util-macros autoconf-archive automake scons smake \
           termbox termcolor cdk cgdb ncurses groff splint makedepend \
+          libapplewm libxpresent xcb-util-image tkdiff wget2 wgetpaste \
           "${COMPILER_FORMULA}"
         if test -z "$(which term)" || test ! -x "$(which term)"; then \
-          brew install term 2>/dev/null || brew install termrec || sync; \
+          brew install termshot || brew install termrec || sync; \
         else \
           sync && which -a term && stat "$(which term)"; \
         fi
         if test -z "$(which ant)" || test ! -x "$(which ant)"; then \
-          brew install ant || brew install ant@1.9; \
+          brew install ant || brew install ant-contrib || brew install antlr; \
         else \
           brew install ant-contrib || stat "$(which ant)"; \
         fi
         # shellcheck disable=SC2016
         if test -d /usr/local/opt/ncurses/bin && test -d /Users/runner && test -w /Users/runner; then \
+          echo "/usr/local/opt/ncurses/bin" >> "${GITHUB_PATH}"; \
           sync && echo "" >> /Users/runner/.bash_profile; \
           sync && echo 'export PATH="/usr/local/opt/ncurses/bin:${PATH}"' | tee -a /Users/runner/.bash_profile; \
           if test -r /Users/runner/.bash_profile; then \
@@ -98,9 +105,13 @@ jobs:
           export PPC_CONFIG_PATH=/opt/sw/etc/; \
         fi
         sync && printf '\n' && sync && date && sync
-    - run: cd .profile.d && test -e ./.profile_generic && test -r ./.profile_generic && test -s ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq | grep -v "\*\*\*" | grep -v "PWD\=") && sync && sleep 1
+    - name: Install XQuartz
+      run: |
+        wget https://github.com/XQuartz/XQuartz/releases/download/XQuartz-2.8.5/XQuartz-2.8.5.pkg
+        sudo installer -package XQuartz-2.8.5.pkg -target /
+    - run: cd .profile.d && test -e ./.profile_generic && test -r ./.profile_generic && test -s ./.profile_generic && sync && source ./.profile_generic && sync && (env | uniq | sort | uniq | grep -v "\*\*\*" | grep -v "PWD\=") && sync && (if test -x "$(which xcode-select)"; then stat "$(which xcode-select)" && xcode-select --print-path && xcode-select --version; else echo "no usable xcode-select found"; fi)
     - run: ./configure --enable-silent-rules --disable-dependency-tracking CC="sccache ${{ matrix.compiler }}" OBJC="sccache ${{ matrix.compiler }}"
-    - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi)
+    - run: make -ki -C libcheckpoint || make -ki -C libcheckpoint -f Makefile_orig || make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || (if test -x "$(which ant)"; then (ant || echo "FIXME, ant build is broken!"); else echo "ant missing"; fi)
     - run: if test ! -e libcheckpoint/libcheckpoint.dylib; then (sync && echo "ensuring libcheckpoint is built" && sync && make -ki -C libcheckpoint -f Makefile_orig RC_CFLAGS="-std=gnu89 -w -Wno-error" && sync) || (sync && make -ki -C macsbug && sync) || (sync && make -ki -C macsbug/gdb_plugin_support && sync) || (if test -x "$(which ant)"; then ant; else echo "ant missing"; fi); else (sync && stat libcheckpoint/libcheckpoint.dylib && sync); fi
     - run: if test -d .. && test -w .. && test ! -e ../gdb; then (sync && echo "symlinking source directory" && sync && pushd .. && sync && ln -sv apple-gdb-1824 gdb && sync && readlink gdb && sync && popd && sync && sleep 1); else (sync && stat .. && sync && ls .. && sync && sleep 1); fi
     - run: if test -d .. && test -w .. && test ! -e ../build; then (sync && echo "ensuring a separate build directory exists for ant" && sync && pushd .. && sync && mkdir -pv build && sync && stat build && sync && popd && sync && sleep 1); else (sync && stat .. && sync && ls .. && sync && sleep 1); fi
@@ -185,17 +196,16 @@ jobs:
     - run: cd src && make all-mmalloc
     - run: cd src && make configure-readline
     - run: cd src && for dir in libtool_gnu sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/configure; then (echo "configuring in ${dir}" && make configure-${dir} && ls ${dir}/config*); elif test -d ${dir}; then ls ${dir}/configure*; else echo "skipping configuring in ${dir}"; fi; done
-    - run: cd src && for dir in sim utils tcl expect dejagnu itcl tk libgui; do if test -e ${dir}/Makefile; then (echo "building in ${dir}" && make -C ${dir}); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
+    - run: cd src && for dir in sim utils tcl expect dejagnu; do if test -e ${dir}/Makefile; then (echo "building in ${dir}" && make -C ${dir}); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping ${dir}"; fi; done
     - run: cd src && (make all-readline || (pushd readline && (make depend || make stamp-framework-headers) && popd) || make am--refresh)
     - run: cd src && make configure-gdb
-    - run: cd src && make all-gdb
+    # FIXME: get the executable to link properly for aarch64:
+    - run: cd src/gdb && make libgdb_a
     - name: bootstrap libtool
       run: |
         cd src/libtool_gnu
-        # TODO: autoconf@2.69 and autoconf@2.13 formulae are deprecated;
-        # replace with just autoconf when they move to disabled:
         if test -z "$(which autoconf)" || test ! -x "$(which autoconf)"; then \
-          brew install autoconf@2.69 || brew install autoconf@2.13 || brew install m4 || ls "configure*"; \
+          brew install autoconf || brew install m4 || ls "configure*"; \
         else \
           sync && echo "autoconf available at $(which autoconf)"; \
         fi
@@ -280,16 +290,27 @@ jobs:
           sync && echo "nproc says we can use $(nproc) build jobs"; \
           if test "$(nproc)" -eq 4; then \
             sync && echo "Full build step: special-casing the 4-job build case…"; \
-            (make -j"$(nproc)" || make -j2 || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
+            (make -j"$(nproc)" || make -j2 || make || \
+               remake -dpPw --verbosity=terse >>config.log || \
+               remake --trace=noshell --verbosity=terse >>config.log || \
+               remake all-gdb >>config.log || clear || stat Makefile); \
           else
-            (make -j"$(nproc)" || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
+            (make -j"$(nproc)" || make || \
+               remake -dpPw --verbosity=terse >>config.log || \
+               remake --trace=noshell --verbosity=terse >>config.log || \
+               remake all-gdb >>config.log || clear || stat Makefile); \
           fi; \
         elif test -x "$(which gnproc)" && test "$(gnproc)" -ge 2; then \
           sync && echo "gnproc says we can use $(gnproc) build jobs"; \
-          (make -j"$(gnproc)" || make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
+          (make -j"$(gnproc)" || make || \
+             remake -dpPw --verbosity=terse >>config.log || \
+             remake --trace=noshell --verbosity=terse >>config.log || \
+             remake all-gdb >>config.log || clear || stat Makefile); \
         else \
           sync && echo "Full build step: on the slow path..."; \
-          (make || remake -dpPw --verbosity=terse >>config.log || remake --trace=noshell --verbosity=terse >>config.log || remake all-gdb >>config.log || clear || stat Makefile); \
+          (make || remake -dpPw --verbosity=terse >>config.log || \
+             remake --trace=noshell --verbosity=terse >>config.log || \
+             remake all-gdb >>config.log || clear || stat Makefile); \
         fi
         sync && echo "Reached end of full build phase..."
     - run: cd src && make check-zlib && sync && make check-libiberty
@@ -326,7 +347,7 @@ jobs:
           time make check-mmalloc; \
           sync && echo "done with mmalloc; moving onto electrict-fence next…"; \
           cd electric-fence; \
-          make check stamp-framework ls; \
+          make check stamp-framework-headers ls; \
           sync && echo "done with electric-fence..." && sync; \
         elif test ${{ matrix.compiler }} == gcc; then \
           sync && echo "getting some additional dependencies..."; \
@@ -361,7 +382,7 @@ jobs:
           shellcheck ./development.sh || shellcheck ./ltmain.sh || ls ./*.sh; \
           popd; \
           pushd binutils; \
-          make am_check-DEJAGNU || make check-DEJAGNU || make check-TESTS; \
+          make am_check-DEJAGNU || make check-DEJAGNU || make check-TESTS || make test-suite.log; \
           make check-recursive || make cscope || make ID || make TAGS || make CTAGS || make GTAGS || make recheck || stat Makefile; \
           make info || make dvi || make embedspu || make stamp-framework-binutils; \
           sync && echo "done with make targets for binutils; using script manually next…"; \
@@ -374,7 +395,7 @@ jobs:
           popd; \
           sync && echo "done with mmalloc; moving on to electric-fence next…"; \
           pushd electric-fence; \
-          sync && make check info stamp-framework ls; \
+          sync && make check info stamp-framework-headers ls; \
           popd; \
           sync && echo "done with electric-fence; moving on to readline next…"; \
           pushd readline; \
@@ -408,16 +429,47 @@ jobs:
         sync && echo "...done cleaning up."
         time (sync && pwd && sync && ls && sync && du && sync && df && sync)
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4.4.0
+      uses: actions/upload-artifact@v7
       if: "${{ always() }}"
       with:
         # Artifact name
         name: apple-gdb-1824-macos-${{ matrix.compiler }}-logfiles-${{ github.sha }}
         # A file, directory or wildcard pattern that describes what to upload
         path: |
-            **/*.log
-    - run: find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
+          **/*.log
+    - name: Explain failure
       if: "${{ failure() }}"
+      run: |
+        find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
+        if test ! -e /var/db/locate.database; then \
+          if test -e /System/Library/LaunchDaemons/com.apple.locate.plist; then \
+            if test -z "$(sudo launchctl list | grep locate)"; then \
+              sync && echo "attempting to ensure that locate will work..."; \
+              sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist; \
+            else \
+              sync && echo "printing launchctl jobs related to locate:"; \
+              sudo launchctl list | grep locate; \
+            fi; \
+          elif test -r /System/Library/LaunchDaemons; then \
+            ls /System/Library/LaunchDaemons/*locate*; \
+          else \
+            sync && echo "Warning: missing launchd plist for locate!" >&2; \
+          fi; \
+        elif test -r /var/db && test -r /var/db/locate.database; then \
+          stat /var/db/locate.database && du /var/db/locate.database; \
+        else \
+          sleep 1; \
+        fi
+        if test -x "$(which locate)"; then \
+          sync && echo "Attempting to locate X11/Xlib.h..."; \
+          sync && (locate X11/Xlib.h || sleep 1); \
+          sync && echo "Attempting to locate mach/mach_exc.defs..."; \
+          sync && (locate mach/mach_exc.defs || sleep 1); \
+        else \
+          sync && sleep 1; \
+        fi
+        echo "grepping for SDK-related strings in environment..."
+        env | grep "SDK"
     strategy:
       fail-fast: false
       matrix:

@@ -1,8 +1,8 @@
 /*
  * tclMacOSXNotify.c --
  *
- *	This file contains the implementation of a merged 
- *	Carbon/select-based notifier, which is the lowest-level part 
+ *	This file contains the implementation of a merged
+ *	Carbon/select-based notifier, which is the lowest-level part
  *	of the Tcl event loop.  This file works together with
  *	../generic/tclNotify.c.
  *
@@ -17,18 +17,18 @@
 
 #include "tclInt.h"
 
-/* FIXME - Why do I need these here? */
+/* FIXME: Why do I need these here? */
 
 #undef environ
 #include "tkMacOSX.h"
 #include "tkMacOSXEvent.h"
 
-#include <signal.h> 
+#include <signal.h>
 
 extern TclStubs tclStubs;
 
 /*
- * This structure is used to keep track of the notifier info for a 
+ * This structure is used to keep track of the notifier info for a
  * a registered file.
  */
 
@@ -63,7 +63,7 @@ typedef struct FileHandlerEvent {
 /*
  * The following static structure contains the state information for the
  * select based implementation of the Tcl notifier.  One of these structures
- * is created for each thread that is using the notifier.  
+ * is created for each thread that is using the notifier.
  */
 
 typedef struct ThreadSpecificData {
@@ -85,11 +85,11 @@ typedef struct ThreadSpecificData {
                                  * we will call RNE in the actual wait... */
 #ifdef TCL_THREADS
     int onList;			/* True if it is in this list */
-    unsigned int pollState;	/* pollState is used to implement a polling 
+    unsigned int pollState;	/* pollState is used to implement a polling
 				 * handshake between each thread and the
 				 * notifier thread. Bits defined below. */
     struct ThreadSpecificData *nextPtr, *prevPtr;
-                                /* All threads that are currently waiting on 
+                                /* All threads that are currently waiting on
                                  * an event have their ThreadSpecificData
                                  * structure on a doubly-linked listed formed
                                  * from these pointers.  You must hold the
@@ -117,7 +117,7 @@ static Tcl_ThreadDataKey dataKey;
 static int notifierCount = 0;
 
 /*
- * The following variable points to the head of a doubly-linked list of 
+ * The following variable points to the head of a doubly-linked list of
  * of ThreadSpecificData structures for all threads that are currently
  * waiting on an event.
  *
@@ -144,7 +144,7 @@ static ThreadSpecificData *waitingListPtr = NULL;
 static int triggerPipe = -1;
 
 /*
- * The notifierMutex locks access to all of the global notifier state. 
+ * The notifierMutex locks access to all of the global notifier state.
  */
 
 TCL_DECLARE_MUTEX(notifierMutex)
@@ -185,7 +185,7 @@ static void	NotifierThreadProc _ANSI_ARGS_((ClientData clientData));
 #endif
 static int	FileHandlerEventProc _ANSI_ARGS_((Tcl_Event *evPtr,
 		    int flags));
-                    
+
 void TkMacOSXSetTimer(Tcl_Time *timePtr);
 void TkMacOSXCreateFileHandler(int fd, int mask, Tcl_FileProc *proc, ClientData clientData);
 void TkMacOSXDeleteFileHandler(int fd);
@@ -214,7 +214,7 @@ EventRef TkMacOSXCreateFakeEvent ();
  */
 
 void
-Tk_MacOSXSetupTkNotifier()
+Tk_MacOSXSetupTkNotifier (void)
 {
     EventQueueRef mainEventQueue;
     Tcl_NotifierProcs macNotifierProcs = {
@@ -233,7 +233,7 @@ Tk_MacOSXSetupTkNotifier()
      */
 
     TclFinalizeNotifier();
-    
+
     Tcl_SetNotifier(&macNotifierProcs);
 
     /* HACK ALERT: There is a bug in Jaguar where when it goes to make
@@ -243,17 +243,17 @@ Tk_MacOSXSetupTkNotifier()
      * the main thread.  Calling GetMainEventQueue will force this to
      * happen.
      */
-    
+
     mainEventQueue = GetMainEventQueue();
-    
-    /* 
+
+    /*
      * Tcl_SetNotifier doesn't call the TclInitNotifier
      * so we call it now. If we don't do this the
      * ThreadSpecificData will keep a pointer to the original
      * InitNotifier. See tclNotify.c:TclInitNotifier().
      */
 
-    TclInitNotifier(); 
+    TclInitNotifier();
 }
 
 /*
@@ -292,7 +292,7 @@ TkMacOSXInitNotifier()
 	}
     }
     notifierCount++;
-    
+
     if (GetCurrentEventLoop() == GetMainEventLoop()) {
         tsdPtr->isMainLoop = 1;
     } else {
@@ -457,9 +457,10 @@ TkMacOSXSetTimer(timePtr)
  */
 
 void
-TkMacOSXServiceModeHook(mode)
-    int mode;			/* Either TCL_SERVICE_ALL, or
+TkMacOSXServiceModeHook (
+    int mode			/* Either TCL_SERVICE_ALL, or
 				 * TCL_SERVICE_NONE. */
+)
 {
 }
 
@@ -521,7 +522,7 @@ TkMacOSXCreateFileHandler(fd, mask, proc, clientData)
 	tsdPtr->checkMasks[index] |= bit;
     } else {
 	tsdPtr->checkMasks[index] &= ~bit;
-    } 
+    }
     if (mask & TCL_WRITABLE) {
 	(tsdPtr->checkMasks+MASK_SIZE)[index] |= bit;
     } else {
@@ -555,8 +556,9 @@ TkMacOSXCreateFileHandler(fd, mask, proc, clientData)
  */
 
 void
-TkMacOSXDeleteFileHandler(fd)
-    int fd;		/* Stream id for which to remove callback procedure. */
+TkMacOSXDeleteFileHandler (
+    int fd		/* Stream id for which to remove callback procedure. */
+)
 {
     FileHandler *filePtr, *prevPtr;
     int index, bit, i;
@@ -706,7 +708,7 @@ DoActualWait(timePtr)
 {
     ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
     OSErr err;
-    
+
     if (!tsdPtr->isMainLoop) {
             Tcl_ConditionWait(&tsdPtr->waitCV, &notifierMutex, timePtr);
     } else {
@@ -717,7 +719,7 @@ DoActualWait(timePtr)
         if (timePtr == NULL) {
             waitTime = kEventDurationForever;
         } else {
-            waitTime = timePtr->sec * kEventDurationSecond 
+            waitTime = timePtr->sec * kEventDurationSecond
                     + timePtr->usec * kEventDurationMicrosecond;
         }
         err = ReceiveNextEvent(0, NULL, waitTime, false, &eventRef);
@@ -757,7 +759,7 @@ TkMacOSXWaitForEvent(timePtr)
 #else
     int numFound;
 #endif
-    
+
     ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
 
     /*
@@ -826,7 +828,7 @@ TkMacOSXWaitForEvent(timePtr)
         tsdPtr->prevPtr = 0;
         waitingListPtr = tsdPtr;
 	tsdPtr->onList = 1;
-	
+
 	write(triggerPipe, "", 1);
     }
 
@@ -858,7 +860,7 @@ TkMacOSXWaitForEvent(timePtr)
 	write(triggerPipe, "", 1);
     }
 
-    
+
 #else
     memcpy((VOID *) tsdPtr->readyMasks, (VOID *) tsdPtr->checkMasks,
 	    3*MASK_SIZE*sizeof(fd_mask));
@@ -915,11 +917,11 @@ TkMacOSXWaitForEvent(timePtr)
 	}
 	filePtr->readyMask = mask;
     }
-    
-    /* 
+
+    /*
      * Also queue the Mac Events found...
      */
-    
+
 #ifdef TCL_THREADS
     Tcl_MutexUnlock(&notifierMutex);
 #endif
@@ -927,7 +929,7 @@ TkMacOSXWaitForEvent(timePtr)
     if (tsdPtr->isMainLoop) {
         TkMacOSXCountAndProcessMacEvents();
     }
-    
+
     return 0;
 }
 
@@ -1028,7 +1030,7 @@ NotifierThreadProc(clientData)
 	/*
 	 * Add in the check masks from all of the waiting notifiers.
 	 */
-	
+
 	Tcl_MutexLock(&notifierMutex);
 	timePtr = NULL;
         for (tsdPtr = waitingListPtr; tsdPtr; tsdPtr = tsdPtr->nextPtr) {
@@ -1083,7 +1085,7 @@ NotifierThreadProc(clientData)
                     * continuously spining on select until the other
                     * threads runs and services the file event.
                     */
-        
+
                     if (tsdPtr->prevPtr) {
                         tsdPtr->prevPtr->nextPtr = tsdPtr->nextPtr;
                     } else {
@@ -1099,11 +1101,11 @@ NotifierThreadProc(clientData)
                 tsdPtr->eventReady = 1;
                 if (tsdPtr->isMainLoop) {
                     OSErr err;
-                    
+
                     /* We need to wake up the main loop, and let it have the event. */
                     EventRef fakeEvent = TkMacOSXCreateFakeEvent();
                     EventQueueRef mainEventQueue = GetMainEventQueue();
-                    
+
                     err = PostEventToQueue(mainEventQueue, fakeEvent,
                                            kEventPriorityHigh);
                     ReleaseEvent(fakeEvent);
@@ -1113,7 +1115,7 @@ NotifierThreadProc(clientData)
             }
         }
 	Tcl_MutexUnlock(&notifierMutex);
-	
+
 	/*
 	 * Consume the next byte from the notifier pipe if the pipe was
 	 * readable.  Note that there may be multiple bytes pending, but
@@ -1147,7 +1149,7 @@ NotifierThreadProc(clientData)
 }
 #endif
 
-EventRef 
+EventRef
 TkMacOSXCreateFakeEvent ()
 {
     EventKind       eKind;

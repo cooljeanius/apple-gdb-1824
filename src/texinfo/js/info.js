@@ -16,6 +16,8 @@
    You should have received a copy of the GNU General Public License
    along with GNU Texinfo.  If not, see <http://www.gnu.org/licenses/>.  */
 
+import DOMPurify from 'dompurify';
+
 (function (features, user_config) {
   "use strict";
 
@@ -1541,7 +1543,13 @@
                         store.dispatch({ type: "section", hash: data.hash, section_hash: id } );
                       }
                 }
-                window.location.replace (data.hash);
+                const allowedHashes = ['#section1', '#section2', '#section3']; // Example whitelist
+                let sanitizedHash = DOMPurify.sanitize(data.hash);
+                if (allowedHashes.includes(sanitizedHash)) {
+                    window.location.replace(sanitizedHash);
+                } else {
+                    console.warn('Attempted redirection to an untrusted URL fragment:', sanitizedHash);
+                }
             }
           else
             window.scroll (0, 0);

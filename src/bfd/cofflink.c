@@ -21,8 +21,8 @@
 
 /* This file contains the COFF backend linker code.  */
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "bfdlink.h"
 #include "libbfd.h"
 #include "coff/internal.h"

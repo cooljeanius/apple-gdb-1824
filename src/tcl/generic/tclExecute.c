@@ -599,7 +599,7 @@ TclDeleteExecEnv(eePtr)
  */
 
 void
-TclFinalizeExecution()
+TclFinalizeExecution (void)
 {
     Tcl_MutexLock(&execMutex);
     execInitialized = 0;
@@ -4701,9 +4701,10 @@ GetExceptRangeForPc(pc, catchOnly, codePtr)
 
 #ifdef TCL_COMPILE_DEBUG
 static char *
-GetOpcodeName(pc)
-    unsigned char *pc;		/* Points to the instruction whose name
+GetOpcodeName (
+    unsigned char *pc		/* Points to the instruction whose name
 				 * should be returned. */
+)
 {
     unsigned char opCode = *pc;
 
@@ -5755,9 +5756,10 @@ TclExprFloatError(interp, value)
  */
 
 int
-TclLog2(value)
-    register int value;		/* The integer for which to compute the
+TclLog2 (
+    register int value		/* The integer for which to compute the
 				 * log base 2. */
+)
 {
     register int n = value;
     register int result = 0;
@@ -6162,7 +6164,7 @@ EvalStatsCmd(unused, interp, objc, objv)
 #ifdef TCL_MEM_DEBUG
     fprintf(stdout, "\nHeap Statistics:\n");
     TclDumpMemoryInfo(stdout);
-#endif
+#endif /* TCL_MEM_DEBUG */
     fprintf(stdout, "\n----------------------------------------------------------------\n");
     return TCL_OK;
 }
@@ -6191,9 +6193,10 @@ EvalStatsCmd(unused, interp, objc, objv)
  */
 
 static char *
-StringForResultCode(result)
-    int result;			/* The Tcl result code for which to
+StringForResultCode (
+    int result			/* The Tcl result code for which to
 				 * generate a string. */
+)
 {
     static char buf[TCL_INTEGER_SPACE];
 

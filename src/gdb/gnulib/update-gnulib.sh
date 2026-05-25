@@ -29,40 +29,44 @@
 #     regenerate the various scripts and Makefiles are on the PATH.
 
 # The list of gnulib modules we are importing in GDB.
+# Formatting note: sorted alphabetically, with a newline whenever a new letter
+# is reached:
 IMPORTED_GNULIB_MODULES="\
-    absolute-header alignof alloca alloca-opt ansi-c++-opt assert assert-h \
-    assure autobuild \
-    bcopy bison-i18n bitset btowc builtin-expect \
-    c-ctype c-strcase c-strcasestr c99 calloc-posix chdir-long configmake \
-    connect closedir crc ctime \
-    dirent dirent-safer dirfd double-slash-root dup2 \
-    environ errno error euidaccess exitfail extensions extern-inline \
-    faccessat fclose fcntl fcntl-h fcntl-safer fflush fileblocks filename \
+    absolute-header accept alignof alloca alloca-opt ansi-c++-opt assert \
+    assert-h assure autobuild \
+    bcopy bind bison-i18n bitset btowc builtin-expect \
+    c-ctype c-strcase c-strcasestr c99 calloc-posix canonicalize-lgpl \
+    chdir-long chown configmake connect count-one-bits closedir crc ctime \
+    dirent dirent-safer dirfd dirname dirname-lgpl dosname double-slash-root \
+    dup2 environ errno error euidaccess exitfail extensions extern-inline \
+    faccessat fclose fcntl fcntl-h fcntl-safer fflush ffs ffsll fileblocks filename \
     flexmember float fnmatch fnmatch-gnu fnmatch-h fopen fpieee fprintf-posix \
     fpucw frexp frexpl fstatat fts \
-    getcwd getcwd-lgpl getpagesize gettext-h gettimeofday git-version-gen \
-    gitlog-to-changelog gnu-make gpl-2.0 \
+    gendocs getcwd getcwd-lgpl getline getpagesize gettext gettext-h \
+    gettimeofday git-version-gen gitlog-to-changelog glob gnu-make gpl-2.0 \
     havelib host-cpu-c-abi host-os \
-    ignore-value include_next inline intprops inttypes inttypes-incomplete \
-    isnand-nolibm isnanl-nolibm iswctype \
-    largefile ldd ldexpl limits-h localcharset locale localtime \
+    ignore-value include_next inet_ntop inline intprops inttypes \
+    inttypes-incomplete isnand-nolibm isnanl-nolibm iswctype \
+    largefile ldd ldexpl limits-h listen localcharset locale localtime \
     localtime longlong lstat \
     malloc-gnu malloc-posix manywarnings math mbrtowc mbschr mbsinit mbsrchr \
     mbsrtowcs mbsspn memchr memcmp memmem memmem-simple \
-    mempcpy memrchr mkdir mkdtemp multiarch \
-    nextafter no-c++ nocrash noreturn \
-    obstack opendirat openmp \
+    mempcpy memrchr mkdir mkdtemp mkostemp multiarch \
+    netdb nextafter no-c++ nocrash noreturn \
+    obstack obstack-printf opendirat openmp \
     pathmax pclose perror pipe-posix popen posixcheck putenv \
-    readdir readlink realloc-gnu realloc-posix recv regex regex-quote \
-    regexprops-generic rmdir \
-    secure_getenv send setenv sh-filename sig2str sigaction signal signal-h \
-    sigpipe sigpipe-die sigprocmask snippet/_Noreturn snippet/arg-nonnull \
-    snippet/c++defs snippet/link-warning snippet/warn-on-use snprintf \
-    sprintf-posix ssize_t stat stat-macros stat-size stat-time stdbool stddef \
-    stdint stdlib streq strerror strerror_r-posix strerror-override \
-    strftime-fixes string strncat strndup strnlen strnlen1 strstr \
-    strstr-simple strtok_r sys_select sys_stat sys_time sys_types sys_wait \
-    tempname time time_r time_rz timegm tzset \
+    rawmemchr readdir readlink realloc-gnu realloc-posix recv regex \
+    regex-quote regexprops-generic rename rmdir \
+    secure_getenv select send setenv setsockopt sh-filename sig2str sigaction \
+    signal signal-h sigpipe sigpipe-die sigprocmask snippet/_Noreturn \
+    snippet/arg-nonnull snippet/c++defs snippet/link-warning \
+    snippet/warn-on-use snprintf socket sprintf-posix ssize_t stat stat-macros \
+    stat-size stat-time stdbool stddef stdint stdlib stpcpy stpncpy strcasestr \
+    strchrnul strcspn streq strerror strerror_r-posix strerror-override \
+    strftime-fixes string string-h strncat strncpy strndup strnlen strnlen1 \
+    strsep strsignal strstr strstr-simple strtok_r sys_select sys_stat \
+    sys_time sys_types sys_wait system-posix system-quote \
+    tempname threads-h time time_r time_rz timegm tzset \
     unistd unistd-safer unlink unlink-busy unsetenv update-copyright usleep \
     vc-list-files verify vfprintf-posix \
     warnings wchar wcscat wcslen wcsncasecmp wctype wctype-h winsz-ioctl \
@@ -77,6 +81,7 @@ IMPORTED_GNULIB_MODULES="\
 # - memchr-obsolete
 # - memmove
 # - strdup (or strdup-posix)
+# - strpbrk
 # (even though I cannot add them, there is no need to explicitly ignore them
 # below, though, so they may still get dragged in as dependencies)
 # Reasons for explicitly ignoring some:
@@ -84,14 +89,14 @@ IMPORTED_GNULIB_MODULES="\
 #   explicitly ignored.
 
 # The gnulib commit ID to use for the update.
-GNULIB_COMMIT_SHA1="4ec032e7c67deccd194f0a230cfaffd25c706b08"
+GNULIB_COMMIT_SHA1="04abe2a3c113aea42a700dad2193122ff955e40c"
 # (feel free to update if you know that your version works and is newer)
-# (last updated November 14, 2023)
+# (last updated March 25, 2026)
 
 # The expected version number for the various auto tools we will
 # use after the import.
-AUTOCONF_VERSION="2.64"
-AUTOMAKE_VERSION="1.11.6"
+AUTOCONF_VERSION="2.69"
+AUTOMAKE_VERSION="1.15.1"
 ACLOCAL_VERSION="$AUTOMAKE_VERSION"
 
 if [ $# -ne 1 ]; then
@@ -136,13 +141,14 @@ fi
 
 echo "actually importing now; this may take a while..."
 # Update our gnulib import.
+# shellcheck disable=SC2086 # quoting ${IMPORTED_GNULIB_MODULES} no longer works
 "${gnulib_prefix}"/gnulib-tool --import --dir=. --lib=libgnu \
   --source-base=import --m4-base=import/m4 --doc-base=doc \
   --tests-base=tests --aux-dir=import/extra \
   --avoid=localename --avoid=lock --avoid=msvc-nothrow --avoid=setlocale \
   --avoid=threadlib --no-conditional-dependencies --no-libtool \
   --macro-prefix=gl --no-vc-files --with-obsolete \
-  "${IMPORTED_GNULIB_MODULES}"
+  ${IMPORTED_GNULIB_MODULES}
 if [ $? -ne 0 ]; then
    echo "Error: gnulib import failed.  Aborting."
    exit 1

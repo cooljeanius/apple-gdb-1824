@@ -197,9 +197,10 @@ TclThreadDataKeySet(keyPtr, data)
  */
 
 static void
-RememberSyncObject(objPtr, recPtr)
-    char *objPtr;		/* Pointer to sync object */
-    SyncObjRecord *recPtr;	/* Record of sync objects */
+RememberSyncObject (
+    char *objPtr,		/* Pointer to sync object */
+    SyncObjRecord *recPtr	/* Record of sync objects */
+)
 {
     char **newList;
     int i, j;
@@ -245,9 +246,10 @@ RememberSyncObject(objPtr, recPtr)
  */
 
 static void
-ForgetSyncObject(objPtr, recPtr)
-    char *objPtr;		/* Pointer to sync object */
-    SyncObjRecord *recPtr;	/* Record of sync objects */
+ForgetSyncObject (
+    char *objPtr,		/* Pointer to sync object */
+    SyncObjRecord *recPtr	/* Record of sync objects */
+)
 {
     int i;
 
@@ -400,7 +402,7 @@ Tcl_ConditionFinalize(condPtr)
  */
 
 void
-TclFinalizeThreadData()
+TclFinalizeThreadData (void)
 {
     int i;
     Tcl_ThreadDataKey *keyPtr;
@@ -440,7 +442,7 @@ TclFinalizeThreadData()
  */
 
 void
-TclFinalizeSynchronization()
+TclFinalizeSynchronization (void)
 {
 #ifdef TCL_THREADS
     Tcl_ThreadDataKey *keyPtr;
@@ -517,8 +519,7 @@ TclFinalizeSynchronization()
  */
 
 void
-Tcl_ExitThread(status)
-    int status;
+Tcl_ExitThread (int status)
 {
     Tcl_FinalizeThread();
 #ifdef TCL_THREADS
@@ -576,4 +577,4 @@ Tcl_MutexUnlock(mutexPtr)
     Tcl_Mutex *mutexPtr;
 {
 }
-#endif
+#endif /* !TCL_THREADS */

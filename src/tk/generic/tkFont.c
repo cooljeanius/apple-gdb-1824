@@ -3612,7 +3612,7 @@ TkFontGetAliasList(faceName)
  */
 
 char ***
-TkFontGetFallbacks()
+TkFontGetFallbacks (void)
 {
     return fontFallbacks;
 }
@@ -3637,7 +3637,7 @@ TkFontGetFallbacks()
  */
 
 char **
-TkFontGetGlobalClass()
+TkFontGetGlobalClass (void)
 {
     return globalFontClass;
 }
@@ -3660,7 +3660,7 @@ TkFontGetGlobalClass()
  */
 
 char **
-TkFontGetSymbolClass()
+TkFontGetSymbolClass (void)
 {
     return symbolClass;
 }

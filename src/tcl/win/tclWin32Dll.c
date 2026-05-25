@@ -1,4 +1,4 @@
-/* 
+/*
  * tclWin32Dll.c --
  *
  *	This file contains the DLL entry point.
@@ -15,7 +15,7 @@
 #include "tclWinInt.h"
 
 /*
- * The following data structures are used when loading the thunking 
+ * The following data structures are used when loading the thunking
  * library for execing child processes under Win32s.
  */
 
@@ -28,9 +28,9 @@ typedef BOOL (WINAPI UTREGISTER)(HANDLE hModule, LPCSTR SixteenBitDLL,
 
 typedef VOID (WINAPI UTUNREGISTER)(HANDLE hModule);
 
-/* 
+/*
  * The following variables keep track of information about this DLL
- * on a per-instance basis.  Each time this DLL is loaded, it gets its own 
+ * on a per-instance basis.  Each time this DLL is loaded, it gets its own
  * new data segment with its own copy of all static and global information.
  */
 
@@ -55,10 +55,10 @@ static TclWinProcs asciiProcs = {
     (TCHAR *(WINAPI *)(TCHAR *)) CharLowerA,
     (BOOL (WINAPI *)(CONST TCHAR *, CONST TCHAR *, BOOL)) CopyFileA,
     (BOOL (WINAPI *)(CONST TCHAR *, LPSECURITY_ATTRIBUTES)) CreateDirectoryA,
-    (HANDLE (WINAPI *)(CONST TCHAR *, DWORD, DWORD, SECURITY_ATTRIBUTES *, 
+    (HANDLE (WINAPI *)(CONST TCHAR *, DWORD, DWORD, SECURITY_ATTRIBUTES *,
 	    DWORD, DWORD, HANDLE)) CreateFileA,
-    (BOOL (WINAPI *)(CONST TCHAR *, TCHAR *, LPSECURITY_ATTRIBUTES, 
-	    LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, CONST TCHAR *, 
+    (BOOL (WINAPI *)(CONST TCHAR *, TCHAR *, LPSECURITY_ATTRIBUTES,
+	    LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, CONST TCHAR *,
 	    LPSTARTUPINFOA, LPPROCESS_INFORMATION)) CreateProcessA,
     (BOOL (WINAPI *)(CONST TCHAR *)) DeleteFileA,
     (HANDLE (WINAPI *)(CONST TCHAR *, WIN32_FIND_DATAT *)) FindFirstFileA,
@@ -66,11 +66,11 @@ static TclWinProcs asciiProcs = {
     (BOOL (WINAPI *)(WCHAR *, LPDWORD)) GetComputerNameA,
     (DWORD (WINAPI *)(DWORD, WCHAR *)) GetCurrentDirectoryA,
     (DWORD (WINAPI *)(CONST TCHAR *)) GetFileAttributesA,
-    (DWORD (WINAPI *)(CONST TCHAR *, DWORD nBufferLength, WCHAR *, 
+    (DWORD (WINAPI *)(CONST TCHAR *, DWORD nBufferLength, WCHAR *,
 	    TCHAR **)) GetFullPathNameA,
     (DWORD (WINAPI *)(HMODULE, WCHAR *, int)) GetModuleFileNameA,
     (DWORD (WINAPI *)(CONST TCHAR *, WCHAR *, DWORD)) GetShortPathNameA,
-    (UINT (WINAPI *)(CONST TCHAR *, CONST TCHAR *, UINT uUnique, 
+    (UINT (WINAPI *)(CONST TCHAR *, CONST TCHAR *, UINT uUnique,
 	    WCHAR *)) GetTempFileNameA,
     (DWORD (WINAPI *)(DWORD, WCHAR *)) GetTempPathA,
     (BOOL (WINAPI *)(CONST TCHAR *, WCHAR *, DWORD, LPDWORD, LPDWORD, LPDWORD,
@@ -79,7 +79,7 @@ static TclWinProcs asciiProcs = {
     (TCHAR (WINAPI *)(WCHAR *, CONST TCHAR *)) lstrcpyA,
     (BOOL (WINAPI *)(CONST TCHAR *, CONST TCHAR *)) MoveFileA,
     (BOOL (WINAPI *)(CONST TCHAR *)) RemoveDirectoryA,
-    (DWORD (WINAPI *)(CONST TCHAR *, CONST TCHAR *, CONST TCHAR *, DWORD, 
+    (DWORD (WINAPI *)(CONST TCHAR *, CONST TCHAR *, CONST TCHAR *, DWORD,
 	    WCHAR *, TCHAR **)) SearchPathA,
     (BOOL (WINAPI *)(CONST TCHAR *)) SetCurrentDirectoryA,
     (BOOL (WINAPI *)(CONST TCHAR *, DWORD)) SetFileAttributesA,
@@ -94,10 +94,10 @@ static TclWinProcs unicodeProcs = {
     (TCHAR *(WINAPI *)(TCHAR *)) CharLowerW,
     (BOOL (WINAPI *)(CONST TCHAR *, CONST TCHAR *, BOOL)) CopyFileW,
     (BOOL (WINAPI *)(CONST TCHAR *, LPSECURITY_ATTRIBUTES)) CreateDirectoryW,
-    (HANDLE (WINAPI *)(CONST TCHAR *, DWORD, DWORD, SECURITY_ATTRIBUTES *, 
+    (HANDLE (WINAPI *)(CONST TCHAR *, DWORD, DWORD, SECURITY_ATTRIBUTES *,
 	    DWORD, DWORD, HANDLE)) CreateFileW,
-    (BOOL (WINAPI *)(CONST TCHAR *, TCHAR *, LPSECURITY_ATTRIBUTES, 
-	    LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, CONST TCHAR *, 
+    (BOOL (WINAPI *)(CONST TCHAR *, TCHAR *, LPSECURITY_ATTRIBUTES,
+	    LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, CONST TCHAR *,
 	    LPSTARTUPINFOA, LPPROCESS_INFORMATION)) CreateProcessW,
     (BOOL (WINAPI *)(CONST TCHAR *)) DeleteFileW,
     (HANDLE (WINAPI *)(CONST TCHAR *, WIN32_FIND_DATAT *)) FindFirstFileW,
@@ -105,20 +105,20 @@ static TclWinProcs unicodeProcs = {
     (BOOL (WINAPI *)(WCHAR *, LPDWORD)) GetComputerNameW,
     (DWORD (WINAPI *)(DWORD, WCHAR *)) GetCurrentDirectoryW,
     (DWORD (WINAPI *)(CONST TCHAR *)) GetFileAttributesW,
-    (DWORD (WINAPI *)(CONST TCHAR *, DWORD nBufferLength, WCHAR *, 
+    (DWORD (WINAPI *)(CONST TCHAR *, DWORD nBufferLength, WCHAR *,
 	    TCHAR **)) GetFullPathNameW,
     (DWORD (WINAPI *)(HMODULE, WCHAR *, int)) GetModuleFileNameW,
     (DWORD (WINAPI *)(CONST TCHAR *, WCHAR *, DWORD)) GetShortPathNameW,
-    (UINT (WINAPI *)(CONST TCHAR *, CONST TCHAR *, UINT uUnique, 
+    (UINT (WINAPI *)(CONST TCHAR *, CONST TCHAR *, UINT uUnique,
 	    WCHAR *)) GetTempFileNameW,
     (DWORD (WINAPI *)(DWORD, WCHAR *)) GetTempPathW,
-    (BOOL (WINAPI *)(CONST TCHAR *, WCHAR *, DWORD, LPDWORD, LPDWORD, LPDWORD, 
+    (BOOL (WINAPI *)(CONST TCHAR *, WCHAR *, DWORD, LPDWORD, LPDWORD, LPDWORD,
 	    WCHAR *, DWORD)) GetVolumeInformationW,
     (HINSTANCE (WINAPI *)(CONST TCHAR *)) LoadLibraryW,
     (TCHAR (WINAPI *)(WCHAR *, CONST TCHAR *)) lstrcpyW,
     (BOOL (WINAPI *)(CONST TCHAR *, CONST TCHAR *)) MoveFileW,
     (BOOL (WINAPI *)(CONST TCHAR *)) RemoveDirectoryW,
-    (DWORD (WINAPI *)(CONST TCHAR *, CONST TCHAR *, CONST TCHAR *, DWORD, 
+    (DWORD (WINAPI *)(CONST TCHAR *, CONST TCHAR *, CONST TCHAR *, DWORD,
 	    WCHAR *, TCHAR **)) SearchPathW,
     (BOOL (WINAPI *)(CONST TCHAR *)) SetCurrentDirectoryW,
     (BOOL (WINAPI *)(CONST TCHAR *, DWORD)) SetFileAttributesW,
@@ -133,7 +133,7 @@ static Tcl_Encoding tclWinTCharEncoding;
  * The following declaration is for the VC++ DLL entry point.
  */
 
-BOOL APIENTRY		DllMain(HINSTANCE hInst, DWORD reason, 
+BOOL APIENTRY		DllMain(HINSTANCE hInst, DWORD reason,
 				LPVOID reserved);
 
 
@@ -203,7 +203,7 @@ DllMain(hInst, reason, reserved)
 	break;
     }
 
-    return TRUE; 
+    return TRUE;
 }
 
 #endif /* !STATIC_BUILD */
@@ -264,7 +264,7 @@ TclWinInit(hInst)
      */
 
     if (platformId == VER_PLATFORM_WIN32s) {
-	panic("Win32s is not a supported platform");	
+	panic("Win32s is not a supported platform");
     }
 
     tclWinProcs = &asciiProcs;
@@ -275,7 +275,7 @@ TclWinInit(hInst)
  *
  * TclWinGetPlatformId --
  *
- *	Determines whether running under NT, 95, or Win32s, to allow 
+ *	Determines whether running under NT, 95, or Win32s, to allow
  *	runtime conditional code.
  *
  * Results:
@@ -290,8 +290,8 @@ TclWinInit(hInst)
  *----------------------------------------------------------------------
  */
 
-int		
-TclWinGetPlatformId()
+int
+TclWinGetPlatformId (void)
 {
     return platformId;
 }
@@ -332,7 +332,7 @@ TclWinNoBackslash(
  *
  * TclpCheckStackSpace --
  *
- *	Detect if we are about to blow the stack.  Called before an 
+ *	Detect if we are about to blow the stack.  Called before an
  *	evaluation can happen when nesting depth is checked.
  *
  * Results:
@@ -345,7 +345,7 @@ TclWinNoBackslash(
  */
 
 int
-TclpCheckStackSpace()
+TclpCheckStackSpace (void)
 {
     int retval = 0;
 
@@ -393,7 +393,7 @@ TclpCheckStackSpace()
 }
 #ifdef HAVE_NO_SEH
 static
-__attribute__ ((cdecl))
+__attribute__((cdecl))
 EXCEPTION_DISPOSITION
 _except_checkstackspace_handler(
     struct _EXCEPTION_RECORD *ExceptionRecord,
@@ -439,7 +439,7 @@ TclWinGetPlatform()
  *	tclWinProcs structure to dispatch to either the wide-character
  *	or multi-byte versions of the operating system calls, depending
  *	on whether Unicode is the system encoding.
- *	
+ *
  *	As well as this, we can also try to load in some additional
  *	procs which may/may not be present depending on the current
  *	Windows version (e.g. Win95 will not have the procs below).
@@ -466,12 +466,12 @@ TclWinSetInterfaces(
 	if (tclWinProcs->getFileAttributesExProc == NULL) {
 	    HINSTANCE hInstance = LoadLibraryA("kernel32");
 	    if (hInstance != NULL) {
-	        tclWinProcs->getFileAttributesExProc = 
-		  (BOOL (WINAPI *)(CONST TCHAR *, GET_FILEEX_INFO_LEVELS, 
+	        tclWinProcs->getFileAttributesExProc =
+		  (BOOL (WINAPI *)(CONST TCHAR *, GET_FILEEX_INFO_LEVELS,
 		  LPVOID)) GetProcAddress(hInstance, "GetFileAttributesExW");
-		tclWinProcs->createHardLinkProc = 
-		  (BOOL (WINAPI *)(CONST TCHAR *, CONST TCHAR*, 
-		  LPSECURITY_ATTRIBUTES)) GetProcAddress(hInstance, 
+		tclWinProcs->createHardLinkProc =
+		  (BOOL (WINAPI *)(CONST TCHAR *, CONST TCHAR*,
+		  LPSECURITY_ATTRIBUTES)) GetProcAddress(hInstance,
 		  "CreateHardLinkW");
 		FreeLibrary(hInstance);
 	    }
@@ -482,12 +482,12 @@ TclWinSetInterfaces(
 	if (tclWinProcs->getFileAttributesExProc == NULL) {
 	    HINSTANCE hInstance = LoadLibraryA("kernel32");
 	    if (hInstance != NULL) {
-		tclWinProcs->getFileAttributesExProc = 
-		  (BOOL (WINAPI *)(CONST TCHAR *, GET_FILEEX_INFO_LEVELS, 
+		tclWinProcs->getFileAttributesExProc =
+		  (BOOL (WINAPI *)(CONST TCHAR *, GET_FILEEX_INFO_LEVELS,
 		  LPVOID)) GetProcAddress(hInstance, "GetFileAttributesExA");
-		tclWinProcs->createHardLinkProc = 
-		  (BOOL (WINAPI *)(CONST TCHAR *, CONST TCHAR*, 
-		  LPSECURITY_ATTRIBUTES)) GetProcAddress(hInstance, 
+		tclWinProcs->createHardLinkProc =
+		  (BOOL (WINAPI *)(CONST TCHAR *, CONST TCHAR*,
+		  LPSECURITY_ATTRIBUTES)) GetProcAddress(hInstance,
 		  "CreateHardLinkA");
 		FreeLibrary(hInstance);
 	    }
@@ -500,7 +500,7 @@ TclWinSetInterfaces(
  *
  * Tcl_WinUtfToTChar, Tcl_WinTCharToUtf --
  *
- *	Convert between UTF-8 and Unicode when running Windows NT or 
+ *	Convert between UTF-8 and Unicode when running Windows NT or
  *	the current ANSI code page when running Windows 95.
  *
  *	On Mac, Unix, and Windows 95, all strings exchanged between Tcl
@@ -511,7 +511,7 @@ TclWinSetInterfaces(
  *	On NT, some strings exchanged between Tcl and the OS are "char"
  *	oriented, while others are in Unicode.  We need two Tcl_Encoding
  *	APIs depending on whether we are targeting a "char" or Unicode
- *	interface.  
+ *	interface.
  *
  *	Calling Tcl_UtfToExternal() or Tcl_ExternalToUtf() with an
  *	encoding of NULL should always used to convert between UTF-8
@@ -554,10 +554,10 @@ Tcl_WinUtfToTChar(string, len, dsPtr)
     CONST char *string;		/* Source string in UTF-8. */
     int len;			/* Source string length in bytes, or < 0 for
 				 * strlen(). */
-    Tcl_DString *dsPtr;		/* Uninitialized or free DString in which 
+    Tcl_DString *dsPtr;		/* Uninitialized or free DString in which
 				 * the converted string is stored. */
 {
-    return (TCHAR *) Tcl_UtfToExternalDString(tclWinTCharEncoding, 
+    return (TCHAR *) Tcl_UtfToExternalDString(tclWinTCharEncoding,
 	    string, len, dsPtr);
 }
 
@@ -567,9 +567,9 @@ Tcl_WinTCharToUtf(string, len, dsPtr)
 				 * NT, ANSI when running 95. */
     int len;			/* Source string length in bytes, or < 0 for
 				 * platform-specific string length. */
-    Tcl_DString *dsPtr;		/* Uninitialized or free DString in which 
+    Tcl_DString *dsPtr;		/* Uninitialized or free DString in which
 				 * the converted string is stored. */
 {
-    return Tcl_ExternalToUtfDString(tclWinTCharEncoding, 
+    return Tcl_ExternalToUtfDString(tclWinTCharEncoding,
 	    (CONST char *) string, len, dsPtr);
 }

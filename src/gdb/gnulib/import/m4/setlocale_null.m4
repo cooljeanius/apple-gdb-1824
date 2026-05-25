@@ -1,10 +1,12 @@
-# setlocale_null.m4 serial 8
-dnl Copyright (C) 2019-2023 Free Software Foundation, Inc.
+# setlocale_null.m4
+# serial 11
+dnl Copyright (C) 2019-2026 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
+dnl This file is offered as-is, without any warranty.
 
-AC_DEFUN([gl_FUNC_SETLOCALE_NULL],
+AC_DEFUN_ONCE([gl_FUNC_SETLOCALE_NULL],
 [
   AC_REQUIRE([AC_CANONICAL_HOST])
   AC_REQUIRE([gl_PTHREADLIB])
@@ -30,8 +32,8 @@ AC_DEFUN([gl_FUNC_SETLOCALE_NULL],
           [gl_cv_func_setlocale_null_all_mtsafe=yes],
           [gl_cv_func_setlocale_null_all_mtsafe=no])
         ;;
-       # Guess yes on glibc, HP-UX, IRIX, Solaris, native Windows.
-       *-gnu* | gnu* | hpux* | irix* | solaris* | mingw*)
+       # Guess yes on glibc, HP-UX, Solaris, native Windows.
+       *-gnu* | gnu* | hpux* | solaris* | mingw* | windows*)
          gl_cv_func_setlocale_null_all_mtsafe=yes ;;
        # If we don't know, obey --enable-cross-guesses.
        *)
@@ -40,7 +42,7 @@ AC_DEFUN([gl_FUNC_SETLOCALE_NULL],
     ])
   dnl On platforms without multithreading, there is no issue.
   case "$host_os" in
-    mingw*) ;;
+    mingw* | windows*) ;;
     *)
       if test $gl_pthread_api = no && test $ac_cv_header_threads_h = no; then
         gl_cv_func_setlocale_null_all_mtsafe="trivially yes"
@@ -61,8 +63,8 @@ AC_DEFUN([gl_FUNC_SETLOCALE_NULL],
        # Guess no on OpenBSD, AIX.
        openbsd* | aix*)
          gl_cv_func_setlocale_null_one_mtsafe=no ;;
-       # Guess yes on glibc, musl libc, macOS, FreeBSD, NetBSD, HP-UX, IRIX, Solaris, Haiku, Cygwin, native Windows.
-       *-gnu* | gnu* | *-musl* | midipix* | darwin* | freebsd* | midnightbsd* | netbsd* | hpux* | irix* | solaris* | haiku* | cygwin* | mingw*)
+       # Guess yes on glibc, musl libc, macOS, FreeBSD, NetBSD, HP-UX, Solaris, Haiku, Cygwin, native Windows.
+       *-gnu* | gnu* | *-musl* | midipix* | darwin* | freebsd* | midnightbsd* | netbsd* | hpux* | solaris* | haiku* | cygwin* | mingw* | windows*)
          gl_cv_func_setlocale_null_one_mtsafe=yes ;;
        # If we don't know, obey --enable-cross-guesses.
        *)
@@ -71,7 +73,7 @@ AC_DEFUN([gl_FUNC_SETLOCALE_NULL],
     ])
   dnl On platforms without multithreading, there is no issue.
   case "$host_os" in
-    mingw*) ;;
+    mingw* | windows*) ;;
     *)
       if test $gl_pthread_api = no && test $ac_cv_header_threads_h = no; then
         gl_cv_func_setlocale_null_one_mtsafe="trivially yes"
@@ -88,7 +90,9 @@ AC_DEFUN([gl_FUNC_SETLOCALE_NULL],
   dnl Determine link dependencies of lib/setlocale_null.c and lib/setlocale-lock.c.
   if test $SETLOCALE_NULL_ALL_MTSAFE = 0 || test $SETLOCALE_NULL_ONE_MTSAFE = 0; then
     case "$host_os" in
-      mingw*) SETLOCALE_NULL_LIB= ;;
+      mingw* | windows*)
+        SETLOCALE_NULL_LIB=
+        ;;
       *)
         gl_WEAK_SYMBOLS
         case "$gl_cv_have_weak" in

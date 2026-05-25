@@ -52,7 +52,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.6 gnits no-dist dejagnu info-in-builddir])dnl
+AM_INIT_AUTOMAKE([1.18.1 gnits no-dist dejagnu info-in-builddir])dnl
 dnl# (maintainer mode macro is called farther below)
 AC_SUBST([am_aux_dir])dnl
 
@@ -70,7 +70,7 @@ if test "x${AR}" = "x"; then
     AC_PROG_AR
   fi
 else
-  test ! -z "${AR}" && export AR
+  test -n "${AR}" && export AR
   AC_SUBST([AR])dnl
   ## dummy
 fi
@@ -80,9 +80,9 @@ if test "x${RANLIB}" = "x"; then
   test -z "${RANLIB}"
   AC_PROG_RANLIB
 else
-  test ! -z "${RANLIB}" && export RANLIB
+  test -n "${RANLIB}" && export RANLIB
   AC_SUBST([RANLIB])dnl
-  ## dummy
+  ## dummy comment
 fi
 AM_PROG_AS
 
@@ -120,8 +120,8 @@ AC_MSG_CHECKING([libtool things])
 AC_MSG_RESULT([ ])
 LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])dnl
 LT_LANG([C])dnl
-dnl# (temporarily) set this while I update everything libtool-related:
-LT_PREREQ([2.4.6])dnl
+dnl# https://lists.gnu.org/archive/html/libtool/2026-01/msg00001.html
+LT_PREREQ([2.5.4])dnl
 
 if test -z "${lt_cv_objdir}"; then
   AC_MSG_WARN([lt_cv_objdir somehow was left unset, setting to default])
@@ -176,9 +176,9 @@ if test "x${lt_sysroot}" = "x" -a "x${prefix}" != "x"; then
   lt_sysroot="${prefix}"
 fi
 if test -x ${srcdir}/libtool; then
-  test -r libtool
+  test -r libtool && test -s libtool && stat libtool
   if test "x${USE_MAINTAINER_MODE}" = "xyes"; then
-    test ! -z "${USE_MAINTAINER_MODE}"
+    test -n "${USE_MAINTAINER_MODE}" && echo "TODO: check up on libtool for maintainer mode"
     ## (bfd puts fixes here, but leave them out in this version for now)
   fi
 fi
@@ -231,7 +231,7 @@ AC_EXEEXT
 
 # host-specific stuff:
 if test "x${CC}" = "x"; then
-  test -z "${CC}"
+  test -z "${CC}" || unset CC
   AC_PROG_CC
 else
   test -n "${CC}" && export CC
@@ -321,15 +321,25 @@ fi
 # check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-# FIXME: Replace `main' with a function in `-lcc_dynamic':
+# OK to use 'main' here:
 AC_CHECK_LIB([cc_dynamic],[main],
            [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lcc_dynamic"])
-# FIXME: Replace `main' with a function in `-lgcc':
+# OK to use 'main' here:
 AC_CHECK_LIB([gcc],[main],
              [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lgcc"])dnl
-# FIXME: Replace `main' with a function in `-lSystem':
+# OK to use 'main' here:
 AC_CHECK_LIB([System],[main],
             [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lSystem"])dnl
+  ## In case those all failed:
+if test "x${SYSTEM_FRAMEWORK_LIBS}" = "x"; then
+  AC_CHECK_LIB([compiler_rt],[main],
+               [test -z "${SYSTEM_FRAMEWORK_LIBS}" && SYSTEM_FRAMEWORK_LIBS="-lcompiler_rt"])
+fi
+  ## 1 more:
+if test "x${SYSTEM_FRAMEWORK_LIBS}" = "x"; then
+  AC_CHECK_LIB([clang_rt],[main],
+               [test -z "${SYSTEM_FRAMEWORK_LIBS}" && SYSTEM_FRAMEWORK_LIBS="-lclang_rt"])
+fi
   ## reset these:
 LDFLAGS="${ARCHLESS_LDFLAGS}"
   ## TODO: might only want to make this an error depending on platform:

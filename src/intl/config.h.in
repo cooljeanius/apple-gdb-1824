@@ -131,6 +131,9 @@
 /* Define to 1 if you have the 'free' function. */
 #undef HAVE_FREE
 
+/* Define to 1 if you have the <gcc/sys-types.h> header file. */
+#undef HAVE_GCC_SYS_TYPES_H
+
 /* Define to 1 if you have the 'getcwd' function. */
 #undef HAVE_GETCWD
 
@@ -192,6 +195,9 @@
 /* Define to 1 if you have the 'iconv' library (-liconv). */
 #undef HAVE_LIBICONV
 
+/* Define to 1 if you have the <libiconv.h> header file. */
+#undef HAVE_LIBICONV_H
+
 /* Define to 1 if you have the 'libintl_dcgettext' function. */
 #undef HAVE_LIBINTL_DCGETTEXT
 
@@ -243,6 +249,9 @@
 
 /* Define to 1 if you have the <nl_types.h> header file. */
 #undef HAVE_NL_TYPES_H
+
+/* Define to 1 if you have the <php_iconv.h> header file. */
+#undef HAVE_PHP_ICONV_H
 
 /* Define if your printf() function supports format strings with positions. */
 #undef HAVE_POSIX_PRINTF
@@ -315,6 +324,9 @@
 /* Define to 1 if you have the 'system' function. */
 #undef HAVE_SYSTEM
 
+/* Define to 1 if you have the <sys/malloc.h> header file. */
+#undef HAVE_SYS_MALLOC_H
+
 /* Define to 1 if you have the <sys/mman.h> header file. */
 #undef HAVE_SYS_MMAN_H
 
@@ -333,11 +345,20 @@
 /* Define if you have the 'uintmax_t' type in <stdint.h> or <inttypes.h>. */
 #undef HAVE_UINTMAX_T
 
+/* Define to 1 if you have the <uniconv.h> header file. */
+#undef HAVE_UNICONV_H
+
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
 /* Define to 1 if the system has the type `unsigned long long int'. */
 #undef HAVE_UNSIGNED_LONG_LONG_INT
+
+/* Define to 1 if the system has the type 'u_int64_t'. */
+#undef HAVE_U_INT64_T
+
+/* Define to 1 if the system has the type 'u_short'. */
+#undef HAVE_U_SHORT
 
 /* Define to 1 or 0, depending whether the compiler supports simple visibility
    declarations. */

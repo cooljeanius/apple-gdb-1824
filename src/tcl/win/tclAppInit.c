@@ -1,4 +1,4 @@
-/* 
+/*
  * tclAppInit.c --
  *
  *	Provides a default version of the main program and Tcl_AppInit
@@ -54,9 +54,10 @@ DWORD			exitErrorCode;
  */
 
 int
-main(argc, argv)
-    int argc;			/* Number of command-line arguments. */
-    char **argv;		/* Values of command-line arguments. */
+main (
+    int argc,			/* Number of command-line arguments. */
+    char **argv 		/* Values of command-line arguments. */
+)
 {
     /*
      * The following #if block allows you to change the AppInit
@@ -64,18 +65,18 @@ main(argc, argv)
      * of rewriting this entire file.  The #if checks for that
      * #define and uses Tcl_AppInit if it doesn't exist.
      */
-    
+
 #ifndef TCL_LOCAL_APPINIT
-#define TCL_LOCAL_APPINIT Tcl_AppInit    
+#define TCL_LOCAL_APPINIT Tcl_AppInit
 #endif
     extern int TCL_LOCAL_APPINIT _ANSI_ARGS_((Tcl_Interp *interp));
-    
+
     /*
      * The following #if block allows you to change how Tcl finds the startup
      * script, prime the library or encoding paths, fiddle with the argv,
      * etc., without needing to rewrite Tcl_Main()
      */
-    
+
 #ifdef TCL_LOCAL_MAIN_HOOK
     extern int TCL_LOCAL_MAIN_HOOK _ANSI_ARGS_((int *argc, char ***argv));
 #endif
@@ -143,8 +144,8 @@ Tcl_AppInit(interp)
     /*
      * Install a signal handler to the win32 console tclsh is running in.
      */
-    SetConsoleCtrlHandler(sigHandler, TRUE); 
-    exitToken = Tcl_AsyncCreate(asyncExit, NULL); 
+    SetConsoleCtrlHandler(sigHandler, TRUE);
+    exitToken = Tcl_AsyncCreate(asyncExit, NULL);
 
 #ifdef TCL_TEST
     if (Tcltest_Init(interp) == TCL_ERROR) {
@@ -200,7 +201,7 @@ Tcl_AppInit(interp)
  * setargv --
  *
  *	Parse the Windows command line string into argc/argv.  Done here
- *	because we don't trust the builtin argument parser in crt0.  
+ *	because we don't trust the builtin argument parser in crt0.
  *	Windows applications are responsible for breaking their command
  *	line into arguments.
  *
@@ -222,14 +223,15 @@ Tcl_AppInit(interp)
  */
 
 static void
-setargv(argcPtr, argvPtr)
-    int *argcPtr;		/* Filled with number of argument strings. */
-    char ***argvPtr;		/* Filled with argument strings (malloc'd). */
+setargv (
+    int *argcPtr,		/* Filled with number of argument strings. */
+    char ***argvPtr		/* Filled with argument strings (malloc'd). */
+)
 {
     char *cmdLine, *p, *arg, *argSpace;
     char **argv;
     int argc, size, inquote, copy, slashes;
-    
+
     cmdLine = GetCommandLine();	/* INTL: BUG */
 
     /*
@@ -367,13 +369,15 @@ sigHandler(DWORD fdwCtrlType)
     exitErrorCode = fdwCtrlType;
     Tcl_AsyncMark(exitToken);
 
-    /* 
-     * This will cause Tcl_Gets in Tcl_Main() to drop-out with an <EOF> 
-     * should it be blocked on input and our Tcl_AsyncMark didn't grab 
-     * the attention of the interpreter. 
-     */ 
+    /*
+     * This will cause Tcl_Gets in Tcl_Main() to drop-out with an <EOF>
+     * should it be blocked on input and our Tcl_AsyncMark didn't grab
+     * the attention of the interpreter.
+     */
     CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
 
-    /* indicate to the OS not to call the default terminator */ 
-    return TRUE; 
-} 
+    /* indicate to the OS not to call the default terminator */
+    return TRUE;
+}
+
+/* EOF */

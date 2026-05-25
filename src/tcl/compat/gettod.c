@@ -1,4 +1,4 @@
-/* 
+/*
  * gettod.c --
  *
  *	This file provides the gettimeofday function on systems
@@ -19,14 +19,12 @@
 #undef timezone
 
 int
-gettimeofday(tp, tz)
-struct timeval *tp;
-struct timezone *tz;
+gettimeofday (struct timeval *tp, struct timezone *tz)
 {
     struct timeb t;
     ftime(&t);
     tp->tv_sec = t.time;
-    tp->tv_usec = t. millitm * 1000;
+    tp->tv_usec = t.millitm * 1000;
     return 0;
 }
 

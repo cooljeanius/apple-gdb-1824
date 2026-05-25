@@ -4,20 +4,23 @@ Please do not make ChangeLog entries.
 COPYING, COPYING.LIB, README
 	http://gnu.org.
 
-Makefile.*; configure; configure.in; src-release
-	Please notify the following of any committed patches.
-		binutils@sources.redhat.com
-		gdb-patches@sources.redhat.com
+Makefile.*; configure; configure.ac; src-release
+	Any global maintainer can approve changes to these files.
+	Also please notify the following of any committed patches:
+		binutils@sourceware.org
+		gdb-patches@sourceware.org
 
-bfd/; binutils/; gas/; gprof/; ld/; opcodes/; cpu/; BFD's part of include/
-	binutils: http://sources.redhat.com/binutils/
-	Patches to binutils@sources.redhat.com.
+bfd/; binutils/; elfcpp/; gas/; gprof/; ld/; opcodes/; cpu/;
+BFD's part of include/
+
+	binutils: http://sourceware.org/binutils/
+	Patches to binutils@sourceware.org.
 	Please notify the following of any interface changes:
-		gdb-patches@sources.redhat.com
+		gdb-patches@sourceware.org
 
 cgen/; cgen parts of opcodes/, sim/ & include/
-	cgen: http://sources.redhat.com/cgen/
-	Patches to cgen@sources.redhat.com
+	cgen: http://sourceware.org/cgen/
+	Patches to cgen@sourceware.org
 	May need separate opcodes/ or sim/ approval for
 		commits of regenerated files there.
 
@@ -29,29 +32,34 @@ config.guess; config.sub; readline/support/config.{sub,guess}
 	in via a merge.  When updating any of these files, please be
 	sure to update all of them.
 	Please notify the following of any committed patches:
-		binutils@sources.redhat.com
-		gdb-patches@sources.redhat.com
+		binutils@sourceware.org
+		gdb-patches@sourceware.org
 
-depcomp
+depcomp; mkinstalldirs
         Send bug reports and patches to bug-automake@gnu.org.
 
 gdb/; readline/; sim/; GDB's part of include/
 	GDB: http://www.gnu.org/software/gdb/
-	Patches to gdb-patches@sources.redhat.com.
+	Patches to gdb-patches@sourceware.org.
 	See also gdb/MAINTAINERS and sim/MAINTAINERS.
 
 include/
-	See binutils/, gdb/, sid/, gcc/, libiberty/ etc.
+	See binutils/, gdb/, sid/, gcc/, libiberty/, etc.
 
-libiberty/; libiberty's part of include/ 
+intl/; config.rhost; libiberty/; libiberty's part of include/;
+compile; depcomp; install-sh; missing; ylwrap; config/; libbacktrace
 	gcc: http://gcc.gnu.org
 	Changes need to be done in tandem with the official GCC
 	sources or submitted to the master file maintainer and brought
-	in via a merge.  Note: approved patches in gcc's libiberty
-	are automatically approved in this libiberty also; feel free
-	to merge them yourself if needed sooner than the next merge.
-	Otherwise, changes are automatically merged, usually within
-	a day.
+	in via a merge.  Note: approved patches in gcc's libiberty or
+	intl are automatically approved in this libiberty and intl also;
+	feel free to merge them yourself if needed sooner than the next
+	merge.  Otherwise, changes are automatically merged, usually
+	within a day.
+
+libdecnumber/
+	See libiberty.  The master copy of this directory is in the GCC
+	repository.
 
 ltconfig; ltmain.sh; ltcf-*.sh
 	libtool: http://www.gnu.org/software/libtool/
@@ -71,39 +79,39 @@ symlink-tree
 	See libiberty.
 
 newlib/; libgloss/
-	http://sources.redhat.com/newlib/
-	Patches to newlib@sources.redhat.com.
+	http://sourceware.org/newlib/
+	Patches to newlib@sourceware.org.
 
 sid/; SID's part of cgen/
-	sid: http://sources.redhat.com/sid/
-	Patches to sid@sources.redhat.com
+	sid: http://sourceware.org/sid/
+	Patches to sid@sourceware.org
 
 texinfo/texinfo.tex
 	texinfo: http://ftp.gnu.org.
 	Latest version can be found on ftp://ftp.gnu.org and can be
 	imported at any (reasonable) time.
-	Please not use GCC's texinfo.  Please do not import texinfo.
+	Please do not use GCC's texinfo.  Please do not import the
+	full texinfo project.
 
 tcl/; tix/; itcl/; tk/; libgui/
-	insight: http://sources.redhat.com/insight/
-	Contact insight@sources.redhat.com.
+	insight: http://sourceware.org/insight/
+	Contact insight@sourceware.org.
 
 winsup/
-	cygwin: http://sources.redhat.com/cygwin
-	Patches to cygwin-patches@sources.redhat.com.
-	General discussion cygwin@sources.redhat.com.
+	cygwin: http://sourceware.org/cygwin
+	Patches to cygwin-patches@cygwin.com.
+	General discussion cygwin@cygwin.com.
 	See also winsup/MAINTAINERS.
 
 config-ml.in; setup.com; missing; makefile.vms; utils/; config/;
 makefile.vms; missing; ylwrap; mkdep; etc/; install-sh; intl/
-	Ask DJ Delorie <dj@redhat.com> after reading the libiberty entry.
+	Any global maintainer can approve changes to these
+	files and directories.
 
 modules file
-	Obviously changes to this file should not go through
-	overseers@sources.redhat.com.  If you understand the file
-	format (or can cut-and-paste existing entries), modify it. If
-	it scares you, get someone who does understand it to help you.
-	Be prepared to fix it if you do break it.
+	If you understand the file format (or can cut-and-paste existing
+	entries), modify it. If it scares you, get someone who does
+	understand it to help you.  Be prepared to fix it if you do break it.
 
 /* Local variables: */
 /* change-log-default-name: "/dev/null" */

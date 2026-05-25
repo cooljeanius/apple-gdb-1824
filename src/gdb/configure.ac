@@ -96,41 +96,44 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   ## 2...
 fi
 
-m4_ifdef([ACX_NONCANONICAL_BUILD],[
+m4_ifdef([ACX_NONCANONICAL_BUILD],[dnl
   ACX_NONCANONICAL_BUILD
 ])dnl
-m4_ifdef([ACX_NONCANONICAL_HOST],[
+m4_ifdef([ACX_NONCANONICAL_HOST],[dnl
   ACX_NONCANONICAL_HOST
 ])dnl
-m4_ifdef([ACX_NONCANONICAL_TARGET],[
+m4_ifdef([ACX_NONCANONICAL_TARGET],[dnl
   ACX_NONCANONICAL_TARGET
 ])dnl
 
-m4_ifdef([gl_HOST_OS],[
+m4_ifdef([gl_HOST_OS],[dnl
   gl_HOST_OS
 ])dnl
-m4_ifdef([gl_HOST_CPU_C_ABI],[
+m4_ifdef([gl_HOST_CPU_C_ABI],[dnl
   gl_HOST_CPU_C_ABI
 ])dnl
 
-if test -n "${BUILD_ARCHITECTURE}"; then
+  ## build:
+AS_IF([test -n "${BUILD_ARCHITECTURE}"],[dnl
   ACX_PROG_CC_WARNING_OPTS(["-arch ${BUILD_ARCHITECTURE}"],
                            [C_BUILDARCHFLAGS])dnl
   AC_SUBST([C_BUILDARCHFLAGS])dnl
   ## 2...
-fi
-if test -n "${HOST_ARCHITECTURE}"; then
+])dnl
+  ## host:
+AS_IF([test -n "${HOST_ARCHITECTURE}"],[dnl
   ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],
                            [C_ARCHFLAGS])dnl
   AC_SUBST([C_ARCHFLAGS])dnl
   ## 2...
-fi
-if test -n "${TARGET_ARCHITECTURE}"; then
+])dnl
+  ## target:
+AS_IF([test -n "${TARGET_ARCHITECTURE}"],[dnl
   ACX_PROG_CC_WARNING_OPTS(["-arch ${TARGET_ARCHITECTURE}"],
                            [C_TARGARCHFLAGS])dnl
   AC_SUBST([C_TARGARCHFLAGS])dnl
   ## 2...
-fi
+])dnl
 
 # Check for the 'make' the user wants to use:
 AC_CHECK_PROGS([MAKE],[make gmake gnumake remake])dnl
@@ -154,7 +157,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.6 gnits dejagnu \
+AM_INIT_AUTOMAKE([1.18.1 gnits dejagnu \
                   dist-bzip2 dist-xz dist-zip dist-tarZ])dnl
   ## make sure this is in the right place:
 if test -x ${srcdir}/missing; then
@@ -164,6 +167,7 @@ if test -x ${srcdir}/missing; then
     AC_REQUIRE_AUX_FILE([compile])dnl
     AC_REQUIRE_AUX_FILE([depcomp])dnl
     AC_REQUIRE_AUX_FILE([missing])dnl
+    AC_REQUIRE_AUX_FILE([config.rpath])dnl
   ])dnl
   ## should now have it...
 fi
@@ -234,15 +238,21 @@ dnl# for it.
 
 dnl# APPLE LOCAL if we have mach_exc.def, use the 64 bit exceptions.
 case "${host}" in
-  arm-apple-*)
-    # No 64 bit exceptions for Apple ARM (yet?)
-    AC_MSG_CHECKING([whether we can use 64 bit mach exceptions])
-    MACH_EXC_SERVER_PREFACE=""
-    AC_MSG_RESULT([(disabled!) no])
-    AC_SUBST([MACH_EXC_SERVER_PREFACE])dnl
-    ## TODO: come back to this after working on aarch64 support
-    ;;
   *-apple-darwin* | *-apple-macosx*)
+    AC_ARG_VAR([SDKROOT],[Where the SDK is.])
+    AC_MSG_CHECKING([for SDKROOT])
+    if test -n "${SDKROOT}"; then
+      if test -d "${SDKROOT}" && test -r "${SDKROOT}"; then
+        AC_MSG_RESULT([set and usable: '${SDKROOT}'])
+      else
+        AC_MSG_RESULT([set to '${SDKROOT}', but not usable])
+        AC_MSG_WARN([issues may arise with current SDKROOT setting])
+      fi
+    else
+      AC_MSG_RESULT([unset])
+      AC_MSG_WARN([generally you should set SDKROOT on '${host}'])
+    fi
+    AC_SUBST([SDKROOT])dnl
     AC_MSG_CHECKING([whether we can use 64 bit mach exceptions])
     if test -r "${SDKROOT}/usr/include/mach/mach_exc.defs"; then
       AC_DEFINE([HAVE_64_BIT_MACH_EXCEPTIONS],[1],
@@ -928,10 +938,17 @@ if test "x${AR}" = "x"; then
   if test "x${ac_cv_prog_AR}" = "x"; then
     test -z "${ac_cv_prog_AR}" || unset ac_cv_prog_AR
     AC_PROG_AR
+  else
+    test -n "${ac_cv_prog_AR}" && echo "ac_cv_prog_AR already cached to '${ac_cv_prog_AR}'"
   fi
 else
-  test -n "${AR}" && export AR
+  test -n "${AR}" && export AR && echo "AR set to '${AR}'"
 fi
+if test "x${ARFLAGS}" = "x"; then
+  test -z "${ARFLAGS}" && export ARFLAGS="cru"
+else
+  test -n "${ARFLAGS}" && echo "ARFLAGS are '${ARFLAGS}'"
+fi  ## just in case
 ])dnl
   ## WIP: replacing "." with "`pwd`" in an attempt to ensure portability of sed
   ## commands:
@@ -970,8 +987,8 @@ AC_MSG_CHECKING([libtool things])
 AC_MSG_RESULT([ ])
 LT_INIT([disable-fast-install dlopen])dnl
 LT_LANG([C])dnl
-dnl# temporarily set this while I update everything libtool-related:
-LT_PREREQ([2.4.7])dnl
+dnl# https://lists.gnu.org/archive/html/libtool/2026-01/msg00001.html
+LT_PREREQ([2.5.4])dnl
 dnl# even though gdb is written only in C, it has tests written
 dnl# for debugging the following languages, so check them, too:
 LT_LANG([C++])dnl
@@ -1099,7 +1116,9 @@ AX_PROG_BISON([
 AC_SUBST([EXTRA_YFLAGS_SEP])dnl
 
 m4_ifdef([BISON_I18N],[
-  m4_ifdef([AM_GNU_GETTEXT],[
+  dnl# extra brackets here due to:
+  dnl# https://lists.gnu.org/archive/html/bug-wget/2025-09/msg00000.html
+  m4_ifdef([AM_GNU_][GETTEXT],[
     if test "x${USE_NLS}" = "x"; then
       test -z "${USE_NLS}" && export USE_NLS="no"
     fi
@@ -1179,9 +1198,6 @@ AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
   AM_MISSING_PROG([AUTOHEADER],[autoheader])dnl
   AM_MISSING_PROG([MAKEINFO],[makeinfo])dnl
   AC_REQUIRE([AM_PROG_INSTALL_SH])dnl
-  dnl# For better backward compatibility. To be removed once Automake 1.9.x
-  dnl# dies out for good.
-  AC_SUBST([mkdir_p],['$(MKDIR_P)'])dnl
   dnl# We need awk for the "check" target. The system "awk" is bad on
   dnl# some platforms.
   AC_REQUIRE([AC_PROG_AWK])dnl
@@ -1195,39 +1211,23 @@ AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
   AC_REQUIRE([AM_DEP_TRACK])dnl
 
   dnl######################################################################
-  dnl# Port to Automake 1.11.
-  dnl# This section can be removed once we assume Automake 1.14 or later.
+  dnl# Better control over Makefile verbosity
+  dnl# Started as compatibility code for Automake 1.11, but changed a bit
   #### check arg val for silent rules:
   if test "x${enable_silent_rules}" = "xno"; then
     : ${V=1}
-    : ${AM_DEFAULT_VERBOSITY=1}
-  elif test "x${enable_silent_rules}" = "xyes"; then
-    : ${V=0}
-    : ${AM_DEFAULT_VERBOSITY=0}
   else
     : ${V=0}
-    : ${AM_DEFAULT_VERBOSITY=1}
   fi
-  : ${AM_DEFAULT_VERBOSITY=1}
-  : ${AM_V=${AM_DEFAULT_VERBOSITY}}
-  : ${AM_DEFAULT_V=${AM_DEFAULT_VERBOSITY}}
   dnl# now subst:
   AC_SUBST([V])dnl
   AM_SUBST_NOTMAKE([V])dnl
-  AC_SUBST([AM_V])dnl
-  AM_SUBST_NOTMAKE([AM_V])dnl
-  AC_SUBST([AM_DEFAULT_V])dnl
-  AM_SUBST_NOTMAKE([AM_DEFAULT_V])dnl
-  AC_SUBST([AM_DEFAULT_VERBOSITY])dnl
 
   dnl## from configmake prep:
   dnl# Added in autoconf 2.70:
   if test "x${runstatedir}" = "x"; then
     AC_SUBST([runstatedir],['${localstatedir}/run'])
   fi
-  dnl# Automake 1.9.6 only lacks pkglibexecdir; and since 1.11 merely
-  dnl# provides it without AC_SUBST, this blind use of AC_SUBST is safe.
-  AC_SUBST([pkglibexecdir],['${libexecdir}/${PACKAGE}'])dnl
 ])dnl
 AM_INIT_MY_AUTOMAKE_LITE
 
@@ -1291,7 +1291,26 @@ if test "x${ac_cv_header_libxml_tree_h}" = "xyes" -a \
      "x${ac_cv_header_libxml_parser_h}" = "xyes" -a \
      "x${ac_cv_lib_xml2_xmlParseFile}" = "xyes"
 then
-  AC_DEFINE([LIBXML2_IS_USABLE],[1],[libxml2 on this system is usable])
+  AC_CACHE_CHECK([if libxml headers can be included along with "defs.h" and compiled into a working program],
+                 [ac_cv_run_libxml_headers],[
+  AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include "defs.h"
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+]],[[
+LIBXML_TEST_VERSION
+]])],[ac_cv_run_libxml_headers=yes],
+     [ac_cv_run_libxml_headers=no],
+     [ac_cv_run_libxml_headers=unknown])dnl
+])dnl
+  ## Only define if conftest was successful:
+  if test "x${ac_cv_run_libxml_headers}" = "xyes"; then
+    AC_DEFINE([LIBXML2_IS_USABLE],[1],[libxml2 on this system is usable])
+  else
+    AC_MSG_WARN([libxml2 support is broken; disabling])
+  fi
+else
+  AC_MSG_WARN([missing requirements for libxml2 support])
 fi
 AC_SUBST([LIBXML2_INCLUDES])dnl
 AC_SUBST([LIBXML2_LIBS])dnl
@@ -1980,6 +1999,16 @@ AC_CHECK_DECLS([timeradd, timerclear, timersub],[],[],[
 
 AC_CHECK_DECLS([coreaddr, file, origin])dnl
 
+AC_CHECK_DECLS([system],[],[],[
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest for system wants to include <stdlib.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_STDLIB_H */
+])dnl
+
 # ----------------------- #
 # Checks for structures.  #
 # ----------------------- #
@@ -2010,6 +2039,14 @@ AC_CHECK_MEMBERS([struct user.u_sa],[],[],[
 #  warning "This conftest for a member of 'struct user' wants <sys/user.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* __USLC__ || HAVE_SYS_USER_H */
+])dnl
+
+AC_CHECK_MEMBERS([struct gdbarch_info.byte_order_for_code],[],[],[
+#include "gdbarch.h"
+])dnl
+
+AC_CHECK_MEMBERS([struct gdbarch_info.target_desc],[],[],[
+#include "gdbarch.h"
 ])dnl
 
 # ------------------ #
@@ -2293,6 +2330,7 @@ AC_C_CHAR_UNSIGNED dnl# can help with conversion warnings eventually
 AC_C_FLEXIBLE_ARRAY_MEMBER dnl# struct hack in at least 1 header (symtab.h)
 AC_C_PROTOTYPES
 AC_C_STRINGIZE
+AC_C_TYPEOF
 AC_C_VARARRAYS
 AC_C_VOLATILE
 AC_DEFUN([AC_C_DUPES],[
@@ -2418,19 +2456,19 @@ unset ac_cv_func_gethostbyname
 unset ac_cv_func_strcasecmp
 unset ac_cv_func_strchr
 AC_CHECK_FUNCS([atof alarm assert atexit bcopy bsearch bzero clnt_pcreateerror \
-                dup2 exit fflush fgets fprintf fwrite gdbarch_obstack_strdup \
-                get_type_arch getcwd gethostbyaddr gethostbyname gethostname \
-                getpass gets gettimeofday gmtime inet_addr inet_ntoa isascii \
-                ishexnumber isnumber isspace ldexpl localtime localtime_r \
-                mach_error_string memchr memcmp memcpy memmove mempcpy \
-                memset mkdir netname_look_up nl_langinfo pathconf pclose \
-                popen pow powl qsort qsort_r readdir recv re_comp regcomp \
-                select send set_type_code setitimer socket strcasecmp strcat \
-                strchr strcpy strcspn strdup strerror strlcat strlcpy strlen \
-                strncasecmp strncat strncmp strncpy strndup strpbrk \
-                strrchr strspn strstr strtok strtok_r strtol strtoul \
-                timeradd timerclear timersub uname vasprintf \
-                verify_floatformat wcwidth])dnl
+                dirname dirname_r dup2 exit fflush fgets fprintf fwrite \
+                gdbarch_obstack_strdup get_type_arch getcwd gethostbyaddr \
+                gethostbyname gethostname getpass gets gettimeofday gmtime \
+                inet_addr inet_ntoa isascii ishexnumber isnumber isspace \
+                ldexpl ldirname localtime localtime_r mach_error_string \
+                memchr memcmp memcpy memmove mempcpy memset mkdir \
+                netname_look_up nl_langinfo pathconf pclose popen pow powl \
+                qsort qsort_r readdir recv re_comp regcomp select send \
+                set_type_code setitimer socket strcasecmp strcat strchr strcpy \
+                strcspn strdup strerror strlcat strlcpy strlen strncasecmp \
+                strncat strncmp strncpy strndup strpbrk strrchr strspn strstr \
+                strtok strtok_r strtol strtoul system timeradd timerclear \
+                timersub uname vasprintf verify_floatformat wcwidth])dnl
 
 dnl# Use as a replacement for just-plain sprintf:
 if test "x${ac_cv_func_snprintf}" = "x"; then
@@ -3139,6 +3177,9 @@ fi
 AC_MSG_RESULT([${found}])
 AC_SUBST([RDYNAMIC])dnl
 
+dnl# another linker flag:
+gl_IGNORE_UNUSED_LIBRARIES
+
 dnl# For certain native configurations, we need to check whether thread
 dnl# support can be built in or not.
 dnl#
@@ -3417,7 +3458,7 @@ build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wtautological-compare -Wduplicated-cond -Wwrite-strings -Wenum-compare \
 -Wnonnull-compare -Wdangling-else -Wmemset-elt-size -Wswitch-unreachable -Whsa \
 -Wscalar-storage-order -Wimplicit-fallthrough=3 \
--Wformat-overflow=2 -Wformat-truncation=2 \
+-Wformat-overflow=2 -Wformat-truncation=2 -Wheader-guard \
 -Wint-in-bool-context -Wbool-operation -Wduplicated-branches \
 -Wstringop-overflow=2 -Wstringop-truncation -Wstringop-overread \
 -Wenum-conversion -Wbuiltin-declaration-mismatch \
@@ -3499,7 +3540,7 @@ case "${host}" in
 -Wnonportable-cfstrings -Wfour-char-constants \
 -Wno-unused-const-variable ${stdflag}"
     case "${host}" in
-      *64*-apple-darwin9* | *64*-apple-darwin1[[0123456789]].*.*)
+      *64*-apple-darwin9.*.* | *64*-apple-darwin1[[0123456789]].*.*)
         build_warnings="${build_warnings} -Wshorten-64-to-32"
       ;;
     esac
@@ -3563,7 +3604,7 @@ if test "x${ax_cv_c_compiler_vendor}" = "xclang"; then
 -Wgnu-flexible-array-initializer -Wgnu-flexible-array-union-member \
 -Wgnu-imaginary-constant -Wgnu-include-next -Wgnu-label-as-value \
 -Wgnu-statement-expression -Wgnu-union-cast -Wgnu-zero-line-directive \
--Wgnu-zero-variadic-macro-arguments"
+-Wgnu-zero-variadic-macro-arguments -Wno-incompatible-sysroot"
   # Up for debate (i.e. for debating adding to existing flags here):
   # * -Wunreachable-code and its suboptions for returns and breaks
   # * -Wgnu-redeclared-enum
@@ -3691,12 +3732,12 @@ fi
 #  * -Wcast-qual (casting can silence other warnings, so this can conflict)
 #  * -Wbad-function-cast (likewise) (C-only, not C++)
 #  * -Wconversion (would require a lot of casting)
-#  * -Wsign-conversion (likewise)
+#  * -Wsign-conversion (likewise, but could help with CodeQL warnings)
 #  * -Wtraditional-conversion (likewise) (C-only, not C++)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
 #  * -Wunsafe-loop-optimizations (lex/yacc generate code that triggers it)
 #  * -Waggregate-return (too noisy and hard to avoid)
-#  * -Wformat-signedness (too noisy)
+#  * -Wformat-signedness (too noisy, but could help with CodeQL warnings)
 #  * -Wpadded (warnings in headers out of our control)
 #  * -Wsuggest-attribute=pure (less obvious than its const counterpart)
 #  * -Wstack-usage=262144 (as in bfd/binutils)
@@ -4000,7 +4041,14 @@ m4_ifdef([GDB_AC_CHECK_BFD],[
     # -ldl is provided by bfd/Makfile.am (LIBDL) <PLUGINS>.
     if test "x${plugins}" = "xyes" && test "x${ac_cv_search_dlopen}" = "x"; then
       test -z "${ac_cv_search_dlopen}" || unset ac_cv_search_dlopen
-      AC_SEARCH_LIBS([dlopen],[dl zrldsrl dlcompat ltdl])
+      AC_SEARCH_LIBS([dlopen],[dl zrldsrl dlcompat ltdl])dnl
+      ## ...and how about we try this way, too:
+      if test "x${LIBDL}" = "x"; then
+        test -z "${LIBDL}" || unset LIBDL
+        gl_LIBDL
+      else
+        test -n "${LIBDL}" && echo "LIBDL is '${LIBDL}'"
+      fi
     fi
   fi
 
@@ -4656,6 +4704,13 @@ if test "x${gl_LIBOBJS}" = "x"; then
   fi
 fi
 AC_SUBST([gl_LIBOBJS])dnl
+
+if test "x${lt_ar_flags}" = "x"; then
+  test -z "${lt_ar_flags}" && echo "lt_ar_flags are empty; setting them" && export lt_ar_flags="cru"
+else
+  test -n "${lt_ar_flags}" && echo "lt_ar_flags are '${lt_ar_flags}'"
+fi
+AC_SUBST([lt_ar_flags])dnl
 
 AC_CONFIG_FILES([Makefile \
                  data-directory/Makefile \

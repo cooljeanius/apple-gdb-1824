@@ -1,7 +1,7 @@
 /* IEEE floating point support routines, for GDB, the GNU Debugger.
-   Copyright 1991, 1994, 1999, 2000, 2003, 2005, 2006
-   Free Software Foundation, Inc.
-
+ * Copyright 1991, 1994, 1999, 2000, 2003, 2005, 2006
+ * Free Software Foundation, Inc. */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.  */
 
 #ifndef _GNU_SOURCE
 /* This is needed to pick up the NAN macro on some systems: */
@@ -78,7 +78,21 @@ floatformat_always_valid (const struct floatformat *fmt ATTRIBUTE_UNUSED,
  * defined in a system header, what we do if not, and so on:  */
 #define FLOATFORMAT_CHAR_BIT 8
 
-/* floatformats for IEEE single and double, big and little endian.  */
+/* floatformats for IEEE half, single and double, big and little endian.  */
+const struct floatformat floatformat_ieee_half_big =
+{
+  floatformat_big, 16, 0, 1, 5, 15, 31, 6, 10,
+  floatformat_intbit_no,
+  "floatformat_ieee_half_big",
+  floatformat_always_valid
+};
+const struct floatformat floatformat_ieee_half_little =
+{
+  floatformat_little, 16, 0, 1, 5, 15, 31, 6, 10,
+  floatformat_intbit_no,
+  "floatformat_ieee_half_little",
+  floatformat_always_valid
+};
 const struct floatformat floatformat_ieee_single_big =
 {
   floatformat_big, 32, 0, 1, 8, 127, 255, 9, 23,
@@ -248,7 +262,28 @@ const struct floatformat floatformat_ia64_quad_little =
   "floatformat_ia64_quad_little",
   floatformat_always_valid
 };
-
+const struct floatformat floatformat_ibm_long_double_big =
+{
+  floatformat_big, 128, 0, 1, 11, 1023, 2047, 12, 52,
+  floatformat_intbit_no,
+  "floatformat_ibm_long_double_big",
+#ifdef HAVE_FLOATFORMAT_IBM_LONG_DOUBLE_IS_VALID
+  floatformat_ibm_long_double_is_valid
+#else
+  floatformat_always_valid
+#endif /* HAVE_FLOATFORMAT_IBM_LONG_DOUBLE_IS_VALID */
+};
+const struct floatformat floatformat_ibm_long_double_little =
+{
+  floatformat_little, 128, 0, 1, 11, 1023, 2047, 12, 52,
+  floatformat_intbit_no,
+  "floatformat_ibm_long_double_little",
+#ifdef HAVE_FLOATFORMAT_IBM_LONG_DOUBLE_IS_VALID
+  floatformat_ibm_long_double_is_valid
+#else
+  floatformat_always_valid
+#endif /* HAVE_FLOATFORMAT_IBM_LONG_DOUBLE_IS_VALID */
+};
 
 #ifndef min
 # define min(a, b) ((a) < (b) ? (a) : (b))
@@ -568,7 +603,7 @@ floatformat_is_valid (const struct floatformat *fmt, const void *from)
 # include <stdio.h> /* for printf() */
 /* This is to be run on a host which uses IEEE floating point: */
 void
-ieee_test (double n)
+ieee_test(double n)
 {
   double result;
 # if IEEE_DEBUG > 1
@@ -576,15 +611,15 @@ ieee_test (double n)
 # endif /* IEEE_DEBUG > 1 */
 
   floatformat_to_double(&floatformat_ieee_double_little, &n, &result);
-  /* FIXME: '-Wfloat-equal': */
-  if (((n != result) && (! isnan((float)n) || ! isnan((float)result)))
+  /* FIXME: '-Wfloat-equal' and '-Wtraditional-conversion': */
+  if (((n != result) && (!isnan((float)n) || !isnan((float)result)))
       || ((n < 0) && (result >= 0))
       || ((n >= 0) && (result < 0)))
     printf("Differ(to): %.20g -> %.20g\n", n, result);
 
   floatformat_from_double(&floatformat_ieee_double_little, &n, &result);
-  /* FIXME: '-Wfloat-equal': */
-  if (((n != result) && (! isnan((float)n) || ! isnan((float)result)))
+  /* FIXME: '-Wfloat-equal' and '-Wtraditional-conversion': */
+  if (((n != result) && (!isnan((float)n) || !isnan((float)result)))
       || ((n < 0) && (result >= 0))
       || ((n >= 0) && (result < 0)))
     printf("Differ(from): %.20g -> %.20g\n", n, result);
@@ -596,8 +631,8 @@ ieee_test (double n)
 
     floatformat_from_double(&floatformat_m68881_ext, &n, exten);
     floatformat_to_double(&floatformat_m68881_ext, exten, &result);
-    /* FIXME: '-Wfloat-equal': */
-    if ((n != result) && (! isnan((float)n) || ! isnan((float)result))) {
+    /* FIXME: '-Wfloat-equal' and '-Wtraditional-conversion': */
+    if ((n != result) && (!isnan((float)n) || !isnan((float)result))) {
       printf("Differ(to+from): %.20g -> %.20g\n", n, result);
     }
 

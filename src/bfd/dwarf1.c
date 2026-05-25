@@ -1,8 +1,8 @@
-/* DWARF 1 find nearest line (_bfd_dwarf1_find_nearest_line).
+/* dwarf1.c: DWARF 1 find nearest line (_bfd_dwarf1_find_nearest_line).
    Copyright 1998, 1999, 2000, 2001, 2002, 2004, 2005
    Free Software Foundation, Inc.
 
-   Written by Gavin Romig-Koch of Cygnus Solutions (gavin@cygnus.com).
+   Written by Gavin Romig-Koch of Cygnus Solutions <gavin@cygnus.com>.
 
    This file is part of BFD.
 
@@ -18,10 +18,10 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "libiberty.h"
 #include "libbfd.h"
 #include "elf-bfd.h"

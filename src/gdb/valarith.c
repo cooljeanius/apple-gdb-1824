@@ -716,7 +716,7 @@ value_concat (struct value *arg1, struct value *arg2)
 	{
 	  count = longest_to_int (value_as_long (inval1));
 	  inval2len = TYPE_LENGTH (type2);
-	  ptr = (char *) alloca (count * inval2len);
+	  ptr = (char *)alloca((size_t)count * inval2len);
 	  if (TYPE_CODE (type2) == TYPE_CODE_CHAR)
 	    {
 	      inchar = (char) unpack_long (type2,

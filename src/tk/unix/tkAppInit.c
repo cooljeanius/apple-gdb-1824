@@ -1,4 +1,4 @@
-/* 
+/*
  * tkAppInit.c --
  *
  *	Provides a default version of the Tcl_AppInit procedure for
@@ -17,7 +17,7 @@
 #include "locale.h"
 
 #ifdef TK_TEST
-extern int		Tktest_Init _ANSI_ARGS_((Tcl_Interp *interp));
+extern int Tktest_Init _ANSI_ARGS_((Tcl_Interp *interp));
 #endif /* TK_TEST */
 
 /*
@@ -38,9 +38,10 @@ extern int		Tktest_Init _ANSI_ARGS_((Tcl_Interp *interp));
  */
 
 int
-main(argc, argv)
-    int argc;			/* Number of command-line arguments. */
-    char **argv;		/* Values of command-line arguments. */
+main (
+    int argc,			/* Number of command-line arguments. */
+    char **argv		/* Values of command-line arguments. */
+)
 {
     /*
      * The following #if block allows you to change the AppInit
@@ -48,18 +49,18 @@ main(argc, argv)
      * of rewriting this entire file.  The #if checks for that
      * #define and uses Tcl_AppInit if it doesn't exist.
      */
-    
+
 #ifndef TK_LOCAL_APPINIT
-#define TK_LOCAL_APPINIT Tcl_AppInit    
+#define TK_LOCAL_APPINIT Tcl_AppInit
 #endif
     extern int TK_LOCAL_APPINIT _ANSI_ARGS_((Tcl_Interp *interp));
-    
+
     /*
      * The following #if block allows you to change how Tcl finds the startup
      * script, prime the library or encoding paths, fiddle with the argv,
      * etc., without needing to rewrite Tk_Main()
      */
-    
+
 #ifdef TK_LOCAL_MAIN_HOOK
     extern int TK_LOCAL_MAIN_HOOK _ANSI_ARGS_((int *argc, char ***argv));
     TK_LOCAL_MAIN_HOOK(&argc, &argv);

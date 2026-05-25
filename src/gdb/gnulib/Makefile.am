@@ -572,6 +572,9 @@ BUILT_SOURCES += mempcpy.c memrchr.c
 obstack.c: $(srcdir)/import/obstack.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
+$(srcdir)/import/obstack.h: $(srcdir)/import/Makefile
+	$(MAKE) -C $(srcdir)/import obstack.h
+
 obstack.h: $(srcdir)/import/obstack.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
 

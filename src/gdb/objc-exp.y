@@ -1936,8 +1936,8 @@ yyerror(const char *msg)
   if (*lexptr == '\0')
     error("A %s near end of expression.", (msg ? msg : "error"));
   else
-    error("A %s in expression, near `%s'.", (msg ? msg : "error"),
-          lexptr);
+    error("A %s in expression, near '%s'.", (msg ? msg : "error"),
+          (lexptr ? lexptr : "lexptr"));
 }
 
 /* End of obj-exp.y */

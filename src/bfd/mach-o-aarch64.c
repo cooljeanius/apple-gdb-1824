@@ -1,4 +1,4 @@
-/* AArch-64 Mach-O support for BFD.
+/* mach-o-aarch64.c: AArch-64 Mach-O support for BFD.
    Copyright (C) 2015-2016 Free Software Foundation, Inc.
 
    This file is part of BFD, the Binary File Descriptor library.
@@ -18,6 +18,9 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+#ifndef __BFD_MACH_O_A_C__
+#define __BFD_MACH_O_A_C__ 1
+
 #include "sysdep.h"
 #include "mach-o.h"
 #include "bfd.h"
@@ -33,24 +36,56 @@
   bfd_mach_o_arm64_canonicalize_one_reloc
 #define bfd_mach_o_swap_reloc_out NULL
 
+static bfd_boolean
+bfd_mach_o_arm64_canonicalize_one_reloc(bfd *,
+				        struct mach_o_reloc_info_external *,
+					arelent *, asymbol **)
+  ATTRIBUTE_UNUSED;
+
 #define bfd_mach_o_bfd_reloc_type_lookup bfd_mach_o_arm64_bfd_reloc_type_lookup
 #define bfd_mach_o_bfd_reloc_name_lookup bfd_mach_o_arm64_bfd_reloc_name_lookup
+
+static reloc_howto_type *
+bfd_mach_o_arm64_bfd_reloc_name_lookup(bfd *, const char *)
+  ATTRIBUTE_USED;
 
 #define bfd_mach_o_print_thread NULL
 #define bfd_mach_o_tgt_seg_table NULL
 #define bfd_mach_o_section_type_valid_for_tgt NULL
 
+#define bfd_mach_o_close_and_cleanup _bfd_generic_close_and_cleanup
+#define bfd_mach_o_new_section_hook _bfd_generic_new_section_hook
+#define bfd_mach_o_get_section_contents_in_window_with_mode _bfd_generic_get_section_contents_in_window_with_mode
+#define bfd_mach_o_bfd_set_private_flags _bfd_generic_bfd_set_private_flags
+#define bfd_mach_o_find_nearest_line _bfd_nosymbols_find_nearest_line
+#define bfd_mach_o_get_reloc_upper_bound _bfd_norelocs_get_reloc_upper_bound
+#define bfd_mach_o_canonicalize_reloc _bfd_norelocs_canonicalize_reloc
+#define bfd_mach_o_set_arch_mach bfd_default_set_arch_mach
+#define bfd_mach_o_set_section_contents _bfd_generic_set_section_contents
+#define bfd_mach_o_bfd_link_hash_table_free _bfd_generic_link_hash_table_free
+
+#ifndef bfd_mach_o_bfd_copy_private_header_data
+# define bfd_mach_o_bfd_copy_private_header_data _bfd_generic_bfd_copy_private_header_data
+#endif /* !bfd_mach_o_bfd_copy_private_header_data */
+
+#if !defined(__STDC_VERSION__) || (__STDC_VERSION__ < 199101L)
+# ifndef ALLOW_IMPLICIT_FUNCDECLS
+#  define ALLOW_IMPLICIT_FUNCDECLS 1
+# endif /* !ALLOW_IMPLICIT_FUNCDECLS */
+#endif /* old versions of C */
+
 static const bfd_target *
-bfd_mach_o_arm64_object_p (bfd *abfd)
+bfd_mach_o_arm64_object_p(bfd *abfd)
 {
-  return bfd_mach_o_header_p (abfd, 0, 0, BFD_MACH_O_CPU_TYPE_ARM64);
+  return bfd_mach_o_header_p(abfd, 0, (bfd_mach_o_filetype)0,
+			     BFD_MACH_O_CPU_TYPE_ARM64);
 }
 
 static const bfd_target *
-bfd_mach_o_arm64_core_p (bfd *abfd)
+bfd_mach_o_arm64_core_p(bfd *abfd)
 {
-  return bfd_mach_o_header_p (abfd, 0,
-                              BFD_MACH_O_MH_CORE, BFD_MACH_O_CPU_TYPE_ARM64);
+  return bfd_mach_o_header_p(abfd, 0, BFD_MACH_O_MH_CORE,
+			     BFD_MACH_O_CPU_TYPE_ARM64);
 }
 
 static bfd_boolean
@@ -146,10 +181,12 @@ static reloc_howto_type arm64_howto_table[]=
 	 FALSE, 0xffffffff, 0xffffffff, TRUE),
 };
 
+#include "mach-o/external.h"
+
 static bfd_boolean
-bfd_mach_o_arm64_canonicalize_one_reloc (bfd *abfd,
-				       struct mach_o_reloc_info_external *raw,
-					 arelent *res, asymbol **syms)
+bfd_mach_o_arm64_canonicalize_one_reloc(bfd *abfd,
+				        struct mach_o_reloc_info_external *raw,
+					arelent *res, asymbol **syms)
 {
   bfd_mach_o_reloc_info reloc;
 
@@ -176,8 +213,12 @@ bfd_mach_o_arm64_canonicalize_one_reloc (bfd *abfd,
       return FALSE;
     }
 
+#ifdef ALLOW_IMPLICIT_FUNCDECLS
   if (!bfd_mach_o_canonicalize_non_scattered_reloc (abfd, &reloc, res, syms))
     return FALSE;
+#else
+  (void)syms;
+#endif /* ALLOW_IMPLICIT_FUNCDECLS */
 
   switch (reloc.r_type)
     {
@@ -286,9 +327,10 @@ bfd_mach_o_arm64_bfd_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
   return NULL;
 }
 
+/* */
 static reloc_howto_type *
-bfd_mach_o_arm64_bfd_reloc_name_lookup (bfd *abfd ATTRIBUTE_UNUSED,
-				      const char *name ATTRIBUTE_UNUSED)
+bfd_mach_o_arm64_bfd_reloc_name_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+				       const char *name ATTRIBUTE_UNUSED)
 {
   return NULL;
 }
@@ -306,3 +348,5 @@ bfd_mach_o_arm64_bfd_reloc_name_lookup (bfd *abfd ATTRIBUTE_UNUSED,
 #undef TARGET_STRING
 #undef TARGET_ARCHIVE
 #undef TARGET_PRIORITY
+
+#endif /* !__BFD_MACH_O_A_C__ */

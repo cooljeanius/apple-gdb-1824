@@ -44,6 +44,15 @@
 # undef realloc
 #endif /* realloc */
 
+#if defined(__GNUC__) && (__GNUC__ >= 5)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wunused-function"
+#endif /* GCC 5+ */
+
 #include "syslex.c"
+
+#if defined(__GNUC__) && (__GNUC__ >= 5)
+# pragma GCC diagnostic pop
+#endif /* GCC 5+ */
 
 /* End of syslex_wrap.c */

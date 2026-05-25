@@ -9,24 +9,33 @@ AC_CONFIG_HEADERS([config.h])dnl
 my_CC=${CC-cc}
 AC_SUBST([my_CC])dnl
 AC_PROG_CC
-AC_PROG_GCC_TRADITIONAL
 AC_USE_SYSTEM_EXTENSIONS
 AC_SEARCH_LIBS([strerror],[cposix]) dnl# used to be AC\_ISC\_POSIX
-  ## set these for use by the Makefile:
-if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
-  export HOST_ARCHITECTURE="${host_cpu}"
-  AC_SUBST([HOST_ARCHITECTURE])dnl
-fi
-if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
-  export TARGET_ARCHITECTURE="${target_cpu}"
-  AC_SUBST([TARGET_ARCHITECTURE])dnl
-  ## TODO: might also want to do likewise with the build arch...
-fi
 
 AC_PROG_INSTALL
 
 AC_CONFIG_AUX_DIR([../..])
 AC_CANONICAL_TARGET
+  ## set these for use by the Makefile:
+if test -z "${HOST_ARCHITECTURE}"; then
+  if test -n "${host_cpu}"; then
+    export HOST_ARCHITECTURE="${host_cpu}"
+  elif test -n "`uname -m`"; then
+    export HOST_ARCHITECTURE="`uname -m`"
+  else
+    export HOST_ARCHITECTURE="x86_64"
+  fi
+  AC_SUBST([HOST_ARCHITECTURE])dnl
+fi
+if test -z "${TARGET_ARCHITECTURE}"; then
+  if test -n "${target_cpu}"; then
+    export TARGET_ARCHITECTURE="${target_cpu}"
+  else
+    export TARGET_ARCHITECTURE="sparclite"
+  fi
+  AC_SUBST([TARGET_ARCHITECTURE])dnl
+  ## TODO: might also want to do likewise with the build arch...
+fi
 AC_ARG_PROGRAM
 
 # Checks for libraries.
@@ -63,14 +72,17 @@ AC_SEARCH_LIBS([bfd_openr],[bfd])dnl
 AC_HEADER_TIME
 AC_CHECK_HEADERS([errno.h fcntl.h netdb.h netinet/in.h stdarg.h stdio.h \
                   sys/socket.h sys/time.h varargs.h])dnl
+  ## 1 of 3:
 AC_CHECK_HEADERS([termios.h],
                  [AC_DEFINE([HAVE_TERMIOS],[1],
                             [Define to 1 if we have termios.h])
                   termio=termios])dnl
+  ## 2 of 3:
 AC_CHECK_HEADERS([termio.h],
                  [AC_DEFINE([HAVE_TERMIO],[1],
                             [Define to 1 if we have termio])
                   termio=termio])dnl
+  ## 3 of 3:
 AC_CHECK_HEADERS([sgtty.h],
                  [AC_DEFINE([HAVE_SGTTY],[1],
                             [Define to 1 if we have sgtty])

@@ -1,4 +1,4 @@
-/* 
+/*
  * tkListbox.c --
  *
  *	This module implements listbox widgets for the Tk
@@ -177,7 +177,7 @@ typedef struct {
     Tk_3DBorder selBorder;	/* Used for selected text */
     XColor *fgColor;		/* Text color in normal mode. */
     XColor *selFgColor;		/* Text color in selected mode. */
-} ItemAttr;    
+} ItemAttr;
 
 /*
  * Flag bits for listboxes:
@@ -204,7 +204,7 @@ typedef struct {
 
 /*
  * The following enum is used to define a type for the -state option
- * of the Entry widget.  These values are used as indices into the 
+ * of the Entry widget.  These values are used as indices into the
  * string table below.
  */
 
@@ -260,7 +260,7 @@ static Tk_OptionSpec optionSpecs[] = {
     {TK_OPTION_INT, "-height", "height", "Height",
 	 DEF_LISTBOX_HEIGHT, -1, Tk_Offset(Listbox, height), 0, 0, 0},
     {TK_OPTION_COLOR, "-highlightbackground", "highlightBackground",
-	 "HighlightBackground", DEF_LISTBOX_HIGHLIGHT_BG, -1, 
+	 "HighlightBackground", DEF_LISTBOX_HIGHLIGHT_BG, -1,
 	 Tk_Offset(Listbox, highlightBgColorPtr), 0, 0, 0},
     {TK_OPTION_COLOR, "-highlightcolor", "highlightColor", "HighlightColor",
 	 DEF_LISTBOX_HIGHLIGHT, -1, Tk_Offset(Listbox, highlightColorPtr),
@@ -285,7 +285,7 @@ static Tk_OptionSpec optionSpecs[] = {
     {TK_OPTION_BOOLEAN, "-setgrid", "setGrid", "SetGrid",
 	 DEF_LISTBOX_SET_GRID, -1, Tk_Offset(Listbox, setGrid), 0, 0, 0},
     {TK_OPTION_STRING_TABLE, "-state", "state", "State",
-	DEF_LISTBOX_STATE, -1, Tk_Offset(Listbox, state), 
+	DEF_LISTBOX_STATE, -1, Tk_Offset(Listbox, state),
         0, (ClientData) stateStrings, 0},
     {TK_OPTION_STRING, "-takefocus", "takeFocus", "TakeFocus",
 	 DEF_LISTBOX_TAKE_FOCUS, -1, Tk_Offset(Listbox, takeFocus),
@@ -335,7 +335,7 @@ static Tk_OptionSpec itemAttrOptionSpecs[] = {
 
 /*
  * The following tables define the listbox widget commands (and sub-
- * commands) and map the indexes into the string tables into 
+ * commands) and map the indexes into the string tables into
  * enumerated types used to dispatch the listbox widget command.
  */
 static CONST char *commandNames[] = {
@@ -609,7 +609,7 @@ ListboxWidgetObjCmd(clientData, interp, objc, objv)
     register Listbox *listPtr = (Listbox *) clientData;
     int cmdIndex, index;
     int result = TCL_OK;
-    
+
     if (objc < 2) {
 	Tcl_WrongNumArgs(interp, 1, objv, "option ?arg arg ...?");
 	return TCL_ERROR;
@@ -665,7 +665,7 @@ ListboxWidgetObjCmd(clientData, interp, objc, objv)
 	    if (result != TCL_OK) {
 		break;
 	    }
-	    
+
 	    result = ListboxBboxSubCmd(interp, listPtr, index);
 	    break;
 	}
@@ -688,7 +688,7 @@ ListboxWidgetObjCmd(clientData, interp, objc, objv)
 	    result = TCL_OK;
 	    break;
 	}
-	
+
 	case COMMAND_CONFIGURE: {
 	    Tcl_Obj *objPtr;
 	    if (objc <= 3) {
@@ -733,7 +733,7 @@ ListboxWidgetObjCmd(clientData, interp, objc, objv)
 	    result = TCL_OK;
 	    break;
 	}
-	
+
 	case COMMAND_DELETE: {
 	    int first, last;
 	    if ((objc < 3) || (objc > 4)) {
@@ -887,7 +887,7 @@ ListboxWidgetObjCmd(clientData, interp, objc, objv)
 		result = TCL_ERROR;
 		break;
 	    }
-	    
+
 	    attrPtr = ListboxGetItemAttributes(interp, listPtr, index);
 
 	    objPtr = Tk_GetOptionValue(interp, (char *)attrPtr,
@@ -915,7 +915,7 @@ ListboxWidgetObjCmd(clientData, interp, objc, objv)
 	    if (result != TCL_OK) {
 		break;
 	    }
-	    
+
 	    if (index < 0 || index >= listPtr->nElements) {
 		Tcl_AppendResult(interp, "item number \"",
 			Tcl_GetString(objv[2]), "\" out of range",
@@ -923,7 +923,7 @@ ListboxWidgetObjCmd(clientData, interp, objc, objv)
 		result = TCL_ERROR;
 		break;
 	    }
-	    
+
 	    attrPtr = ListboxGetItemAttributes(interp, listPtr, index);
 	    if (objc <= 4) {
 		objPtr = Tk_GetOptionInfo(interp, (char *)attrPtr,
@@ -943,7 +943,7 @@ ListboxWidgetObjCmd(clientData, interp, objc, objv)
 	    }
 	    break;
 	}
-	
+
 	case COMMAND_NEAREST: {
 	    char buf[TCL_INTEGER_SPACE];
 	    int y;
@@ -952,7 +952,7 @@ ListboxWidgetObjCmd(clientData, interp, objc, objv)
 		result = TCL_ERROR;
 		break;
 	    }
-	    
+
 	    result = Tcl_GetIntFromObj(interp, objv[2], &y);
 	    if (result != TCL_OK) {
 		break;
@@ -963,7 +963,7 @@ ListboxWidgetObjCmd(clientData, interp, objc, objv)
 	    result = TCL_OK;
 	    break;
 	}
-	
+
 	case COMMAND_SCAN: {
 	    int x, y, scanCmdIndex;
 
@@ -1049,7 +1049,7 @@ ListboxWidgetObjCmd(clientData, interp, objc, objv)
 	    result = ListboxSelectionSubCmd(interp, listPtr, objc, objv);
 	    break;
 	}
-	
+
 	case COMMAND_SIZE: {
 	    char buf[TCL_INTEGER_SPACE];
 	    if (objc != 2) {
@@ -1067,7 +1067,7 @@ ListboxWidgetObjCmd(clientData, interp, objc, objv)
 	    result = ListboxXviewSubCmd(interp, listPtr, objc, objv);
 	    break;
 	}
-	
+
 	case COMMAND_YVIEW: {
 	    result = ListboxYviewSubCmd(interp, listPtr, objc, objv);
 	    break;
@@ -1250,7 +1250,7 @@ ListboxXviewSubCmd(interp, listPtr, objc, objv)
     int index, count, type, windowWidth, windowUnits;
     int offset = 0;		/* Initialized to stop gcc warnings. */
     double fraction, fraction2;
-    
+
     windowWidth = Tk_Width(listPtr->tkwin)
 	- 2*(listPtr->inset + listPtr->selBorderWidth);
     if (objc == 2) {
@@ -1258,7 +1258,7 @@ ListboxXviewSubCmd(interp, listPtr, objc, objv)
 	    Tcl_SetResult(interp, "0 1", TCL_STATIC);
 	} else {
 	    char buf[TCL_DOUBLE_SPACE * 2];
-	    
+
 	    fraction = listPtr->xOffset/((double) listPtr->maxWidth);
 	    fraction2 = (listPtr->xOffset + windowWidth)
 		/((double) listPtr->maxWidth);
@@ -1324,13 +1324,13 @@ ListboxYviewSubCmd(interp, listPtr, objc, objv)
 {
     int index, count, type;
     double fraction, fraction2;
-    
+
     if (objc == 2) {
 	if (listPtr->nElements == 0) {
 	    Tcl_SetResult(interp, "0 1", TCL_STATIC);
 	} else {
 	    char buf[TCL_DOUBLE_SPACE * 2];
-	    
+
 	    fraction = listPtr->topIndex/((double) listPtr->nElements);
 	    fraction2 = (listPtr->topIndex+listPtr->fullLines)
 		/((double) listPtr->nElements);
@@ -1433,8 +1433,9 @@ ListboxGetItemAttributes(interp, listPtr, index)
  */
 
 static void
-DestroyListbox(memPtr)
-    char *memPtr;	/* Info about listbox widget. */
+DestroyListbox (
+    char *memPtr	/* Info about listbox widget. */
+)
 {
     register Listbox *listPtr = (Listbox *) memPtr;
     Tcl_HashEntry *entry;
@@ -1451,7 +1452,7 @@ DestroyListbox(memPtr)
 		TCL_GLOBAL_ONLY|TCL_TRACE_WRITES|TCL_TRACE_UNSETS,
 		ListboxListVarProc, (ClientData) listPtr);
     }
-    
+
     /* Free the selection hash table */
     Tcl_DeleteHashTable(listPtr->selection);
     ckfree((char *)listPtr->selection);
@@ -1658,7 +1659,7 @@ ConfigureListbox(interp, listPtr, objc, objv, flags)
 
     /* Make sure that the list length is correct */
     Tcl_ListObjLength(listPtr->interp, listPtr->listObj, &listPtr->nElements);
-    
+
     if (error) {
         Tcl_SetObjResult(interp, errorResult);
 	Tcl_DecrRefCount(errorResult);
@@ -1729,7 +1730,7 @@ ConfigureListboxItem(interp, listPtr, attrs, objc, objv)
  *
  *---------------------------------------------------------------------------
  */
- 
+
 static void
 ListboxWorldChanged(instanceData)
     ClientData instanceData;	/* Information about widget. */
@@ -1738,7 +1739,7 @@ ListboxWorldChanged(instanceData)
     GC gc;
     unsigned long mask;
     Listbox *listPtr;
-    
+
     listPtr = (Listbox *) instanceData;
 
     if (listPtr->state & STATE_NORMAL) {
@@ -1884,10 +1885,10 @@ DisplayListbox(clientData)
 	right = listPtr->selBorderWidth+1;
     }
     prevSelected = 0;
-    
+
     for (i = listPtr->topIndex; i <= limit; i++) {
 	x = listPtr->inset;
-	y = ((i - listPtr->topIndex) * listPtr->lineHeight) 
+	y = ((i - listPtr->topIndex) * listPtr->lineHeight)
 		+ listPtr->inset;
 	gc = listPtr->textGC;
 	freeGC = 0;
@@ -1908,7 +1909,7 @@ DisplayListbox(clientData)
 		gc = listPtr->selTextGC;
 		width = Tk_Width(tkwin) - 2*listPtr->inset;
 		selectedBg = listPtr->selBorder;
-		
+
 		/* If there is attribute information for this item,
 		 * adjust the drawing accordingly */
 		if (entry != NULL) {
@@ -1918,11 +1919,11 @@ DisplayListbox(clientData)
 		    gcValues.font = Tk_FontId(listPtr->tkfont);
 		    gcValues.graphics_exposures = False;
 		    mask = GCForeground | GCFont | GCGraphicsExposures;
-		    
+
 		    if (attrs->selBorder != NULL) {
 			selectedBg = attrs->selBorder;
 		    }
-		    
+
 		    if (attrs->selFgColor != NULL) {
 			gcValues.foreground = attrs->selFgColor->pixel;
 			gc = Tk_GetGC(listPtr->tkwin, mask, &gcValues);
@@ -1990,22 +1991,22 @@ DisplayListbox(clientData)
 		    gcValues.font = Tk_FontId(listPtr->tkfont);
 		    gcValues.graphics_exposures = False;
 		    mask = GCForeground | GCFont | GCGraphicsExposures;
-		    
+
 		    /*
 		     * If the item has its own background color, draw it now.
 		     */
-		    
+
 		    if (attrs->border != NULL) {
 			width = Tk_Width(tkwin) - 2*listPtr->inset;
 			Tk_Fill3DRectangle(tkwin, pixmap, attrs->border, x, y,
 				width, listPtr->lineHeight, 0, TK_RELIEF_FLAT);
 		    }
-		    
+
 		    /*
 		     * If the item has its own foreground, use it to override
 		     * the value in the gcValues structure.
 		     */
-		    
+
 		    if ((listPtr->state & STATE_NORMAL)
 			    && attrs->fgColor != NULL) {
 			gcValues.foreground = attrs->fgColor->pixel;
@@ -2043,7 +2044,7 @@ DisplayListbox(clientData)
 
 		dc = TkWinGetDrawableDC(listPtr->display, pixmap, &state);
 		rect.left   = listPtr->inset;
-		rect.top    = ((i - listPtr->topIndex) * listPtr->lineHeight) 
+		rect.top    = ((i - listPtr->topIndex) * listPtr->lineHeight)
 		    + listPtr->inset;
 		rect.right  = rect.left + width;
 		rect.bottom = rect.top + listPtr->lineHeight;
@@ -2107,10 +2108,10 @@ DisplayListbox(clientData)
 	bgGC = Tk_GCForColor(listPtr->highlightBgColorPtr, pixmap);
 	if (listPtr->flags & GOT_FOCUS) {
 	    fgGC = Tk_GCForColor(listPtr->highlightColorPtr, pixmap);
-	    TkpDrawHighlightBorder(tkwin, fgGC, bgGC, 
+	    TkpDrawHighlightBorder(tkwin, fgGC, bgGC,
 	            listPtr->highlightWidth, pixmap);
 	} else {
-	    TkpDrawHighlightBorder(tkwin, bgGC, bgGC, 
+	    TkpDrawHighlightBorder(tkwin, bgGC, bgGC,
 	            listPtr->highlightWidth, pixmap);
 	}
     }
@@ -2141,19 +2142,20 @@ DisplayListbox(clientData)
  */
 
 static void
-ListboxComputeGeometry(listPtr, fontChanged, maxIsStale, updateGrid)
-    Listbox *listPtr;		/* Listbox whose geometry is to be
+ListboxComputeGeometry (
+    Listbox *listPtr,		/* Listbox whose geometry is to be
 				 * recomputed. */
-    int fontChanged;		/* Non-zero means the font may have changed
+    int fontChanged,		/* Non-zero means the font may have changed
 				 * so per-element width information also
 				 * has to be computed. */
-    int maxIsStale;		/* Non-zero means the "maxWidth" field may
+    int maxIsStale,		/* Non-zero means the "maxWidth" field may
 				 * no longer be up-to-date and must
 				 * be recomputed.  If fontChanged is 1 then
 				 * this must be 1. */
-    int updateGrid;		/* Non-zero means call Tk_SetGrid or
+    int updateGrid		/* Non-zero means call Tk_SetGrid or
 				 * Tk_UnsetGrid to update gridding for
 				 * the window. */
+)
 {
     int width, height, pixelWidth, pixelHeight;
     Tk_FontMetrics fm;
@@ -2161,7 +2163,7 @@ ListboxComputeGeometry(listPtr, fontChanged, maxIsStale, updateGrid)
     int textLength;
     char *text;
     int i, result;
-    
+
     if (fontChanged  || maxIsStale) {
 	listPtr->xScrollUnit = Tk_TextWidth(listPtr->tkfont, "0", 1);
 	if (listPtr->xScrollUnit == 0) {
@@ -2249,7 +2251,7 @@ ListboxInsertSubCmd(listPtr, index, objc, objv)
     int result;
     char *stringRep;
     int length;
-    
+
     oldMaxWidth = listPtr->maxWidth;
     for (i = 0; i < objc; i++) {
 	/*
@@ -2262,13 +2264,13 @@ ListboxInsertSubCmd(listPtr, index, objc, objv)
 	    listPtr->maxWidth = pixelWidth;
 	}
     }
-    
+
     /* Adjust selection and attribute information for every index after
      * the first index */
     MigrateHashEntries(listPtr->selection, index, listPtr->nElements-1, objc);
     MigrateHashEntries(listPtr->itemAttrTable, index, listPtr->nElements-1,
 	    objc);
-    
+
     /* If the object is shared, duplicate it before writing to it */
     if (Tcl_IsShared(listPtr->listObj)) {
 	newListObj = Tcl_DuplicateObj(listPtr->listObj);
@@ -2299,7 +2301,7 @@ ListboxInsertSubCmd(listPtr, index, objc, objv)
 
     /* Get the new list length */
     Tcl_ListObjLength(listPtr->interp, listPtr->listObj, &listPtr->nElements);
-    
+
     /*
      * Update the "special" indices (anchor, topIndex, active) to account
      * for the renumbering that just occurred.  Then arrange for the new
@@ -2346,10 +2348,11 @@ ListboxInsertSubCmd(listPtr, index, objc, objv)
  */
 
 static int
-ListboxDeleteSubCmd(listPtr, first, last)
-    register Listbox *listPtr;	/* Listbox widget to modify. */
-    int first;			/* Index of first element to delete. */
-    int last;			/* Index of last element to delete. */
+ListboxDeleteSubCmd (
+    register Listbox *listPtr,	/* Listbox widget to modify. */
+    int first,			/* Index of first element to delete. */
+    int last			/* Index of last element to delete. */
+)
 {
     int count, i, widthChanged;
     Tcl_Obj *newListObj;
@@ -2359,7 +2362,7 @@ ListboxDeleteSubCmd(listPtr, first, last)
     int result;
     int pixelWidth;
     Tcl_HashEntry *entry;
-    
+
     /*
      * Adjust the range to fit within the existing elements of the
      * listbox, and make sure there's something to delete.
@@ -2396,7 +2399,7 @@ ListboxDeleteSubCmd(listPtr, first, last)
 	if (entry != NULL) {
 	    Tcl_DeleteHashEntry(entry);
 	}
-	
+
 	/* Check width of the element.  We only have to check if widthChanged
 	 * has not already been set to 1, because we only need one maxWidth
 	 * element to disappear for us to have to recompute the width
@@ -2438,7 +2441,7 @@ ListboxDeleteSubCmd(listPtr, first, last)
 
     /* Get the new list length */
     Tcl_ListObjLength(listPtr->interp, listPtr->listObj, &listPtr->nElements);
-    
+
     /* If there is a listvar, make sure it points at the new object */
     if (listPtr->listVarName != NULL) {
 	if (Tcl_SetVar2Ex(listPtr->interp, listPtr->listVarName,
@@ -2514,7 +2517,7 @@ ListboxEventProc(clientData, eventPtr)
     XEvent *eventPtr;		/* Information about event. */
 {
     Listbox *listPtr = (Listbox *) clientData;
-    
+
     if (eventPtr->type == Expose) {
 	EventuallyRedrawRange(listPtr,
 		NearestListboxElement(listPtr, eventPtr->xexpose.y),
@@ -2637,7 +2640,7 @@ GetListboxIndex(interp, listPtr, indexObj, endIsSize, indexPtr)
     int result;
     int index;
     char *stringRep;
-    
+
     /* First see if the index is one of the named indices */
     result = Tcl_GetIndexFromObj(NULL, indexObj, indexNames, "", 0, &index);
     if (result == TCL_OK) {
@@ -2692,7 +2695,7 @@ GetListboxIndex(interp, listPtr, indexObj, endIsSize, indexPtr)
 	*indexPtr = NearestListboxElement(listPtr, y);
 	return TCL_OK;
     }
-    
+
     /* Maybe the index is just an integer */
     if (Tcl_GetIntFromObj(interp, indexObj, indexPtr) == TCL_OK) {
 	return TCL_OK;
@@ -2726,11 +2729,12 @@ GetListboxIndex(interp, listPtr, indexObj, endIsSize, indexPtr)
  */
 
 static void
-ChangeListboxView(listPtr, index)
-    register Listbox *listPtr;		/* Information about widget. */
-    int index;				/* Index of element in listPtr
+ChangeListboxView (
+    register Listbox *listPtr,		/* Information about widget. */
+    int index				/* Index of element in listPtr
 					 * that should now appear at the
 					 * top of the listbox. */
+)
 {
     if (index >= (listPtr->nElements - listPtr->fullLines)) {
 	index = listPtr->nElements - listPtr->fullLines;
@@ -2763,13 +2767,14 @@ ChangeListboxView(listPtr, index)
  */
 
 static void
-ChangeListboxOffset(listPtr, offset)
-    register Listbox *listPtr;		/* Information about widget. */
-    int offset;				/* Desired new "xOffset" for
+ChangeListboxOffset (
+    register Listbox *listPtr,		/* Information about widget. */
+    int offset				/* Desired new "xOffset" for
 					 * listbox. */
+)
 {
     int maxOffset;
-    
+
     /*
      * Make sure that the new offset is within the allowable range, and
      * round it off to an even multiple of xScrollUnit.
@@ -2814,15 +2819,16 @@ ChangeListboxOffset(listPtr, offset)
  */
 
 static void
-ListboxScanTo(listPtr, x, y)
-    register Listbox *listPtr;		/* Information about widget. */
-    int x;				/* X-coordinate to use for scan
+ListboxScanTo (
+    register Listbox *listPtr,		/* Information about widget. */
+    int x,				/* X-coordinate to use for scan
 					 * operation. */
-    int y;				/* Y-coordinate to use for scan
+    int y				/* Y-coordinate to use for scan
 					 * operation. */
+)
 {
     int newTopIndex, newOffset, maxIndex, maxOffset;
-    
+
     maxIndex = listPtr->nElements - listPtr->fullLines;
     maxOffset = listPtr->maxWidth + (listPtr->xScrollUnit - 1)
 	    - (Tk_Width(listPtr->tkwin) - 2*listPtr->inset
@@ -2887,9 +2893,10 @@ ListboxScanTo(listPtr, x, y)
  */
 
 static int
-NearestListboxElement(listPtr, y)
-    register Listbox *listPtr;		/* Information about widget. */
-    int y;				/* Y-coordinate in listPtr's window. */
+NearestListboxElement (
+    register Listbox *listPtr,		/* Information about widget. */
+    int y				/* Y-coordinate in listPtr's window. */
+)
 {
     int index;
 
@@ -2928,19 +2935,20 @@ NearestListboxElement(listPtr, y)
  */
 
 static int
-ListboxSelect(listPtr, first, last, select)
-    register Listbox *listPtr;		/* Information about widget. */
-    int first;				/* Index of first element to
+ListboxSelect (
+    register Listbox *listPtr,		/* Information about widget. */
+    int first,				/* Index of first element to
 					 * select or deselect. */
-    int last;				/* Index of last element to
+    int last,				/* Index of last element to
 					 * select or deselect. */
-    int select;				/* 1 means select items, 0 means
+    int select				/* 1 means select items, 0 means
 					 * deselect them. */
+)
 {
     int i, firstRedisplay, increment, oldCount;
     Tcl_HashEntry *entry;
     int new;
-    
+
     if (last < first) {
 	i = first;
 	first = last;
@@ -3044,7 +3052,7 @@ ListboxFetchSelection(clientData, offset, buffer, maxBytes)
     int stringLen;
     Tcl_HashEntry *entry;
     int i;
-    
+
     if (!listPtr->exportSelection) {
 	return -1;
     }
@@ -3117,7 +3125,7 @@ ListboxLostSelection(clientData)
     ClientData clientData;		/* Information about listbox widget. */
 {
     register Listbox *listPtr = (Listbox *) clientData;
-    
+
     if ((listPtr->exportSelection) && (listPtr->nElements > 0)) {
 	ListboxSelect(listPtr, 0, listPtr->nElements-1, 0);
     }
@@ -3141,14 +3149,15 @@ ListboxLostSelection(clientData)
  */
 
 static void
-EventuallyRedrawRange(listPtr, first, last)
-    register Listbox *listPtr;		/* Information about widget. */
-    int first;				/* Index of first element in list
+EventuallyRedrawRange (
+    register Listbox *listPtr,		/* Information about widget. */
+    int first,				/* Index of first element in list
 					 * that needs to be redrawn. */
-    int last;				/* Index of last element in list
+    int last				/* Index of last element in list
 					 * that needs to be redrawn.  May
 					 * be less than first;
 					 * these just bracket a range. */
+)
 {
     /* We don't have to register a redraw callback if one is already pending,
      * or if the window doesn't exist, or if the window isn't mapped */
@@ -3182,14 +3191,15 @@ EventuallyRedrawRange(listPtr, first, last)
  */
 
 static void
-ListboxUpdateVScrollbar(listPtr)
-    register Listbox *listPtr;		/* Information about widget. */
+ListboxUpdateVScrollbar (
+    register Listbox *listPtr		/* Information about widget. */
+)
 {
     char string[TCL_DOUBLE_SPACE * 2];
     double first, last;
     int result;
     Tcl_Interp *interp;
-    
+
     if (listPtr->yScrollCmd == NULL) {
 	return;
     }
@@ -3210,7 +3220,7 @@ ListboxUpdateVScrollbar(listPtr)
      * We must hold onto the interpreter from the listPtr because the data
      * at listPtr might be freed as a result of the Tcl_VarEval.
      */
-    
+
     interp = listPtr->interp;
     Tcl_Preserve((ClientData) interp);
     result = Tcl_VarEval(interp, listPtr->yScrollCmd, string,
@@ -3244,8 +3254,9 @@ ListboxUpdateVScrollbar(listPtr)
  */
 
 static void
-ListboxUpdateHScrollbar(listPtr)
-    register Listbox *listPtr;		/* Information about widget. */
+ListboxUpdateHScrollbar (
+    register Listbox *listPtr		/* Information about widget. */
+)
 {
     char string[TCL_DOUBLE_SPACE * 2];
     int result, windowWidth;
@@ -3274,7 +3285,7 @@ ListboxUpdateHScrollbar(listPtr)
      * We must hold onto the interpreter because the data referred to at
      * listPtr might be freed as a result of the call to Tcl_VarEval.
      */
-    
+
     interp = listPtr->interp;
     Tcl_Preserve((ClientData) interp);
     result = Tcl_VarEval(interp, listPtr->xScrollCmd, string,
@@ -3316,7 +3327,7 @@ ListboxListVarProc(clientData, interp, name1, name2, flags)
     int oldLength;
     int i;
     Tcl_HashEntry *entry;
-    
+
     /* Bwah hahahaha -- puny mortal, you can't unset a -listvar'd variable! */
     if (flags & TCL_TRACE_UNSETS) {
 	if ((flags & TCL_TRACE_DESTROYED) && !(flags & TCL_INTERP_DESTROYED)) {
@@ -3341,7 +3352,7 @@ ListboxListVarProc(clientData, interp, name1, name2, flags)
 		    oldListObj, TCL_GLOBAL_ONLY);
 	    return("invalid listvar value");
 	}
-	
+
 	listPtr->listObj = varListObj;
 	/* Incr the obj ref count so it doesn't vanish if the var is unset */
 	Tcl_IncrRefCount(listPtr->listObj);
@@ -3390,9 +3401,9 @@ ListboxListVarProc(clientData, interp, name1, name2, flags)
      * next time the list is redrawn.
      */
     listPtr->flags |= MAXWIDTH_IS_STALE;
-    
+
     EventuallyRedrawRange(listPtr, 0, listPtr->nElements-1);
-    return (char*)NULL;
+    return (char *)NULL;
 }
 
 /*

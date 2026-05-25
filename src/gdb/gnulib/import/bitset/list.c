@@ -1,6 +1,6 @@
 /* Functions to support link list bitsets.
 
-   Copyright (C) 2002-2004, 2006, 2009-2015, 2018-2023 Free Software
+   Copyright (C) 2002-2004, 2006, 2009-2015, 2018-2026 Free Software
    Foundation, Inc.
 
    Contributed by Michael Hayes (m.hayes@elec.canterbury.ac.nz).
@@ -95,7 +95,7 @@ lbitset_elt_alloc (void)
 {
   lbitset_elt *elt;
 
-  if (lbitset_free_list != 0)
+  if (lbitset_free_list != NULL)
     {
       elt = lbitset_free_list;
       lbitset_free_list = elt->next;
@@ -196,7 +196,7 @@ lbitset_elt_unlink (bitset bset, lbitset_elt *elt)
       else
         {
           bset->b.csize = 0;
-          bset->b.cdata = 0;
+          bset->b.cdata = NULL;
         }
     }
 
@@ -217,21 +217,21 @@ lbitset_prune (bitset bset, lbitset_elt *elt)
       LBITSET_TAIL (bset) = elt->prev;
       bset->b.cdata = elt->prev->words;
       bset->b.cindex = elt->prev->index;
-      elt->prev->next = 0;
+      elt->prev->next = NULL;
     }
   else
     {
-      LBITSET_HEAD (bset) = 0;
-      LBITSET_TAIL (bset) = 0;
-      bset->b.cdata = 0;
+      LBITSET_HEAD (bset) = NULL;
+      LBITSET_TAIL (bset) = NULL;
+      bset->b.cdata = NULL;
       bset->b.csize = 0;
     }
 
-  lbitset_elt *next;
-  for (; elt; elt = next)
+  for (; elt;)
     {
-      next = elt->next;
+      lbitset_elt *next = elt->next;
       lbitset_elt_free (elt);
+      elt = next;
     }
 }
 
@@ -256,9 +256,9 @@ lbitset_elt_link (bitset bset, lbitset_elt *elt)
   lbitset_elt *current = bset->b.csize ? LBITSET_CURRENT (bset) : LBITSET_HEAD (bset);
 
   /* If this is the first and only element, add it in.  */
-  if (LBITSET_HEAD (bset) == 0)
+  if (LBITSET_HEAD (bset) == NULL)
     {
-      elt->next = elt->prev = 0;
+      elt->next = elt->prev = NULL;
       LBITSET_HEAD (bset) = elt;
       LBITSET_TAIL (bset) = elt;
     }
@@ -359,7 +359,7 @@ lbitset_elt_find (bitset bset, bitset_windex windex,
       abort ();
 
     case LBITSET_FIND:
-      return 0;
+      return NULL;
 
     case LBITSET_CREATE:
       windex -= windex % LBITSET_ELT_WORDS;
@@ -378,12 +378,12 @@ lbitset_elt_find (bitset bset, bitset_windex windex,
 static inline void
 lbitset_weed (bitset bset)
 {
-  lbitset_elt *next;
-  for (lbitset_elt *elt = LBITSET_HEAD (bset); elt; elt = next)
+  for (lbitset_elt *elt = LBITSET_HEAD (bset); elt;)
     {
-      next = elt->next;
+      lbitset_elt *next = elt->next;
       if (lbitset_elt_zero_p (elt))
         lbitset_elt_unlink (bset, elt);
+      elt = next;
     }
 }
 
@@ -439,7 +439,7 @@ lbitset_copy_ (bitset dst, bitset src)
   if (!head)
     return;
 
-  lbitset_elt *prev = 0;
+  lbitset_elt *prev = NULL;
   lbitset_elt *tmp;
   lbitset_elt *elt = head;
   do
@@ -447,7 +447,7 @@ lbitset_copy_ (bitset dst, bitset src)
       tmp = lbitset_elt_alloc ();
       tmp->index = elt->index;
       tmp->prev = prev;
-      tmp->next = 0;
+      tmp->next = NULL;
       if (prev)
         prev->next = tmp;
       else
@@ -487,7 +487,7 @@ lbitset_copy_cmp (bitset dst, bitset src)
   if (!LBITSET_HEAD (dst))
     {
       lbitset_copy (dst, src);
-      return LBITSET_HEAD (src) != 0;
+      return LBITSET_HEAD (src) != NULL;
     }
 
   if (lbitset_equal_p (dst, src))
@@ -724,19 +724,22 @@ lbitset_list (bitset bset, bitset_bindex *list,
           /* The coast is clear, plant boot!  */
 
 #if LBITSET_ELT_WORDS == 2
-          bitset_word word = srcp[0];
-          if (word)
-            BITSET_FOR_EACH_BIT (pos, word)
-              list[count++] = bitno + pos;
-          windex++;
-          bitno = windex * BITSET_WORD_BITS;
-
-          word = srcp[1];
-          if (word)
-            BITSET_FOR_EACH_BIT (pos, word)
-              list[count++] = bitno + pos;
-          windex++;
-          bitno = windex * BITSET_WORD_BITS;
+          {
+            bitset_word word = srcp[0];
+            if (word)
+              BITSET_FOR_EACH_BIT (pos, word)
+                list[count++] = bitno + pos;
+            windex++;
+            bitno = windex * BITSET_WORD_BITS;
+          }
+          {
+            bitset_word word = srcp[1];
+            if (word)
+              BITSET_FOR_EACH_BIT (pos, word)
+                list[count++] = bitno + pos;
+            windex++;
+            bitno = windex * BITSET_WORD_BITS;
+          }
 #else
           for (int i = 0; i < LBITSET_ELT_WORDS; i++)
             {
@@ -787,16 +790,14 @@ lbitset_list (bitset bset, bitset_bindex *list,
 static bool
 lbitset_empty_p (bitset dst)
 {
-  lbitset_elt *elt;
-  lbitset_elt *next;
-
-  for (elt = LBITSET_HEAD (dst); elt; elt = next)
+  for (lbitset_elt *elt = LBITSET_HEAD (dst); elt; )
     {
-      next = elt->next;
+      lbitset_elt *next = elt->next;
       if (!lbitset_elt_zero_p (elt))
         return false;
       /* Weed as we go.  */
       lbitset_elt_unlink (dst, elt);
+      elt = next;
     }
 
   return true;
@@ -923,12 +924,13 @@ lbitset_disjoint_p (bitset dst, bitset src)
             }
           /* Since the elements are different, there is no
              intersection of these elements.  */
-          continue;
         }
-
-      for (unsigned j = 0; j < LBITSET_ELT_WORDS; j++)
-        if (selt->words[j] & delt->words[j])
-          return false;
+      else
+        {
+          for (unsigned j = 0; j < LBITSET_ELT_WORDS; j++)
+            if (selt->words[j] & delt->words[j])
+              return false;
+        }
     }
   return true;
 }
@@ -942,7 +944,7 @@ lbitset_op3_cmp (bitset dst, bitset src1, bitset src2, enum bitset_ops op)
   lbitset_elt *delt = LBITSET_HEAD (dst);
   bool changed = false;
 
-  LBITSET_HEAD (dst) = 0;
+  LBITSET_HEAD (dst) = NULL;
   dst->b.csize = 0;
 
   bitset_windex windex1 = (selt1) ? selt1->index : BITSET_WINDEX_MAX;
@@ -1194,7 +1196,7 @@ lbitset_xor (bitset dst, bitset src1, bitset src2)
 
 
 /* Vector of operations for linked-list bitsets.  */
-struct bitset_vtable lbitset_vtable = {
+static struct bitset_vtable lbitset_vtable = {
   lbitset_set,
   lbitset_reset,
   bitset_toggle_,
@@ -1233,7 +1235,7 @@ struct bitset_vtable lbitset_vtable = {
 
 /* Return size of initial structure.  */
 size_t
-lbitset_bytes (MAYBE_UNUSED bitset_bindex n_bits)
+lbitset_bytes (bitset_bindex UNNAMED (n_bits))
 {
   return sizeof (struct lbitset_struct);
 }
@@ -1241,7 +1243,7 @@ lbitset_bytes (MAYBE_UNUSED bitset_bindex n_bits)
 
 /* Initialize a bitset.  */
 bitset
-lbitset_init (bitset bset, MAYBE_UNUSED bitset_bindex n_bits)
+lbitset_init (bitset bset, bitset_bindex n_bits)
 {
   BITSET_NBITS_ (bset) = n_bits;
   bset->b.vtable = &lbitset_vtable;
@@ -1252,7 +1254,7 @@ lbitset_init (bitset bset, MAYBE_UNUSED bitset_bindex n_bits)
 void
 lbitset_release_memory (void)
 {
-  lbitset_free_list = 0;
+  lbitset_free_list = NULL;
   if (lbitset_obstack_init)
     {
       lbitset_obstack_init = false;

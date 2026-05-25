@@ -1,6 +1,6 @@
 /* Variable array bitsets.
 
-   Copyright (C) 2002-2006, 2009-2015, 2018-2023 Free Software Foundation, Inc.
+   Copyright (C) 2002-2006, 2009-2015, 2018-2026 Free Software Foundation, Inc.
 
    Contributed by Michael Hayes (m.hayes@elec.canterbury.ac.nz).
 
@@ -126,7 +126,7 @@ vbitset_set (bitset dst, bitset_bindex bitno)
 
 /* Reset bit BITNO in bitset DST.  */
 static void
-vbitset_reset (MAYBE_UNUSED bitset dst, MAYBE_UNUSED bitset_bindex bitno)
+vbitset_reset (bitset UNNAMED (dst), bitset_bindex UNNAMED (bitno))
 {
   /* We must be accessing outside the cache so the bit is
      zero anyway.  */
@@ -135,8 +135,7 @@ vbitset_reset (MAYBE_UNUSED bitset dst, MAYBE_UNUSED bitset_bindex bitno)
 
 /* Test bit BITNO in bitset SRC.  */
 static bool
-vbitset_test (MAYBE_UNUSED bitset src,
-              MAYBE_UNUSED bitset_bindex bitno)
+vbitset_test (bitset UNNAMED (src), bitset_bindex UNNAMED (bitno))
 {
   /* We must be accessing outside the cache so the bit is
      zero anyway.  */
@@ -260,23 +259,23 @@ vbitset_list (bitset src, bitset_bindex *list,
   for (; windex < size; windex++, bitoff += BITSET_WORD_BITS)
     {
       bitset_word word = srcp[windex];
-      if (!word)
-        continue;
-
-      /* Is there enough room to avoid checking in each iteration? */
-      if ((count + BITSET_WORD_BITS) < num)
-        BITSET_FOR_EACH_BIT (pos, word)
-          list[count++] = bitoff + pos;
-      else
-        BITSET_FOR_EACH_BIT (pos, word)
-          {
-            list[count++] = bitoff + pos;
-            if (count >= num)
+      if (word)
+        {
+          /* Is there enough room to avoid checking in each iteration? */
+          if ((count + BITSET_WORD_BITS) < num)
+            BITSET_FOR_EACH_BIT (pos, word)
+              list[count++] = bitoff + pos;
+          else
+            BITSET_FOR_EACH_BIT (pos, word)
               {
-                *next = bitoff + pos + 1;
-                return count;
+                list[count++] = bitoff + pos;
+                if (count >= num)
+                  {
+                    *next = bitoff + pos + 1;
+                    return count;
+                  }
               }
-          }
+        }
     }
 
   *next = bitoff;
@@ -893,8 +892,7 @@ vbitset_or_and_cmp (bitset dst, bitset src1, bitset src2, bitset src3)
   bitset_windex size = VBITSET_SIZE (dst);
 
   bool changed = false;
-  unsigned i;
-  for (i = 0; i < size; i++, dstp++)
+  for (unsigned int i = 0; i < size; i++)
     {
       bitset_word tmp = (*src1p++ | *src2p++) & *src3p++;
 
@@ -903,6 +901,7 @@ vbitset_or_and_cmp (bitset dst, bitset src1, bitset src2, bitset src3)
           changed = true;
           *dstp = tmp;
         }
+      dstp++;
     }
   return changed;
 }
@@ -926,7 +925,7 @@ vbitset_free (bitset bset)
 
 
 /* Vector of operations for multiple word bitsets.  */
-struct bitset_vtable vbitset_vtable = {
+static struct bitset_vtable vbitset_vtable = {
   vbitset_set,
   vbitset_reset,
   bitset_toggle_,
@@ -964,7 +963,7 @@ struct bitset_vtable vbitset_vtable = {
 
 
 size_t
-vbitset_bytes (MAYBE_UNUSED bitset_bindex n_bits)
+vbitset_bytes (bitset_bindex UNNAMED (n_bits))
 {
   return sizeof (struct vbitset_struct);
 }

@@ -474,6 +474,9 @@ AC_CHECK_SIZEOF([char])dnl
 AC_CHECK_ALIGNOF([char])dnl
 AC_CHECK_TYPES([regoff_t])dnl
 
+dnl# kinda related; useful for casting to unknown types:
+AC_C_TYPEOF
+
 #--------------------------------------------------------------------
 #	If a system does NOT have an opendir function (man, is that old!)
 #	then we have to supply a different version of dirent.h which
@@ -583,6 +586,9 @@ AC_MSG_CHECKING([for a putenv() that copies the buffer])
 AC_CACHE_VAL([tcl_cv_putenv_copy],
     [AC_RUN_IFELSE([AC_LANG_SOURCE([[
 	#include <stdlib.h>
+	#if defined(STDC_HEADERS) || defined(HAVE_STRING_H) || defined(__STDC__)
+	# include <string.h>
+	#endif /* STDC_HEADERS || HAVE_STRING_H || __STDC__ */
 	#define OURVAR "havecopy=yes"
 	int main (int argc, char *argv[])
 	{

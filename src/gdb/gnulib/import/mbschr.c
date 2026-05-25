@@ -1,5 +1,5 @@
 /* Searching a string for a character.
-   Copyright (C) 2007-2023 Free Software Foundation, Inc.
+   Copyright (C) 2007-2026 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2007.
 
    This file is free software: you can redistribute it and/or modify
@@ -20,7 +20,13 @@
 /* Specification.  */
 #include <string.h>
 
-#include "mbuiterf.h"
+#include <stdlib.h>
+
+#if GNULIB_MCEL_PREFER
+# include "mcel.h"
+#else
+# include "mbuiterf.h"
+#endif
 
 /* Locate the first single-byte character C in the character string STRING,
    and return a pointer to it.  Return NULL if C is not found in STRING.  */
@@ -33,6 +39,15 @@ mbschr (const char *string, int c)
          the faster unibyte loop can be used.  */
       && (unsigned char) c >= 0x30)
     {
+#if GNULIB_MCEL_PREFER
+      while (*string)
+        {
+          mcel_t g = mcel_scanz (string);
+          if (g.len == 1 && (unsigned char) *string == (unsigned char) c)
+            return (char *) string;
+          string += g.len;
+        }
+#else
       mbuif_state_t state;
       const char *iter;
       for (mbuif_init (state), iter = string;; )
@@ -46,8 +61,9 @@ mbschr (const char *string, int c)
         }
       return (char *) iter;
      notfound:
+#endif
       return NULL;
     }
   else
-    return strchr (string, c);
+    return (char *) strchr (string, c);
 }

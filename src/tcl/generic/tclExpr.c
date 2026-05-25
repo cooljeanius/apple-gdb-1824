@@ -1,4 +1,4 @@
-/* 
+/*
  * tclExpr.c --
  *
  *	This file contains the code to evaluate expressions for
@@ -18,12 +18,12 @@
 
 #include "tclInt.h"
 #ifdef NO_FLOAT_H
-#   include "../compat/float.h"
+# include "../compat/float.h"
 #else
-#   include <float.h>
+# include <float.h>
 #endif
 #ifndef TCL_NO_MATH
-#include <math.h>
+# include <math.h>
 #endif
 
 /*
@@ -33,15 +33,15 @@
  */
 
 #ifndef TCL_GENERIC_ONLY
-#include "tclPort.h"
+# include "tclPort.h"
 #else
-#define NO_ERRNO_H
+# define NO_ERRNO_H
 #endif
 
 #ifdef NO_ERRNO_H
 int errno;
-#define EDOM 33
-#define ERANGE 34
+# define EDOM 33
+# define ERANGE 34
 #endif
 
 /*
@@ -320,7 +320,7 @@ static int
 ExprParseString(interp, string, valuePtr)
     Tcl_Interp *interp;		/* Where to store error message. */
     char *string;		/* String to turn into value. */
-    Value *valuePtr;		/* Where to store value information. 
+    Value *valuePtr;		/* Where to store value information.
 				 * Caller must have initialized pv field. */
 {
     char *term, *p, *start;
@@ -329,14 +329,14 @@ ExprParseString(interp, string, valuePtr)
 	if (ExprLooksLikeInt(string)) {
 	    valuePtr->type = TYPE_INT;
 	    errno = 0;
-    
+
 	    /*
 	     * Note: use strtoul instead of strtol for integer conversions
 	     * to allow full-size unsigned numbers, but don't depend on
 	     * strtoul to handle sign characters;  it won't in some
 	     * implementations.
 	     */
-    
+
 	    for (p = string; isspace(UCHAR(*p)); p++) {
 		/* Empty loop body. */
 	    }
@@ -357,7 +357,7 @@ ExprParseString(interp, string, valuePtr)
 		     * interp->result, so we have to clear the result before
 		     * logging an error message.
 		     */
-	
+
 		    Tcl_ResetResult(interp);
 		    interp->result = "integer value too large to represent";
 		    Tcl_SetErrorCode(interp, "ARITH", "IOVERFLOW",
@@ -786,14 +786,14 @@ ExprGetValue(interp, infoPtr, prec, valuePtr)
 			} else {
 			    badType = valuePtr->type;
 			    goto illegalType;
-			} 
+			}
 			break;
 		    case UNARY_PLUS:
 			if ((valuePtr->type != TYPE_INT)
 				&& (valuePtr->type != TYPE_DOUBLE)) {
 			    badType = valuePtr->type;
 			    goto illegalType;
-			} 
+			}
 			break;
 		    case NOT:
 			if (valuePtr->type == TYPE_INT) {
@@ -1710,12 +1710,12 @@ ExprMathFunc(interp, infoPtr, valuePtr)
 			"argument to math function didn't have numeric value";
 		return TCL_ERROR;
 	    }
-    
+
 	    /*
 	     * Copy the value to the argument record, converting it if
 	     * necessary.
 	     */
-    
+
 	    if (valuePtr->type == TYPE_INT) {
 		if (mathFuncPtr->argTypes[i] == TCL_DOUBLE) {
 		    args[i].type = TCL_DOUBLE;
@@ -1733,12 +1733,12 @@ ExprMathFunc(interp, infoPtr, valuePtr)
 		    args[i].doubleValue = valuePtr->doubleValue;
 		}
 	    }
-    
+
 	    /*
 	     * Check for a comma separator between arguments or a close-paren
 	     * to end the argument list.
 	     */
-    
+
 	    if (i == (mathFuncPtr->numArgs-1)) {
 		if (infoPtr->token == CLOSE_PAREN) {
 		    break;
@@ -2038,8 +2038,9 @@ ExprRoundFunc(clientData, interp, args, resultPtr)
  */
 
 static int
-ExprLooksLikeInt(p)
-    char *p;			/* Pointer to string. */
+ExprLooksLikeInt (
+    char *p			/* Pointer to string. */
+)
 {
     while (isspace(UCHAR(*p))) {
 	p++;

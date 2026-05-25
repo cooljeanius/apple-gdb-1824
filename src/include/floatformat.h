@@ -92,6 +92,8 @@ struct floatformat
 };
 
 /* floatformats for IEEE single and double, big and little endian: */
+extern const struct floatformat floatformat_ieee_half_big;
+extern const struct floatformat floatformat_ieee_half_little;
 extern const struct floatformat floatformat_ieee_single_big;
 extern const struct floatformat floatformat_ieee_single_little;
 extern const struct floatformat floatformat_ieee_double_big;
@@ -118,6 +120,9 @@ extern const struct floatformat floatformat_ia64_spill_big;
 extern const struct floatformat floatformat_ia64_spill_little;
 extern const struct floatformat floatformat_ia64_quad_big;
 extern const struct floatformat floatformat_ia64_quad_little;
+/* IBM long double (double+double).  */
+extern const struct floatformat floatformat_ibm_long_double_big;
+extern const struct floatformat floatformat_ibm_long_double_little;
 
 /* Convert from FMT to a double.
    FROM is the address of the extended float.

@@ -21,12 +21,13 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#include "config.h" /* Needs to go before <getopt.h> */
+
 #include <getopt.h>
 
 #include "misc.h"
 #include "lf.h"
 #include "table.h"
-#include "config.h"
 #include "filter.h"
 
 #include "igen.h"

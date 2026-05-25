@@ -23,12 +23,6 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301,
    USA.  */
-
-/* This tells Alpha OSF/1 not to define a getopt prototype in <stdio.h>.
-   Ditto for AIX 3.2 and <stdlib.h>.  */
-#ifndef _NO_PROTO
-# define _NO_PROTO
-#endif /* !_NO_PROTO */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -39,8 +33,8 @@
    reject `defined (const)'.  */
 # ifndef const
 #  define const
-# endif
-#endif
+# endif /* !const */
+#endif /* !__STDC__ */
 
 #include "ansidecl.h"
 #include <stdio.h>
@@ -82,7 +76,7 @@
 # if HAVE_STRING_H - 0
 #  include <string.h>
 # endif
-#endif
+#endif /* VMS */
 
 #ifndef _
 /* This is for other GNU distributions with internationalized messages.
@@ -216,8 +210,8 @@ static char *posixly_correct;
 # else
 #  if HAVE_STRINGS_H
 #   include <strings.h>
-#  endif
-# endif
+#  endif /* HAVE_STRINGS_H */
+# endif /* HAVE_STRING_H */
 
 /* Avoid depending on library functions or files
    whose names are inconsistent.  */
@@ -289,7 +283,7 @@ static void
 ATTRIBUTE_UNUSED
 store_args_and_env(int argc, char *const *argv)
 {
-  /* XXX This is no good solution.  We should rather copy the args so
+  /* XXX: This is no good solution.  We should rather copy the args so
      that we can compare them later.  But we must not use malloc(3).  */
   original_argc = argc;
   original_argv = argv;
@@ -320,7 +314,7 @@ text_set_element (__libc_subinit, store_args_and_env);
 
 #if defined __STDC__ && __STDC__
 static void exchange (char **);
-#endif
+#endif /* __STDC__ */
 
 static void
 exchange (char **argv)
@@ -355,7 +349,7 @@ exchange (char **argv)
 	  __getopt_nonoption_flags = new_str;
 	}
     }
-#endif
+#endif /* _LIBC */
 
   while (top > middle && middle > bottom)
     {
@@ -405,7 +399,7 @@ exchange (char **argv)
 
 #if defined __STDC__ && __STDC__
 static const char *_getopt_initialize (int, char *const *, const char *);
-#endif
+#endif /* __STDC__ */
 static const char *
 _getopt_initialize (int argc ATTRIBUTE_UNUSED,
 		    char *const *argv ATTRIBUTE_UNUSED,
@@ -466,7 +460,7 @@ _getopt_initialize (int argc ATTRIBUTE_UNUSED,
     }
   else
     nonoption_flags_len = 0;
-#endif
+#endif /* _LIBC */
 
   return optstring;
 }

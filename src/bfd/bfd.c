@@ -152,6 +152,13 @@ CODE_FRAGMENT
 .     be used only for archive elements.  *}
 .  int archive_pass;
 .
+.  union {
+.    {* For input BFDs, a chain of BFDs involved in a link.  *}
+.    struct bfd *next;
+.    {* For output BFD, the linker hash table.  *}
+.    struct bfd_link_hash_table *hash;
+.  } link;
+.
 .  {* Used by the back end to hold private data.  *}
 .  union
 .    {
@@ -204,9 +211,9 @@ CODE_FRAGMENT
 .
 */
 
+#include "sysdep.h"
 #include "bfd.h"
 #include "bfdver.h"
-#include "sysdep.h"
 #include <stdarg.h>
 #include "libiberty.h"
 #include "safe-ctype.h"

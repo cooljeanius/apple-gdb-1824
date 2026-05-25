@@ -5543,7 +5543,7 @@ simple_overlay_update_1(struct obj_section *osect)
 	&& (cache_ovly_table[i][LMA] == bfd_section_lma(obfd, bsect))
 	&& (cache_ovly_table[i][SIZE] == size))
       {
-	read_target_long_array((cache_ovly_table_base + i * TARGET_LONG_BYTES),
+	read_target_long_array((cache_ovly_table_base + (unsigned long)i * TARGET_LONG_BYTES),
                                (unsigned int *)cache_ovly_table[i], 4);
 	if ((cache_ovly_table[i][VMA] == bfd_section_vma(obfd, bsect))
 	    && (cache_ovly_table[i][LMA] == bfd_section_lma(obfd, bsect))

@@ -650,7 +650,8 @@ ada_parse(void)
 void ATTR_NORETURN
 yyerror(const char *msg)
 {
-  error("A %s in expression, near `%s'.", (msg ? msg : "error"), lexptr);
+  error("A %s in expression, near '%s'.", (msg ? msg : "error"),
+  	(lexptr ? lexptr : "lexptr"));
 }
 
 /* The operator name corresponding to operator symbol STRING (adds

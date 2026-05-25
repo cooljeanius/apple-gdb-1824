@@ -24,21 +24,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <signal.h>
 #include <stdio.h>
 #ifdef __STDC__
-#include <stdarg.h>
+# include <stdarg.h>
 #else
-#include <varargs.h>
+# include <varargs.h>
 #endif
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
+# include <stdlib.h>
 #endif
 
 #ifdef HAVE_STRING_H
-#include <string.h>
+# include <string.h>
 #else
-#ifdef HAVE_STRINGS_H
-#include <strings.h>
-#endif
+# ifdef HAVE_STRINGS_H
+#  include <strings.h>
+# endif
 #endif
 
 #include "libiberty.h"
@@ -76,9 +76,7 @@ cntrl_c (int sig ATTRIBUTE_UNUSED)
 }
 
 int
-main (ac, av)
-     int ac;
-     char **av;
+main (int ac, char **av)
 {
   RETSIGTYPE (*prev_sigint) ();
   bfd *abfd;
@@ -317,7 +315,7 @@ main (ac, av)
 }
 
 static void
-usage ()
+usage (void)
 {
   fprintf (stderr, "Usage: %s [options] program [program args]\n", myname);
   fprintf (stderr, "Options:\n");

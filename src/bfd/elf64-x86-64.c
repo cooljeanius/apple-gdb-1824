@@ -1,4 +1,4 @@
-/* X86-64 specific support for 64-bit ELF
+/* elf64-x86-64.c: X86-64 specific support for 64-bit ELF
    Copyright 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
    Contributed by Jan Hubicka <jh@suse.cz>.
@@ -17,22 +17,22 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "bfdlink.h"
 #include "libbfd.h"
 #include "elf-bfd.h"
 
 #include "elf/x86-64.h"
 
-/* In case we're on a 32-bit machine, construct a 64-bit "-1" value.  */
-#define MINUS_ONE (~ (bfd_vma) 0)
+/* In case we are on a 32-bit machine, construct a 64-bit "-1" value: */
+#define MINUS_ONE (~(bfd_vma)0)
 
 /* The relocation "howto" table.  Order of fields:
    type, size, bitsize, pc_relative, complain_on_overflow,
-   special_function, name, partial_inplace, src_mask, dst_pack, pcrel_offset.  */
+   special_function, name, partial_inplace, src_mask, dst_pack, pcrel_offset */
 static reloc_howto_type x86_64_elf_howto_table[] =
 {
   HOWTO(R_X86_64_NONE, 0, 0, 0, FALSE, 0, complain_overflow_dont,

@@ -1,6 +1,6 @@
 /* Open a directory relative to another directory.
 
-   Copyright (C) 2018-2023 Free Software Foundation, Inc.
+   Copyright (C) 2018-2026 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published
@@ -22,5 +22,15 @@
 
 #include <dirent.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 DIR *opendirat (int, char const *, int, int *)
   _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC (closedir, 1);
+
+
+#ifdef __cplusplus
+}
+#endif

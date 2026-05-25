@@ -34,6 +34,7 @@ DEFS = @DEFS@ @EXTRA_DEFS@
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CFLAGS = $(C_ARCHFLAGS) -ggdb -fno-strict-aliasing -std=gnu99 -Wall \
 -Wextra -Wold-style-definition -Wwrite-strings -Wformat=2 \
+-Wno-error=int-conversion \
 -Wmissing-include-dirs @MAINT@ -Wstrict-prototypes -Wnested-externs
 ## put these in an unused variable, just to record what I tried:
 AM_EXTRA_WARN_CFLAGS = -Wmissing-format-attribute -Wc++-compat \

@@ -513,6 +513,13 @@ can read it by hand, print it by using TeX and texinfo, or process it
 into an `info' file for use with Emacs' info mode or the standalone
 `info' program.
 
+   There is also information about writing code for GDB in the file
+`CONTRIBUTE' and at the website:
+
+	http://www.gnu.org/software/gdb/
+
+in particular in the wiki.
+
    If you are pondering writing anything but a short patch, especially
 take note of the information about copyrights in the node Submitting
 Patches.  It can take quite a while to get all the paperwork done, so

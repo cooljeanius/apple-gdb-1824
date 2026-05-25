@@ -220,7 +220,7 @@ struct vars {
 	struct cvec *cv;	/* interface cvec */
 	struct cvec *cv2;	/* utility cvec */
 	struct cvec *mcces;	/* collating-element information */
-#		define	ISCELEADER(v,c)	(v->mcces != NULL && haschr(v->mcces, (c)))
+#	define	ISCELEADER(v,c)	(v->mcces != NULL && haschr(v->mcces, (c)))
 	struct state *mccepbegin;	/* in nfa, start of MCCE prototypes */
 	struct state *mccepend;	/* in nfa, end of MCCE prototypes */
 	struct subre *lacons;	/* lookahead-constraint vector */
@@ -476,9 +476,7 @@ int wanted;			/* want enough room for this one */
  ^ static int freev(struct vars *, int);
  */
 static int
-freev(v, err)
-struct vars *v;
-int err;
+freev (struct vars *v, int err)
 {
 	if (v->re != NULL)
 		rfree(v->re);
@@ -583,12 +581,13 @@ struct nfa *nfa;
  ^ 	struct state *);
  */
 static struct subre *
-parse(v, stopper, type, init, final)
-struct vars *v;
-int stopper;			/* EOS or ')' */
-int type;			/* LACON (lookahead subRE) or PLAIN */
-struct state *init;		/* initial state */
-struct state *final;		/* final state */
+parse (
+    struct vars *v,
+    int stopper,			/* EOS or ')' */
+    int type,   			/* LACON (lookahead subRE) or PLAIN */
+    struct state *init, 		/* initial state */
+    struct state *final 		/* final state */
+)
 {
 	struct state *left;	/* scaffolding for branch */
 	struct state *right;
@@ -658,13 +657,14 @@ struct state *final;		/* final state */
  ^ 	struct state *, int);
  */
 static struct subre *
-parsebranch(v, stopper, type, left, right, partial)
-struct vars *v;
-int stopper;			/* EOS or ')' */
-int type;			/* LACON (lookahead subRE) or PLAIN */
-struct state *left;		/* leftmost state */
-struct state *right;		/* rightmost state */
-int partial;			/* is this only part of a branch? */
+parsebranch (
+    struct vars *v,
+    int stopper,			/* EOS or ')' */
+    int type,   			/* LACON (lookahead subRE) or PLAIN */
+    struct state *left, 		/* leftmost state */
+    struct state *right,		/* rightmost state */
+    int partial 			/* is this only part of a branch? */
+)
 {
 	struct state *lp;	/* left end of current construct */
 	int seencontent;	/* is there anything in this branch yet? */
@@ -1139,8 +1139,7 @@ struct state *rp;
  ^ static int scannum(struct vars *);
  */
 static int			/* value, <= DUPMAX */
-scannum(v)
-struct vars *v;
+scannum (struct vars *v)
 {
 	int n = 0;
 
@@ -1743,12 +1742,7 @@ struct vars *v;
  ^	struct state *);
  */
 static struct subre *
-subre(v, op, flags, begin, end)
-struct vars *v;
-int op;
-int flags;
-struct state *begin;
-struct state *end;
+subre (struct vars *v, int op, int flags, struct state *begin, struct state *end)
 {
 	struct subre *ret;
 
@@ -1848,9 +1842,10 @@ struct subre *t;
  ^ static int numst(struct subre *, int);
  */
 static int			/* next number */
-numst(t, start)
-struct subre *t;
-int start;			/* starting point for subtree numbers */
+numst (
+    struct subre *t,
+    int start			/* starting point for subtree numbers */
+)
 {
 	int i;
 
@@ -1960,11 +1955,7 @@ FILE *f;			/* for debug output */
  ^ static int newlacon(struct vars *, struct state *, struct state *, int);
  */
 static int			/* lacon number */
-newlacon(v, begin, end, pos)
-struct vars *v;
-struct state *begin;
-struct state *end;
-int pos;
+newlacon (struct vars *v, struct state *begin, struct state *end, int pos)
 {
 	int n;
 	struct subre *sub;
@@ -2153,10 +2144,7 @@ int nfapresent;			/* is the original NFA still around? */
  ^ static char *stid(struct subre *, char *, size_t);
  */
 static char *			/* points to buf or constant string */
-stid(t, buf, bufsize)
-struct subre *t;
-char *buf;
-size_t bufsize;
+stid (struct subre *t, char *buf, size_t bufsize)
 {
 	/* big enough for hex int or decimal t->retry? */
 	if (bufsize < sizeof(int)*2 + 3 || bufsize < sizeof(t->retry)*3 + 1)

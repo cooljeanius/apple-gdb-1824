@@ -10,7 +10,7 @@
 #endif /* !read */
 
 /* Local functions */
-local int gz_load OF((gz_statep, unsigned char *, unsigned, unsigned *));
+local int gz_load OF((gz_statep, unsigned char *, unsigned int, unsigned int *));
 local int gz_avail OF((gz_statep));
 local int gz_look OF((gz_statep));
 local int gz_decomp OF((gz_statep));
@@ -22,11 +22,8 @@ local int gz_skip OF((gz_statep, z_off64_t));
  * This function needs to loop on read(), since read() is not guaranteed to
  * read the number of bytes requested, depending on the type of descriptor.
  */
-local int gz_load(state, buf, len, have)
-    gz_statep state;
-    unsigned char *buf;
-    unsigned len;
-    unsigned *have;
+local int gz_load(gz_statep state, unsigned char *buf, unsigned int len,
+		  unsigned int *have)
 {
     int ret;
 

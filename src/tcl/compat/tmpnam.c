@@ -25,12 +25,11 @@
 
 #ifdef P_tmpdir
 #   undef P_tmpdir
-#endif
+#endif /* P_tmpdir */
 #define	P_tmpdir	"/tmp"
 
 char *
-tmpnam(s)
-	char *s;
+tmpnam (char *s)
 {
 	static char name[50];
 	char *mktemp();

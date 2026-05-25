@@ -70,17 +70,26 @@ AC_USE_SYSTEM_EXTENSIONS
 if test -n "${HOST_ARCHITECTURE}"; then
   ACX_PROG_CC_WARNING_OPTS(["-arch ${HOST_ARCHITECTURE}"],[C_ARCHFLAGS])
   test -n "${C_ARCHFLAGS}" && export C_ARCHFLAGS
-  AC_SUBST([C_ARCHFLAGS])
+  AC_SUBST([C_ARCHFLAGS])dnl
+  ## TODO: find a way to test what archflags ${SHOBJ_LD} accepts;
+  ## it chokes on aarch64, for instance:
+  if test "x${C_ARCHFLAGS}" = "xaarch64"; then
+    export CCLD_ARCHFLAGS=""
+  else
+    export CCLD_ARCHFLAGS="${C_ARCHFLAGS}"
+  fi
+  AC_SUBST([CCLD_ARCHFLAGS])dnl
+  ## dummy comment
 fi
 
 AC_PROG_MAKE_SET
 if test "x${CC}" = "x"; then
-  test -z "${CC}"
+  test -z "${CC}" || unset CC
   AC_PROG_CC
 else
-  test ! -z "${CC}" && export CC
+  test -n "${CC}" && export CC
   AC_SUBST([CC])dnl
-  ## dummy
+  ## dummy comment
 fi
 XORG_PROG_RAWCPP
 XORG_LD_WRAP
@@ -161,7 +170,7 @@ dnl#TODO: automake does actually have the AM_PROG_AR macro,
 dnl# try using that instead?
 test -n "${ARFLAGS}" || ARFLAGS="cr"
 if test "x${AR}" = "x"; then
-  test -z "${AR}"
+  test -z "${AR}" || unset AR
   AM_PROG_AR
   ## might want to switch around these checks...
   if test "x${ac_cv_prog_AR}" = "x"; then
@@ -172,10 +181,10 @@ else
   test -n "${AR}" && export AR
 fi
 if test "x${RANLIB}" = "x"; then
-  test -z "${RANLIB}"
+  test -z "${RANLIB}" || unset RANLIB
   AC_PROG_RANLIB
 else
-  test ! -z "${RANLIB}"
+  test -n "${RANLIB}" && export RANLIB
 fi
 AC_DEFUN([AC_REQUIRE_PROG_SED],[
   AC_REQUIRE([AC_PROG_SED])dnl
@@ -227,11 +236,11 @@ AC_CHECK_LIB([c],[printf])dnl
 # check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
-# FIXME: Replace `main' with a function in `-lcurses':
+# FIXME: Replace 'main' with a function in '-lcurses':
 AC_CHECK_LIB([curses],[main])dnl
-# FIXME: Replace `main' with a function in `-lhistory':
+# FIXME: Replace 'main' with a function in '-lhistory':
 AC_CHECK_LIB([history],[main])dnl
-# FIXME: Replace `main' with a function in `-lreadline':
+# FIXME: Replace 'main' with a function in '-lreadline':
 AC_CHECK_LIB([readline],[main])dnl
   ## reset these:
 LDFLAGS="${ARCHLESS_LDFLAGS}"
@@ -266,7 +275,7 @@ return *(signal (0, 0)) (0) == 1;
   ## corresponding define:
 AC_DEFINE_UNQUOTED([RETSIGTYPE],[${ac_cv_type_signal}],
                    [Define as the return type of signal handlers
-                    (`int' or `void').])dnl
+                    ('int' or 'void').])dnl
 dnl# End what used to be AC\_TYPE\_SIGNAL
 AC_TYPE_UID_T
 AC_TYPE_PID_T
@@ -351,15 +360,15 @@ AC_CHECK_HEADERS([arpa/inet.h errno.h fcntl.h features.h limits.h \
                   termio.h termios.h time.h varargs.h wchar.h wctype.h])dnl
 
 if test "x${ac_cv_header_stdint_h}" = "x"; then
-  test -z "${ac_cv_header_stdint_h}"
+  test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
   AC_CHECK_HEADERS([stdint.h])
 fi
 if test "x${ac_cv_header_strings_h}" = "x"; then
-  test -z "${ac_cv_header_strings_h}"
+  test -z "${ac_cv_header_strings_h}" || unset ac_cv_header_strings_h
   AC_CHECK_HEADERS([strings.h])
 fi
 if test "x${ac_cv_header_unistd_h}" = "x"; then
-  test -z "${ac_cv_header_unistd_h}"
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
   AC_CHECK_HEADERS([unistd.h])
 fi
 
@@ -405,26 +414,26 @@ BASH_STRUCT_ST_BLOCKS
 
 dnl# yuck
 case "${host_os}" in
-aix*)   prefer_curses=yes ;;
+aix*) prefer_curses=yes ;;
 esac
 BASH_CHECK_LIB_TERMCAP
 if test "${TERMCAP_LIB}" = "./lib/termcap/libtermcap.a"; then
-	if test "${prefer_curses}" = yes; then
-		TERMCAP_LIB=-lcurses
-	else
-		TERMCAP_LIB=-ltermcap	# default
-	fi
+  if test "${prefer_curses}" = yes; then
+    TERMCAP_LIB=-lcurses
+  else
+    ERMCAP_LIB=-ltermcap # default
+  fi
 fi
 
 BASH_CHECK_MULTIBYTE
 
 case "${host_cpu}" in
-*cray*)	LOCAL_CFLAGS=-DCRAY ;;
+*cray*) LOCAL_CFLAGS=-DCRAY ;;
 *s390*) LOCAL_CFLAGS=-fsigned-char ;;
 esac
 
 case "${host_os}" in
-isc*)	 LOCAL_CFLAGS=-Disc386 ;;
+isc*) LOCAL_CFLAGS=-Disc386 ;;
 darwin*) LOCAL_CFLAGS="-mmacosx-version-min=10.6" ;;
 esac
 
@@ -435,7 +444,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.6 dejagnu foreign std-options subdir-objects -Wno-obsolete])
+AM_INIT_AUTOMAKE([1.18.1 dejagnu foreign std-options subdir-objects -Wno-obsolete])
 AM_MAINTAINER_MODE
 m4_ifdef([AC_REQUIRE_AUX_FILE],[
   AC_REQUIRE_AUX_FILE([compile])dnl
@@ -470,35 +479,35 @@ AH_BOTTOM([
 # ${srcdir}/support/shobj-conf
 #
 if test -f ${srcdir}/support/shobj-conf; then
-        AC_MSG_CHECKING([configuration for building shared libraries])
-        eval `${CONFIG_SHELL-/bin/sh} ${srcdir}/support/shobj-conf -C "${CC}" -c ${host_cpu} -o ${host_os} -v ${host_vendor}`
-        AC_SUBST([SHOBJ_CC])dnl
-        AC_SUBST([SHOBJ_CFLAGS])dnl
-        AC_SUBST([SHOBJ_LD])dnl
-        AC_SUBST([SHOBJ_LDFLAGS])dnl
-	AC_SUBST([SHOBJ_XLDFLAGS])dnl
-        AC_SUBST([SHOBJ_LIBS])dnl
-        AC_SUBST([SHOBJ_STATUS])dnl
-	AC_SUBST([SHLIB_STATUS])dnl
-	AC_SUBST([SHLIB_XLDFLAGS])dnl
-	AC_SUBST([SHLIB_LIBSUFF])dnl
-	AC_SUBST([SHLIB_LIBVERSION])dnl
-	AC_SUBST([SHLIB_LIBS])dnl
-        AC_MSG_RESULT([${SHLIB_STATUS}])dnl
+  AC_MSG_CHECKING([configuration for building shared libraries])
+  eval `${CONFIG_SHELL-/bin/sh} ${srcdir}/support/shobj-conf -C "${CC}" -c ${host_cpu} -o ${host_os} -v ${host_vendor}`
+  AC_SUBST([SHOBJ_CC])dnl
+  AC_SUBST([SHOBJ_CFLAGS])dnl
+  AC_SUBST([SHOBJ_LD])dnl
+  AC_SUBST([SHOBJ_LDFLAGS])dnl
+  AC_SUBST([SHOBJ_XLDFLAGS])dnl
+  AC_SUBST([SHOBJ_LIBS])dnl
+  AC_SUBST([SHOBJ_STATUS])dnl
+  AC_SUBST([SHLIB_STATUS])dnl
+  AC_SUBST([SHLIB_XLDFLAGS])dnl
+  AC_SUBST([SHLIB_LIBSUFF])dnl
+  AC_SUBST([SHLIB_LIBVERSION])dnl
+  AC_SUBST([SHLIB_LIBS])dnl
+  AC_MSG_RESULT([${SHLIB_STATUS}])dnl
 
-	# SHLIB_STATUS is either `supported' or `unsupported'. If it is
-	# `unsupported', turn off any default shared library building
-	if test "${SHLIB_STATUS}" = 'unsupported'; then
-		opt_shared_libs=no
-	fi
+  # SHLIB_STATUS is either 'supported' or 'unsupported'. If it is
+  # 'unsupported', then turn off any default shared library building:
+  if test "${SHLIB_STATUS}" = 'unsupported'; then
+    opt_shared_libs=no
+  fi
 
-	# shared library versioning
-	# quoted for m4 so I can use character classes
-	SHLIB_MAJOR=[`expr "${LIBVERSION}" : '\([0-9]\)\..*'`]
-	SHLIB_MINOR=[`expr "${LIBVERSION}" : '[0-9]\.\([0-9]\).*'`]
-	AC_SUBST([SHLIB_MAJOR])dnl
-	AC_SUBST([SHLIB_MINOR])dnl
-	## done with shobj-conf
+  # shared library versioning
+  # quoted for m4 so I can use character classes
+  SHLIB_MAJOR=[`expr "${LIBVERSION}" : '\([0-9]\)\..*'`]
+  SHLIB_MINOR=[`expr "${LIBVERSION}" : '[0-9]\.\([0-9]\).*'`]
+  AC_SUBST([SHLIB_MAJOR])dnl
+  AC_SUBST([SHLIB_MINOR])dnl
+  ## done with shobj-conf
 fi
 
 if test "x${opt_static_libs}" = "xyes"; then
@@ -515,8 +524,8 @@ AC_MSG_CHECKING([libtool-related things])
 AC_MSG_RESULT([ ])
 LT_INIT([static disable-shared])dnl
 LT_LANG([C])dnl
-dnl# temporarily set this while I update everything libtool-related:
-LT_PREREQ([2.4.7])dnl
+dnl# https://lists.gnu.org/archive/html/libtool/2026-01/msg00001.html
+LT_PREREQ([2.5.4])dnl
 
 # Some final things:
 AC_MSG_NOTICE([finishing up...])
@@ -528,8 +537,8 @@ AC_SUBST([STATIC_INSTALL_TARGET])dnl
 AC_SUBST([SHARED_INSTALL_TARGET])dnl
 
 case "${host_os}" in
-msdosdjgpp*)	BUILD_DIR=`pwd.exe` ;;	# to prevent //d/path/file
-*)		BUILD_DIR=`pwd` ;;
+msdosdjgpp*) BUILD_DIR=`pwd.exe` ;; # to prevent //d/path/file
+*) BUILD_DIR=`pwd` ;;
 esac
 
 AC_SUBST([BUILD_DIR])dnl

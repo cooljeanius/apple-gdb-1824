@@ -23,10 +23,10 @@
 #include <assert.h>
 
 #ifndef EINVAL
-#define EINVAL	9
+# define EINVAL	9
 #endif
 #ifndef EOK
-#define EOK	0
+# define EOK	0
 #endif
 
 /*
@@ -1143,7 +1143,7 @@ ReflectClose(
 
 	if (rcPtr->interp) {
 	    rcmPtr = GetReflectedChannelMap (rcPtr->interp);
-	    hPtr = Tcl_FindHashEntry (&rcmPtr->map, 
+	    hPtr = Tcl_FindHashEntry (&rcmPtr->map,
 				      Tcl_GetChannelName (rcPtr->chan));
 	    if (hPtr) {
 		Tcl_DeleteHashEntry (hPtr);
@@ -1151,7 +1151,7 @@ ReflectClose(
 	}
 #ifdef TCL_THREADS
         rcmPtr = GetThreadReflectedChannelMap();
-	hPtr = Tcl_FindHashEntry (&rcmPtr->map, 
+	hPtr = Tcl_FindHashEntry (&rcmPtr->map,
 				  Tcl_GetChannelName (rcPtr->chan));
 	if (hPtr) {
 	    Tcl_DeleteHashEntry (hPtr);
@@ -2561,7 +2561,7 @@ DeleteReflectedChannelMap(
  */
 
 static ReflectedChannelMap *
-GetThreadReflectedChannelMap()
+GetThreadReflectedChannelMap (void)
 {
     ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
 
@@ -2851,12 +2851,12 @@ ForwardProc(
 	 */
 
 	rcmPtr = GetReflectedChannelMap (interp);
-	hPtr = Tcl_FindHashEntry (&rcmPtr->map, 
+	hPtr = Tcl_FindHashEntry (&rcmPtr->map,
 				  Tcl_GetChannelName (rcPtr->chan));
 	Tcl_DeleteHashEntry (hPtr);
 
         rcmPtr = GetThreadReflectedChannelMap();
-	hPtr = Tcl_FindHashEntry (&rcmPtr->map, 
+	hPtr = Tcl_FindHashEntry (&rcmPtr->map,
 				  Tcl_GetChannelName (rcPtr->chan));
 	Tcl_DeleteHashEntry (hPtr);
 

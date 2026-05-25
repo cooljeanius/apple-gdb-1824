@@ -149,7 +149,7 @@ static void		TimerSetupProc _ANSI_ARGS_((ClientData clientData,
  */
 
 static ThreadSpecificData *
-InitTimer()
+InitTimer (void)
 {
     ThreadSpecificData *tsdPtr =
 	(ThreadSpecificData *) TclThreadDataKeyGet(&dataKey);
@@ -660,7 +660,7 @@ Tcl_CancelIdleCall(proc, clientData)
  */
 
 int
-TclServiceIdle()
+TclServiceIdle (void)
 {
     IdleHandler *idlePtr;
     int oldGeneration;
@@ -1081,8 +1081,9 @@ AfterProc(clientData)
  */
 
 static void
-FreeAfterPtr(afterPtr)
-    AfterInfo *afterPtr;		/* Command to be deleted. */
+FreeAfterPtr (
+    AfterInfo *afterPtr 		/* Command to be deleted. */
+)
 {
     AfterInfo *prevPtr;
     AfterAssocData *assocPtr = afterPtr->assocPtr;

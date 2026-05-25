@@ -1,8 +1,10 @@
-# signbit.m4 serial 21
-dnl Copyright (C) 2007-2023 Free Software Foundation, Inc.
+# signbit.m4
+# serial 23
+dnl Copyright (C) 2007-2026 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
+dnl This file is offered as-is, without any warranty.
 
 AC_DEFUN([gl_SIGNBIT],
 [
@@ -34,7 +36,7 @@ AC_DEFUN([gl_SIGNBIT],
                                # Guess yes on musl systems.
            *-musl* | midipix*) gl_cv_func_signbit="guessing yes" ;;
                                # Guess yes on native Windows.
-           mingw*)             gl_cv_func_signbit="guessing yes" ;;
+           mingw* | windows*)  gl_cv_func_signbit="guessing yes" ;;
                                # If we don't know, obey --enable-cross-guesses.
            *)                  gl_cv_func_signbit="$gl_cross_guess_normal" ;;
          esac
@@ -68,7 +70,7 @@ AC_DEFUN([gl_SIGNBIT],
                                # Guess yes on musl systems.
            *-musl* | midipix*) gl_cv_func_signbit_builtins="guessing yes" ;;
                                # Guess yes on mingw, no on MSVC.
-           mingw*)             if test -n "$GCC"; then
+           mingw* | windows*)  if test -n "$GCC"; then
                                  gl_cv_func_signbit_builtins="guessing yes"
                                else
                                  gl_cv_func_signbit_builtins="guessing no"
@@ -197,7 +199,7 @@ double m0d = -p0d;
    But that expression does not work on other platforms, such as when
    cross-compiling to PowerPC on Mac OS X 10.5.  */
 long double p0l = 0.0L;
-#if defined __hpux || defined __sgi
+#if defined __hpux
 long double m0l = -LDBL_MIN * LDBL_MIN;
 #else
 long double m0l = -p0l;

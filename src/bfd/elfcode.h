@@ -67,8 +67,8 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 #ifndef ELFCODE_H
 #define ELFCODE_H 1
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "libiberty.h"
 #include "bfdlink.h"
 #include "libbfd.h"

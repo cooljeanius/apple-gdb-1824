@@ -79,9 +79,9 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
 AC_REQUIRE_HEADER_STDC
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_HEADER_TIME
-AC_PATH_X
+AC_PATH_XTRA
 AC_CHECK_HEADERS([fcntl.h limits.h stddef.h stdio.h sys/file.h \
-                  sys/ioctl.h sys/time.h])dnl
+                  sys/ioctl.h sys/time.h X11/Xlib.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST

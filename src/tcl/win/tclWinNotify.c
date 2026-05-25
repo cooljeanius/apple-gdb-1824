@@ -1,4 +1,4 @@
-/* 
+/*
  * tclWinNotify.c --
  *
  *	This file contains Windows-specific procedures for the notifier,
@@ -26,7 +26,7 @@
 /*
  * The following static structure contains the state information for the
  * Windows implementation of the Tcl notifier.  One of these structures
- * is created for each thread that is using the notifier.  
+ * is created for each thread that is using the notifier.
  */
 
 typedef struct ThreadSpecificData {
@@ -325,9 +325,10 @@ Tcl_SetTimer(
  */
 
 void
-Tcl_ServiceModeHook(mode)
-    int mode;			/* Either TCL_SERVICE_ALL, or
+Tcl_ServiceModeHook (
+    int mode			/* Either TCL_SERVICE_ALL, or
 				 * TCL_SERVICE_NONE. */
+)
 {
     ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
 
@@ -390,7 +391,7 @@ NotifierProc(
     } else if (message != WM_TIMER) {
 	return DefWindowProc(hwnd, message, wParam, lParam);
     }
-	
+
     /*
      * Process all of the runnable events.
      */
@@ -518,8 +519,9 @@ Tcl_WaitForEvent(
  */
 
 void
-Tcl_Sleep(ms)
-    int ms;			/* Number of milliseconds to sleep. */
+Tcl_Sleep (
+    int ms			/* Number of milliseconds to sleep. */
+)
 {
     /*
      * Simply calling 'Sleep' for the requisite number of milliseconds
@@ -542,7 +544,7 @@ Tcl_Sleep(ms)
 	++desired.sec;
 	desired.usec -= 1000000;
     }
-	
+
     for ( ; ; ) {
 	Sleep( sleepTime );
 	Tcl_GetTime( &now );
@@ -555,5 +557,6 @@ Tcl_Sleep(ms)
 	sleepTime = ( ( 1000 * ( desired.sec - now.sec ) )
 		      + ( ( desired.usec - now.usec ) / 1000 ) );
     }
-
 }
+
+/* EOF */
