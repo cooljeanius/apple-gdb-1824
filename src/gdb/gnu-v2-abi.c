@@ -281,8 +281,7 @@ gnuv2_value_rtti_type (struct value *v, int *full, int *top, int *using_enc)
             }
           else
             {
-              if (full)
-                *full = 1;
+              *full = 1;
             }
         }
     }
