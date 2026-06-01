@@ -286,7 +286,7 @@ udi_open (char *name, int from_tty)
   if (from_tty)
     {
       printf_filtered ("Connected via UDI socket,\n\
- DFE-IPC version %x.%x.%x  TIP-IPC version %x.%x.%x  TIP version %x.%x.%x\n %s\n",
+ DFE-IPC version %lx.%lx.%lx  TIP-IPC version %lx.%lx.%lx  TIP version %lx.%lx.%lx\n %s\n",
 	       (DFEIPCId >> 8) & 0xf, (DFEIPCId >> 4) & 0xf, DFEIPCId & 0xf,
 	       (TIPIPCId >> 8) & 0xf, (TIPIPCId >> 4) & 0xf, TIPIPCId & 0xf,
 	       (TargetId >> 8) & 0xf, (TargetId >> 4) & 0xf, TargetId & 0xf,
