@@ -334,7 +334,7 @@ static void define_set(char *theSetting, Gdb_Set_Funct sfunct, Gdb_Set_Type type
 	
 	helpInfo = gdb_malloc(strlen(help) + 1);
 	strcpy(helpInfo, help);
-    } else if (helpInfo && strncmp(helpInfo, "Set ", 4) != 0) {
+    } else if (strncmp(helpInfo, "Set ", 4) != 0) {
 	gdb_error("gdb_define_set() help info MUST begin with \"Set \" exactly");
 	return;
     }
