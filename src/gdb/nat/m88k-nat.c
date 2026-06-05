@@ -61,8 +61,8 @@ extern jmp_buf stack_jmp;
 extern int errno;
 
 void
-fetch_inferior_registers (regno)
-     int regno;		/* Original value discarded */
+fetch_inferior_registers(int regno /* Original value discarded */
+)
 {
   register unsigned int regaddr;
   char buf[MAX_REGISTER_RAW_SIZE];
@@ -105,8 +105,7 @@ fetch_inferior_registers (regno)
    Otherwise, REGNO specifies which register (so we can save time).  */
 
 void
-store_inferior_registers (regno)
-     int regno;
+store_inferior_registers(int regno)
 {
   register unsigned int regaddr;
   char buf[80];
@@ -173,7 +172,8 @@ store_inferior_registers (regno)
 
 
 /* blockend is the address of the end of the user structure */
-m88k_register_u_addr (blockend, regnum)
+int
+m88k_register_u_addr(int blockend, int regnum)
 {
   struct USER u;
   int ustart = blockend - sizeof (struct USER);

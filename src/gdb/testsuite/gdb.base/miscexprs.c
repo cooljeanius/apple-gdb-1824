@@ -1,11 +1,11 @@
 void
-marker1 ()
+marker1(void)
 {
    
 }
 
 int
-main ()
+main(void)
 {
   STORAGE struct {
     char c[100];

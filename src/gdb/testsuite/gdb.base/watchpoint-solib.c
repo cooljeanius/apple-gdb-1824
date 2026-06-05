@@ -32,8 +32,8 @@
 #include <dlfcn.h>
 #endif
 
-
-void open_shlib ()
+void
+open_shlib(void)
 {
   void *handle;
   void (*foo) (int);
@@ -60,8 +60,8 @@ void open_shlib ()
   dlclose (handle);
 }
 
-
-int main()
+int
+main(void)
 {
   open_shlib ();
   return 0;

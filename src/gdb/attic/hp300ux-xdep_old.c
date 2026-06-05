@@ -1,7 +1,7 @@
 /* hp300ux-xdep.c
    HP/UX interface for HP 300's, for GDB when running under Unix.
    Copyright (C) 1986, 1987, 1989, 1991 Free Software Foundation, Inc.
-   
+
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "frame.h"
 #include "inferior.h"
 
-/* Defining this means some system include files define some extra stuff.  */
+/* Defining this means some system include files define some extra stuff: */
 #define WOPR
 #include <sys/param.h>
 #include <sys/dir.h>
@@ -48,16 +48,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
    - KERNEL_U_ADDR)
 
 static void
-fetch_inferior_register (regno, regaddr)
-     register int regno;
-     register unsigned int regaddr;
+fetch_inferior_register(register int regno, register unsigned int regaddr)
 {
 #ifndef HPUX_VERSION_5
   if (regno == PS_REGNUM)
     {
       union { int i; short s[2]; } ps_val;
       int regval;
-      
+
       ps_val.i = (ptrace (PT_RUAREA, inferior_pid, regaddr, 0));
       regval = ps_val.s[0];
       supply_register (regno, &regval);
@@ -67,7 +65,7 @@ fetch_inferior_register (regno, regaddr)
     {
       char buf[MAX_REGISTER_RAW_SIZE];
       register int i;
-      
+
       for (i = 0; i < REGISTER_RAW_SIZE (regno); i += sizeof (int))
 	{
 	  *(int *) &buf[i] = ptrace (PT_RUAREA, inferior_pid, regaddr, 0);
@@ -79,10 +77,7 @@ fetch_inferior_register (regno, regaddr)
 }
 
 static void
-store_inferior_register_1 (regno, regaddr, value)
-     int regno;
-     unsigned int regaddr;
-     int value;
+store_inferior_register_1(int regno, unsigned int regaddr, int value)
 {
   errno = 0;
   ptrace (PT_WUAREA, inferior_pid, regaddr, value);
@@ -92,7 +87,7 @@ store_inferior_register_1 (regno, regaddr, value)
   if (errno != 0)
     {
       char string_buf[64];
-      
+
       sprintf (string_buf, "writing register number %d", regno);
       perror_with_name (string_buf);
     }
@@ -101,15 +96,13 @@ store_inferior_register_1 (regno, regaddr, value)
 }
 
 static void
-store_inferior_register (regno, regaddr)
-     register int regno;
-     register unsigned int regaddr;
+store_inferior_register(register int regno, register unsigned int regaddr)
 {
 #ifndef HPUX_VERSION_5
   if (regno == PS_REGNUM)
     {
       union { int i; short s[2]; } ps_val;
-      
+
       ps_val.i = (ptrace (PT_RUAREA, inferior_pid, regaddr, 0));
       ps_val.s[0] = (read_register (regno));
       store_inferior_register_1 (regno, regaddr, ps_val.i);
@@ -120,7 +113,7 @@ store_inferior_register (regno, regaddr)
       char buf[MAX_REGISTER_RAW_SIZE];
       register int i;
       extern char registers[];
-      
+
       for (i = 0; i < REGISTER_RAW_SIZE (regno); i += sizeof (int))
 	{
 	  store_inferior_register_1
@@ -133,13 +126,12 @@ store_inferior_register (regno, regaddr)
 }
 
 void
-fetch_inferior_registers (regno)
-     int regno;
+fetch_inferior_registers(int regno)
 {
   struct user u;
   register int regno;
   register unsigned int ar0_offset;
-  
+
   ar0_offset = (INFERIOR_AR0 (u));
   if (regno == -1)
     {
@@ -159,8 +151,8 @@ fetch_inferior_registers (regno)
    If REGNO is -1, do this for all registers.
    Otherwise, REGNO specifies which register (so we can save time).  */
 
-store_inferior_registers (regno)
-     register int regno;
+int
+store_inferior_registers(register int regno)
 {
   struct user u;
   register unsigned int ar0_offset;
@@ -171,7 +163,7 @@ store_inferior_registers (regno)
       store_inferior_register (regno, (FP_REGISTER_ADDR (u, regno)));
       return;
     }
-  
+
   ar0_offset = (INFERIOR_AR0 (u));
   if (regno >= 0)
     {
@@ -196,10 +188,7 @@ store_inferior_registers (regno)
 #endif /* HPUX_VERSION_5 */
 
 void
-fetch_core_registers (core_reg_sect, core_reg_size, which)
-     char *core_reg_sect;
-     int core_reg_size;
-     int which;
+fetch_core_registers(char *core_reg_sect, int core_reg_size, int which)
 {
   int val, regno;
   struct user u;
@@ -208,15 +197,13 @@ fetch_core_registers (core_reg_sect, core_reg_size, which)
   char *buf;
 
   if (which == 0) {
-    if (core_reg_size < 
-		  ((char *) &es.e_offset - (char *) &es.e_regs[R0]))
-	  error ("Not enough registers in core file");
-    for (regno = 0; (regno < PS_REGNUM); regno++)
-      supply_register (regno, &es.e_regs[regno + R0]);
-    val = es.e_PS;
-    supply_register (regno++, &val);
-    supply_register (regno++, &es.e_PC);
-
+      if (core_reg_size < ((char *) &es.e_offset - (char *) &es.e_regs[R0]))
+	error("Not enough registers in core file");
+      for (regno = 0; (regno < PS_REGNUM); regno++)
+	supply_register(regno, &es.e_regs[regno + R0]);
+      val = es.e_PS;
+      supply_register(regno++, &val);
+      supply_register(regno++, &es.e_PC);
   } else if (which == 2) {
 
     /* FIXME: This may not work if the float regs and control regs are

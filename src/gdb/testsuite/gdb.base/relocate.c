@@ -25,13 +25,13 @@ int global_foo = 3;
 int global_bar = 4;
 
 int
-function_foo ()
+function_foo(void)
 {
   return 5;
 }
 
 int
-function_bar ()
+function_bar(void)
 {
   return 6;
 }

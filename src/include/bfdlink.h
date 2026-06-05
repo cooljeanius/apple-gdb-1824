@@ -1,6 +1,5 @@
-/* bfdlink.h -- header file for BFD link routines
-   Copyright 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
-   2003, 2004, 2005 Free Software Foundation, Inc.
+/* bfdlink.h -- header file for BFD link routines -*- C -*-
+   Copyright 1993-2005 Free Software Foundation, Inc.
    Written by Steve Chamberlain and Ian Lance Taylor, Cygnus Support.
 
    This file is part of BFD, the Binary File Descriptor library.
@@ -91,7 +90,7 @@ struct bfd_link_hash_entry
 {
   /* Base hash table entry structure: */
   struct bfd_hash_entry root;
-  
+
 #ifdef USE_NEW_ELF_BFD_STRUCT_MEMBERS
   /* Type of this entry: */
   ENUM_BITFIELD(bfd_link_hash_type) type : 8;
@@ -99,7 +98,7 @@ struct bfd_link_hash_entry
   /* Symbol is referenced in a normal regular object file,
    * as distinct from a LTO IR object file: */
   unsigned int non_ir_ref_regular : 1;
-  
+
   /* Symbol is referenced in a normal dynamic object file,
    * as distinct from a LTO IR object file: */
   unsigned int non_ir_ref_dynamic : 1;
@@ -107,7 +106,7 @@ struct bfd_link_hash_entry
   /* Symbol is a built-in define.  These will be overridden by PROVIDE
    * in a linker script: */
   unsigned int linker_def : 1;
-  
+
   /* Symbol defined in a linker script: */
   unsigned int ldscript_def : 1;
 #else
@@ -368,7 +367,7 @@ struct bfd_link_info
   /* Criteria for skipping symbols when detemining
      whether to include an object from an archive. */
   enum bfd_link_common_skip_ar_aymbols common_skip_ar_aymbols;
-  
+
 #ifdef USE_NEW_ELF_BFD_STRUCT_MEMBERS
   /* TRUE if the linker script contained an explicit PHDRS command.  */
   unsigned int user_phdrs: 1;
@@ -402,10 +401,10 @@ struct bfd_link_info
   /* Hash table of symbols which may be left unresolved during
    * a link.  If this is NULL, no symbols can be left unresolved.  */
   struct bfd_hash_table *ignore_hash;
-  
+
   /* The output BFD.  */
   bfd *output_bfd;
-  
+
   /* The import library generated.  */
   bfd *out_implib_bfd;
 #endif /* USE_NEW_ELF_BFD_STRUCT_MEMBERS */
@@ -752,7 +751,7 @@ struct bfd_elf_version_tree
     (struct bfd_elf_version_expr_head *head,
      struct bfd_elf_version_expr *prev, const char *sym);
 };
-  
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -15,7 +15,8 @@ struct foo
   };
 };
 
-int main ()
+int
+main(void)
 {
   struct foo mine = {1, 2, 3, 4.0};
   struct foo *nother = &mine;

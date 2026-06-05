@@ -57,9 +57,9 @@ EXTERN int		Tclxttest_Init _ANSI_ARGS_((Tcl_Interp *interp));
  */
 
 int
-main(argc, argv)
-    int argc;			/* Number of command-line arguments. */
-    char **argv;		/* Values of command-line arguments. */
+main(int argc,   /* Number of command-line arguments. */
+     char **argv /* Values of command-line arguments. */
+)
 {
 #ifdef TCL_XT_TEST
     XtToolkitInitialize();

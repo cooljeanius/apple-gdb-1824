@@ -38,28 +38,33 @@ struct foo struct1, struct2, *ptr1, *ptr2;
 
 int doread = 0;
 
-void marker1 ()
+void
+marker1(void)
 {
 }
 
-void marker2 ()
+void
+marker2(void)
 {
 }
 
-void marker4 ()
+void
+marker4(void)
 {
 }
 
-void marker5 ()
+void
+marker5(void)
 {
 }
 
-void marker6 ()
+void
+marker6(void)
 {
 }
 
-void recurser (x)
-  int  x;
+void
+recurser(int x)
 {
   int  local_x;
 
@@ -69,7 +74,7 @@ void recurser (x)
 }
 
 void
-func2 ()
+func2(void)
 {
   int  local_a;
   static int  static_b;
@@ -80,7 +85,7 @@ func2 ()
 }
 
 int
-func1 ()
+func1(void)
 {
   /* The point of this is that we will set a breakpoint at this call.
 
@@ -94,7 +99,8 @@ func1 ()
   return 73;
 }
 
-int main ()
+int
+main(void)
 {
   struct1.val = 1;
   struct2.val = 2;

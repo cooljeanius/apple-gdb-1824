@@ -20,13 +20,13 @@ int my_global_symbol = 42;
 static int my_static_symbol;
 
 int
-main ()
+main(void)
 {
   return my_global_func ();
 }
 
 int
-my_global_func ()
+my_global_func(void)
 {
   my_static_symbol = my_global_symbol;
   my_global_symbol = my_static_symbol + my_global_symbol;

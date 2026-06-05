@@ -5,7 +5,8 @@ static int filelocal_bss;	/* In BSS section */
 #endif
 static const int filelocal_ro = 202;	/* In Read-Only Data section */
 
-void foo ()
+void
+foo(void)
 {
 
   void bar ();
@@ -19,21 +20,24 @@ void foo ()
   bar ();
 }
 
-void bar ()
+void
+bar(void)
 {
   static int funclocal = 4;	/* In data section */
   static int funclocal_bss;	/* In BSS section */
   funclocal_bss = 104;
 }
 
-void init1 ()
+void
+init1(void)
 {
   filelocal_bss = 102;
 }
 
 /* On some systems, such as AIX, unreferenced variables are deleted
    from the executable.  */
-void usestatics1 ()
+void
+usestatics1(void)
 {
   void useit1 (int val);
   

@@ -18,7 +18,7 @@
 #include <unistd.h>
 
 int
-main ()
+main(void)
 {
   sleep (600);
   return 0;

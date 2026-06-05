@@ -103,7 +103,7 @@ extern void exceptionHandler ();	/* assign an exception handler   */
 
 /*****************************************************************************
  * BUFMAX defines the maximum number of characters in inbound/outbound buffers
- * at least NUMREGBYTES*2 are needed for register packets 
+ * at least NUMREGBYTES*2 are needed for register packets
  */
 #define BUFMAX 400
 
@@ -170,7 +170,7 @@ int gdb_m32r_vector = -1;
 
 #if 0
 #include "syscall.h"		/* for SYS_exit, SYS_write etc. */
-#endif
+#endif /* 0 */
 
 /* Global entry points:
  */
@@ -491,9 +491,9 @@ handle_exception (int exceptionVector)
 	    }
 	  else			/* continuing, not single-stepping */
 	    {
-	      /* OK, about to do a "continue".  First check to see if the 
-	         target pc is on an odd boundary (second instruction in the 
-	         word).  If so, we must do a single-step first, because 
+	      /* OK, about to do a "continue".  First check to see if the
+	         target pc is on an odd boundary (second instruction in the
+	         word).  If so, we must do a single-step first, because
 	         ya can't jump or return back to an odd boundary!  */
 	      if ((registers[PC] & 2) != 0)
 		prepare_to_step (1);
@@ -503,7 +503,7 @@ handle_exception (int exceptionVector)
 
 	case 'D':		/* Detach */
 #if 0
-	  /* I am interpreting this to mean, release the board from control 
+	  /* I am interpreting this to mean, release the board from control
 	     by the remote stub.  To do this, I am restoring the original
 	     (or at least previous) exception vectors.
 	   */
@@ -945,7 +945,7 @@ hexToInt (unsigned char **ptr, int *intValue)
 
 /*
   Table of branch instructions:
-  
+
   10B6		RTE	return from trap or exception
   1FCr		JMP	jump
   1ECr		JL	jump and link
@@ -1006,7 +1006,7 @@ isLongBranch (unsigned char *instr)
   return 0;
 }
 
-/* if address is NOT on a 4-byte boundary, or high-bit of instr is zero, 
+/* if address is NOT on a 4-byte boundary, or high-bit of instr is zero,
    then it's a 2-byte instruction, else it's a 4-byte instruction.  */
 
 #define INSTRUCTION_SIZE(addr) \
@@ -1146,13 +1146,13 @@ static struct STEPPING_CONTEXT
 
 /* Function: prepare_to_step
    Called from handle_exception to prepare the user program to single-step.
-   Places a trap instruction after the target instruction, with special 
-   extra handling for branch instructions and for instructions in the 
-   second half-word of a word.  
+   Places a trap instruction after the target instruction, with special
+   extra handling for branch instructions and for instructions in the
+   second half-word of a word.
 
-   Returns: True  if we should actually execute the instruction; 
+   Returns: True  if we should actually execute the instruction;
 	    False if we are going to emulate executing the instruction,
-	    in which case we simply report to GDB that the instruction 
+	    in which case we simply report to GDB that the instruction
 	    has already been executed.  */
 
 #define TRAP1  0x10f1;		/* trap #1 instruction */
@@ -1162,14 +1162,15 @@ static unsigned short trap1 = TRAP1;
 static unsigned short noop = NOOP;
 
 static int
-prepare_to_step (continue_p)
-     int continue_p;		/* if this isn't REALLY a single-step (see below) */
+prepare_to_step(
+  int continue_p /* if this isn't REALLY a single-step (see below) */
+)
 {
   unsigned long pc = registers[PC];
   int branchCode = isBranch ((unsigned char *) pc);
   unsigned char *p;
 
-  /* zero out the stepping context 
+  /* zero out the stepping context
      (paranoia -- it should already be zeroed) */
   for (p = (unsigned char *) &stepping;
        p < ((unsigned char *) &stepping) + sizeof (stepping); p++)
@@ -1202,7 +1203,7 @@ prepare_to_step (continue_p)
       stepping.trap1_save = *(unsigned short *) stepping.trap1_addr;
       *(unsigned short *) stepping.trap1_addr = trap1;
     }
-  /* "continue_p" means that we are actually doing a continue, and not 
+  /* "continue_p" means that we are actually doing a continue, and not
      being requested to single-step by GDB.  Sometimes we have to do
      one single-step before continuing, because the PC is on a half-word
      boundary.  There's no way to simply resume at such an address.  */
@@ -1212,13 +1213,13 @@ prepare_to_step (continue_p)
 }
 
 /* Function: finish_from_step
-   Called from handle_exception to finish up when the user program 
+   Called from handle_exception to finish up when the user program
    returns from a single-step.  Replaces the instructions that had
-   been overwritten by traps or no-ops, 
+   been overwritten by traps or no-ops,
 
    Returns: True  if we should notify GDB that the target stopped.
 	    False if we only single-stepped because we had to before we
-	    could continue (ie. we were trying to continue at a 
+	    could continue (ie. we were trying to continue at a
 	    half-word boundary).  In that case don't notify GDB:
 	    just "continue continuing".  */
 
@@ -1761,8 +1762,7 @@ strlen (const unsigned char *src)
 
 #if 0
 void
-exit (code)
-     int code;
+exit (int code)
 {
   _exit (code);
 }

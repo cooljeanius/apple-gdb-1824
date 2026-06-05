@@ -32,7 +32,8 @@ void marker (struct s_2_by_4 s_whatever)
   return;
 }
 
-void foo ()
+void
+foo(void)
 {
   /* I want this variable in a register but I can't really force it */
   register struct s_2_by_4 s24;
@@ -42,7 +43,8 @@ void foo ()
   return;
 }
 
-int main ()
+int
+main(void)
 {
   foo ();
 }

@@ -2280,7 +2280,7 @@ stamp-splint: $(LINTFILES)
 	$(AM_V_CLANG)$(RUN_CLANG_ANALYZER) -Wall -Wextra \
 	  -o $(analysisdir)/$@ $<
 
-# To actually run clang:
+# To actually run clang (and gcc as a static analyzer):
 lint-local: stamp-clang stamp-gcc-analysis
 stamp-clang: $(LINTFILES) $(DEPFILES)
 	$(MAKE) $(AM_V_MFLAG) `echo "$(LINTFILES) init.c" | uniq | $(SED) 's/\.c /\.plist /g' | $(SED) 's/\.y /\.plist /g'`

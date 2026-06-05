@@ -37,47 +37,49 @@ static char rcsid[] =
 #include "ttycntl.h"
 
 #ifdef USG
-	int send_break( fd )
-	    int fd;	/* File descriptor of i960 tty */
-	{
-		TTY_FLUSH(fd);
-		ioctl( fd, TCSBRK, 0 );
-		return 0;
-	}
+int
+send_break(int fd /* File descriptor of i960 tty */
+)
+{
+  TTY_FLUSH(fd);
+  ioctl(fd, TCSBRK, 0);
+  return 0;
+}
 
 #else	/* BSD Unix */
 
 #	include <signal.h>
 #	include <sys/time.h>
 
-	static void
-	alarm_handler()
-	{
-		return;
-	}
+static void
+alarm_handler(void)
+{
+  return;
+}
 
-	int send_break( fd )
-	    int fd;	/* File descriptor of i960 tty */
-	{
-		struct itimerval t;
-		void (*old_alarm)();    /* Alarm signal handler on entry */
+int
+send_break(int fd /* File descriptor of i960 tty */
+)
+{
+  struct itimerval t;
+  void (*old_alarm)(); /* Alarm signal handler on entry */
 
-		old_alarm = signal( SIGALRM, alarm_handler );
+  old_alarm = signal(SIGALRM, alarm_handler);
 
-		/* Set timer for 1/4 second break */
-		t.it_value.tv_sec = 0;
-		t.it_value.tv_usec = 250000;
-		t.it_interval.tv_sec = t.it_interval.tv_usec = 0;
+  /* Set timer for 1/4 second break */
+  t.it_value.tv_sec = 0;
+  t.it_value.tv_usec = 250000;
+  t.it_interval.tv_sec = t.it_interval.tv_usec = 0;
 
-		/* Assert break for the duration of the timer */
-		ioctl( fd, TIOCSBRK, 0 );
-		setitimer( ITIMER_REAL, &t, 0 );
-		sigpause(0);
-		ioctl( fd, TIOCCBRK, 0 );
+  /* Assert break for the duration of the timer */
+  ioctl(fd, TIOCSBRK, 0);
+  setitimer(ITIMER_REAL, &t, 0);
+  sigpause(0);
+  ioctl(fd, TIOCCBRK, 0);
 
-		signal( SIGALRM, old_alarm );
-		return 0;
-	}
+  signal(SIGALRM, old_alarm);
+  return 0;
+}
 #endif /* USG */
 
 /* EOF */

@@ -2474,9 +2474,9 @@ NAME (aout, bfd_free_cached_info) (bfd *abfd)
 /* Routine to create an entry in an a.out link hash table.  */
 
 struct bfd_hash_entry *
-NAME (aout, link_hash_newfunc) (struct bfd_hash_entry *entry,
-				struct bfd_hash_table *table,
-				const char *string)
+NAME(int aout, int link_hash_newfunc)(struct bfd_hash_entry *entry,
+				      struct bfd_hash_table *table,
+				      const char *string)
 {
   struct aout_link_hash_entry *ret = (struct aout_link_hash_entry *)entry;
 

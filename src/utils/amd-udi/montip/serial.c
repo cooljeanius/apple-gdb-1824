@@ -565,8 +565,8 @@ INT32 ignore2;
 ** a character is returned.
 */
 
-int
-get_byte_serial()
+   int
+   get_byte_serial(void)
    {
    int result=-1;
 
@@ -604,7 +604,8 @@ get_byte_serial()
 **        "iret" instead of the usual "ret".
 */
 
-void interrupt serial_int()
+   void interrupt
+   serial_int(void)
    {
    int c;
 

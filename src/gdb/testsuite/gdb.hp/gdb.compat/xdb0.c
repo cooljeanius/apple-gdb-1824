@@ -1,6 +1,7 @@
 #include "xdb0.h"
 
-main ()
+int
+main(void)
 {
     int x;
 #ifdef usestubs
@@ -36,7 +37,7 @@ main ()
 }
 
 static void
-unused ()
+unused(void)
 {
     /* Not used for anything */
 }

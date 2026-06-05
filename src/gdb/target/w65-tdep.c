@@ -54,13 +54,14 @@ read_memory_pointer (x)
   return read_memory_integer (ADDR_BITS_REMOVE (x), 4);
 }
 
-init_frame_pc ()
+int
+init_frame_pc(void)
 {
   abort ();
 }
 
 void
-w65_push_dummy_frame ()
+w65_push_dummy_frame(void)
 {
   abort ();
 }
@@ -75,9 +76,7 @@ w65_push_dummy_frame ()
    it is fairly expensive.  */
 
 void
-frame_find_saved_regs (fip, fsrp)
-     struct frame_info *fip;
-     struct frame_saved_regs *fsrp;
+frame_find_saved_regs(struct frame_info *fip, struct frame_saved_regs *fsrp)
 {
   int locals;
   CORE_ADDR pc;
@@ -88,18 +87,15 @@ frame_find_saved_regs (fip, fsrp)
 }
 
 int
-saved_pc_after_call ()
+saved_pc_after_call(void)
 {
   int sp = read_register (SP_REGNUM);
   int val = read_memory_integer (sp + 1, 4);
   return ADDR_BITS_REMOVE (val);
 }
 
-
-extract_return_value (type, regbuf, valbuf)
-     struct type *type;
-     char *regbuf;
-     char *valbuf;
+int
+extract_return_value(struct type *type, char *regbuf, char *valbuf)
 {
   int b;
   int len = TYPE_LENGTH (type);
@@ -114,9 +110,7 @@ extract_return_value (type, regbuf, valbuf)
 }
 
 void
-write_return_value (type, valbuf)
-     struct type *type;
-     char *valbuf;
+write_return_value(struct type *type, char *valbuf)
 {
   int reg;
   int len;
@@ -135,26 +129,28 @@ store_struct_return (addr, sp)
 }
 
 void
-w65_pop_frame ()
+w65_pop_frame(void)
 {
 }
 
-init_extra_frame_info ()
+int
+init_extra_frame_info(void)
 {
 }
 
-pop_frame ()
+int
+pop_frame(void)
 {
 }
 
-w65_frame_chain (thisframe)
-     struct frame_info *thisframe;
+int
+w65_frame_chain(struct frame_info *thisframe)
 {
   return 0xffff & read_memory_integer ((thisframe)->frame, 2);
 }
 
 static int
-gb (x)
+gb(int x)
 {
   return read_memory_integer (x, 1) & 0xff;
 }
@@ -227,15 +223,14 @@ w65_skip_prologue (pc)
   return pc;
 }
 
-
-register_raw_size (n)
+int
+register_raw_size(int n)
 {
   return sim_reg_size (n);
 }
 
-
 void
-print_register_hook (regno)
+print_register_hook(int regno)
 {
   if (regno == P_REGNUM)
     {
@@ -289,7 +284,7 @@ print_register_hook (regno)
 }
 
 void
-_initialize_w65_tdep ()
+_initialize_w65_tdep(void)
 {
   tm_print_insn = print_insn_w65;
 }

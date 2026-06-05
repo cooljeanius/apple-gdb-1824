@@ -13,8 +13,7 @@ handle_USR1 (int sig)
 }
 #else
 void
-handle_USR1 (sig)
-     int sig;
+handle_USR1(int sig)
 {
 }
 #endif

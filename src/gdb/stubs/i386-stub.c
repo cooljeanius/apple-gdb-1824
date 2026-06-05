@@ -556,9 +556,7 @@ putpacket(unsigned char *buffer)
 }
 
 void
-debug_error (format, parm)
-     char *format;
-     char *parm;
+debug_error(char *format, char *parm)
 {
   if (remote_debug)
     fprintf (stderr, format, parm);

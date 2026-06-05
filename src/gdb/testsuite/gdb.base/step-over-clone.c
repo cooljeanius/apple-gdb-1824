@@ -21,7 +21,7 @@
 #include <sched.h>
 
 static void
-marker ()
+marker(void)
 {}
 
 #define STACK_SIZE 0x1000

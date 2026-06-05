@@ -56,10 +56,7 @@ static int sig_table_nelts = 0;
 
 /* Enter signal number NUMBER into the tables with ABBREV and NAME.  */
 static void
-init_sig (number, abbrev, name)
-     int number;
-     CONST char *abbrev;
-     CONST char *name;
+init_sig(int number, CONST char *abbrev, CONST char *name)
 {
 #if SYS_SIGLIST_MISSING
   sys_siglist[number] = (char *) name;
@@ -68,7 +65,8 @@ init_sig (number, abbrev, name)
   sig_table[sig_table_nelts++].abbrev = abbrev;
 }
 
-static void init_sigs ()
+static void
+init_sigs(void)
 {
 #if SYS_SIGLIST_MISSING
   int i;
@@ -205,8 +203,7 @@ static void init_sigs ()
 
 /* Return the abbreviation for signal NUMBER.  */
 char *
-sig_abbrev (number)
-     int number;
+sig_abbrev(int number)
 {
   int i;
 
@@ -219,8 +216,7 @@ sig_abbrev (number)
 /* Return the signal number for an ABBREV, or -1 if there is no
    signal by that name.  */
 int
-sig_number (abbrev)
-     CONST char *abbrev;
+sig_number(CONST char *abbrev)
 {
   int i;
 
@@ -239,9 +235,7 @@ sig_number (abbrev)
 /* Print to standard error the name of SIGNAL, preceded by MESSAGE and
    a colon, and followed by a newline.  */
 void
-psignal (signal, message)
-     unsigned signal;
-     CONST char *message;
+psignal(unsigned signal, CONST char *message)
 {
   if (signal <= 0 || signal >= NSIG)
     fprintf (stderr, "%s: unknown signal", message);
@@ -251,7 +245,7 @@ psignal (signal, message)
 #endif /* SYS_SIGLIST_MISSING */
 
 void
-_initialize_signame ()
+_initialize_signame(void)
 {
 	init_sigs ();
 }

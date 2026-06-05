@@ -17,7 +17,8 @@ foo (void)
  y = 10;
 }
 
-main ()
+int
+main(void)
 {
   int a = 1;
   foo ();

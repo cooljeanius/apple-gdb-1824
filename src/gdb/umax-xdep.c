@@ -39,9 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
    This code would be in corefile.c if it weren't machine-dependent. */
 
 void
-core_file_command (filename, from_tty)
-     char *filename;
-     int from_tty;
+core_file_command(char *filename, int from_tty)
 {
   int val;
 

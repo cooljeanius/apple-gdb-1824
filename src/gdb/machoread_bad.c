@@ -1,4 +1,4 @@
-/* Darwin support for GDB, the GNU debugger.
+/* Darwin support for GDB, the GNU debugger.  -*- C -*-
    Copyright (C) 2008, 2009 Free Software Foundation, Inc.
 
    Contributed by AdaCore.
@@ -732,7 +732,7 @@ static struct sym_fns macho_sym_fns = {
  * of now. */
 #if 0
 void
-_initialize_machoread ()
+_initialize_machoread (void)
 {
   add_symtab_fns (&macho_sym_fns);
 
@@ -745,7 +745,7 @@ Show if printing Mach-O symbols processing."), NULL,
 }
 #else
 void
-_initialize_machoread ()
+_initialize_machoread(void)
 {
 }
 #endif /* 0 */

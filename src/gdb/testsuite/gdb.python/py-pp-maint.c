@@ -66,7 +66,7 @@ init_ss (struct ss *s, int a, int b)
 }
 
 int
-main ()
+main(void)
 {
   struct function_lookup_test flt;
   struct ss ss;

@@ -27,8 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include "inferior.h"
 
 void
-fetch_inferior_registers(regno)
-     int regno;
+fetch_inferior_registers(int regno)
 {
   struct reg inferior_registers;
 
@@ -38,8 +37,7 @@ fetch_inferior_registers(regno)
 }
 
 void
-store_inferior_registers(regno)
-     int regno;
+store_inferior_registers(int regno)
 {
   struct reg inferior_registers;
 
@@ -105,9 +103,7 @@ static int sregmap[] =
    place where ES is stored.  */
 
 int
-i386_register_u_addr (blockend, regnum)
-     int blockend;
-     int regnum;
+i386_register_u_addr(int blockend, int regnum)
 {
   /* The following condition is a kludge to get at the proper register map
      depending upon the state of pcb_flag.
@@ -171,9 +167,7 @@ struct env387
 };
 
 static void
-print_387_status (status, ep)
-     unsigned short status;
-     struct env387 *ep;
+print_387_status(int status, struct env387 *ep)
 {
   int i;
   int bothstatus;
@@ -228,7 +222,8 @@ print_387_status (status, ep)
     }
 }
 
-i386_float_info ()
+int
+i386_float_info(void)
 {
   struct user u; /* just for address computations */
   int i;
@@ -277,7 +272,7 @@ i386_float_info ()
 }
 
 int
-kernel_u_size ()
+kernel_u_size(void)
 {
   return (sizeof (struct user));
 }

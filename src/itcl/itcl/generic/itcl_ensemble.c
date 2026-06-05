@@ -1142,8 +1142,8 @@ CreateEnsemblePart(interp, ensData, partName, ensPartPtr)
  *----------------------------------------------------------------------
  */
 static void
-DeleteEnsemblePart(ensPart)
-    EnsemblePart *ensPart;     /* part being destroyed */
+DeleteEnsemblePart(EnsemblePart *ensPart /* part being destroyed */
+)
 {
     int i, pos;
     Command *cmdPtr;
@@ -1319,10 +1319,10 @@ FindEnsemblePart(interp, ensData, partName, rensPart)
  *----------------------------------------------------------------------
  */
 static int
-FindEnsemblePartIndex(ensData, partName, posPtr)
-    Ensemble *ensData;        /* ensemble being searched */
-    char *partName;           /* name of desired part */
-    int *posPtr;              /* returns: index for part */
+FindEnsemblePartIndex(Ensemble *ensData, /* ensemble being searched */
+		      char *partName, /* name of desired part */
+		      int *posPtr /* returns: index for part */
+)
 {
     int pos = 0;
     int first, last;
@@ -1389,9 +1389,9 @@ FindEnsemblePartIndex(ensData, partName, posPtr)
  *----------------------------------------------------------------------
  */
 static void
-ComputeMinChars(ensData, pos)
-    Ensemble *ensData;        /* ensemble being modified */
-    int pos;                  /* index of part being updated */
+ComputeMinChars(Ensemble *ensData, /* ensemble being modified */
+		int pos /* index of part being updated */
+)
 {
     int min, max;
     char *p, *q;

@@ -16,7 +16,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 int
-main ()
+main(void)
 {
   int acc = 0, i, j;
   for (i = 0; i < 5; ++i)

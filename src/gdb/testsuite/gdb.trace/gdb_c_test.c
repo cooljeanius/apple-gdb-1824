@@ -1719,9 +1719,8 @@ static  long    get_gdb_input( long c, T_RS232_QUEUE * p_input_q )
    stand-alone                                                 stand-alone
    stand-alone stand-alone stand-alone stand-alone stand-alone stand-alone */
 
-long write_to_protected_mem (addr, word)
-     void *addr;
-     unsigned short word;
+long
+write_to_protected_mem(void *addr, int word)
 {
   return 0;
 }
@@ -3664,10 +3663,7 @@ static unsigned long crc32_table[256];
 static int crc_mem_err;
 
 static unsigned long
-crc32 (buf, len, crc)
-     unsigned char *buf;
-     int len;
-     unsigned long crc;
+crc32(unsigned char *buf, int len, unsigned long crc)
 {
   crc_mem_err = FALSE;
 
@@ -3698,8 +3694,7 @@ crc32 (buf, len, crc)
 }
 
 static char *
-crc_query (cmd)
-     char *cmd;
+crc_query(char *cmd)
 {
   unsigned long startmem, len, crc;
   static char buf[32];
@@ -3720,10 +3715,8 @@ crc_query (cmd)
   return buf;
 }
 
-
 static char *
-handle_test (request)
-     char *request;
+handle_test(char *request)
 {
   ULONG args[7];
   int i;

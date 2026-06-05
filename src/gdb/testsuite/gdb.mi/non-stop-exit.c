@@ -33,7 +33,7 @@ thread_function (void *arg)
 }
 
 int
-main ()
+main(void)
 {
   pthread_t thread_id[NTHREADS];
   int args[NTHREADS];

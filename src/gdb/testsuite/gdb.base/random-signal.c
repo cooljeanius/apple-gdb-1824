@@ -19,7 +19,8 @@
 
 int v;
 
-int main()
+int
+main(void)
 {
   /* Don't let the test case run forever.  */
   alarm (60);

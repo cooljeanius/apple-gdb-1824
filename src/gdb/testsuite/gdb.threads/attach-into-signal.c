@@ -48,7 +48,8 @@ static void *func (void *arg)
   return NULL;
 }
 
-int main ()
+int
+main(void)
 {
 
 #ifndef USE_THREADS

@@ -31,8 +31,8 @@ int another_thread_local_val[ N_THREADS ];
    variables from gdb.  */
 sem_t tell_main, tell_thread;
 
-
-void print_error ()
+void
+print_error(void)
 {
   switch (errno)
   {
@@ -61,8 +61,8 @@ void print_error ()
 }
 
 /* Routine for each thread to run, does nothing.  */
-void *spin( vp )
-    void * vp;
+void *
+spin(void *vp)
 {
     int me = (long) vp;
     int i;
@@ -119,7 +119,7 @@ void *spin( vp )
 }
 
 void
-do_pass()
+do_pass(void)
 {
     int i;
     pthread_t t[ N_THREADS ];
@@ -211,7 +211,7 @@ do_pass()
 }
 
 int
-main()
+main(void)
 {
    do_pass ();
 

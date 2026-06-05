@@ -109,7 +109,7 @@ all_threads_done (void)
 }
 
 int
-main ()
+main(void)
 {
   pthread_t sigusr1_thread, sigusr2_thread;
 

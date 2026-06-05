@@ -9,7 +9,8 @@ void subroutine (int);
 void handler (int);
 void have_a_very_merry_interrupt (void);
 
-main ()
+int
+main(void)
 {
   puts ("Starting up");
 

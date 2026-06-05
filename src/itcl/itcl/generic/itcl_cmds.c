@@ -410,8 +410,8 @@ Itcl_SafeInit(interp)
  * ------------------------------------------------------------------------
  */
 static void
-ItclDelObjectInfo(cdata)
-    char* cdata;    /* client data for class command */
+ItclDelObjectInfo(char *cdata /* client data for class command */
+)
 {
     ItclObjectInfo *info = (ItclObjectInfo*)cdata;
 

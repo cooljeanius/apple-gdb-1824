@@ -21,7 +21,8 @@ char *call_get_a_string (int len)
   return retVal;
 }
 
-int main ()
+int
+main(void)
 {
   char *foo;
   

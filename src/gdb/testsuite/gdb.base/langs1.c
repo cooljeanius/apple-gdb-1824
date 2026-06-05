@@ -25,7 +25,8 @@ static integer c__10000 = 10000;
 } /* MAIN__ */
 
 #line 4 "langs1.f"
-/* Subroutine */ int fsub_()
+/* Subroutine */ int
+fsub_(void)
 {
 #ifdef PROTOTYPES
     extern integer cppsub_(int*);

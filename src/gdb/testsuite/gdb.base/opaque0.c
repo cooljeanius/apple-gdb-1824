@@ -11,7 +11,8 @@ extern struct foo *getfoo ();
 extern void putfoo (struct foo *foop);
 #endif
 
-int main ()
+int
+main(void)
 {
 #ifdef usestubs
     set_debug_traps();

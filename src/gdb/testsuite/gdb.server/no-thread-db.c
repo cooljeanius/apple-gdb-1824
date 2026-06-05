@@ -20,7 +20,7 @@
 __thread int foo;
 
 int
-main ()
+main(void)
 {
   foo = 1;
   /* after tls assignment */

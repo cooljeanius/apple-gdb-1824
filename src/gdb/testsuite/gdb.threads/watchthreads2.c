@@ -42,7 +42,7 @@ int x;
 int test_ready = 0;
 
 int
-main ()
+main(void)
 {
   int res;
   pthread_t threads[NR_THREADS];
@@ -85,7 +85,7 @@ main ()
    has been registered with gdb.  */
 
 void
-thread_started ()
+thread_started(void)
 {
 }
 

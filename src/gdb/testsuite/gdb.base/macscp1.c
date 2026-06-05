@@ -34,7 +34,7 @@
 #define BEFORE_MACSCP1_1
 #undef UNTIL_MACSCP1_1
 void
-macscp1_1 ()
+macscp1_1(void)
 {
   puts ("macscp1_1");
 }
@@ -46,7 +46,7 @@ macscp1_1 ()
 #define BEFORE_MACSCP1_2
 #undef UNTIL_MACSCP1_2
 void
-macscp1_2 ()
+macscp1_2(void)
 {
   puts ("macscp1_2");
 }
@@ -58,7 +58,7 @@ macscp1_2 ()
 #define BEFORE_MACSCP1_3
 #undef UNTIL_MACSCP1_3
 void
-macscp1_3 ()
+macscp1_3(void)
 {
   puts ("macscp1_3");
 }

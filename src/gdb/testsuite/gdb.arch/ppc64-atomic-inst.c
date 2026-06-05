@@ -17,7 +17,8 @@
 
 #include <stdio.h>
 
-int main()
+int
+main(void)
 {
   unsigned int word = 0;
   unsigned int *word_addr = &word;

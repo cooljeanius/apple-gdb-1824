@@ -22,7 +22,8 @@
 
 pid_t pids[4];
 
-main()
+int
+main(void)
 {
   int i;
 

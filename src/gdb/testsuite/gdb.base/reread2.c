@@ -4,13 +4,15 @@
 
 int x;
 
-void foo()
+void
+foo(void)
 {
   x++;
   printf("This is foo\n");
 }
 
-int main()
+int
+main(void)
 {
 #ifdef usestubs
   set_debug_traps ();

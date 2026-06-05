@@ -56,8 +56,7 @@ typedef int *intp;
 typedef intp *intpp;
 typedef intpp *intppp;
 
-int __attribute__ ((noinline, used, noclone)) 
-bar (int i) 
+int __attribute__ bar(int i)
 {
   intp j = &i;
   intpp k = &j;
@@ -66,7 +65,8 @@ bar (int i)
   return i;
 }
 
-int main ()
+int
+main(void)
 {
   return bar(5) + foo (23);
 }

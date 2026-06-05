@@ -16,8 +16,8 @@ int total = 0;
 int debugger_saw[NTHREADS][ELEMS_PER_THREAD]; /* [4][3] */
 int the_code_saw[NTHREADS][ELEMS_PER_THREAD];
 
-int get_number(i)
-int i;
+int
+get_number(int i)
 {
    /* sleep to force context switch to another thread in non-MP system 
     * so that TLS symbols are used by multiple threads concurrently
@@ -27,7 +27,8 @@ int i;
    return numbers[i];
 }
 
-main()
+int
+main(void)
 {
    pthread_t	thread[NTHREADS];
    void 	*status;

@@ -27,7 +27,7 @@ handler (int sig)
 }
 
 int
-main ()
+main(void)
 {
   signal (SIGALRM, handler);
   kill (getpid (), SIGALRM);

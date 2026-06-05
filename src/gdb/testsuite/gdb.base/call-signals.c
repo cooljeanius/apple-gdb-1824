@@ -28,7 +28,7 @@ handle_signal (int sig)
 }
 
 void
-gen_signal ()
+gen_signal(void)
 {
   /* According to sigall.exp, SIGABRT is always supported.  */
 #ifdef SIGABRT
@@ -41,22 +41,22 @@ gen_signal ()
 /* Easy place to set a breakpoint.  */
 
 void
-stop_one ()
+stop_one(void)
 {
 }
 
 void
-stop_two ()
+stop_two(void)
 {
 }
 
 void
-null_hand_call ()
+null_hand_call(void)
 {
 }
 
 int
-main ()
+main(void)
 {
 #ifdef usestubs
   set_debug_traps ();

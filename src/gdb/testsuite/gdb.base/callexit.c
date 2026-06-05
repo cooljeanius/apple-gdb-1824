@@ -21,13 +21,13 @@
 #include <stdlib.h>
 
 void
-callexit ()
+callexit(void)
 {
   exit (0);
 }
 
 int
-main ()
+main(void)
 {
   return 0;
 }

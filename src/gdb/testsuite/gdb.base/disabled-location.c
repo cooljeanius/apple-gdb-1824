@@ -22,7 +22,7 @@ function (void)
 }
 
 int
-main ()
+main(void)
 {
   function ();
   return 0;

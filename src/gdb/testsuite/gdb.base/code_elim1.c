@@ -27,7 +27,7 @@ static int my_bss_symbol;
 static int my_static_symbol;
 
 int
-main ()
+main(void)
 {
   int v_in_main;
 
@@ -35,7 +35,7 @@ main ()
 }
 
 int
-my_global_func ()
+my_global_func(void)
 {
   int v_in_global_func;
 

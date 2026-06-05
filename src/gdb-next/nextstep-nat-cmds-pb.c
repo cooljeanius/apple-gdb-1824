@@ -53,8 +53,7 @@ void pb_breakpoint_move_command (char *arg, int from_tty)
 }
 
 void
-print_sel_frame (just_source)
-     int just_source;
+print_sel_frame(int just_source)
 {
   print_stack_frame (selected_frame, -1, just_source ? -1 : 1);
 }
@@ -63,13 +62,13 @@ print_sel_frame (just_source)
  * but not source.  */
 
 void
-print_selected_frame ()
+print_selected_frame(void)
 {
   print_stack_frame (selected_frame, selected_frame_level, 0);
 }
 
 void
-_initialize_pb ()
+_initialize_pb(void)
 {
   add_com ("annotation_level", class_support, annotation_level_command,
 	   "Sets the annotation level.");

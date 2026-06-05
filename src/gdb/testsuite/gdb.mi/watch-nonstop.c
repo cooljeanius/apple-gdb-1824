@@ -17,7 +17,8 @@
 
 int global;
 
-int main ()
+int
+main(void)
 {
   sleep (60);
   return 0;

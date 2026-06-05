@@ -313,11 +313,13 @@ void print_all_arrays( array_i, array_c, array_f, array_d )
  * LOOP_COUNT : 
  * A do nothing function. Used to provide a point at which calls can be made.  
  *****************************************************************/
-void loop_count () {
+void
+loop_count(void)
+{
+  int index;
 
-     int index;
-
-     for (index=0; index<4; index++);
+  for (index = 0; index < 4; index++)
+    ;
 }
 
 /*****************************************************************
@@ -1142,9 +1144,9 @@ void init_array_rep( linked_list, seed )
   linked_list->head = 0; 
 }
 
-
-int main ()  {
-
+int
+main(void)
+{
   /* variables for array and enumerated type testing
    */
   static char     char_array[121];
@@ -1332,8 +1334,3 @@ int main ()  {
 
   return 0;
 }
-
-
-
-
-

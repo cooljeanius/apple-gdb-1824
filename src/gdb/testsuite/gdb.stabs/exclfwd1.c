@@ -29,6 +29,6 @@ struct a
 a_t v1;
 
 int
-main ()
+main(void)
 {
 }

@@ -254,10 +254,8 @@ quick_sort(float *data, int n)
 #endif
 }
 
-
-main( argc, argv )
-int    argc;
-char **argv;
+int
+main(int argc, char **argv)
 {
 	float data[SORTSET];
 	int i; int debugging = 0;

@@ -47,8 +47,8 @@ int val_debugger_saw[ N_THREADS ];
 
 /* Routine for each thread to run, does nothing.
  */
-void *spin( vp )
-    void * vp;
+void *
+spin(void *vp)
 {
     int me = (int) vp;
     int i;
@@ -79,8 +79,7 @@ void *spin( vp )
 }
 
 void
-do_pass( pass )
-    int pass;
+do_pass(int pass)
 {
     int i;
     pthread_t t[ N_THREADS ];
@@ -121,7 +120,7 @@ do_pass( pass )
 }
 
 void
-do_it()
+do_it(void)
 {
     /* We want to start some threads and then
      * end them, and then do it again and again
@@ -135,9 +134,8 @@ do_it()
     }
 }
 
-main( argc, argv )
-int    argc;
-char **argv;
+int
+main(int argc, char **argv)
 {
    wait_here = FALSE;
    if((argc > 1) && (0 != argv )) {

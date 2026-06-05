@@ -46,7 +46,7 @@ AC_ARG_WITH([curses],
             [opt_curses=${withval}])dnl
 
 if test "${opt_curses}" = "yes"; then
-	prefer_curses=yes
+  prefer_curses=yes
 fi
 
 dnl# option parsing for optional features:
@@ -109,7 +109,7 @@ if test "x${cross_compiling}" = "xyes"; then
 	cross_cache=${srcdir}/cross-build/cygwin.cache
 	LOCAL_CFLAGS="${LOCAL_CFLAGS} -I${srcdir}/../libtermcap"
 	;;
-   *-mingw32*)	
+   *-mingw32*)
 	cross_cache=${srcdir}/cross-build/mingw.cache
         ;;
     *)  echo "configure: cross-compiling for a non-cygwin target is not supported" >&2
@@ -385,7 +385,8 @@ ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wno-unused-parameter -Wshadow \
   -Wbool-conversion -Wbool-operation -Wnested-externs -Wabi \
   -Wint-in-bool-context -Wnull-dereference -Wmisleading-indentation \
   -Wc99-c11-compat -Wswitch-unreachable -Wswitch-bool -Wstring-compare \
-  -Wzero-length-bounds -Wformat=2 -fanalyzer],[GCC_LINT_FLAGS])dnl
+  -Wzero-length-bounds -Wformat=2 -Wtrailing-whitespace -fanalyzer],
+                         [GCC_LINT_FLAGS])dnl
 ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-ansi -Wno-long-long],
                                     [GCC_LINT_FLAGS])dnl
 

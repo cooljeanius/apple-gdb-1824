@@ -38,8 +38,7 @@ static int masterfd = -1;
 static int slavefd;
 
 void
-sigint (s)
-     int s;
+sigint(int s)
 {
   tty_reset (STDIN_FILENO);
   close (masterfd);
@@ -49,7 +48,7 @@ sigint (s)
 }
 
 static int
-user_input()
+user_input(void)
 {
   int size;
   const int MAX = 1024;
@@ -67,7 +66,7 @@ user_input()
 }
 
 static int
-readline_input()
+readline_input(void)
 {
   const int MAX = 1024;
   char *buf = (char *)malloc(MAX+1);
@@ -113,7 +112,7 @@ rlctx_send_user_command(char *line)
 }
 
 static void
-custom_deprep_term_function ()
+custom_deprep_term_function(void)
 {
 }
 
@@ -305,7 +304,7 @@ int tty_reset(int fd)
 }
 
 int
-main()
+main(void)
 {
   int val;
   val = openpty (&masterfd, &slavefd, NULL, NULL, NULL);

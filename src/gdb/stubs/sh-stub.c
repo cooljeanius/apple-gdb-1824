@@ -231,9 +231,8 @@ void breakpoint (void);
 #define init_stack_size 8*1024  /* if you change this you should also modify BINIT */
 #define stub_stack_size 8*1024
 
-int init_stack[init_stack_size] __attribute__ ((section ("stack"))) = {0};
-int stub_stack[stub_stack_size] __attribute__ ((section ("stack"))) = {0};
-
+int init_stack[init_stack_size] __attribute__((section("stack"))) = { 0 };
+int stub_stack[stub_stack_size] __attribute__((section("stack"))) = { 0 };
 
 void INIT ();
 void BINIT ();
@@ -1153,119 +1152,119 @@ INIT (void)
     ;
 }
 
-
-static void sr()
+static void
+sr(void)
 {
 
 
   /* Calling Reset does the same as pressing the button */
-  asm (".global _Reset
-        .global _WarmReset
-_Reset:
-_WarmReset:
-         mov.l L_sp,r15
-         bra   _INIT
-         nop
-         .align 2
+  asm(".global _Reset \
+        .global _WarmReset \
+_Reset: \
+_WarmReset: \
+         mov.l L_sp,r15 \
+         bra   _INIT \
+         nop \
+         .align 2 \
 L_sp:    .long _init_stack + 8000");
 
-  asm("saveRegisters:
-	mov.l	@(L_reg, pc), r0
-	mov.l	@r15+, r1				! pop R0
-	mov.l	r2, @(0x08, r0)				! save R2
-	mov.l	r1, @r0					! save R0
-	mov.l	@r15+, r1				! pop R1
-	mov.l	r3, @(0x0c, r0)				! save R3
-	mov.l	r1, @(0x04, r0)				! save R1
-	mov.l	r4, @(0x10, r0)				! save R4
-	mov.l	r5, @(0x14, r0)				! save R5
-	mov.l	r6, @(0x18, r0)				! save R6
-	mov.l	r7, @(0x1c, r0)				! save R7
-	mov.l	r8, @(0x20, r0)				! save R8
-	mov.l	r9, @(0x24, r0)				! save R9
-	mov.l	r10, @(0x28, r0)			! save R10
-	mov.l	r11, @(0x2c, r0)			! save R11
-	mov.l	r12, @(0x30, r0)			! save R12
-	mov.l	r13, @(0x34, r0)			! save R13
-	mov.l	r14, @(0x38, r0)			! save R14
-	mov.l	@r15+, r4				! save arg to handleException
-	add	#8, r15					! hide PC/SR values on stack
-	mov.l	r15, @(0x3c, r0)			! save R15
-	add	#-8, r15				! save still needs old SP value
-	add	#92, r0					! readjust register pointer
-	mov	r15, r2
-	add	#4, r2
-	mov.l	@r2, r2					! R2 has SR
-	mov.l	@r15, r1				! R1 has PC
-	mov.l	r2, @-r0				! save SR
-	sts.l	macl, @-r0				! save MACL
-	sts.l	mach, @-r0				! save MACH
-	stc.l	vbr, @-r0				! save VBR
-	stc.l	gbr, @-r0				! save GBR
-	sts.l	pr, @-r0				! save PR
-	mov.l	@(L_stubstack, pc), r2
-	mov.l	@(L_hdl_except, pc), r3
-	mov.l	@r2, r15
-	jsr	@r3
-	mov.l	r1, @-r0				! save PC
-	mov.l	@(L_stubstack, pc), r0
-	mov.l	@(L_reg, pc), r1
-	bra	restoreRegisters
-	mov.l	r15, @r0				! save __stub_stack
-
-	.align 2
-L_reg:
-	.long	_registers
-L_stubstack:
-	.long	_stub_sp
-L_hdl_except:
+  asm("saveRegisters: \
+	mov.l	@(L_reg, pc), r0 \
+	mov.l	@r15+, r1				! pop R0 \
+	mov.l	r2, @(0x08, r0)				! save R2 \
+	mov.l	r1, @r0					! save R0 \
+	mov.l	@r15+, r1				! pop R1 \
+	mov.l	r3, @(0x0c, r0)				! save R3 \
+	mov.l	r1, @(0x04, r0)				! save R1 \
+	mov.l	r4, @(0x10, r0)				! save R4 \
+	mov.l	r5, @(0x14, r0)				! save R5 \
+	mov.l	r6, @(0x18, r0)				! save R6 \
+	mov.l	r7, @(0x1c, r0)				! save R7 \
+	mov.l	r8, @(0x20, r0)				! save R8 \
+	mov.l	r9, @(0x24, r0)				! save R9 \
+	mov.l	r10, @(0x28, r0)			! save R10 \
+	mov.l	r11, @(0x2c, r0)			! save R11 \
+	mov.l	r12, @(0x30, r0)			! save R12 \
+	mov.l	r13, @(0x34, r0)			! save R13 \
+	mov.l	r14, @(0x38, r0)			! save R14 \
+	mov.l	@r15+, r4				! save arg to handleException \
+	add	#8, r15					! hide PC/SR values on stack \
+	mov.l	r15, @(0x3c, r0)			! save R15 \
+	add	#-8, r15				! save still needs old SP value \
+	add	#92, r0					! readjust register pointer \
+	mov	r15, r2 \
+	add	#4, r2 \
+	mov.l	@r2, r2					! R2 has SR \
+	mov.l	@r15, r1				! R1 has PC \
+	mov.l	r2, @-r0				! save SR \
+	sts.l	macl, @-r0				! save MACL \
+	sts.l	mach, @-r0				! save MACH \
+	stc.l	vbr, @-r0				! save VBR \
+	stc.l	gbr, @-r0				! save GBR \
+	sts.l	pr, @-r0				! save PR \
+	mov.l	@(L_stubstack, pc), r2 \
+	mov.l	@(L_hdl_except, pc), r3 \
+	mov.l	@r2, r15 \
+	jsr	@r3 \
+	mov.l	r1, @-r0				! save PC \
+	mov.l	@(L_stubstack, pc), r0 \
+	mov.l	@(L_reg, pc), r1 \
+	bra	restoreRegisters \
+	mov.l	r15, @r0				! save __stub_stack \
+ \
+	.align 2 \
+L_reg: \
+	.long	_registers \
+L_stubstack: \
+	.long	_stub_sp \
+L_hdl_except: \
 	.long	_handle_exception");
-
 }
 
-static void rr()
+static void
+rr(void)
 {
-asm("
-	.align 2
-        .global _resume
-_resume:
-	mov	r4,r1
-restoreRegisters:
-	add	#8, r1						! skip to R2
-	mov.l	@r1+, r2					! restore R2
-	mov.l	@r1+, r3					! restore R3
-	mov.l	@r1+, r4					! restore R4
-	mov.l	@r1+, r5					! restore R5
-	mov.l	@r1+, r6					! restore R6
-	mov.l	@r1+, r7					! restore R7
-	mov.l	@r1+, r8					! restore R8
-	mov.l	@r1+, r9					! restore R9
-	mov.l	@r1+, r10					! restore R10
-	mov.l	@r1+, r11					! restore R11
-	mov.l	@r1+, r12					! restore R12
-	mov.l	@r1+, r13					! restore R13
-	mov.l	@r1+, r14					! restore R14
-	mov.l	@r1+, r15					! restore programs stack
-	mov.l	@r1+, r0
-	add	#-8, r15					! uncover PC/SR on stack
-	mov.l	r0, @r15					! restore PC onto stack
-	lds.l	@r1+, pr					! restore PR
-	ldc.l	@r1+, gbr					! restore GBR
-	ldc.l	@r1+, vbr					! restore VBR
-	lds.l	@r1+, mach					! restore MACH
-	lds.l	@r1+, macl					! restore MACL
-	mov.l	@r1, r0
-	add	#-88, r1					! readjust reg pointer to R1
-	mov.l	r0, @(4, r15)					! restore SR onto stack+4
-	mov.l	r2, @-r15
-	mov.l	L_in_nmi, r0
-	mov		#0, r2
-	mov.b	r2, @r0
-	mov.l	@r15+, r2
-	mov.l	@r1+, r0					! restore R0
-	rte
-	mov.l	@r1, r1						! restore R1
-
+  asm(" \
+	.align 2 \
+        .global _resume \
+_resume: \
+	mov	r4,r1 \
+restoreRegisters: \
+	add	#8, r1						! skip to R2 \
+	mov.l	@r1+, r2					! restore R2 \
+	mov.l	@r1+, r3					! restore R3 \
+	mov.l	@r1+, r4					! restore R4 \
+	mov.l	@r1+, r5					! restore R5 \
+	mov.l	@r1+, r6					! restore R6 \
+	mov.l	@r1+, r7					! restore R7 \
+	mov.l	@r1+, r8					! restore R8 \
+	mov.l	@r1+, r9					! restore R9 \
+	mov.l	@r1+, r10					! restore R10 \
+	mov.l	@r1+, r11					! restore R11 \
+	mov.l	@r1+, r12					! restore R12 \
+	mov.l	@r1+, r13					! restore R13 \
+	mov.l	@r1+, r14					! restore R14 \
+	mov.l	@r1+, r15					! restore programs stack \
+	mov.l	@r1+, r0 \
+	add	#-8, r15					! uncover PC/SR on stack \
+	mov.l	r0, @r15					! restore PC onto stack \
+	lds.l	@r1+, pr					! restore PR \
+	ldc.l	@r1+, gbr					! restore GBR \
+	ldc.l	@r1+, vbr					! restore VBR \
+	lds.l	@r1+, mach					! restore MACH \
+	lds.l	@r1+, macl					! restore MACL \
+	mov.l	@r1, r0 \
+	add	#-88, r1					! readjust reg pointer to R1 \
+	mov.l	r0, @(4, r15)					! restore SR onto stack+4 \
+	mov.l	r2, @-r15 \
+	mov.l	L_in_nmi, r0 \
+	mov		#0, r2 \
+	mov.b	r2, @r0 \
+	mov.l	@r15+, r2 \
+	mov.l	@r1+, r0					! restore R0 \
+	rte \
+	mov.l	@r1, r1						! restore R1 \
+ \
 ");
 }
 

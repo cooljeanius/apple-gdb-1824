@@ -29,14 +29,14 @@ static int static_array[4] = {5, 6, 7, 8};
 static int un_initialized_array[4];
 static char *heap_string;
 
-void 
-terminal_func ()
+void
+terminal_func(void)
 {
   return;
 }
 
 void
-array_func ()
+array_func(void)
 {
   int local_array[4];
   int i;
@@ -65,7 +65,8 @@ int factorial_func (value)
   return (value);
 }
 
-main()
+int
+main(void)
 {
   factorial_func (6);
   return 0;

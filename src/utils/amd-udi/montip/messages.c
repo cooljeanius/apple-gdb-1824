@@ -159,13 +159,15 @@ static	INT32	match_name PARAMS((char *targ_name));
 void	set_lpt PARAMS((void));
 void	unset_lpt PARAMS((void));
 
-void	set_lpt ()
+void
+set_lpt(void)
 {
   TDF[target_index].msg_send = msg_send_parport;
   use_parport = 1;
 }
 
-void	unset_lpt()
+void
+unset_lpt(void)
 {
   TDF[target_index].msg_send = msg_send_serial;
   use_parport = 0;
@@ -236,8 +238,7 @@ char	*target_name;
 }
 
 int
-Mini_alloc_msgbuf(size)
-int	size;
+Mini_alloc_msgbuf(int size)
 {
   if (size > (int) BUFFER_SIZE) {
      (void) free(send_msg_buffer);
@@ -253,7 +254,7 @@ int	size;
 }
 
 void
-Mini_msg_exit()
+Mini_msg_exit(void)
 {
   if (send_msg_buffer)
     (void) free ((char *) send_msg_buffer);
@@ -350,9 +351,8 @@ Mini_exit_comm()
 					tip_config.PC_mem_seg));
 }
 
-
 void
-Mini_go_target()
+Mini_go_target(void)
 {
  (*TDF[target_index].go)(tip_config.PC_port_base,
 				 tip_config.PC_mem_seg);
@@ -399,21 +399,21 @@ Mini_fill_memory()
 */
 
 void
-Mini_build_reset_msg()
+Mini_build_reset_msg(void)
 {
  send_msg_buffer->reset_msg.code = RESET;
  send_msg_buffer->reset_msg.length = (INT32) 0;/* Length always is zero */
 }
 
 void
-Mini_build_config_req_msg()
+Mini_build_config_req_msg(void)
 {
  send_msg_buffer->config_req_msg.code = CONFIG_REQ;
  send_msg_buffer->config_req_msg.length = (INT32) 0; /* Always zero */
 }
 
 void
-Mini_build_status_req_msg()
+Mini_build_status_req_msg(void)
 {
 send_msg_buffer->status_req_msg.code = STATUS_REQ;
 send_msg_buffer->status_req_msg.length = (INT32) 0; /* Always zero */
@@ -582,7 +582,7 @@ send_msg_buffer->init_msg.highmem = highmem;
 }
 
 void
-Mini_build_go_msg()
+Mini_build_go_msg(void)
 {
 send_msg_buffer->go_msg.code = GO;
 send_msg_buffer->go_msg.length = (INT32) 0; /* Always zero */
@@ -598,7 +598,7 @@ send_msg_buffer->step_msg.count = count;
 }
 
 void
-Mini_build_break_msg()
+Mini_build_break_msg(void)
 {
 send_msg_buffer->break_msg.code = BREAK;
 send_msg_buffer->break_msg.length = (INT32) 0; /* Always zero */
@@ -707,7 +707,7 @@ send_msg_buffer->stdin_mode_ack_msg.mode = mode;
 */
 
 void
-Mini_unpack_reset_ack_msg()
+Mini_unpack_reset_ack_msg(void)
 {
  /* No data in this message */
 }
@@ -850,7 +850,7 @@ INT32	*pattern_cnt;
 }
 
 void
-Mini_unpack_init_ack_msg()
+Mini_unpack_init_ack_msg(void)
 {
  /* No data in this message */
 
@@ -881,7 +881,7 @@ ADDR32	*address;
 }
 
 void
-Mini_unpack_channel0_ack_msg()
+Mini_unpack_channel0_ack_msg(void)
 {
  /* No data in this message */
 }
@@ -1125,51 +1125,44 @@ print_msg(msg, MsgFile)
 
    }  /* end print_msg() */
 
+   void
+   CopyMsgToTarg(union msg_t *source)
+   {
+     INT32 msglen;
+     INT32 count;
+     char *to, *from;
 
+     send_msg_buffer->generic_msg.code = source->generic_msg.code;
+     send_msg_buffer->generic_msg.length = source->generic_msg.length;
+     msglen = source->generic_msg.length;
+     to = (char *) &(send_msg_buffer->generic_msg.byte);
+     from = (char *) &(source->generic_msg.byte);
+     for (count = (INT32) 0; count < msglen; count++)
+       *to++ = *from++;
+   }
 
+   void
+   CopyMsgFromTarg(union msg_t *dest)
+   {
+     INT32 msglen;
+     INT32 count;
+     char *to, *from;
 
-void
-CopyMsgToTarg(source)
-union msg_t	*source;
-{
-  INT32		msglen;
-  INT32		count;
-  char		*to, *from;
+     dest->generic_msg.code = recv_msg_buffer->generic_msg.code;
+     dest->generic_msg.length = recv_msg_buffer->generic_msg.length;
+     msglen = recv_msg_buffer->generic_msg.length;
+     to = (char *) &(dest->generic_msg.byte);
+     from = (char *) &(recv_msg_buffer->generic_msg.byte);
+     for (count = (INT32) 0; count < msglen; count++)
+       *to++ = *from++;
+   }
 
-  send_msg_buffer->generic_msg.code = source->generic_msg.code;
-  send_msg_buffer->generic_msg.length = source->generic_msg.length;
-  msglen = source->generic_msg.length;
-  to = (char *) &(send_msg_buffer->generic_msg.byte);
-  from = (char *) &(source->generic_msg.byte);
-  for (count = (INT32) 0; count < msglen; count++)
-     *to++ = *from++;
-
-}
-
-void
-CopyMsgFromTarg(dest)
-union msg_t	*dest;
-{
-  INT32		msglen;
-  INT32		count;
-  char		*to, *from;
-
-  dest->generic_msg.code = recv_msg_buffer->generic_msg.code;
-  dest->generic_msg.length = recv_msg_buffer->generic_msg.length;
-  msglen = recv_msg_buffer->generic_msg.length;
-  to = (char *) &(dest->generic_msg.byte);
-  from = (char *) &(recv_msg_buffer->generic_msg.byte);
-  for (count = (INT32) 0; count < msglen; count++)
-     *to++ = *from++;
-
-}
-
-void
-print_recv_bytes()
-{
-  printf("Bytes received: \n");
-  printf("0x%lx \n", (long) recv_msg_buffer->generic_msg.code);
-  printf("0x%lx \n", (long) recv_msg_buffer->generic_msg.length);
-}
+   void
+   print_recv_bytes(void)
+   {
+     printf("Bytes received: \n");
+     printf("0x%lx \n", (long) recv_msg_buffer->generic_msg.code);
+     printf("0x%lx \n", (long) recv_msg_buffer->generic_msg.length);
+   }
 
 /* EOF */

@@ -16,8 +16,8 @@ Return:
 
 Vector:
 	0x21
-
 */
+
 #ifdef __GO32__
 
 #include <stdlib.h>
@@ -57,7 +57,8 @@ static int DO_CALL(int function)
 /*----------------------------------------------------------------------*/
 
 #ifdef TEST_UDI
-int main()
+int
+main(void)
 {
   int r;
   long p2;
@@ -599,7 +600,8 @@ UDIError UDITransMode (
 #define DFEIPCIdProduct 0x1	/* Product ID 0 */
 #define DFEIPCIdVersion 0x125	/* 1.2.5 */
 
-unsigned UDIGetDFEIPCId ()
+unsigned int
+UDIGetDFEIPCId(void)
 {
     return((((UDIUInt32)DFEIPCIdCompany) << 16) |(DFEIPCIdProduct << 12) | DFEIPCIdVersion);
 }

@@ -34,9 +34,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <sys/user.h>		/* After a.out.h  */
 #include <sys/file.h>
 #include <sys/stat.h>
-
+
 void
-fetch_inferior_registers ()
+fetch_inferior_registers(void)
 {
   register int regno, datum;
   register unsigned int regaddr;

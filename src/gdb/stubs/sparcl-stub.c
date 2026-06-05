@@ -116,16 +116,80 @@ static const char hexchars[]="0123456789abcdef";
 /* Number of bytes of registers.  */
 #define NUMREGBYTES (NUMREGS * 4)
 enum regnames {G0, G1, G2, G3, G4, G5, G6, G7,
-		 O0, O1, O2, O3, O4, O5, SP, O7,
-		 L0, L1, L2, L3, L4, L5, L6, L7,
-		 I0, I1, I2, I3, I4, I5, FP, I7,
+  O0,
+  O1,
+  O2,
+  O3,
+  O4,
+  O5,
+  SP,
+  O7,
+  L0,
+  L1,
+  L2,
+  L3,
+  L4,
+  L5,
+  L6,
+  L7,
+  I0,
+  I1,
+  I2,
+  I3,
+  I4,
+  I5,
+  FP,
+  I7,
 
-		 F0, F1, F2, F3, F4, F5, F6, F7,
-		 F8, F9, F10, F11, F12, F13, F14, F15,
-		 F16, F17, F18, F19, F20, F21, F22, F23,
-		 F24, F25, F26, F27, F28, F29, F30, F31,
-		 Y, PSR, WIM, TBR, PC, NPC, FPSR, CPSR,
-		 DIA1, DIA2, DDA1, DDA2, DDV1, DDV2, DCR, DSR };
+  F0,
+  F1,
+  F2,
+  F3,
+  F4,
+  F5,
+  F6,
+  F7,
+  F8,
+  F9,
+  F10,
+  F11,
+  F12,
+  F13,
+  F14,
+  F15,
+  F16,
+  F17,
+  F18,
+  F19,
+  F20,
+  F21,
+  F22,
+  F23,
+  F24,
+  F25,
+  F26,
+  F27,
+  F28,
+  F29,
+  F30,
+  F31,
+  Y,
+  PSR,
+  WIM,
+  TBR,
+  PC,
+  NPC,
+  FPSR,
+  CPSR,
+  DIA1,
+  DIA2,
+  DDA1,
+  DDA2,
+  DDV1,
+  DDV2,
+  DCR,
+  DSR
+};
 
 /***************************  ASSEMBLY CODE MACROS *************************/
 /* 									   */
@@ -159,210 +223,210 @@ memcpy (void *vdst, const void *vsrc, int n)
   return retval;
 }
 
-asm("
-	.reserve trapstack, 1000 * 4, \"bss\", 8
-
-	.data
-	.align	4
-
-in_trap_handler:
-	.word	0
-
-	.text
-	.align 4
-
-! This function is called when any SPARC trap (except window overflow or
-! underflow) occurs.  It makes sure that the invalid register window is still
-! available before jumping into C code.  It will also restore the world if you
-! return from handle_exception.
-!
-! On entry, trap_low expects l1 and l2 to contain pc and npc respectivly.
-! Register usage throughout the routine is as follows:
-!
-!	l0 - psr
-!	l1 - pc
-!	l2 - npc
-!	l3 - wim
-!	l4 - scratch and y reg
-!	l5 - scratch and tbr
-!	l6 - unused
-!	l7 - unused
-
-	.globl _trap_low
-_trap_low:
-	mov	%psr, %l0
-	mov	%wim, %l3
-
-	srl	%l3, %l0, %l4		! wim >> cwp
-	cmp	%l4, 1
-	bne	window_fine		! Branch if not in the invalid window
-	nop
-
-! Handle window overflow
-
-	mov	%g1, %l4		! Save g1, we use it to hold the wim
-	srl	%l3, 1, %g1		! Rotate wim right
-	tst	%g1
-	bg	good_wim		! Branch if new wim is non-zero
-	nop
-
-! At this point, we need to bring a 1 into the high order bit of the wim.
-! Since we do NOT want to make any assumptions about the number of register
-! windows, we figure it out dynamically so as to setup the wim correctly.
-
-	not	%g1			! Fill g1 with ones
-	mov	%g1, %wim		! Fill the wim with ones
-	nop
-	nop
-	nop
-	mov	%wim, %g1		! Read back the wim
-	inc	%g1			! Now g1 has 1 just to left of wim
-	srl	%g1, 1, %g1		! Now put 1 at top of wim
-	mov	%g0, %wim		! Clear wim so that subsequent save
-	nop				!  will NOT trap
-	nop
-	nop
-
-good_wim:
-	save	%g0, %g0, %g0		! Slip into next window
-	mov	%g1, %wim		! Install the new wim
-
-	std	%l0, [%sp + 0 * 4]	! save L & I registers
-	std	%l2, [%sp + 2 * 4]
-	std	%l4, [%sp + 4 * 4]
-	std	%l6, [%sp + 6 * 4]
-
-	std	%i0, [%sp + 8 * 4]
-	std	%i2, [%sp + 10 * 4]
-	std	%i4, [%sp + 12 * 4]
-	std	%i6, [%sp + 14 * 4]
-
-	restore				! Go back to trap window.
-	mov	%l4, %g1		! Restore %g1
-
-window_fine:
-	sethi	%hi(in_trap_handler), %l4
-	ld	[%lo(in_trap_handler) + %l4], %l5
-	tst	%l5
-	bg	recursive_trap
-	inc	%l5
-
-	set	trapstack+1000*4, %sp	! Switch to trap stack
-
-recursive_trap:
-	st	%l5, [%lo(in_trap_handler) + %l4]
-	sub	%sp,(16+1+6+1+80)*4,%sp	! Make room for input & locals
- 					! + hidden arg + arg spill
-					! + doubleword alignment
-					! + registers[72] local var
-
-	std	%g0, [%sp + (24 + 0) * 4] ! registers[Gx]
-	std	%g2, [%sp + (24 + 2) * 4]
-	std	%g4, [%sp + (24 + 4) * 4]
-	std	%g6, [%sp + (24 + 6) * 4]
-
-	std	%i0, [%sp + (24 + 8) * 4] ! registers[Ox]
-	std	%i2, [%sp + (24 + 10) * 4]
-	std	%i4, [%sp + (24 + 12) * 4]
-	std	%i6, [%sp + (24 + 14) * 4]
-
-	mov	%y, %l4
-	mov	%tbr, %l5
-	st	%l4, [%sp + (24 + 64) * 4] ! Y
-	st	%l0, [%sp + (24 + 65) * 4] ! PSR
-	st	%l3, [%sp + (24 + 66) * 4] ! WIM
-	st	%l5, [%sp + (24 + 67) * 4] ! TBR
-	st	%l1, [%sp + (24 + 68) * 4] ! PC
-	st	%l2, [%sp + (24 + 69) * 4] ! NPC
-
-	or	%l0, 0xf20, %l4
-	mov	%l4, %psr		! Turn on traps, disable interrupts
-
-	set	0x1000, %l1
-	btst	%l1, %l0		! FP enabled?
-	be	no_fpstore
-	nop
-
-! Must save fsr first, to flush the FQ.  This may cause a deferred fp trap, so
-! traps must be enabled to allow the trap handler to clean things up.
-
-	st	%fsr, [%sp + (24 + 70) * 4]
-
-	std	%f0, [%sp + (24 + 32) * 4]
-	std	%f2, [%sp + (24 + 34) * 4]
-	std	%f4, [%sp + (24 + 36) * 4]
-	std	%f6, [%sp + (24 + 38) * 4]
-	std	%f8, [%sp + (24 + 40) * 4]
-	std	%f10, [%sp + (24 + 42) * 4]
-	std	%f12, [%sp + (24 + 44) * 4]
-	std	%f14, [%sp + (24 + 46) * 4]
-	std	%f16, [%sp + (24 + 48) * 4]
-	std	%f18, [%sp + (24 + 50) * 4]
-	std	%f20, [%sp + (24 + 52) * 4]
-	std	%f22, [%sp + (24 + 54) * 4]
-	std	%f24, [%sp + (24 + 56) * 4]
-	std	%f26, [%sp + (24 + 58) * 4]
-	std	%f28, [%sp + (24 + 60) * 4]
-	std	%f30, [%sp + (24 + 62) * 4]
-no_fpstore:
-
-	call	_handle_exception
-	add	%sp, 24 * 4, %o0	! Pass address of registers
-
-! Reload all of the registers that are NOT on the stack
-
-	ld	[%sp + (24 + 1) * 4], %g1 ! registers[Gx]
-	ldd	[%sp + (24 + 2) * 4], %g2
-	ldd	[%sp + (24 + 4) * 4], %g4
-	ldd	[%sp + (24 + 6) * 4], %g6
-
-	ldd	[%sp + (24 + 8) * 4], %i0 ! registers[Ox]
-	ldd	[%sp + (24 + 10) * 4], %i2
-	ldd	[%sp + (24 + 12) * 4], %i4
-	ldd	[%sp + (24 + 14) * 4], %i6
-
-
-	ldd	[%sp + (24 + 64) * 4], %l0 ! Y & PSR
-	ldd	[%sp + (24 + 68) * 4], %l2 ! PC & NPC
-
-	set	0x1000, %l5
-	btst	%l5, %l1		! FP enabled?
-	be	no_fpreload
-	nop
-
-	ldd	[%sp + (24 + 32) * 4], %f0
-	ldd	[%sp + (24 + 34) * 4], %f2
-	ldd	[%sp + (24 + 36) * 4], %f4
-	ldd	[%sp + (24 + 38) * 4], %f6
-	ldd	[%sp + (24 + 40) * 4], %f8
-	ldd	[%sp + (24 + 42) * 4], %f10
-	ldd	[%sp + (24 + 44) * 4], %f12
-	ldd	[%sp + (24 + 46) * 4], %f14
-	ldd	[%sp + (24 + 48) * 4], %f16
-	ldd	[%sp + (24 + 50) * 4], %f18
-	ldd	[%sp + (24 + 52) * 4], %f20
-	ldd	[%sp + (24 + 54) * 4], %f22
-	ldd	[%sp + (24 + 56) * 4], %f24
-	ldd	[%sp + (24 + 58) * 4], %f26
-	ldd	[%sp + (24 + 60) * 4], %f28
-	ldd	[%sp + (24 + 62) * 4], %f30
-
-	ld	[%sp + (24 + 70) * 4], %fsr
-no_fpreload:
-
-	restore				! Ensure that previous window is valid
-	save	%g0, %g0, %g0		!  by causing a window_underflow trap
-
-	mov	%l0, %y
-	mov	%l1, %psr		! Make sure that traps are disabled
-					! for rett
-	sethi	%hi(in_trap_handler), %l4
-	ld	[%lo(in_trap_handler) + %l4], %l5
-	dec	%l5
-	st	%l5, [%lo(in_trap_handler) + %l4]
-
-	jmpl	%l2, %g0		! Restore old PC
-	rett	%l3			! Restore old nPC
+asm(" \
+	.reserve trapstack, 1000 * 4, \"bss\", 8 \
+ \
+	.data \
+	.align	4 \
+ \
+in_trap_handler: \
+	.word	0 \
+ \
+	.text \
+	.align 4 \
+ \
+! This function is called when any SPARC trap (except window overflow or \
+! underflow) occurs.  It makes sure that the invalid register window is still \
+! available before jumping into C code.  It will also restore the world if you \
+! return from handle_exception. \
+! \
+! On entry, trap_low expects l1 and l2 to contain pc and npc respectivly. \
+! Register usage throughout the routine is as follows: \
+! \
+!	l0 - psr \
+!	l1 - pc \
+!	l2 - npc \
+!	l3 - wim \
+!	l4 - scratch and y reg \
+!	l5 - scratch and tbr \
+!	l6 - unused \
+!	l7 - unused \
+ \
+	.globl _trap_low \
+_trap_low: \
+	mov	%psr, %l0 \
+	mov	%wim, %l3 \
+ \
+	srl	%l3, %l0, %l4		! wim >> cwp \
+	cmp	%l4, 1 \
+	bne	window_fine		! Branch if not in the invalid window \
+	nop \
+ \
+! Handle window overflow \
+ \
+	mov	%g1, %l4		! Save g1, we use it to hold the wim \
+	srl	%l3, 1, %g1		! Rotate wim right \
+	tst	%g1 \
+	bg	good_wim		! Branch if new wim is non-zero \
+	nop \
+ \
+! At this point, we need to bring a 1 into the high order bit of the wim. \
+! Since we do NOT want to make any assumptions about the number of register \
+! windows, we figure it out dynamically so as to setup the wim correctly. \
+ \
+	not	%g1			! Fill g1 with ones \
+	mov	%g1, %wim		! Fill the wim with ones \
+	nop \
+	nop \
+	nop \
+	mov	%wim, %g1		! Read back the wim \
+	inc	%g1			! Now g1 has 1 just to left of wim \
+	srl	%g1, 1, %g1		! Now put 1 at top of wim \
+	mov	%g0, %wim		! Clear wim so that subsequent save \
+	nop				!  will NOT trap \
+	nop \
+	nop \
+ \
+good_wim: \
+	save	%g0, %g0, %g0		! Slip into next window \
+	mov	%g1, %wim		! Install the new wim \
+ \
+	std	%l0, [%sp + 0 * 4]	! save L & I registers \
+	std	%l2, [%sp + 2 * 4] \
+	std	%l4, [%sp + 4 * 4] \
+	std	%l6, [%sp + 6 * 4] \
+ \
+	std	%i0, [%sp + 8 * 4] \
+	std	%i2, [%sp + 10 * 4] \
+	std	%i4, [%sp + 12 * 4] \
+	std	%i6, [%sp + 14 * 4] \
+ \
+	restore				! Go back to trap window. \
+	mov	%l4, %g1		! Restore %g1 \
+ \
+window_fine: \
+	sethi	%hi(in_trap_handler), %l4 \
+	ld	[%lo(in_trap_handler) + %l4], %l5 \
+	tst	%l5 \
+	bg	recursive_trap \
+	inc	%l5 \
+ \
+	set	trapstack+1000*4, %sp	! Switch to trap stack \
+ \
+recursive_trap: \
+	st	%l5, [%lo(in_trap_handler) + %l4] \
+	sub	%sp,(16+1+6+1+80)*4,%sp	! Make room for input & locals \
+					! + hidden arg + arg spill \
+					! + doubleword alignment \
+					! + registers[72] local var \
+ \
+	std	%g0, [%sp + (24 + 0) * 4] ! registers[Gx] \
+	std	%g2, [%sp + (24 + 2) * 4] \
+	std	%g4, [%sp + (24 + 4) * 4] \
+	std	%g6, [%sp + (24 + 6) * 4] \
+ \
+	std	%i0, [%sp + (24 + 8) * 4] ! registers[Ox] \
+	std	%i2, [%sp + (24 + 10) * 4] \
+	std	%i4, [%sp + (24 + 12) * 4] \
+	std	%i6, [%sp + (24 + 14) * 4] \
+ \
+	mov	%y, %l4 \
+	mov	%tbr, %l5 \
+	st	%l4, [%sp + (24 + 64) * 4] ! Y \
+	st	%l0, [%sp + (24 + 65) * 4] ! PSR \
+	st	%l3, [%sp + (24 + 66) * 4] ! WIM \
+	st	%l5, [%sp + (24 + 67) * 4] ! TBR \
+	st	%l1, [%sp + (24 + 68) * 4] ! PC \
+	st	%l2, [%sp + (24 + 69) * 4] ! NPC \
+ \
+	or	%l0, 0xf20, %l4 \
+	mov	%l4, %psr		! Turn on traps, disable interrupts \
+ \
+	set	0x1000, %l1 \
+	btst	%l1, %l0		! FP enabled? \
+	be	no_fpstore \
+	nop \
+ \
+! Must save fsr first, to flush the FQ.  This may cause a deferred fp trap, so \
+! traps must be enabled to allow the trap handler to clean things up. \
+ \
+	st	%fsr, [%sp + (24 + 70) * 4] \
+ \
+	std	%f0, [%sp + (24 + 32) * 4] \
+	std	%f2, [%sp + (24 + 34) * 4] \
+	std	%f4, [%sp + (24 + 36) * 4] \
+	std	%f6, [%sp + (24 + 38) * 4] \
+	std	%f8, [%sp + (24 + 40) * 4] \
+	std	%f10, [%sp + (24 + 42) * 4] \
+	std	%f12, [%sp + (24 + 44) * 4] \
+	std	%f14, [%sp + (24 + 46) * 4] \
+	std	%f16, [%sp + (24 + 48) * 4] \
+	std	%f18, [%sp + (24 + 50) * 4] \
+	std	%f20, [%sp + (24 + 52) * 4] \
+	std	%f22, [%sp + (24 + 54) * 4] \
+	std	%f24, [%sp + (24 + 56) * 4] \
+	std	%f26, [%sp + (24 + 58) * 4] \
+	std	%f28, [%sp + (24 + 60) * 4] \
+	std	%f30, [%sp + (24 + 62) * 4] \
+no_fpstore: \
+ \
+	call	_handle_exception \
+	add	%sp, 24 * 4, %o0	! Pass address of registers \
+ \
+! Reload all of the registers that are NOT on the stack \
+ \
+	ld	[%sp + (24 + 1) * 4], %g1 ! registers[Gx] \
+	ldd	[%sp + (24 + 2) * 4], %g2 \
+	ldd	[%sp + (24 + 4) * 4], %g4 \
+	ldd	[%sp + (24 + 6) * 4], %g6 \
+ \
+	ldd	[%sp + (24 + 8) * 4], %i0 ! registers[Ox] \
+	ldd	[%sp + (24 + 10) * 4], %i2 \
+	ldd	[%sp + (24 + 12) * 4], %i4 \
+	ldd	[%sp + (24 + 14) * 4], %i6 \
+ \
+ \
+	ldd	[%sp + (24 + 64) * 4], %l0 ! Y & PSR \
+	ldd	[%sp + (24 + 68) * 4], %l2 ! PC & NPC \
+ \
+	set	0x1000, %l5 \
+	btst	%l5, %l1		! FP enabled? \
+	be	no_fpreload \
+	nop \
+ \
+	ldd	[%sp + (24 + 32) * 4], %f0 \
+	ldd	[%sp + (24 + 34) * 4], %f2 \
+	ldd	[%sp + (24 + 36) * 4], %f4 \
+	ldd	[%sp + (24 + 38) * 4], %f6 \
+	ldd	[%sp + (24 + 40) * 4], %f8 \
+	ldd	[%sp + (24 + 42) * 4], %f10 \
+	ldd	[%sp + (24 + 44) * 4], %f12 \
+	ldd	[%sp + (24 + 46) * 4], %f14 \
+	ldd	[%sp + (24 + 48) * 4], %f16 \
+	ldd	[%sp + (24 + 50) * 4], %f18 \
+	ldd	[%sp + (24 + 52) * 4], %f20 \
+	ldd	[%sp + (24 + 54) * 4], %f22 \
+	ldd	[%sp + (24 + 56) * 4], %f24 \
+	ldd	[%sp + (24 + 58) * 4], %f26 \
+	ldd	[%sp + (24 + 60) * 4], %f28 \
+	ldd	[%sp + (24 + 62) * 4], %f30 \
+ \
+	ld	[%sp + (24 + 70) * 4], %fsr \
+no_fpreload: \
+ \
+	restore				! Ensure that previous window is valid \
+	save	%g0, %g0, %g0		!  by causing a window_underflow trap \
+ \
+	mov	%l0, %y \
+	mov	%l1, %psr		! Make sure that traps are disabled \
+					! for rett \
+	sethi	%hi(in_trap_handler), %l4 \
+	ld	[%lo(in_trap_handler) + %l4], %l5 \
+	dec	%l5 \
+	st	%l5, [%lo(in_trap_handler) + %l4] \
+ \
+	jmpl	%l2, %g0		! Restore old PC \
+	rett	%l3			! Restore old nPC \
 ");
 
 /* Convert ch from a hex digit to an int */
@@ -583,20 +647,20 @@ set_debug_traps (void)
   initialized = 1;
 }
 
-asm ("
-! Trap handler for memory errors.  This just sets mem_err to be non-zero.  It
-! assumes that %l1 is non-zero.  This should be safe, as it is doubtful that
-! 0 would ever contain code that could mem fault.  This routine will skip
-! past the faulting instruction after setting mem_err.
-
-	.text
-	.align 4
-
-_fltr_set_mem_err:
-	sethi %hi(_mem_err), %l0
-	st %l1, [%l0 + %lo(_mem_err)]
-	jmpl %l2, %g0
-	rett %l2+4
+asm(" \
+! Trap handler for memory errors.  This just sets mem_err to be non-zero.  It \
+! assumes that %l1 is non-zero.  This should be safe, as it is doubtful that \
+! 0 would ever contain code that could mem fault.  This routine will skip \
+! past the faulting instruction after setting mem_err. \
+ \
+	.text \
+	.align 4 \
+ \
+_fltr_set_mem_err: \
+	sethi %hi(_mem_err), %l0 \
+	st %l1, [%l0 + %lo(_mem_err)] \
+	jmpl %l2, %g0 \
+	rett %l2+4 \
 ");
 
 static void
@@ -611,15 +675,15 @@ set_mem_fault_trap (int enable)
     exceptionHandler(9, trap_low);
 }
 
-asm ("
-	.text
-	.align 4
-
-_dummy_hw_breakpoint:
-	jmpl %l2, %g0
-	rett %l2+4
-	nop
-	nop
+asm(" \
+	.text \
+	.align 4 \
+ \
+_dummy_hw_breakpoint: \
+	jmpl %l2, %g0 \
+	rett %l2+4 \
+	nop \
+	nop \
 ");
 
 static void
@@ -695,22 +759,22 @@ handle_exception (unsigned long *registers)
 
 /* First, we must force all of the windows to be spilled out */
 
-  asm("	save %sp, -64, %sp
-	save %sp, -64, %sp
-	save %sp, -64, %sp
-	save %sp, -64, %sp
-	save %sp, -64, %sp
-	save %sp, -64, %sp
-	save %sp, -64, %sp
-	save %sp, -64, %sp
-	restore
-	restore
-	restore
-	restore
-	restore
-	restore
-	restore
-	restore
+  asm("	save %sp, -64, %sp \
+	save %sp, -64, %sp \
+	save %sp, -64, %sp \
+	save %sp, -64, %sp \
+	save %sp, -64, %sp \
+	save %sp, -64, %sp \
+	save %sp, -64, %sp \
+	save %sp, -64, %sp \
+	restore \
+	restore \
+	restore \
+	restore \
+	restore \
+	restore \
+	restore \
+	restore \
 ");
 
   get_in_break_mode ();		/* Enable DSU register writes */
@@ -920,7 +984,7 @@ handle_exception (unsigned long *registers)
 	  break;
 #endif /* 0 */
 	case 'r':		/* Reset */
-	  asm ("call 0
+	  asm("call 0 \
 		nop ");
 	  break;
 	}			/* switch */
@@ -941,9 +1005,9 @@ breakpoint (void)
   if (!initialized)
     return;
 
-  asm("	.globl _breakinst
-
-	_breakinst: ta 1
+  asm("	.globl _breakinst \
+ \
+	_breakinst: ta 1 \
       ");
 }
 

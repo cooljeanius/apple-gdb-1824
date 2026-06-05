@@ -54,8 +54,7 @@ int deferred_stores = 0;	/* Cumulates stores we want to do eventually. */
    them all.  We actually fetch more than requested, when convenient,
    marking them as valid so we will NOT fetch them again.  */
 void
-fetch_inferior_registers (regno)
-     int regno;
+fetch_inferior_registers(int regno)
 {
   struct regs inferior_registers;
   struct fp_status inferior_fp_registers;
@@ -143,8 +142,7 @@ fetch_inferior_registers (regno)
    Otherwise, REGNO specifies which register (so we can save time).  */
 
 int
-store_inferior_registers (regno)
-     int regno;
+store_inferior_registers(int regno)
 {
   struct regs inferior_registers;
   struct fp_status inferior_fp_registers;
@@ -245,12 +243,9 @@ store_inferior_registers (regno)
     }
     return 0;
 }
-
+
 void
-fetch_core_registers (core_reg_sect, core_reg_size, which)
-  char *core_reg_sect;
-  unsigned core_reg_size;
-  int which;
+fetch_core_registers(char *core_reg_sect, unsigned core_reg_size, int which)
 {
 
   if (which == 0) {

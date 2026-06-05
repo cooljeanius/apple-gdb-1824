@@ -20,7 +20,8 @@ extern void foo();
 void foo3();
 void foo2();
 
-int main ()
+int
+main(void)
 {
   printf ("in main\n");
   foo ();
@@ -28,13 +29,15 @@ int main ()
   return 0;
 }
 
-void foo3()
+void
+foo3(void)
 {
   printf ("foo3 in main\n");
   return;
 }
 
-void foo2()
+void
+foo2(void)
 {
   printf ("foo2 in main\n");
   return;

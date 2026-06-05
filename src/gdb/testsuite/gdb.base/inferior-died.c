@@ -24,7 +24,8 @@ void function(void)
   exit (0);			/* Break here */
 }
 
-int main()
+int
+main(void)
 {
   pid_t child = fork ();
 

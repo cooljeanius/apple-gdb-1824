@@ -43,22 +43,20 @@ signed long  l0,  l1,  l2,  l3,  l4,  l5,  l6,  l7,
  * Test functions
  */
 
-static void begin ()	/* called before anything else */
+static void
+begin(void) /* called before anything else */
 {
 }
 
-static void end ()	/* called after everything else */
+static void
+end(void) /* called after everything else */
 {
 }
 
 /* Test collecting args. */
-int args_test_func (argc, argi, argf, argd, argstruct, argarray)
-     char   argc;
-     int    argi;
-     float  argf;
-     double argd;
-     test_struct argstruct;
-     int argarray[4];
+int
+args_test_func(int argc, int argi, double argf, double argd,
+	       test_struct argstruct, int argarray[4])
 {
   int i;
 
@@ -68,23 +66,22 @@ int args_test_func (argc, argi, argf, argd, argstruct, argarray)
 }
 
 /* Test collecting struct args. */
-int argstruct_test_func (argstruct)
-     test_struct argstruct;
+int
+argstruct_test_func(test_struct argstruct)
 {
   return (int) argstruct.memberc + argstruct.memberi + 
                  argstruct.memberf + argstruct.memberd;
 }
 
 /* Test collecting array args. */
-int argarray_test_func (argarray)
-     int argarray[4];
+int
+argarray_test_func(int argarray[4])
 {
   return (int) argarray[0] + argarray[1] + argarray[2] + argarray[3];
 }
 
-
-
-int local_test_func ()			/* test collecting locals */
+int
+local_test_func(void) /* test collecting locals */
 {
   char        locc  = 11;
   int         loci  = 12;
@@ -109,7 +106,8 @@ int local_test_func ()			/* test collecting locals */
   return i;
 }
 
-int reglocal_test_func ()		/* test collecting register locals */
+int
+reglocal_test_func(void) /* test collecting register locals */
 {
   register char        locc = 11;
   register int         loci = 12;
@@ -134,7 +132,8 @@ int reglocal_test_func ()		/* test collecting register locals */
   return i;
 }
 
-int statlocal_test_func ()		/* test collecting static locals */
+int
+statlocal_test_func(void) /* test collecting static locals */
 {
   static   char        locc;
   static   int         loci;
@@ -177,8 +176,8 @@ int statlocal_test_func ()		/* test collecting static locals */
   return i;
 }
 
-
-int globals_test_func ()
+int
+globals_test_func(void)
 {
   int i = 0;
 
@@ -191,9 +190,7 @@ int globals_test_func ()
 }
 
 int
-main (argc, argv, envp)
-     int argc;
-     char *argv[], **envp;
+main(int argc, char *argv[], char **envp)
 {
   int         i = 0;
   test_struct mystruct;

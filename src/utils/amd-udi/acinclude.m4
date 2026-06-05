@@ -401,7 +401,9 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
 #else
-# warning this conftest expects <inttypes.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "this conftest expects <inttypes.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_INTTYPES_H */
 #include <termios.h>
 int
@@ -436,7 +438,9 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
 #else
-# warning this conftest expects <inttypes.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "this conftest expects <inttypes.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_INTTYPES_H */
 #include <termios.h>
 int

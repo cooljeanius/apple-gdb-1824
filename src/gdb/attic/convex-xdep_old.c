@@ -58,7 +58,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 static int n_threads;
 
 #define MAXTHREADS 8
-		
+
 /* Thread state.  The remaining data is valid only if this is PI_TALIVE.  */
 
 static int thread_state[MAXTHREADS];
@@ -67,7 +67,7 @@ static int thread_state[MAXTHREADS];
 
 static int thread_pc[MAXTHREADS];
 static int thread_signal[MAXTHREADS];
-static int thread_sigcode[MAXTHREADS];	
+static int thread_sigcode[MAXTHREADS];
 
 /* Thread registers.
    If thread is selected, the regs are in registers[] instead.  */
@@ -99,7 +99,7 @@ static SCNHDR scnhdr;
 /* Address maps constructed from section headers of exec and core files.
    Defines process address -> file address translation.  */
 
-struct pmap 
+struct pmap
 {
     long mem_addr;		/* process start address */
     long mem_end;		/* process end+1 address */
@@ -148,7 +148,7 @@ static int thread_switch_ok;
 
 /* Stack of signals recieved from threads but not yet delivered to gdb.  */
 
-struct threadpid 
+struct threadpid
 {
     int pid;
     int thread;
@@ -221,8 +221,7 @@ extern char *sys_siglist[];
    Allow ptrace (0) as a no-op.  */
 
 int
-call_ptrace (request, pid, procaddr, buf)
-     int request, pid, procaddr, buf;
+call_ptrace(int request, int pid, int procaddr, int buf)
 {
   if (request == 0)
     return;
@@ -232,8 +231,8 @@ call_ptrace (request, pid, procaddr, buf)
 /* Replacement for system execle routine.
    Convert it to an equivalent exect, which pattach insists on.  */
 
-execle (name, argv)
-     char *name, *argv;
+int
+execle(char *name, char *argv)
 {
   char ***envp = (char ***) &argv;
   while (*envp++) ;
@@ -245,28 +244,27 @@ execle (name, argv)
 /* Stupid handler for stupid trace trap that otherwise causes
    startup to stupidly hang.  */
 
-static sig_noop () 
+static sig_noop(void)
 {}
 
 /* Read registers from inferior into registers[] array.
    For convex, they are already there, read in when the inferior stops.  */
 
 void
-fetch_inferior_registers (regno)
-     int regno;
+fetch_inferior_registers(int regno)
 {
 }
 
 /* Store our register values back into the inferior.
    For Convex, do this only once, right before resuming inferior.  */
 
-store_inferior_registers (regno)
-     int regno;
+int
+store_inferior_registers(int regno)
 {
 }
 
 /* Copy LEN bytes from inferior's memory starting at MEMADDR
-   to debugger memory starting at MYADDR. 
+   to debugger memory starting at MYADDR.
    On failure (cannot read from inferior, usually because address is out
    of bounds) returns the value of errno. */
 
@@ -289,7 +287,7 @@ read_inferior_memory (memaddr, myaddr, len)
       myaddr += i;
       len -= i;
     }
-  if (errno) 
+  if (errno)
     bzero (myaddr, len);
   return errno;
 }
@@ -315,8 +313,8 @@ write_inferior_memory (memaddr, myaddr, len)
 
    Also, intercept the CONT command by altering its dispatch address.  */
 
-create_inferior_hook (pid)
-    int pid;
+int
+create_inferior_hook(int pid)
 {
   static char cont[] = "cont";
   static char cont1[] = "c";
@@ -340,8 +338,8 @@ create_inferior_hook (pid)
 
 /* Attach process PID for debugging.  */
 
-attach (pid)
-    int pid;
+int
+attach(int pid)
 {
   int fd = pattach (pid, O_EXCL);
   if (fd < 0)
@@ -362,8 +360,7 @@ attach (pid)
    SIGNAL = 0 means just continue it.  */
 
 void
-detach (signal)
-     int signal;
+detach(int signal)
 {
   signal_stack = signal_stack_bot;
   thread_continue (-1, 0, signal);
@@ -375,7 +372,8 @@ detach (signal)
 
 /* Kill off the inferior process.  */
 
-kill_inferior ()
+int
+kill_inferior(void)
 {
   if (inferior_pid == 0)
     return;
@@ -386,7 +384,8 @@ kill_inferior ()
 
 /* This is used when GDB is exiting.  It gives less chance of error.*/
 
-kill_inferior_fast ()
+int
+kill_inferior_fast(void)
 {
   if (inferior_pid == 0)
     return;
@@ -397,8 +396,7 @@ kill_inferior_fast ()
 /* Read vector register REG, and return a pointer to the value.  */
 
 static long *
-read_vector_register (reg)
-    int reg;
+read_vector_register(int reg)
 {
   if (have_inferior_p ())
     {
@@ -434,8 +432,7 @@ read_vector_register (reg)
    fetched from the inferior or core file.  */
 
 static long *
-read_vector_register_1 (reg) 
-    int reg;
+read_vector_register_1(int reg)
 {
   switch (reg)
     {
@@ -481,7 +478,7 @@ write_vector_register (reg, element, val)
 	  vector_registers.vls =
 	    (val << 32) + (unsigned long) vector_registers.vls;
 	  break;
-	    
+
 	default:
 	  vector_registers.vr[reg].el[element] = val;
 	  break;
@@ -494,11 +491,11 @@ write_vector_register (reg, element, val)
     }
 }
 
-/* Return the contents of communication register NUM.  */ 
+/* Return the contents of communication register NUM.  */
 
-static REGISTER_TYPE 
-read_comm_register (num)
-     int num;
+static REGISTER_TYPE
+read_comm_register(num)
+int num;
 {
   if (have_inferior_p ())
     {
@@ -511,7 +508,7 @@ read_comm_register (num)
   return comm_registers.crreg.r4[num];
 }
 
-/* Store a new value VAL into communication register NUM.  
+/* Store a new value VAL into communication register NUM.
    NB: Must use read-modify-write on the whole comm register set
    since pattach does not do offsetted writes correctly.  */
 
@@ -537,9 +534,7 @@ write_comm_register (num, val)
    If SIGNAL is nonzero, give it that signal.  */
 
 void
-resume (step, signal)
-     int step;
-     int signal;
+resume(int step, int signal)
 {
   errno = 0;
   if (step || signal)
@@ -561,8 +556,7 @@ resume (step, signal)
    and see one of the stopped threads in the queue.  */
 
 static void
-thread_continue (thread, step, signal)
-     int thread, step, signal;
+thread_continue(int thread, int step, int signal)
 {
   int n;
 
@@ -596,7 +590,7 @@ thread_continue (thread, step, signal)
 
 	if ((thread < 0 || n == thread) && ! thread_is_in_kernel[n])
 	  {
-	    /* Blam the trace bits in the stack's saved psws to match 
+	    /* Blam the trace bits in the stack's saved psws to match
 	       the desired step mode.  This is required so that
 	       single-stepping a return doesn't restore a psw with a
 	       clear trace bit and fly away, and conversely,
@@ -628,7 +622,7 @@ thread_continue (thread, step, signal)
     perror_with_name ("PIXRUN");
 }
 
-/* Replacement for system wait routine.  
+/* Replacement for system wait routine.
 
    The system wait returns with one or more threads stopped by
    signals.  Put stopped threads on a stack and return them one by
@@ -664,7 +658,7 @@ wait (w)
 
       if (ioctl (inferior_fd, PIXGETTHCOUNT, &ps) < 0)
 	perror_with_name ("PIXGETTHCOUNT");
-      
+
       n_threads = ps.pi_othdcnt;
       for (thread = 0; thread < n_threads; thread++)
 	{
@@ -694,8 +688,8 @@ wait (w)
 		 know what, but do I know this: the only thing you
 		 can do with such a thread is continue it.  */
 
-	      thread_is_in_kernel[thread] = 
-		((read_register (PS_REGNUM) >> 25) & 3) == 0;
+	      thread_is_in_kernel[thread]
+		= ((read_register(PS_REGNUM) >> 25) & 3) == 0;
 
 	      /* Signals push an extended frame and then fault
 		 with a ridiculous pc.  Pop the frame.  */
@@ -709,7 +703,7 @@ wait (w)
 		    thread_pc[thread] = read_pc ();
 		  write_register (PC_REGNUM, thread_pc[thread]);
 		}
-	      
+
 	      if (ps.pi_osigno || ps.pi_osigcode)
 		{
 		  signal_stack++;
@@ -724,7 +718,7 @@ wait (w)
 		 the inferior's fixed scheduling mode is cleared when
 		 it execs the shell (since the shell is not a parallel
 		 program).  So, note the 5.4 trap we get when
-		 the shell does its exec, then catch the 5.0 trap 
+		 the shell does its exec, then catch the 5.0 trap
 		 that occurs when the debuggee starts, and set fixed
 		 scheduling mode properly.  */
 
@@ -732,7 +726,7 @@ wait (w)
 		exec_trap_timer = 1;
 	      else
 		exec_trap_timer--;
-	      
+
 	      if (ps.pi_osigno == 5 && exec_trap_timer == 0)
 		set_fixed_scheduling (pid, parallel == 2);
 	    }
@@ -759,8 +753,7 @@ wait (w)
    or thread_regs[].  */
 
 static void
-select_thread (thread)
-     int thread;
+select_thread(int thread)
 {
   if (thread == inferior_thread)
     return;
@@ -771,19 +764,18 @@ select_thread (thread)
     ioctl (inferior_fd, PISETRWTID, &ps);
   bcopy (thread_regs[thread], registers, REGISTER_BYTES);
 }
-  
+
 /* Routine to set or clear a psw bit in the psw and also all psws
    saved on the stack.  Quits when we get to a frame in which the
    saved psw is correct. */
 
 static void
-scan_stack (bit, val)
-    long bit, val;
+scan_stack(long bit, long val)
 {
   long ps = read_register (PS_REGNUM);
   long fp;
   if (val ? !(ps & bit) : (ps & bit))
-    {    
+    {
       ps ^= bit;
       write_register (PS_REGNUM, ps);
 
@@ -803,19 +795,16 @@ scan_stack (bit, val)
 /* Set fixed scheduling (alliant mode) of process PID to ARG (0 or 1).  */
 
 static void
-set_fixed_scheduling (pid, arg)
-      int arg;
+set_fixed_scheduling(int pid, int arg)
 {
   struct pattributes pattr;
   getpattr (pid, &pattr);
   pattr.pattr_pfixed = arg;
   setpattr (pid, &pattr);
 }
-
+
 void
-core_file_command (filename, from_tty)
-     char *filename;
-     int from_tty;
+core_file_command(char *filename, int from_tty)
 {
   int n;
 
@@ -842,7 +831,7 @@ core_file_command (filename, from_tty)
     {
       filename = tilde_expand (filename);
       make_cleanup (free, filename);
-      
+
       if (have_inferior_p ())
 	error ("To look at a core file, you must kill the inferior with \"kill\".");
       corechan = open (filename, O_RDONLY, 0);
@@ -884,13 +873,13 @@ core_file_command (filename, from_tty)
 	      else if (n_core == 0
 		       || core_map[n_core-1].mem_addr != scnhdr.s_vaddr)
 		core_map[n_core].thread = 0;
-	      else 
+	      else
 		core_map[n_core].thread = core_map[n_core-1].thread + 1;
 	      n_core++;
 	    }
 	  else if ((scnhdr.s_flags & S_TYPMASK) == S_CONTEXT)
 	    context_offset = scnhdr.s_scnptr;
-	  else if ((scnhdr.s_flags & S_TYPMASK) == S_TCONTEXT) 
+	  else if ((scnhdr.s_flags & S_TYPMASK) == S_TCONTEXT)
 	    tcontext_offset[n_threads++] = scnhdr.s_scnptr;
 	}
 
@@ -979,8 +968,8 @@ core_file_command (filename, from_tty)
 
       print_sel_frame (1);
     } else if (from_tty) {
-		printf_filtered ("No core file now.\n");
-	}
+      printf_filtered("No core file now.\n");
+    }
 }
 
 /* EOF */

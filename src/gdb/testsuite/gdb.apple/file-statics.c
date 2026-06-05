@@ -9,7 +9,8 @@ static int static_doesnt_match = 8;
 
 extern int foo (void);
 
-int main ()
+int
+main(void)
 {
   /* Use all the variables so -gused won't strip them.  */
   foo ();

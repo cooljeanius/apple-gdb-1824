@@ -141,7 +141,7 @@ find_tcb (ptid_t ptid)
 }
 
 static void
-check_new_threads ()
+check_new_threads(void)
 {
   cma__t_int_tcb tcb;
   cma__t_known_object queue_header;

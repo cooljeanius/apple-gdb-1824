@@ -318,7 +318,7 @@ extern int stop_stack_dummy;
  * only gpr's and fpr's, which is not good enough! FIXMEmgo */
 
 void
-push_dummy_frame ()
+push_dummy_frame(void)
 {
   /* stack pointer.  */
   CORE_ADDR sp;
@@ -425,7 +425,8 @@ push_dummy_frame ()
  * GDB process that keeps track of these dummy frames!  -- gnu@cygnus.com Aug92
  */
 
-pop_dummy_frame ()
+int
+pop_dummy_frame(void)
 {
   CORE_ADDR sp, pc;
   int ii;
@@ -465,7 +466,7 @@ pop_dummy_frame ()
 /* pop the innermost frame, go back to the caller. */
 
 void
-pop_frame ()
+pop_frame(void)
 {
   CORE_ADDR pc, lr, sp, prev_sp;		/* %pc, %lr, %sp */
   struct rs6000_framedata fdata;
@@ -742,10 +743,8 @@ ran_out_of_registers_for_arguments:
  * value into `valbuf' */
 
 void
-extract_return_value (valtype, regbuf, valbuf)
-     struct type *valtype;
-     char regbuf[REGISTER_BYTES];
-     char *valbuf;
+extract_return_value(struct type *valtype, char regbuf[REGISTER_BYTES],
+		     char *valbuf)
 {
   int offset = 0;
 
@@ -787,8 +786,7 @@ CORE_ADDR rs6000_struct_return_address;
 /* Determines whether the function FI has a frame on the stack or not.  */
 
 int
-frameless_function_invocation (fi)
-     struct frame_info *fi;
+frameless_function_invocation(struct frame_info *fi)
 {
   CORE_ADDR func_start;
   struct rs6000_framedata fdata;
@@ -813,8 +811,7 @@ frameless_function_invocation (fi)
 /* Return the PC saved in a frame */
 
 unsigned long
-frame_saved_pc (fi)
-     struct frame_info *fi;
+frame_saved_pc(struct frame_info *fi)
 {
   CORE_ADDR func_start;
   struct rs6000_framedata fdata;
@@ -850,9 +847,7 @@ frame_saved_pc (fi)
  * in which case the framedata are read.  */
 
 static void
-frame_get_cache_fsr (fi, fdatap)
-     struct frame_info *fi;
-     struct rs6000_framedata *fdatap;
+frame_get_cache_fsr(struct frame_info *fi, struct rs6000_framedata *fdatap)
 {
   int ii;
   CORE_ADDR frame_addr;
@@ -1016,9 +1011,7 @@ gdb_print_insn_powerpc (memaddr, info)
 }
 
 void
-init_extra_frame_info (fromleaf, fi)
-    int fromleaf;
-    struct frame_info *fi;
+init_extra_frame_info(int fromleaf, struct frame_info *fi)
 {
     fi->initial_sp = 0;
     fi->cache_fsr  = 0;
@@ -1061,11 +1054,12 @@ frame_find_saved_regs(struct frame_info *fi, struct frame_saved_regs *fsr)
     for (ii=0; ii<32; ii++) {
       fsr->regs[GP0_REGNUM+ii] = pt_regs_addr + offsetof(struct pt_regs, gpr[0]) + 4*ii;
     }
-#if 0  /* FIXME: enable this once mklinux header files get more up to date */
+    /* FIXME: enable this once mklinux header files get more up to date */
+#ifdef MKLINUX_HEADERS_ARE_MORE_UP_TO_DATE
     for (ii=0; ii<4; ii++) {	/* only four fpu regs saved in struct pt_regs */
       fsr->regs[FP0_REGNUM+ii] = pt_regs_addr + offsetof(struct pt_regs, fpr[0]) + 4*ii;
     }
-#endif /* 0 */
+#endif /* MKLINUX_HEADERS_ARE_MORE_UP_TO_DATE */
     return;
   }
 
@@ -1268,7 +1262,7 @@ skip_trampoline_code (CORE_ADDR pc)
 }
 
 void
-_initialize_ppclinux_tdep ()
+_initialize_ppclinux_tdep(void)
 {
   tm_print_insn = gdb_print_insn_powerpc;
 }

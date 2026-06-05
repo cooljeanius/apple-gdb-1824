@@ -17,12 +17,16 @@
 
 extern void do_nothing (void);
 
-int second(){
+int
+second(void)
+{
   fork() ;
   return 12;
 }
 
-int first(){
+int
+first(void)
+{
   int i;
 
   for (i = 0; i < 2; i++)
@@ -31,7 +35,9 @@ int first(){
   return second();
 }
 
-int main (){
+int
+main(void)
+{
   do_nothing();
   return first();
 }

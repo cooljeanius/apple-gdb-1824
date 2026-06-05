@@ -24,8 +24,8 @@ make_outer (int one, int two, int spacer)
   return ret_val;
 }
 
-int 
-main ()
+int
+main(void)
 {
   struct outer *my_outer;
 

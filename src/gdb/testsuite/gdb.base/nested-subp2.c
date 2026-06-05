@@ -40,7 +40,7 @@ length_str (const char *str)
 }
 
 int
-main ()
+main(void)
 {
   if (length_str ("foo") == 3)
     return 0;

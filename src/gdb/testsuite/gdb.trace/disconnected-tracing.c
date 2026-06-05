@@ -31,7 +31,8 @@ void
 start (void)
 {}
 
-int main ()
+int
+main(void)
 {
   start ();
   end ();

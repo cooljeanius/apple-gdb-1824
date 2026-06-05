@@ -13,8 +13,8 @@ int ival2 = -1;
 int ival3 = -1;
 int ival4 = -1;
 
-int 
-main ()
+int
+main(void)
 {
 #ifdef usestubs
   set_debug_traps();

@@ -77,7 +77,8 @@ int y;
    table making it impossible to refer to the variable in gdb.  */
 void usevar (void *var) {}
 
-int main ()
+int
+main(void)
 {
   void dummy();
   int more_code();
@@ -98,7 +99,8 @@ int main ()
   
 }
 
-void dummy()
+void
+dummy(void)
 {
     
   
@@ -168,11 +170,13 @@ void dummy()
 
 }
 
-void marker1 ()
+void
+marker1(void)
 {
 }
 
-int more_code()
+int
+more_code(void)
 {
     char C, *pC, **ppC, ***pppC, ****ppppC, *****pppppC, ******ppppppC;
     unsigned char UC, *pUC;

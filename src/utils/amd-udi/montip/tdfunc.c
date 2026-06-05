@@ -550,7 +550,10 @@ INT32  reset_comm_eb29k()   {return (-1);}
 #ifndef _EB29K_C
 INT32  exit_comm_eb29k()   {return (-1);}
 #endif /* !_EB29K_C */
-void   go_eb29k()           {}
+void
+go_eb29k(void)
+{
+}
 INT32  read_memory_eb29k()  {return (-1);}
 INT32  write_memory_eb29k() {return (-1);}
 INT32  fill_memory_eb29k()  {return (-1);}
@@ -564,7 +567,10 @@ INT32  reset_comm_lcb29k()  {return (-1);}
 #ifndef _LCB29K_C
 INT32  exit_comm_lcb29k()  {return (-1);}
 #endif /* !_LCB29K_C */
-void   go_lcb29k()          {}
+void
+go_lcb29k(void)
+{
+}
 INT32  read_memory_lcb29k() {return (-1);}
 INT32  write_memory_lcb29k(){return (-1);}
 INT32  fill_memory_lcb29k() {return (-1);}
@@ -578,7 +584,10 @@ INT32  reset_comm_pceb()    {return (-1);}
 #ifndef _PCEB_C
 INT32  exit_comm_pceb()    {return (-1);}
 #endif /* !_PCEB_C */
-void   go_pceb()            {}
+void
+go_pceb(void)
+{
+}
 INT32  read_memory_pceb()   {return (-1);}
 INT32  write_memory_pceb()  {return (-1);}
 INT32  fill_memory_pceb()   {return (-1);}
@@ -592,7 +601,10 @@ INT32  reset_comm_eb030()   {return (-1);}
 #ifndef _EB030_C
 INT32  exit_comm_eb030()   {return (-1);}
 #endif /* !_EB030_C */
-void   go_eb030()           {}
+void
+go_eb030(void)
+{
+}
 INT32  read_memory_eb030()  {return (-1);}
 INT32  write_memory_eb030() {return (-1);}
 INT32  fill_memory_eb030()  {return (-1);}

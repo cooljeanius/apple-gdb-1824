@@ -38,7 +38,8 @@ int g;
   return 2*g;
 }
 
-int main()
+int
+main(void)
 {
   struct s y;
   g = 1;

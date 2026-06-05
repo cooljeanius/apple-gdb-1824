@@ -1,4 +1,5 @@
-int main ()
+int
+main(void)
 {
 
   foo ();
@@ -17,12 +18,8 @@ int main ()
 
  /* lines after main () */
 
-
-
-
-
-
-int foo ()
+int
+foo(void)
 {
    bar ();
 }
@@ -44,12 +41,8 @@ int foo ()
 
 /* lines after foo () */
 
-
-
-
-
-
-int bar ()
+int
+bar(void)
 {
 
 }

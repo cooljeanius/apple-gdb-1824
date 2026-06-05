@@ -28,7 +28,7 @@
 char *libname = "mi-catch-load-so.so";
 
 int
-main ()
+main(void)
 {
   void *h;
 

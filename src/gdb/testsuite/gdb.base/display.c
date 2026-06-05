@@ -5,7 +5,8 @@
 
 int sum = 0;
 
-int do_loops()
+int
+do_loops(void)
 {
     int i=0;
     int k=0;
@@ -21,7 +22,8 @@ int do_loops()
     return i;
 }
 
-int do_vars()
+int
+do_vars(void)
 {
     int       j;
     int       i = 9;
@@ -45,7 +47,8 @@ int do_vars()
     return *p_i;
 }
 
-main()
+int
+main(void)
 {
     do_loops();
     do_vars();    

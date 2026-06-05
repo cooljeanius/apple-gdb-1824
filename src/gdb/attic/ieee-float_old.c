@@ -25,10 +25,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 /* Convert an IEEE extended float to a double. FROM is the address
  * of the extended float. Store the double in *TO. */
-void ieee_extended_to_double(ext_format, from, to)
-     struct ext_format *ext_format;
-     char *from;
-     double *to;
+void
+ieee_extended_to_double(struct ext_format *ext_format, char *from, double *to)
 {
   unsigned char *ufrom = (unsigned char *)from;
   double dto;
@@ -66,10 +64,7 @@ void ieee_extended_to_double(ext_format, from, to)
    and store where TO points.  */
 
 void
-double_to_ieee_extended (ext_format, from, to)
-     struct ext_format *ext_format;
-     double *from;
-     char *to;
+double_to_ieee_extended(struct ext_format *ext_format, double *from, char *to)
 {
   double dfrom = *from;
   unsigned long twolongs[2];
@@ -127,8 +122,8 @@ double_to_ieee_extended (ext_format, from, to)
 
 #ifdef DEBUG
 /* Test some numbers to see that extended/double conversion works for them: */
-ieee_test(n)
-     int n;
+int
+ieee_test(int n)
 {
   union { double d; int i[2]; } di;
   double result;

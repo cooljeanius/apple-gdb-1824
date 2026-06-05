@@ -57,8 +57,7 @@ extern struct target_ops core_ops;
 
 /* ARGSUSED */
 void
-core_close (quitting)
-     int quitting;
+core_close(int quitting)
 {
   if (core_bfd) {
     free (bfd_get_filename (core_bfd));
@@ -66,7 +65,7 @@ core_close (quitting)
     core_bfd = NULL;
 #ifdef CLEAR_SOLIB
     CLEAR_SOLIB ();
-#endif
+#endif /* CLEAR_SOLIB */
     if (core_ops.sections) {
       free (core_ops.sections);
       core_ops.sections = NULL;
@@ -78,9 +77,8 @@ core_close (quitting)
 #ifdef SOLIB_ADD
 /* Stub function for catch_errors around shared library hacking. */
 
-int 
-solib_add_stub (from_tty)
-     int from_tty;
+int
+solib_add_stub(int from_tty)
 {
     SOLIB_ADD (NULL, from_tty, &core_ops);
     return 0;
@@ -90,9 +88,7 @@ solib_add_stub (from_tty)
 /* This routine opens and sets up the core file bfd */
 
 void
-core_open (filename, from_tty)
-     char *filename;
-     int from_tty;
+core_open(char *filename, int from_tty)
 {
   const char *p;
   int siggy;
@@ -104,9 +100,9 @@ core_open (filename, from_tty)
   target_preopen (from_tty);
   if (!filename)
     {
-      error (core_bfd? 
-       "No core file specified.  (Use `detach' to stop debugging a core file.)"
-     : "No core file specified.");
+      error(core_bfd ? "No core file specified.  (Use `detach' to stop "
+		       "debugging a core file.)"
+		     : "No core file specified.");
     }
 
   filename = tilde_expand (filename);
@@ -177,9 +173,7 @@ your %s; do ``info files''\n", current_target->to_longname);
 }
 
 void
-core_detach (args, from_tty)
-     char *args;
-     int from_tty;
+core_detach(char *args, int from_tty)
 {
   if (args)
     error ("Too many arguments");
@@ -191,9 +185,7 @@ core_detach (args, from_tty)
 /* Backward compatability with old way of specifying core files.  */
 
 void
-core_file_command (filename, from_tty)
-     char *filename;
-     int from_tty;
+core_file_command(char *filename, int from_tty)
 {
   dont_repeat ();			/* Either way, seems bogus. */
   if (!filename)
@@ -207,8 +199,7 @@ core_file_command (filename, from_tty)
    This is called from the x-window display code.  */
 
 void
-specify_exec_file_hook (hook)
-     void (*hook) ();
+specify_exec_file_hook(void (*hook)(void))
 {
   exec_file_display_hook = hook;
 }
@@ -218,7 +209,7 @@ specify_exec_file_hook (hook)
    be reopened.  */
 
 void
-close_exec_file ()
+close_exec_file(void)
 {
 #ifdef FIXME
   if (exec_bfd)
@@ -227,7 +218,7 @@ close_exec_file ()
 }
 
 void
-reopen_exec_file ()
+reopen_exec_file(void)
 {
 #ifdef FIXME
   if (exec_bfd)
@@ -239,7 +230,7 @@ reopen_exec_file ()
    print a warning if they don't go together.  */
 
 void
-validate_files ()
+validate_files(void)
 {
   if (exec_bfd && core_bfd)
     {
@@ -255,8 +246,7 @@ validate_files ()
    otherwise return 0 in that case.  */
 
 char *
-get_exec_file (err)
-     int err;
+get_exec_file(int err)
 {
   if (exec_bfd) return bfd_get_filename(exec_bfd);
   if (!err)     return NULL;
@@ -267,8 +257,7 @@ Use the \"file\" or \"exec-file\" command.");
 }
 
 static void
-core_files_info (t)
-  struct target_ops *t;
+core_files_info(struct target_ops *t)
 {
   struct section_table *p;
 
@@ -383,8 +372,7 @@ read_memory_integer (memaddr, len)
 /* We just get all the registers, so we don't use regno.  */
 /* ARGSUSED */
 static void
-get_core_registers (regno)
-     int regno;
+get_core_registers(int regno)
 {
   sec_ptr reg_sec;
   unsigned size;
@@ -422,27 +410,51 @@ get_core_registers (regno)
   }
   registers_fetched();
 }
-
+
 struct target_ops core_ops = {
-	"core", "Local core dump file",
-	"Use a core file as a target.  Specify the filename of the core file.",
-	core_open, core_close,
-	child_attach, core_detach, 0, 0, /* resume, wait */
-	get_core_registers, 
-	0, 0, 0, 0, /* store_regs, prepare_to_store, conv_to, conv_from */
-	xfer_memory, core_files_info,
-	0, 0, /* core_insert_breakpoint, core_remove_breakpoint, */
-	0, 0, 0, 0, 0, /* terminal stuff */
-	0, 0, 0, 0, /* kill, load, call fn, lookup sym */
-	child_create_inferior, 0, /* mourn_inferior */
-	core_stratum, 0, /* next */
-	0, 1, 1, 1, 0,	/* all mem, mem, stack, regs, exec */
-	0, 0,			/* section pointers */
-	OPS_MAGIC,		/* Always the last thing */
+  "core",
+  "Local core dump file",
+  "Use a core file as a target.  Specify the filename of the core file.",
+  core_open,
+  core_close,
+  child_attach,
+  core_detach,
+  0,
+  0, /* resume, wait */
+  get_core_registers,
+  0,
+  0,
+  0,
+  0, /* store_regs, prepare_to_store, conv_to, conv_from */
+  xfer_memory,
+  core_files_info,
+  0,
+  0, /* core_insert_breakpoint, core_remove_breakpoint, */
+  0,
+  0,
+  0,
+  0,
+  0, /* terminal stuff */
+  0,
+  0,
+  0,
+  0, /* kill, load, call fn, lookup sym */
+  child_create_inferior,
+  0, /* mourn_inferior */
+  core_stratum,
+  0, /* next */
+  0,
+  1,
+  1,
+  1,
+  0, /* all mem, mem, stack, regs, exec */
+  0,
+  0, /* section pointers */
+  OPS_MAGIC, /* Always the last thing */
 };
 
 void
-_initialize_core()
+_initialize_core(void)
 {
 
   add_com ("core-file", class_files, core_file_command,

@@ -2,7 +2,7 @@
 #include <sys/stat.h>
 
 int
-main ()
+main(void)
 {
   int result;
   struct stat buf;

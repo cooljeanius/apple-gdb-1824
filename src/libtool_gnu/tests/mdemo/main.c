@@ -122,7 +122,7 @@ test_dl (char *filename, int test_ext)
 }
 
 int
-myfunc ()
+myfunc(void)
 {
   return HELLO_RET;
 }
@@ -130,7 +130,7 @@ myfunc ()
 int myvar;
 
 int
-test_dlself ()
+test_dlself(void)
 {
   lt_dlhandle handle;	
   int (*pmyfunc)() = 0;

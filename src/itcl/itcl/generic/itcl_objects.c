@@ -949,8 +949,8 @@ ItclDestroyObject(cdata)
  * ------------------------------------------------------------------------
  */
 static void
-ItclFreeObject(cdata)
-    char* cdata;  /* object instance data */
+ItclFreeObject(char *cdata /* object instance data */
+)
 {
     ItclObject *contextObj = (ItclObject*)cdata;
     Tcl_Interp *interp = contextObj->classDefn->interp;

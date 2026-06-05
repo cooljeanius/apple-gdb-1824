@@ -4,9 +4,8 @@ int y;
 int z;
 int w;
 
-
-
-int main ()
+int
+main(void)
 {
    
 #ifdef usestubs

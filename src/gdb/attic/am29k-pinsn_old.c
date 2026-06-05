@@ -81,8 +81,7 @@ print_special (num, stream)
 
 /* Is an instruction with OPCODE a delayed branch?  */
 static int
-is_delayed_branch (opcode)
-     int opcode;
+is_delayed_branch(int opcode)
 {
   return (opcode == 0xa8 || opcode == 0xa9 || opcode == 0xa0 || opcode == 0xa1
 	  || opcode == 0xa4 || opcode == 0xa5
@@ -97,12 +96,8 @@ is_delayed_branch (opcode)
    big or little-endian (the tm file says which) and we can't assume
    the host machine is the same.  */
 static void
-find_bytes (insn, insn0, insn8, insn16, insn24)
-     char *insn;
-     unsigned char *insn0;
-     unsigned char *insn8;
-     unsigned char *insn16;
-     unsigned char *insn24;
+find_bytes(char *insn, unsigned char *insn0, unsigned char *insn8,
+	   unsigned char *insn16, unsigned char *insn24)
 {
 #if defined(TARGET_BYTE_ORDER) && defined(BIG_ENDIAN) && (TARGET_BYTE_ORDER == BIG_ENDIAN)
   *insn24 = insn[0];
@@ -182,7 +177,7 @@ print_insn (memaddr, stream)
 
 		case 'P':
 		  /* This output looks just like absolute addressing, but
-		     maybe that's OK (it's what the GDB 68k and EBMON
+		     maybe that is OK (it is what the GDB 68k and EBMON
 		     29k disassemblers do).  */
 		  /* All the shifting is to sign-extend it.  p*/
 		  print_address

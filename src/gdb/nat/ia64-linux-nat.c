@@ -318,14 +318,14 @@ register_addr (int regno, CORE_ADDR blockend)
   return addr;
 }
 
-int ia64_cannot_fetch_register (regno)
-     int regno;
+int
+ia64_cannot_fetch_register(int regno)
 {
   return regno < 0 || regno >= NUM_REGS || u_offsets[regno] == -1;
 }
 
-int ia64_cannot_store_register (regno)
-     int regno;
+int
+ia64_cannot_store_register(int regno)
 {
   /* Rationale behind not permitting stores to bspstore...
 

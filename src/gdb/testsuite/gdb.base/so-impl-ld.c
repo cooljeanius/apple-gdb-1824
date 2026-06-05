@@ -10,7 +10,8 @@ extern "C" int  solib_main (int  arg);
 int  solib_main (int  arg);
 #endif
 
-int main ()
+int
+main(void)
 {
   int  result;
 

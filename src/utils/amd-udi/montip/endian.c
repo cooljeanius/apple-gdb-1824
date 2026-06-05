@@ -72,9 +72,7 @@ void  tip_convert16 PARAMS((BYTE *));
 */
 
 void
-endian_cvt(msg_buf, direction)
-   union  msg_t  *msg_buf;
-   int    direction;
+endian_cvt(union msg_t *msg_buf, int direction)
 {
    INT32  i;
    BYTE  *byte;

@@ -61,7 +61,8 @@ unsigned char i[MAX_BYTES];
 unsigned char l[MAX_BYTES];
 unsigned char ll[MAX_BYTES];
 
-int known_types()
+int
+known_types(void)
 {
   /* A union is used here as, hopefully it has well defined packing
      rules.  */
@@ -81,22 +82,23 @@ int known_types()
   return 0;
 }
 
-int main() {
-
-   /* Pack Byte, Half, Word and Giant arrays with byte-orderd values.
+int
+main(void)
+{
+  /* Pack Byte, Half, Word and Giant arrays with byte-orderd values.
       That way "(gdb) x" gives the same output on different
       architectures.  */
-   pack (b, 1, 2);
-   pack (h, 2, 2);
-   pack (w, 4, 2);
-   pack (g, 8, 2);
-   pack (c, sizeof (char), 2);
-   pack (s, sizeof (short), 2);
-   pack (i, sizeof (int), 2);
-   pack (l, sizeof (long), 2);
-   pack (ll, sizeof (long long), 2);
+  pack(b, 1, 2);
+  pack(h, 2, 2);
+  pack(w, 4, 2);
+  pack(g, 8, 2);
+  pack(c, sizeof(char), 2);
+  pack(s, sizeof(short), 2);
+  pack(i, sizeof(int), 2);
+  pack(l, sizeof(long), 2);
+  pack(ll, sizeof(long long), 2);
 
-   known_types();
-   
-   return 0;
+  known_types();
+
+  return 0;
 }

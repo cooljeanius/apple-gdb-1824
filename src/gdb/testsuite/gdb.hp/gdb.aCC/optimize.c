@@ -5,7 +5,8 @@
 int callee();
 int test_opt;
 
-int main()
+int
+main(void)
 {
    int a,b,c,d,e,f,g,h;
 
@@ -65,8 +66,9 @@ int main()
 
 /* defined late to keep line numbers the same
 */
-int callee( x )
-    int x;      /* not used! */
+int
+callee(int x /* not used! */
+)
 {
     test_opt++; /* side effect */
 

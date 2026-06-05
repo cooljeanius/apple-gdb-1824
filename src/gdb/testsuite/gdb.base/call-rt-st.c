@@ -121,11 +121,13 @@ struct int_char_combo_t {
  * LOOP_COUNT : 
  * A do nothing function. Used to provide a point at which calls can be made.  
  *****************************************************************/
-void loop_count () {
+void
+loop_count(void)
+{
+  int index;
 
-     int index;
-
-     for (index=0; index<4; index++);
+  for (index = 0; index < 4; index++)
+    ;
 }
 
 /*****************************************************************
@@ -692,9 +694,9 @@ int    seed;
   linked_list->head = 0;
 }
 
-
-int main ()  {
-   
+int
+main(void)
+{
   /* variables for large structure testing
    */
   int number = 10;
@@ -776,18 +778,3 @@ int main ()  {
 
   return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

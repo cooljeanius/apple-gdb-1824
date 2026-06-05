@@ -13,7 +13,7 @@ vector_fun (vector unsigned int a, vector unsigned int b)
 }
 
 int
-main ()
+main(void)
 {
   vector unsigned int y;
   vector unsigned int x;

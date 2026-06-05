@@ -54,8 +54,7 @@ chill_printchar PARAMS ((int, GDB_FILE *));
    characters to derive the demangled form. */
 
 char *
-chill_demangle (mangled)
-     const char *mangled;
+chill_demangle(const char *mangled)
 {
   const char *joiner = NULL;
   char *demangled;
@@ -231,9 +230,7 @@ chill_printstr (stream, string, length, width, force_ellipses)
 }
 
 static struct type *
-chill_create_fundamental_type (objfile, typeid)
-     struct objfile *objfile;
-     int typeid;
+chill_create_fundamental_type(struct objfile *objfile, int typeid)
 {
   register struct type *type = NULL;
 
@@ -348,10 +345,8 @@ struct type ** CONST_PTR (chill_builtin_types[]) =
    *RESULT_TYPE is the appropriate type for the result. */
 
 LONGEST
-type_lower_upper (op, type, result_type)
-     enum exp_opcode op;  /* Either UNOP_LOWER or UNOP_UPPER */
-     struct type *type;
-     struct type **result_type;
+type_lower_upper(enum exp_opcode op, /* Either UNOP_LOWER or UNOP_UPPER */
+		 struct type *type, struct type **result_type)
 {
   LONGEST low, high;
   *result_type = type;
@@ -650,7 +645,7 @@ const struct language_defn chill_language_defn = {
 /* Initialization for Chill */
 
 void
-_initialize_chill_language ()
+_initialize_chill_language(void)
 {
   builtin_type_chill_bool =
     init_type (TYPE_CODE_BOOL, TARGET_CHAR_BIT / TARGET_CHAR_BIT,

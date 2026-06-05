@@ -92,9 +92,7 @@ static void __runexit();
 #endif /* VXWORKS */
 
 static char *
-write_int(val, ptr)
-     int val;
-     char *ptr;
+write_int(int val, char *ptr)
 {
   char c;
   if (val<0) {
@@ -180,8 +178,7 @@ ORIG_MAIN (argc, argv, envp)
 
 #ifdef VXWORKS
 void
-_exit (status)
-     int status;
+_exit(int status)
 {
   REAL_EXIT (status);
 }
@@ -199,7 +196,7 @@ atexit (PFV func)
 }
 
 static void
-__runexit ()
+__runexit(void)
 {
   int i;
   if (__running++)

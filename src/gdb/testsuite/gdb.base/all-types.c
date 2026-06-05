@@ -25,7 +25,8 @@ unsigned long	v_unsigned_long;
 float		v_float;
 double		v_double;
 
-int main ()
+int
+main(void)
 {
     extern void dummy();
 #ifdef usestubs
@@ -37,7 +38,8 @@ int main ()
     
 }
 
-void dummy()
+void
+dummy(void)
 {
   /* Some linkers (e.g. on AIX) remove unreferenced variables,
      so make sure to reference them. */

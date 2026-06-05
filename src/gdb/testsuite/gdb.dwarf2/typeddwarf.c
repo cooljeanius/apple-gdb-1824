@@ -5,8 +5,9 @@ typedef __SIZE_TYPE__ size_t;
 volatile int vv;
 extern void *memcpy (void *, const void *, size_t);
 
-__attribute__((noinline, noclone)) void
-f1 (double a, double b, double c, float d, float e, int f, unsigned int g, long long h, unsigned long long i)
+__attribute__ void
+f1(double a, double b, double c, float d, float e, int f, unsigned int g,
+   long long h, unsigned long long i)
 {
   double j = d;			/* { dg-final { gdb-test 29 "j" "4" } } */
   long long l;			/* { dg-final { gdb-test 29 "l" "4616189618054758400" } } */
@@ -29,8 +30,9 @@ f1 (double a, double b, double c, float d, float e, int f, unsigned int g, long 
   vv++;
 }
 
-__attribute__((noinline, noclone)) void
-f2 (double a, double b, double c, float d, float e, int f, unsigned int g, long long h, unsigned long long i)
+__attribute__ void
+f2(double a, double b, double c, float d, float e, int f, unsigned int g,
+   long long h, unsigned long long i)
 {
   double j = d;			/* { dg-final { gdb-test 53 "j" "4" } } */
   long long l;			/* { dg-final { gdb-test 53 "l" "4616189618054758400" } } */
@@ -63,8 +65,8 @@ f2 (double a, double b, double c, float d, float e, int f, unsigned int g, long 
   vv = j;
 }
 
-__attribute__((noinline, noclone)) void
-f3 (long long a, int b, long long c, unsigned d)
+__attribute__ void
+f3(long long a, int b, long long c, unsigned d)
 {
   long long w = (a > d) ? a : d;/* { dg-final { gdb-test 73 "w" "4" } } */
   long long x = a + b + 7;	/* { dg-final { gdb-test 73 "x" "10" } } */
@@ -73,8 +75,7 @@ f3 (long long a, int b, long long c, unsigned d)
   vv++;
 }
 
-__attribute__((noinline, noclone)) void
-f4 (_Decimal32 a, _Decimal64 b, _Decimal128 c)
+__attribute__ void f4(_Decimal32 a, _Decimal64 b, _Decimal128 c)
 {
   _Decimal32 w = a * 8.0DF + 6.0DF;/* { dg-final { xfail-gdb-test 82 "(int)w" "70" } } */
   _Decimal64 x = b / 8.0DD - 6.0DD;/* { dg-final { xfail-gdb-test 82 "(int)x" "-4" } } */
@@ -83,7 +84,7 @@ f4 (_Decimal32 a, _Decimal64 b, _Decimal128 c)
 }
 
 int
-main ()
+main(void)
 {
   f1 (1.0, 2.0, 3.0, 4.0f, 5.0f, 6, 7, 8, 9);
   f2 (1.0, 2.0, 3.0, 4.0f, 5.0f, 6, 7, 8, 9);

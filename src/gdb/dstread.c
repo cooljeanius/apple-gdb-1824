@@ -113,7 +113,7 @@ dst_record_line (line, pc)
 /* FIXME: use start_symtab, like coffread.c now does.  */
 
 static void
-dst_start_symtab ()
+dst_start_symtab(void)
 {
   /* Initialize the source file line number information for this file.  */
 
@@ -157,8 +157,7 @@ complete_symtab (name, start_addr, size)
 /* FIXME: Use end_symtab, like coffread.c now does.  */
 
 static void
-dst_end_symtab (objfile)
-     struct objfile *objfile;
+dst_end_symtab(struct objfile *objfile)
 {
   register struct symtab *symtab;
   register struct blockvector *blockvector;
@@ -203,8 +202,7 @@ dst_end_symtab (objfile)
    The ultimate result is a new symtab (or, FIXME, eventually a psymtab).  */
 
 static void
-dst_symfile_init (objfile)
-     struct objfile *objfile;
+dst_symfile_init(struct objfile *objfile)
 {
   asection	*section;
   bfd *abfd = objfile->obfd;
@@ -261,10 +259,8 @@ static bfd *symfile_bfd;
 
 /* ARGSUSED */
 static void
-dst_symfile_read (objfile, section_offsets, mainline)
-     struct objfile *objfile;
-     struct section_offsets *section_offsets;
-     int mainline;
+dst_symfile_read(struct objfile *objfile,
+		 struct section_offsets *section_offsets, int mainline)
 {
   bfd *abfd = objfile->obfd;
   char *name = bfd_get_filename (abfd);
@@ -311,8 +307,7 @@ dst_symfile_read (objfile, section_offsets, mainline)
 }
 
 static void
-dst_new_init (ignore)
-     struct objfile *ignore;
+dst_new_init(struct objfile *ignore)
 {
 	/* Nothin' to do */
 }
@@ -323,8 +318,7 @@ dst_new_init (ignore)
    objfile struct from the global list of known objfiles. */
 
 static void
-dst_symfile_finish (objfile)
-     struct objfile *objfile;
+dst_symfile_finish(struct objfile *objfile)
 {
     /* Nothing to do */
 }
@@ -337,9 +331,7 @@ dst_symfile_finish (objfile)
  * this is what was really intended.
  */
 static int
-get_dst_line(buffer, pc)
-    signed char **buffer;
-    long *pc;
+get_dst_line(signed char **buffer, long *pc)
 {
 	static last_pc = 0;
 	static long last_line = 0;
@@ -442,19 +434,15 @@ get_dst_line(buffer, pc)
 	return 1;
 }
 
-static	void
-enter_all_lines(buffer, address)
-    char *buffer;
-    long address;
+static void
+enter_all_lines(char *buffer, long address)
 {
     if (buffer)
 	while (get_dst_line(&buffer, &address));
 }
 
 static int
-get_dst_entry(buffer, ret_entry)
-    char *buffer;
-    dst_rec_ptr_t *ret_entry;
+get_dst_entry(char *buffer, dst_rec_ptr_t *ret_entry)
 {
     int size;
     dst_rec_ptr_t entry;
@@ -675,10 +663,8 @@ get_dst_entry(buffer, ret_entry)
    return size;
 }
 
-static	int next_dst_entry(buffer, entry, table)
-    char **buffer;
-    dst_rec_ptr_t *entry;
-    dst_sec *table;
+static int
+next_dst_entry(char **buffer, dst_rec_ptr_t *entry, dst_sec *table)
 {
     if (*buffer - table->buffer >= table->size)
     {
@@ -696,8 +682,7 @@ static	int next_dst_entry(buffer, entry, table)
 static	dst_rec_ptr_t	section_table = NULL;
 
 char *
-get_sec_ref(ref)
-    dst_sect_ref_t *ref;
+get_sec_ref(dst_sect_ref_t *ref)
 {
 	dst_sec *section = NULL;
 	long offset;
@@ -739,8 +724,7 @@ dst_sym_addr(ref)
 }
 
 static struct type *
-create_new_type(objfile)
-    struct objfile *objfile;
+create_new_type(struct objfile *objfile)
 {
 	struct type *type;
 
@@ -751,9 +735,7 @@ create_new_type(objfile)
 }
 
 static struct symbol *
-create_new_symbol(objfile, name)
-    struct objfile *objfile;
-    char *name;
+create_new_symbol(struct objfile *objfile, char *name)
 {
 	struct symbol *sym = (struct symbol *)
 	       obstack_alloc (&objfile->symbol_obstack, sizeof (struct symbol));
@@ -771,10 +753,8 @@ static struct type *
 decode_dst_type PARAMS ((struct objfile *, dst_rec_ptr_t));
 
 static struct type *
-decode_type_desc(objfile, type_desc, base)
-	struct objfile *objfile;
-	dst_type_t *type_desc;
-	dst_rec_ptr_t base;
+decode_type_desc(struct objfile *objfile, dst_type_t *type_desc,
+		 dst_rec_ptr_t base)
 {
 	struct type *type;
 	dst_rec_ptr_t entry;
@@ -872,8 +852,7 @@ struct	structure_list
 static struct structure_list *struct_list = NULL;
 
 static struct type *
-find_dst_structure(name)
-    char *name;
+find_dst_structure(char *name)
 {
 	struct structure_list *element;
 
@@ -883,13 +862,9 @@ find_dst_structure(name)
 	return NULL;
 }
 
-
 static struct type *
-decode_dst_structure(objfile, entry, code, version)
-    struct objfile *objfile;
-    dst_rec_ptr_t entry;
-    int code;
-    int version;
+decode_dst_structure(struct objfile *objfile, dst_rec_ptr_t entry, int code,
+		     int version)
 {
 	struct	type *type, *child_type;
 	char	*struct_name;
@@ -991,9 +966,7 @@ decode_dst_structure(objfile, entry, code, version)
 }
 
 static struct type *
-decode_dst_type(objfile, entry)
-    struct objfile *objfile;
-    dst_rec_ptr_t entry;
+decode_dst_type(struct objfile *objfile, dst_rec_ptr_t entry)
 {
 	struct type *child_type, *type, *range_type, *index_type;
 
@@ -1056,9 +1029,7 @@ static	struct	symbol_list *dst_global_symbols = NULL;
 static	int	total_globals = 0;
 
 static void
-decode_dst_locstring(locstr, sym)
-    char *locstr;
-    struct symbol *sym;
+decode_dst_locstring(char *locstr, struct symbol *sym)
 {
 	dst_loc_entry_t *entry, *next_entry;
 	CORE_ADDR	temp;
@@ -1175,11 +1146,8 @@ decode_dst_locstring(locstr, sym)
 }
 
 static struct symbol_list *
-process_dst_symbols(objfile, entry, name, nsyms_ret)
-    struct objfile *objfile;
-    dst_rec_ptr_t entry;
-    char *name;
-    int *nsyms_ret;
+process_dst_symbols(struct objfile *objfile, dst_rec_ptr_t entry, char *name,
+		    int *nsyms_ret)
 {
 	struct symbol_list *list = NULL, *element;
 	struct symbol *sym;
@@ -1377,9 +1345,7 @@ process_dst_function(objfile, entry, name, address)
 }
 
 static struct block *
-process_dst_block(objfile, entry)
-    struct objfile *objfile;
-    dst_rec_ptr_t entry;
+process_dst_block(struct objfile *objfile, dst_rec_ptr_t entry)
 {
 	struct	block	*block;
 	struct	symbol	*function = NULL;
@@ -1504,10 +1470,8 @@ process_dst_block(objfile, entry)
 	return block;
 }
 
-
 static void
-read_dst_symtab (objfile)
-     struct objfile *objfile;
+read_dst_symtab(struct objfile *objfile)
 {
 	char	*buffer;
 	dst_rec_ptr_t entry, file_table, root_block;
@@ -1603,9 +1567,7 @@ static unsigned long linetab_size;
    external (unswapped) format in memory; we'll swap them as we enter
    them into GDB's data structures.  */
 static int
-init_one_section(chan, secinfo)
-    int chan;
-    dst_sec *secinfo;
+init_one_section(int chan, dst_sec *secinfo)
 {
   if (secinfo->size == 0
       || lseek(chan, secinfo->position, 0) == -1
@@ -1615,10 +1577,9 @@ init_one_section(chan, secinfo)
   else
 	return 1;
 }
- 
+
 static int
-init_dst_sections (chan)
-    int chan;
+init_dst_sections(int chan)
 {
 
   if (!init_one_section(chan, &blocks_info) ||
@@ -1659,7 +1620,7 @@ static struct sym_fns dst_sym_fns =
 };
 
 void
-_initialize_dstread ()
+_initialize_dstread(void)
 {
   add_symtab_fns(&dst_sym_fns);
 }

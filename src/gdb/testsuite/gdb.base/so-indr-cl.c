@@ -19,8 +19,8 @@ solib_wrapper (function)
   return (*function)(100);
 }
 
-
-int main ()
+int
+main(void)
 {
   int  result;
 

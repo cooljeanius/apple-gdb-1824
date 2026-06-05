@@ -3,7 +3,7 @@
 int globa;
 
 int
-main()
+main(void)
 {
   int a = 1, idx;
 

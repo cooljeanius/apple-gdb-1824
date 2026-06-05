@@ -20,7 +20,7 @@
 struct s bar;
 
 int
-func2 ()
+func2(void)
 {
   bar.x = 1;
   return 42;

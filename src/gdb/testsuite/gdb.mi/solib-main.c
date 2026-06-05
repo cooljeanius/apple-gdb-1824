@@ -15,7 +15,8 @@
 
 extern void solibfunction(void);
 
-int main ()
+int
+main(void)
 {
   solibfunction ();
   return 0;

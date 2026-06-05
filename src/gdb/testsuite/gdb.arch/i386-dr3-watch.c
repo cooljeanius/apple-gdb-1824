@@ -36,7 +36,7 @@ trigger (void)
 }
 
 int
-main ()
+main(void)
 {
   trigger ();
   return 0;

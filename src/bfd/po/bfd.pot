@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-25 00:58-0400\n"
+"POT-Creation-Date: 2026-06-03 14:57-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -232,7 +232,7 @@ msgid "%B: unsupported relocation: ALPHA_R_GPRELLOW"
 msgstr ""
 
 #: coff-alpha.c:1536 elf32-m32r.c:2451 elf64-alpha.c:3973 elf64-alpha.c:4099
-#: elf64-ia64-vms.c:3432 elf32-ia64.c:4038 elf64-ia64.c:4038
+#: elf64-ia64-vms.c:3432 elf32-ia64.c:4035 elf64-ia64.c:4035
 msgid "%B: unknown relocation type %d"
 msgstr ""
 
@@ -2362,8 +2362,8 @@ msgstr ""
 msgid "error reading cpu type from elf private data"
 msgstr ""
 
-#: elf32-xstormy16.c:425 elf64-ia64-vms.c:2075 elf32-ia64.c:2528
-#: elf64-ia64.c:2528
+#: elf32-xstormy16.c:425 elf64-ia64-vms.c:2075 elf32-ia64.c:2525
+#: elf64-ia64.c:2525
 msgid "non-zero addend in @fptr reloc"
 msgstr ""
 
@@ -2474,45 +2474,45 @@ msgid ""
 "branch."
 msgstr ""
 
-#: elf64-ia64-vms.c:2030 elf32-ia64.c:2473 elf64-ia64.c:2473
+#: elf64-ia64-vms.c:2030 elf32-ia64.c:2470 elf64-ia64.c:2470
 msgid "@pltoff reloc against local symbol"
 msgstr ""
 
-#: elf64-ia64-vms.c:3282 elf32-ia64.c:3890 elf64-ia64.c:3890
+#: elf64-ia64-vms.c:3282 elf32-ia64.c:3887 elf64-ia64.c:3887
 #, c-format
 msgid "%s: short data segment overflowed (0x%lx >= 0x400000)"
 msgstr ""
 
-#: elf64-ia64-vms.c:3293 elf32-ia64.c:3901 elf64-ia64.c:3901
+#: elf64-ia64-vms.c:3293 elf32-ia64.c:3898 elf64-ia64.c:3898
 #, c-format
 msgid "%s: __gp does not cover short data segment"
 msgstr ""
 
-#: elf64-ia64-vms.c:3558 elf32-ia64.c:4143 elf64-ia64.c:4143
+#: elf64-ia64-vms.c:3558 elf32-ia64.c:4140 elf64-ia64.c:4140
 msgid "%B: non-pic code with imm relocation against dynamic symbol `%s'"
 msgstr ""
 
-#: elf64-ia64-vms.c:3620 elf32-ia64.c:4210 elf64-ia64.c:4210
+#: elf64-ia64-vms.c:3620 elf32-ia64.c:4207 elf64-ia64.c:4207
 msgid "%B: @gprel relocation against dynamic symbol %s"
 msgstr ""
 
-#: elf64-ia64-vms.c:3679 elf32-ia64.c:4273 elf64-ia64.c:4273
+#: elf64-ia64-vms.c:3679 elf32-ia64.c:4270 elf64-ia64.c:4270
 msgid "%B: linking non-pic code in a position independent executable"
 msgstr ""
 
-#: elf64-ia64-vms.c:3780 elf32-ia64.c:4412 elf64-ia64.c:4412
+#: elf64-ia64-vms.c:3780 elf32-ia64.c:4409 elf64-ia64.c:4409
 msgid "%B: @internal branch to dynamic symbol %s"
 msgstr ""
 
-#: elf64-ia64-vms.c:3782 elf32-ia64.c:4414 elf64-ia64.c:4414
+#: elf64-ia64-vms.c:3782 elf32-ia64.c:4411 elf64-ia64.c:4411
 msgid "%B: speculation fixup to dynamic symbol %s"
 msgstr ""
 
-#: elf64-ia64-vms.c:3784 elf32-ia64.c:4416 elf64-ia64.c:4416
+#: elf64-ia64-vms.c:3784 elf32-ia64.c:4413 elf64-ia64.c:4413
 msgid "%B: @pcrel relocation against dynamic symbol %s"
 msgstr ""
 
-#: elf64-ia64-vms.c:3908 elf32-ia64.c:4623 elf64-ia64.c:4623
+#: elf64-ia64-vms.c:3908 elf32-ia64.c:4620 elf64-ia64.c:4620
 msgid "unsupported reloc"
 msgstr ""
 
@@ -2522,29 +2522,29 @@ msgid ""
 "`%A'."
 msgstr ""
 
-#: elf64-ia64-vms.c:3960 elf32-ia64.c:4656 elf64-ia64.c:4656
+#: elf64-ia64-vms.c:3960 elf32-ia64.c:4653 elf64-ia64.c:4653
 msgid ""
 "%B: Can't relax br (%s) to `%s' at 0x%lx in section `%A' with size 0x%lx (> "
 "0x1000000)."
 msgstr ""
 
-#: elf64-ia64-vms.c:4249 elf32-ia64.c:4915 elf64-ia64.c:4915
+#: elf64-ia64-vms.c:4249 elf32-ia64.c:4912 elf64-ia64.c:4912
 msgid "%B: linking trap-on-NULL-dereference with non-trapping files"
 msgstr ""
 
-#: elf64-ia64-vms.c:4258 elf32-ia64.c:4924 elf64-ia64.c:4924
+#: elf64-ia64-vms.c:4258 elf32-ia64.c:4921 elf64-ia64.c:4921
 msgid "%B: linking big-endian files with little-endian files"
 msgstr ""
 
-#: elf64-ia64-vms.c:4267 elf32-ia64.c:4933 elf64-ia64.c:4933
+#: elf64-ia64-vms.c:4267 elf32-ia64.c:4930 elf64-ia64.c:4930
 msgid "%B: linking 64-bit files with 32-bit files"
 msgstr ""
 
-#: elf64-ia64-vms.c:4276 elf32-ia64.c:4942 elf64-ia64.c:4942
+#: elf64-ia64-vms.c:4276 elf32-ia64.c:4939 elf64-ia64.c:4939
 msgid "%B: linking constant-gp files with non-constant-gp files"
 msgstr ""
 
-#: elf64-ia64-vms.c:4286 elf32-ia64.c:4952 elf64-ia64.c:4952
+#: elf64-ia64-vms.c:4286 elf32-ia64.c:4949 elf64-ia64.c:4949
 msgid "%B: linking auto-pic files with non-auto-pic files"
 msgstr ""
 

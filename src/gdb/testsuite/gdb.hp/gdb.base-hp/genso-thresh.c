@@ -27,9 +27,8 @@
 #include <sys/stat.h>
 #include <sys/fcntl.h>
 
-int main (argc, argv)
-int    argc;
-char **argv;
+int
+main(int argc, char **argv)
 {
 #define NUMBER_OF_INT_VARS 1500
 #define NUMBER_OF_LIBS 3

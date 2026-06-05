@@ -42,10 +42,10 @@ static char _[] = " @(#)asm.c	5.23 93/10/26 10:17:03, Srini, AMD";
 #include "error.h"
 
 #ifdef	MSDOS
-#include <string.h>
-#define	strcasecmp	stricmp
+# include <string.h>
+# define strcasecmp stricmp
 #else
-#include <string.h>
+# include <string.h>
 #endif
 
 
@@ -120,21 +120,22 @@ static	int	asm_token_count;
 */
 
 INT32
-asm_cmd(token, token_count)
-   char   *token[];
-   int     token_count;
-   {
-   INT32		result;
-   struct addr_29k_t 	addr_29k;
-   int		asm_done;
+asm_cmd(char *token[], int token_count)
+{
+  INT32 result;
+  struct addr_29k_t addr_29k;
+  int asm_done;
 
-   /*
+  /*
    ** Parse parameters
    */
 
-   if ((token_count < 2) || (token_count > 9)) {
+  if ((token_count < 2) || (token_count > 9))
+    {
       return (EMSYNTAX);
-   } else if (token_count == 2) {
+    }
+  else if (token_count == 2)
+    {
       /* Get address of assembly */
       result = get_addr_29k_m(token[1], &addr_29k, I_MEM);
       if (result != 0)
@@ -147,7 +148,7 @@ asm_cmd(token, token_count)
       do {
         if (io_config.cmd_file_io == TRUE) {
 	     if (Mini_cmdfile_input(cmd_buffer, BUFFER_SIZE) == SUCCESS) {
-               fprintf(stderr, "%s", cmd_buffer); 
+		 fprintf(stderr, "%s", cmd_buffer);
 	     } else {
                Mini_poll_kbd(cmd_buffer, BUFFER_SIZE, BLOCK); /* block */
 	     }
@@ -179,7 +180,9 @@ asm_cmd(token, token_count)
 	  fprintf(stderr, "0x%08lx:\t", addr_29k.address);
 	}
       } while (asm_done != 1);
-   } else {
+    }
+  else
+    {
       /* Get address of assembly */
       result = get_addr_29k_m(token[1], &addr_29k, I_MEM);
       if (result != 0)
@@ -188,10 +191,9 @@ asm_cmd(token, token_count)
       if (result != 0)
          return (result);
       return (do_assemble(addr_29k, &token[2], (token_count-2)));
-   }
+    }
    return (SUCCESS);
 }
-
 
 INT32
 do_assemble(addr_29k, token, token_count)
@@ -223,18 +225,17 @@ int			token_count;
    write_data = (BYTE *) &instr;
 
    hostendian = FALSE;
-   if ((retval = Mini_write_req (addr_29k.memory_space,
-				 addr_29k.address, 
-				 1, /* count */
-				 (INT16) sizeof(INST32),  /* size */
-				 &bytes_ret,
-				 write_data,
-				 hostendian)) != SUCCESS) {
-      return(FAILURE);
-   }; 
+   if ((retval = Mini_write_req(addr_29k.memory_space, addr_29k.address,
+				1, /* count */
+				(INT16) sizeof(INST32), /* size */
+				&bytes_ret, write_data, hostendian))
+       != SUCCESS)
+     {
+       return (FAILURE);
+     };
    return (SUCCESS);
 }
-#endif
+#endif /* !XRAY */
 
 /*
 ** This function is used to assemble a single Am29000 instruction.
@@ -250,33 +251,27 @@ int			token_count;
 	char  *inst_mnem;
 	unsigned char	oprn_fmt;
 } inst_table[];
-#endif
+#endif /* XRAY */
 
 int
-asm_instr(instr, token, token_count)
-   struct   instr_t *instr;
-   char    *token[];
-   int      token_count;
-   {
-   int    i;
-   int    result;
-   struct addr_29k_t parm[10];
-   char   temp_opcode[20];
-   char  *temp_ptr;
-   int    opcode_found;
-   static char  *str_0x40="0x40";
-   static char  *str_gr1="gr1";
+asm_instr(struct instr_t *instr, char *token[], int token_count)
+{
+  int i;
+  int result;
+  struct addr_29k_t parm[10];
+  char temp_opcode[20];
+  char *temp_ptr;
+  int opcode_found;
+  static char *str_0x40 = "0x40";
+  static char *str_gr1 = "gr1";
 
+  /* Is token_count valid, and is the first token a string? */
+  if ((token_count < 1) || (token_count > 7) || (strcmp(token[0], "") == 0))
+    return (EMSYNTAX);
 
-   /* Is token_count valid, and is the first token a string? */
-   if ((token_count < 1) ||
-       (token_count > 7) ||
-       (strcmp(token[0], "") == 0))
-      return (EMSYNTAX);
+  /* Get opcode */
 
-   /* Get opcode */
-
-   /*
+  /*
    ** Note:  Since the opcode_name[] string used in the disassembler
    ** uses padded strings, we cannot do a strcmp().  We canot do a
    ** strncmp() of the length of token[0] either, since "and" will
@@ -285,9 +280,10 @@ asm_instr(instr, token, token_count)
    ** compare.  This is inefficient, but necessary.
    */
 
-   i=0;
-   opcode_found = FALSE;
-   while ((i<256) && (opcode_found != TRUE)) {
+  i = 0;
+  opcode_found = FALSE;
+  while ((i < 256) && (opcode_found != TRUE))
+    {
 #ifdef XRAY
       result = strcasecmp(token[0], inst_table[i].inst_mnem);
 #else
@@ -303,7 +299,7 @@ asm_instr(instr, token, token_count)
          instr->op = (BYTE) i;
          }
       i = i + 1;
-      }  /* end while */
+    } /* end while */
 
    /* Check for a NOP */
    if ((opcode_found == FALSE) &&
@@ -346,570 +342,818 @@ asm_instr(instr, token, token_count)
       }
    }
 
+   switch (instr->op)
+     {
+     /* Opcodes 0x00 to 0x0F */
+     case ILLEGAL_00:
+       result = EMSYNTAX;
+       break;
+     case CONSTN:
+       result = asm_const(instr, parm, 2);
+       break;
+     case CONSTH:
+       result = asm_consth(instr, parm, 2);
+       break;
+     case CONST:
+       result = asm_const(instr, parm, 2);
+       break;
+     case MTSRIM:
+       result = asm_mtsrim(instr, parm, 2);
+       break;
+     case CONSTHZ:
+       result = asm_const(instr, parm, 2);
+       break;
+     case LOADL0:
+       result = asm_load_store(instr, parm, 4);
+       break;
+     case LOADL1:
+       result = asm_load_store(instr, parm, 4);
+       break;
+     case CLZ0:
+       result = asm_clz(instr, parm, 2);
+       break;
+     case CLZ1:
+       result = asm_clz(instr, parm, 2);
+       break;
+     case EXBYTE0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case EXBYTE1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case INBYTE0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case INBYTE1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case STOREL0:
+       result = asm_load_store(instr, parm, 4);
+       break;
+     case STOREL1:
+       result = asm_load_store(instr, parm, 4);
+       break;
 
-   switch (instr->op) {   
+     /* Opcodes 0x10 to 0x1F */
+     case ADDS0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case ADDS1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case ADDU0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case ADDU1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case ADD0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case ADD1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case LOAD0:
+       result = asm_load_store(instr, parm, 4);
+       break;
+     case LOAD1:
+       result = asm_load_store(instr, parm, 4);
+       break;
+     case ADDCS0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case ADDCS1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case ADDCU0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case ADDCU1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case ADDC0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case ADDC1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case STORE0:
+       result = asm_load_store(instr, parm, 4);
+       break;
+     case STORE1:
+       result = asm_load_store(instr, parm, 4);
+       break;
 
-      /* Opcodes 0x00 to 0x0F */
-      case ILLEGAL_00:  result = EMSYNTAX;
-                        break;
-      case CONSTN:      result = asm_const(instr, parm, 2);
-                        break;
-      case CONSTH:      result = asm_consth(instr, parm, 2);
-                        break;
-      case CONST:       result = asm_const(instr, parm, 2);
-                        break;
-      case MTSRIM:      result = asm_mtsrim(instr, parm, 2);
-                        break;
-      case CONSTHZ:     result = asm_const(instr, parm, 2);
-                        break;
-      case LOADL0:      result = asm_load_store(instr, parm, 4);
-                        break;
-      case LOADL1:      result = asm_load_store(instr, parm, 4);
-                        break;
-      case CLZ0:        result = asm_clz(instr, parm, 2);
-                        break;
-      case CLZ1:        result = asm_clz(instr, parm, 2);
-                        break;
-      case EXBYTE0:     result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case EXBYTE1:     result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case INBYTE0:     result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case INBYTE1:     result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case STOREL0:     result = asm_load_store(instr, parm, 4);
-                        break;
-      case STOREL1:     result = asm_load_store(instr, parm, 4);
-                        break;
+     /* Opcodes 0x20 to 0x2F */
+     case SUBS0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBS1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBU0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBU1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUB0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUB1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case LOADSET0:
+       result = asm_load_store(instr, parm, 4);
+       break;
+     case LOADSET1:
+       result = asm_load_store(instr, parm, 4);
+       break;
+     case SUBCS0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBCS1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBCU0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBCU1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBC0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBC1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPBYTE0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPBYTE1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
 
-      /* Opcodes 0x10 to 0x1F */
-      case ADDS0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case ADDS1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case ADDU0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case ADDU1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case ADD0:        result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case ADD1:        result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case LOAD0:       result = asm_load_store(instr, parm, 4);
-                        break;
-      case LOAD1:       result = asm_load_store(instr, parm, 4);
-                        break;
-      case ADDCS0:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case ADDCS1:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case ADDCU0:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case ADDCU1:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case ADDC0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case ADDC1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case STORE0:      result = asm_load_store(instr, parm, 4);
-                        break;
-      case STORE1:      result = asm_load_store(instr, parm, 4);
-                        break;
+     /* Opcodes 0x30 to 0x3F */
+     case SUBRS0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBRS1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBRU0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBRU1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBR0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBR1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case LOADM0:
+       result = asm_load_store(instr, parm, 4);
+       break;
+     case LOADM1:
+       result = asm_load_store(instr, parm, 4);
+       break;
+     case SUBRCS0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBRCS1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBRCU0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBRCU1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBRC0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SUBRC1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case STOREM0:
+       result = asm_load_store(instr, parm, 4);
+       break;
+     case STOREM1:
+       result = asm_load_store(instr, parm, 4);
+       break;
 
-      /* Opcodes 0x20 to 0x2F */
-      case SUBS0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBS1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBU0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBU1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUB0:        result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUB1:        result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case LOADSET0:    result = asm_load_store(instr, parm, 4);
-                        break;
-      case LOADSET1:    result = asm_load_store(instr, parm, 4);
-                        break;
-      case SUBCS0:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBCS1:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBCU0:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBCU1:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBC0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBC1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPBYTE0:     result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPBYTE1:     result = asm_arith_logic(instr, parm, 3);
-                        break;
+     /* Opcodes 0x40 to 0x4F */
+     case CPLT0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPLT1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPLTU0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPLTU1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPLE0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPLE1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPLEU0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPLEU1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPGT0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPGT1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPGTU0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPGTU1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPGE0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPGE1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPGEU0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPGEU1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
 
+     /* Opcodes 0x50 to 0x5F */
+     case ASLT0:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASLT1:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASLTU0:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASLTU1:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASLE0:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASLE1:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASLEU0:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASLEU1:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASGT0:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASGT1:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASGTU0:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASGTU1:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASGE0:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASGE1:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASGEU0:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASGEU1:
+       result = asm_vector(instr, parm, 3);
+       break;
 
-      /* Opcodes 0x30 to 0x3F */
-      case SUBRS0:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBRS1:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBRU0:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBRU1:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBR0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBR1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case LOADM0:      result = asm_load_store(instr, parm, 4);
-                        break;
-      case LOADM1:      result = asm_load_store(instr, parm, 4);
-                        break;
-      case SUBRCS0:     result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBRCS1:     result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBRCU0:     result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBRCU1:     result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBRC0:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SUBRC1:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case STOREM0:     result = asm_load_store(instr, parm, 4);
-                        break;
-      case STOREM1:     result = asm_load_store(instr, parm, 4);
-                        break;
+     /* Opcodes 0x60 to 0x6F */
+     case CPEQ0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPEQ1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPNEQ0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case CPNEQ1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case MUL0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case MUL1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case MULL0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case MULL1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case DIV0_OP0:
+       result = asm_div0(instr, parm, 2);
+       break;
+     case DIV0_OP1:
+       result = asm_div0(instr, parm, 2);
+       break;
+     case DIV_OP0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case DIV_OP1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case DIVL0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case DIVL1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case DIVREM0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case DIVREM1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
 
-      /* Opcodes 0x40 to 0x4F */
-      case CPLT0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPLT1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPLTU0:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPLTU1:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPLE0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPLE1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPLEU0:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPLEU1:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPGT0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPGT1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPGTU0:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPGTU1:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPGE0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPGE1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPGEU0:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPGEU1:      result = asm_arith_logic(instr, parm, 3);
-                        break;
+     /* Opcodes 0x70 to 0x7F */
+     case ASEQ0:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASEQ1:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASNEQ0:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case ASNEQ1:
+       result = asm_vector(instr, parm, 3);
+       break;
+     case MULU0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case MULU1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case ILLEGAL_76:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_77:
+       result = EMSYNTAX;
+       break;
+     case INHW0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case INHW1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case EXTRACT0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case EXTRACT1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case EXHW0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case EXHW1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case EXHWS:
+       result = asm_exhws(instr, parm, 2);
+       break;
+     case ILLEGAL_7F:
+       result = EMSYNTAX;
+       break;
 
-      /* Opcodes 0x50 to 0x5F */
-      case ASLT0:       result = asm_vector(instr, parm, 3);
-                        break;
-      case ASLT1:       result = asm_vector(instr, parm, 3);
-                        break;
-      case ASLTU0:      result = asm_vector(instr, parm, 3);
-                        break;
-      case ASLTU1:      result = asm_vector(instr, parm, 3);
-                        break;
-      case ASLE0:       result = asm_vector(instr, parm, 3);
-                        break;
-      case ASLE1:       result = asm_vector(instr, parm, 3);
-                        break;
-      case ASLEU0:      result = asm_vector(instr, parm, 3);
-                        break;
-      case ASLEU1:      result = asm_vector(instr, parm, 3);
-                        break;
-      case ASGT0:       result = asm_vector(instr, parm, 3);
-                        break;
-      case ASGT1:       result = asm_vector(instr, parm, 3);
-                        break;
-      case ASGTU0:      result = asm_vector(instr, parm, 3);
-                        break;
-      case ASGTU1:      result = asm_vector(instr, parm, 3);
-                        break;
-      case ASGE0:       result = asm_vector(instr, parm, 3);
-                        break;
-      case ASGE1:       result = asm_vector(instr, parm, 3);
-                        break;
-      case ASGEU0:      result = asm_vector(instr, parm, 3);
-                        break;
-      case ASGEU1:      result = asm_vector(instr, parm, 3);
-                        break;
+     /* Opcodes 0x80 to 0x8F */
+     case SLL0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SLL1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SRL0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SRL1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case ILLEGAL_84:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_85:
+       result = EMSYNTAX;
+       break;
+     case SRA0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SRA1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case IRET:
+       result = asm_no_parms(instr, parm, 0);
+       break;
+     case HALT_OP:
+       result = asm_no_parms(instr, parm, 0);
+       break;
+     case ILLEGAL_8A:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_8B:
+       result = EMSYNTAX;
+       break;
+     case IRETINV:
+       if (token_count > 1)
+	 result = asm_one_parms(instr, parm, 1);
+       else
+	 result = asm_no_parms(instr, parm, 0);
+       break;
+     case ILLEGAL_8D:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_8E:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_8F:
+       result = EMSYNTAX;
+       break;
 
-      /* Opcodes 0x60 to 0x6F */
-      case CPEQ0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPEQ1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPNEQ0:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case CPNEQ1:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case MUL0:        result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case MUL1:        result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case MULL0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case MULL1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case DIV0_OP0:    result = asm_div0(instr, parm, 2);
-                        break;
-      case DIV0_OP1:    result = asm_div0(instr, parm, 2);
-                        break;
-      case DIV_OP0:     result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case DIV_OP1:     result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case DIVL0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case DIVL1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case DIVREM0:     result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case DIVREM1:     result = asm_arith_logic(instr, parm, 3);
-                        break;
+     /* Opcodes 0x90 to 0x9F */
+     case AND_OP0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case AND_OP1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case OR_OP0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case OR_OP1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case XOR_OP0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case XOR_OP1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case XNOR0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case XNOR1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case NOR0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case NOR1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case NAND0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case NAND1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case ANDN0:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case ANDN1:
+       result = asm_arith_logic(instr, parm, 3);
+       break;
+     case SETIP:
+       result = asm_float(instr, parm, 3);
+       break;
+     case INV:
+       if (token_count > 1)
+	 result = asm_one_parms(instr, parm, 1);
+       else
+	 result = asm_no_parms(instr, parm, 0);
+       break;
 
-      /* Opcodes 0x70 to 0x7F */
-      case ASEQ0:       result = asm_vector(instr, parm, 3);
-                        break;
-      case ASEQ1:       result = asm_vector(instr, parm, 3);
-                        break;
-      case ASNEQ0:      result = asm_vector(instr, parm, 3);
-                        break;
-      case ASNEQ1:      result = asm_vector(instr, parm, 3);
-                        break;
-      case MULU0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case MULU1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case ILLEGAL_76:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_77:  result = EMSYNTAX;
-                        break;
-      case INHW0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case INHW1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case EXTRACT0:    result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case EXTRACT1:    result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case EXHW0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case EXHW1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case EXHWS:       result = asm_exhws(instr, parm, 2);
-                        break;
-      case ILLEGAL_7F:  result = EMSYNTAX;
-                        break;
+     /* Opcodes 0xA0 to 0xAF */
+     case JMP0:
+       result = asm_jmp(instr, parm, 1);
+       break;
+     case JMP1:
+       result = asm_jmp(instr, parm, 1);
+       break;
+     case ILLEGAL_A2:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_A3:
+       result = EMSYNTAX;
+       break;
+     case JMPF0:
+       result = asm_call_jmp(instr, parm, 2);
+       break;
+     case JMPF1:
+       result = asm_call_jmp(instr, parm, 2);
+       break;
+     case ILLEGAL_A6:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_A7:
+       result = EMSYNTAX;
+       break;
+     case CALL0:
+       result = asm_call_jmp(instr, parm, 2);
+       break;
+     case CALL1:
+       result = asm_call_jmp(instr, parm, 2);
+       break;
+     case ORN_OP0:
+       result = EMSYNTAX;
+       break;
+     case ORN_OP1:
+       result = EMSYNTAX;
+       break;
+     case JMPT0:
+       result = asm_call_jmp(instr, parm, 2);
+       break;
+     case JMPT1:
+       result = asm_call_jmp(instr, parm, 2);
+       break;
+     case ILLEGAL_AE:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_AF:
+       result = EMSYNTAX;
+       break;
 
-      /* Opcodes 0x80 to 0x8F */
-      case SLL0:        result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SLL1:        result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SRL0:        result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SRL1:        result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case ILLEGAL_84:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_85:  result = EMSYNTAX;
-                        break;
-      case SRA0:        result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SRA1:        result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case IRET:        
-			result = asm_no_parms(instr, parm, 0);
-                        break;
-      case HALT_OP:     result = asm_no_parms(instr, parm, 0);
-                        break;
-      case ILLEGAL_8A:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_8B:  result = EMSYNTAX;
-                        break;
-      case IRETINV:     
-			if (token_count > 1)
-			    result = asm_one_parms(instr, parm, 1);
-		        else
-			    result = asm_no_parms(instr, parm, 0);
-                        break;
-      case ILLEGAL_8D:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_8E:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_8F:  result = EMSYNTAX;
-                        break;
+     /* Opcodes 0xB0 to 0xBF */
+     case ILLEGAL_B0:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_B1:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_B2:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_B3:
+       result = EMSYNTAX;
+       break;
+     case JMPFDEC0:
+       result = asm_call_jmp(instr, parm, 2);
+       break;
+     case JMPFDEC1:
+       result = asm_call_jmp(instr, parm, 2);
+       break;
+     case MFTLB:
+       result = asm_mftlb(instr, parm, 2);
+       break;
+     case ILLEGAL_B7:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_B8:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_B9:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_BA:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_BB:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_BC:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_BD:
+       result = EMSYNTAX;
+       break;
+     case MTTLB:
+       result = asm_mttlb(instr, parm, 2);
+       break;
+     case ILLEGAL_BF:
+       result = EMSYNTAX;
+       break;
 
-      /* Opcodes 0x90 to 0x9F */
-      case AND_OP0:     result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case AND_OP1:     result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case OR_OP0:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case OR_OP1:      result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case XOR_OP0:     result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case XOR_OP1:     result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case XNOR0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case XNOR1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case NOR0:        result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case NOR1:        result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case NAND0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case NAND1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case ANDN0:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case ANDN1:       result = asm_arith_logic(instr, parm, 3);
-                        break;
-      case SETIP:       result = asm_float(instr, parm, 3);
-                        break;
-      case INV:         
-			  if (token_count > 1)
-			    result = asm_one_parms(instr, parm, 1);
-			  else
-			    result = asm_no_parms(instr, parm, 0);
-                        break;
+     /* Opcodes 0xC0 to 0xCF */
+     case JMPI:
+       result = asm_jmpi(instr, parm, 1);
+       break;
+     case ILLEGAL_C1:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_C2:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_C3:
+       result = EMSYNTAX;
+       break;
+     case JMPFI:
+       result = asm_calli_jmpi(instr, parm, 2);
+       break;
+     case ILLEGAL_C5:
+       result = EMSYNTAX;
+       break;
+     case MFSR:
+       result = asm_mfsr(instr, parm, 2);
+       break;
+     case ILLEGAL_C7:
+       result = EMSYNTAX;
+       break;
+     case CALLI:
+       result = asm_calli_jmpi(instr, parm, 2);
+       break;
+     case ILLEGAL_C9:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_CA:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_CB:
+       result = EMSYNTAX;
+       break;
+     case JMPTI:
+       result = asm_calli_jmpi(instr, parm, 2);
+       break;
+     case ILLEGAL_CD:
+       result = EMSYNTAX;
+       break;
+     case MTSR:
+       result = asm_mtsr(instr, parm, 2);
+       break;
+     case ILLEGAL_CF:
+       result = EMSYNTAX;
+       break;
 
-      /* Opcodes 0xA0 to 0xAF */
-      case JMP0:        result = asm_jmp(instr, parm, 1);
-                        break;
-      case JMP1:        result = asm_jmp(instr, parm, 1);
-                        break;
-      case ILLEGAL_A2:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_A3:  result = EMSYNTAX;
-                        break;
-      case JMPF0:       result = asm_call_jmp(instr, parm, 2);
-                        break;
-      case JMPF1:       result = asm_call_jmp(instr, parm, 2);
-                        break;
-      case ILLEGAL_A6:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_A7:  result = EMSYNTAX;
-                        break;
-      case CALL0:       result = asm_call_jmp(instr, parm, 2);
-                        break;
-      case CALL1:       result = asm_call_jmp(instr, parm, 2);
-                        break;
-      case ORN_OP0:  	result = EMSYNTAX;
-                        break;
-      case ORN_OP1:  	result = EMSYNTAX;
-                        break;
-      case JMPT0:       result = asm_call_jmp(instr, parm, 2);
-                        break;
-      case JMPT1:       result = asm_call_jmp(instr, parm, 2);
-                        break;
-      case ILLEGAL_AE:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_AF:  result = EMSYNTAX;
-                        break;
+     /* Opcodes 0xD0 to 0xDF */
+     case ILLEGAL_D0:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_D1:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_D2:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_D3:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_D4:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_D5:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_D6:
+       result = EMSYNTAX;
+       break;
+     case EMULATE:
+       result = asm_emulate(instr, parm, 3);
+       break;
+     case ILLEGAL_D8:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_D9:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_DA:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_DB:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_DC:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_DD:
+       result = EMSYNTAX;
+       break;
+     case MULTM:
+       result = asm_float(instr, parm, 3);
+       break;
+     case MULTMU:
+       result = asm_float(instr, parm, 3);
+       break;
 
-      /* Opcodes 0xB0 to 0xBF */
-      case ILLEGAL_B0:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_B1:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_B2:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_B3:  result = EMSYNTAX;
-                        break;
-      case JMPFDEC0:    result = asm_call_jmp(instr, parm, 2);
-                        break;
-      case JMPFDEC1:    result = asm_call_jmp(instr, parm, 2);
-                        break;
-      case MFTLB:       result = asm_mftlb(instr, parm, 2);
-                        break;
-      case ILLEGAL_B7:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_B8:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_B9:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_BA:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_BB:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_BC:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_BD:  result = EMSYNTAX;
-                        break;
-      case MTTLB:       result = asm_mttlb(instr, parm, 2);
-                        break;
-      case ILLEGAL_BF:  result = EMSYNTAX;
-                        break;
+     /* Opcodes 0xE0 to 0xEF */
+     case MULTIPLY:
+       result = asm_float(instr, parm, 3);
+       break;
+     case DIVIDE:
+       result = asm_float(instr, parm, 3);
+       break;
+     case MULTIPLU:
+       result = asm_float(instr, parm, 3);
+       break;
+     case DIVIDU:
+       result = asm_float(instr, parm, 3);
+       break;
+     case CONVERT:
+       result = asm_convert(instr, parm, 6);
+       break;
+     case SQRT:
+       result = asm_sqrt(instr, parm, 3);
+       break;
+     case CLASS:
+       result = asm_class(instr, parm, 3);
+       break;
+     case ILLEGAL_E7:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_E8:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_E9:
+       result = EMSYNTAX;
+       break;
+     case FEQ:
+       result = asm_float(instr, parm, 3);
+       break;
+     case DEQ:
+       result = asm_float(instr, parm, 3);
+       break;
+     case FGT:
+       result = asm_float(instr, parm, 3);
+       break;
+     case DGT:
+       result = asm_float(instr, parm, 3);
+       break;
+     case FGE:
+       result = asm_float(instr, parm, 3);
+       break;
+     case DGE:
+       result = asm_float(instr, parm, 3);
+       break;
 
-      /* Opcodes 0xC0 to 0xCF */
-      case JMPI:        result = asm_jmpi(instr, parm, 1);
-                        break;
-      case ILLEGAL_C1:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_C2:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_C3:  result = EMSYNTAX;
-                        break;
-      case JMPFI:       result = asm_calli_jmpi(instr, parm, 2);
-                        break;
-      case ILLEGAL_C5:  result = EMSYNTAX;
-                        break;
-      case MFSR:        result = asm_mfsr(instr, parm, 2);
-                        break;
-      case ILLEGAL_C7:  result = EMSYNTAX;
-                        break;
-      case CALLI:       result = asm_calli_jmpi(instr, parm, 2);
-                        break;
-      case ILLEGAL_C9:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_CA:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_CB:  result = EMSYNTAX;
-                        break;
-      case JMPTI:       result = asm_calli_jmpi(instr, parm, 2);
-                        break;
-      case ILLEGAL_CD:  result = EMSYNTAX;
-                        break;
-      case MTSR:        result = asm_mtsr(instr, parm, 2);
-                        break;
-      case ILLEGAL_CF:  result = EMSYNTAX;
-                        break;
-
-      /* Opcodes 0xD0 to 0xDF */
-      case ILLEGAL_D0:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_D1:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_D2:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_D3:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_D4:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_D5:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_D6:  result = EMSYNTAX;
-                        break;
-      case EMULATE:     result = asm_emulate(instr, parm, 3);
-                        break;
-      case ILLEGAL_D8:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_D9:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_DA:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_DB:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_DC:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_DD:  result = EMSYNTAX;
-                        break;
-      case MULTM:       result = asm_float(instr, parm, 3);
-                        break;
-      case MULTMU:      result = asm_float(instr, parm, 3);
-                        break;
-
-      /* Opcodes 0xE0 to 0xEF */
-      case MULTIPLY:    result = asm_float(instr, parm, 3);
-                        break;
-      case DIVIDE:      result = asm_float(instr, parm, 3);
-                        break;
-      case MULTIPLU:    result = asm_float(instr, parm, 3);
-                        break;
-      case DIVIDU:      result = asm_float(instr, parm, 3);
-                        break;
-      case CONVERT:     result = asm_convert(instr, parm, 6);
-                        break;
-      case SQRT:        result = asm_sqrt(instr, parm, 3);
-                        break;
-      case CLASS:       result = asm_class(instr, parm, 3);
-                        break;
-      case ILLEGAL_E7:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_E8:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_E9:  result = EMSYNTAX;
-                        break;
-      case FEQ:         result = asm_float(instr, parm, 3);
-                        break;
-      case DEQ:         result = asm_float(instr, parm, 3);
-                        break;
-      case FGT:         result = asm_float(instr, parm, 3);
-                        break;
-      case DGT:         result = asm_float(instr, parm, 3);
-                        break;
-      case FGE:         result = asm_float(instr, parm, 3);
-                        break;
-      case DGE:         result = asm_float(instr, parm, 3);
-                        break;
-
-      /* Opcodes 0xF0 to 0xFF */
-      case FADD:        result = asm_float(instr, parm, 3);
-                        break;
-      case DADD:        result = asm_float(instr, parm, 3);
-                        break;
-      case FSUB:        result = asm_float(instr, parm, 3);
-                        break;
-      case DSUB:        result = asm_float(instr, parm, 3);
-                        break;
-      case FMUL:        result = asm_float(instr, parm, 3);
-                        break;
-      case DMUL:        result = asm_float(instr, parm, 3);
-                        break;
-      case FDIV:        result = asm_float(instr, parm, 3);
-                        break;
-      case DDIV:        result = asm_float(instr, parm, 3);
-                        break;
-      case ILLEGAL_F8:  result = EMSYNTAX;
-                        break;
-      case FDMUL:       result = asm_float(instr, parm, 3);
-                        break;
-      case ILLEGAL_FA:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_FB:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_FC:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_FD:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_FE:  result = EMSYNTAX;
-                        break;
-      case ILLEGAL_FF:  result = EMSYNTAX;
-                        break;
-      }  /* end switch */
+     /* Opcodes 0xF0 to 0xFF */
+     case FADD:
+       result = asm_float(instr, parm, 3);
+       break;
+     case DADD:
+       result = asm_float(instr, parm, 3);
+       break;
+     case FSUB:
+       result = asm_float(instr, parm, 3);
+       break;
+     case DSUB:
+       result = asm_float(instr, parm, 3);
+       break;
+     case FMUL:
+       result = asm_float(instr, parm, 3);
+       break;
+     case DMUL:
+       result = asm_float(instr, parm, 3);
+       break;
+     case FDIV:
+       result = asm_float(instr, parm, 3);
+       break;
+     case DDIV:
+       result = asm_float(instr, parm, 3);
+       break;
+     case ILLEGAL_F8:
+       result = EMSYNTAX;
+       break;
+     case FDMUL:
+       result = asm_float(instr, parm, 3);
+       break;
+     case ILLEGAL_FA:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_FB:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_FC:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_FD:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_FE:
+       result = EMSYNTAX;
+       break;
+     case ILLEGAL_FF:
+       result = EMSYNTAX;
+       break;
+     } /* end switch */
 
    return (result);
 
-   }  /* End asm_instr() */
-
-
-
+} /* End asm_instr() */
 
 /*
 ** The following functions are used to convert instruction
@@ -927,23 +1171,20 @@ asm_instr(instr, token, token_count)
 */
 
 int
-asm_arith_logic(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
-   {
-   if (parm_count != 3)
-      return (EMSYNTAX);
+asm_arith_logic(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
+{
+  if (parm_count != 3)
+    return (EMSYNTAX);
 
-   if (ISGENERAL(parm[0].memory_space) &&
-       ISGENERAL(parm[1].memory_space) &&
-       ISGENERAL(parm[2].memory_space)) {
+  if (ISGENERAL(parm[0].memory_space) && ISGENERAL(parm[1].memory_space)
+      && ISGENERAL(parm[2].memory_space))
+    {
       /* Make sure M flag is cleared */
       instr->op = (BYTE) (instr->op & 0xfe);
       instr->c = (BYTE) (parm[0].address & 0xff);
       instr->a = (BYTE) (parm[1].address & 0xff);
       instr->b = (BYTE) (parm[2].address & 0xff);
-      }
+    }
    else
    if (ISGENERAL(parm[0].memory_space) &&
        ISGENERAL(parm[1].memory_space) &&
@@ -958,9 +1199,7 @@ asm_arith_logic(instr, parm, parm_count)
       return(EMSYNTAX);
 
    return (0);
-   }  /* end asm_arith_logic() */
-
-
+} /* end asm_arith_logic() */
 
 /*
 ** Formats:   <nmemonic>, VN, RA, (RB or I)
@@ -970,23 +1209,20 @@ asm_arith_logic(instr, parm, parm_count)
 */
 
 int
-asm_vector(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
-   {
-   if (parm_count != 3)
-      return (EMSYNTAX);
+asm_vector(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
+{
+  if (parm_count != 3)
+    return (EMSYNTAX);
 
-   if (ISMEM(parm[0].memory_space) &&
-       ISGENERAL(parm[1].memory_space) &&
-       ISGENERAL(parm[2].memory_space)) {
+  if (ISMEM(parm[0].memory_space) && ISGENERAL(parm[1].memory_space)
+      && ISGENERAL(parm[2].memory_space))
+    {
       /* Make sure M flag is cleared */
       instr->op = (BYTE) (instr->op & 0xfe);
       instr->c = (BYTE) (parm[0].address & 0xff);
       instr->a = (BYTE) (parm[1].address & 0xff);
       instr->b = (BYTE) (parm[2].address & 0xff);
-      }
+    }
    else
    if (ISMEM(parm[0].memory_space) &&
        ISGENERAL(parm[1].memory_space) &&
@@ -1001,9 +1237,7 @@ asm_vector(instr, parm, parm_count)
       return(EMSYNTAX);
 
    return (0);
-   }  /* end asm_vector() */
-
-
+} /* end asm_vector() */
 
 /*
 ** Formats:   <nmemonic>, CE, CNTL, RA, (RB or I)
@@ -1013,21 +1247,17 @@ asm_vector(instr, parm, parm_count)
 */
 
 int
-asm_load_store(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
-   {
-   int  ce;
-   int  cntl;
+asm_load_store(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
+{
+  int ce;
+  int cntl;
 
-   if (parm_count != 4)
-      return (EMSYNTAX);
+  if (parm_count != 4)
+    return (EMSYNTAX);
 
-   if (ISMEM(parm[0].memory_space) &&
-       ISMEM(parm[1].memory_space) &&
-       ISGENERAL(parm[2].memory_space) &&
-       ISGENERAL(parm[3].memory_space)) {
+  if (ISMEM(parm[0].memory_space) && ISMEM(parm[1].memory_space)
+      && ISGENERAL(parm[2].memory_space) && ISGENERAL(parm[3].memory_space))
+    {
       /* Make sure M flag is cleared */
       instr->op = (BYTE) (instr->op & 0xfe);
       if (parm[0].address > 1)
@@ -1039,7 +1269,7 @@ asm_load_store(instr, parm, parm_count)
       instr->c = (BYTE) (ce | cntl);
       instr->a = (BYTE) (parm[2].address & 0xff);
       instr->b = (BYTE) (parm[3].address & 0xff);
-      }
+    }
    else
    if (ISMEM(parm[0].memory_space) &&
        ISMEM(parm[1].memory_space) &&
@@ -1063,9 +1293,7 @@ asm_load_store(instr, parm, parm_count)
       return(EMSYNTAX);
 
    return (0);
-   }  /* end asm_load_store() */
-
-
+} /* end asm_load_store() */
 
 /*
 ** Formats:   <nmemonic>
@@ -1074,41 +1302,33 @@ asm_load_store(instr, parm, parm_count)
 /*ARGSUSED*/
 
 int
-asm_no_parms(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
-   {
-   if (parm_count != 0)
-      return (EMSYNTAX);
+asm_no_parms(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
+{
+  if (parm_count != 0)
+    return (EMSYNTAX);
 
-   /* Put zeros in the "reserved" fields */
-   instr->c = 0;
-   instr->a = 0;
-   instr->b = 0;
+  /* Put zeros in the "reserved" fields */
+  instr->c = 0;
+  instr->a = 0;
+  instr->b = 0;
 
-   return (0);
-   }  /* end asm_no_parms() */
-
+  return (0);
+} /* end asm_no_parms() */
 
 int
-asm_one_parms(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
-   {
-   if (parm_count != 1)
-      return (EMSYNTAX);
+asm_one_parms(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
+{
+  if (parm_count != 1)
+    return (EMSYNTAX);
 
-   instr->c = (BYTE) (parm[0].address & 0x3);
+  instr->c = (BYTE) (parm[0].address & 0x3);
 
-   /* Put zeros in the "reserved" fields */
-   instr->a = 0;
-   instr->b = 0;
+  /* Put zeros in the "reserved" fields */
+  instr->a = 0;
+  instr->b = 0;
 
-   return (0);
-   } /* end asm_one_parms */
-
+  return (0);
+} /* end asm_one_parms */
 
 /*
 ** Formats:   <nmemonic>, RC, RA, RB
@@ -1118,28 +1338,23 @@ asm_one_parms(instr, parm, parm_count)
 */
 
 int
-asm_float(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
-   {
-   if (parm_count != 3)
-      return (EMSYNTAX);
+asm_float(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
+{
+  if (parm_count != 3)
+    return (EMSYNTAX);
 
-   if (ISGENERAL(parm[0].memory_space) &&
-       ISGENERAL(parm[1].memory_space) &&
-       ISGENERAL(parm[2].memory_space)) {
+  if (ISGENERAL(parm[0].memory_space) && ISGENERAL(parm[1].memory_space)
+      && ISGENERAL(parm[2].memory_space))
+    {
       instr->c = (BYTE) (parm[0].address & 0xff);
       instr->a = (BYTE) (parm[1].address & 0xff);
       instr->b = (BYTE) (parm[2].address & 0xff);
-      }
+    }
    else
       return(EMSYNTAX);
 
    return (0);
-   }  /* end asm_float() */
-
-
+} /* end asm_float() */
 
 /*
 ** Formats:   <nmemonic> RA, <target>
@@ -1150,16 +1365,13 @@ asm_float(instr, parm, parm_count)
 */
 
 int
-asm_call_jmp(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
-   {
-   if (parm_count != 2)
-      return (EMSYNTAX);
+asm_call_jmp(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
+{
+  if (parm_count != 2)
+    return (EMSYNTAX);
 
-   if (ISGENERAL(parm[0].memory_space) &&
-       ISMEM(parm[1].memory_space)) {
+  if (ISGENERAL(parm[0].memory_space) && ISMEM(parm[1].memory_space))
+    {
       /* Make sure M flag is set */
       if (parm[1].memory_space != PC_RELATIVE)
          instr->op = (BYTE) (instr->op | 0x01);
@@ -1168,15 +1380,12 @@ asm_call_jmp(instr, parm, parm_count)
       instr->c = (BYTE) ((parm[1].address >> 10) & 0xff);
       instr->a = (BYTE) (parm[0].address & 0xff);
       instr->b = (BYTE) ((parm[1].address >> 2) & 0xff);
-      }
+    }
    else
       return(EMSYNTAX);
 
    return (0);
-   }  /* end asm_call_jmp() */
-
-
-
+} /* end asm_call_jmp() */
 
 /*
 ** Formats:   <nmemonic> RA, RB
@@ -1187,27 +1396,22 @@ asm_call_jmp(instr, parm, parm_count)
 */
 
 int
-asm_calli_jmpi(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
-   {
-   if (parm_count != 2)
-      return (EMSYNTAX);
+asm_calli_jmpi(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
+{
+  if (parm_count != 2)
+    return (EMSYNTAX);
 
-   if (ISGENERAL(parm[0].memory_space) &&
-       ISREG(parm[1].memory_space)) {
+  if (ISGENERAL(parm[0].memory_space) && ISREG(parm[1].memory_space))
+    {
       instr->c = 0;
       instr->a = (BYTE) (parm[0].address & 0xff);
       instr->b = (BYTE) (parm[1].address & 0xff);
-      }
+    }
    else
       return(EMSYNTAX);
 
    return (0);
-   }  /* end asm_calli_jmpi() */
-
-
+} /* end asm_calli_jmpi() */
 
 /*
 ** Formats:   <nmemonic> RC, RB, FS
@@ -1218,29 +1422,25 @@ asm_calli_jmpi(instr, parm, parm_count)
 */
 
 int
-asm_class(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
-   {
-   if (parm_count != 3)
-      return (EMSYNTAX);
+asm_class(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
+{
+  if (parm_count != 3)
+    return (EMSYNTAX);
 
-   if (ISGENERAL(parm[0].memory_space) &&
-       ISGENERAL(parm[1].memory_space) &&
-       ISMEM(parm[2].memory_space)) {
+  if (ISGENERAL(parm[0].memory_space) && ISGENERAL(parm[1].memory_space)
+      && ISMEM(parm[2].memory_space))
+    {
       if (parm[2].address > 0x03)
          return (EMSYNTAX);
       instr->c = (BYTE) (parm[0].address & 0xff);
       instr->a = (BYTE) (parm[1].address & 0xff);
       instr->b = (BYTE) (parm[2].address & 0x03);
-      }
+    }
    else
       return(EMSYNTAX);
 
    return (0);
-   }  /* end asm_class() */
-
+} /* end asm_class() */
 
 /*
 ** Formats:   <nmemonic> RC, (RB or I)
@@ -1251,22 +1451,19 @@ asm_class(instr, parm, parm_count)
 */
 
 int
-asm_clz(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
-   {
-   if (parm_count != 2)
-      return (EMSYNTAX);
+asm_clz(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
+{
+  if (parm_count != 2)
+    return (EMSYNTAX);
 
-   if (ISGENERAL(parm[0].memory_space) &&
-       ISGENERAL(parm[1].memory_space)) {
+  if (ISGENERAL(parm[0].memory_space) && ISGENERAL(parm[1].memory_space))
+    {
       /* Make sure M flag is cleared */
       instr->op = (BYTE) (instr->op & 0xfe);
       instr->c = (BYTE) (parm[0].address & 0xff);
       instr->a = 0;
       instr->b = (BYTE) (parm[1].address & 0xff);
-      }
+    }
    else
    if (ISGENERAL(parm[0].memory_space) &&
        ISMEM(parm[1].memory_space)) {
@@ -1283,9 +1480,7 @@ asm_clz(instr, parm, parm_count)
       return(EMSYNTAX);
 
    return (0);
-   }  /* end asm_clz() */
-
-
+} /* end asm_clz() */
 
 /*
 ** Formats:   <nmemonic> RA, <const16>
@@ -1294,56 +1489,45 @@ asm_clz(instr, parm, parm_count)
 */
 
 int
-asm_const(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
-   {
-   if (parm_count != 2)
-      return (EMSYNTAX);
+asm_const(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
+{
+  if (parm_count != 2)
+    return (EMSYNTAX);
 
-   if (ISGENERAL(parm[0].memory_space) &&
-       ISMEM(parm[1].memory_space)) {
+  if (ISGENERAL(parm[0].memory_space) && ISMEM(parm[1].memory_space))
+    {
       instr->c = (BYTE) ((parm[1].address >> 8) & 0xff);
       instr->a = (BYTE) (parm[0].address & 0xff);
       instr->b = (BYTE) (parm[1].address & 0xff);
-      }
-   else
-      return(EMSYNTAX);
+    }
+  else
+    return (EMSYNTAX);
 
-   return (0);
-   }  /* end asm_const() */
-
-
+  return (0);
+} /* end asm_const() */
 
 /*
 ** Formats:   <nmemonic> RA, <const16>
 ** Examples:  CONSTH
 **
 */
-
 int
-asm_consth(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
-   {
-   if (parm_count != 2)
-      return (EMSYNTAX);
+asm_consth(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
+{
+  if (parm_count != 2)
+    return (EMSYNTAX);
 
-   if (ISGENERAL(parm[0].memory_space) &&
-       ISMEM(parm[1].memory_space)) {
+  if (ISGENERAL(parm[0].memory_space) && ISMEM(parm[1].memory_space))
+    {
       instr->c = (BYTE) ((parm[1].address >> 24) & 0xff);
       instr->a = (BYTE) (parm[0].address & 0xff);
       instr->b = (BYTE) ((parm[1].address >> 16) & 0xff);
-      }
-   else
-      return(EMSYNTAX);
+    }
+  else
+    return EMSYNTAX;
 
-   return (0);
-   }  /* end asm_consth() */
-
-
+  return (0);
+} /* end asm_consth() */
 
 /*
 ** Formats:   <nmemonic> RC, RA, UI, RND, FD, FS
@@ -1357,25 +1541,20 @@ asm_consth(instr, parm, parm_count)
 */
 
 int
-asm_convert(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
-   {
-   BYTE  ui;
-   BYTE  rnd;
-   BYTE  fd;
-   BYTE  fs;
+asm_convert(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
+{
+  BYTE ui;
+  BYTE rnd;
+  BYTE fd;
+  BYTE fs;
 
-   if (parm_count != 6)
-      return (EMSYNTAX);
+  if (parm_count != 6)
+    return (EMSYNTAX);
 
-   if (ISGENERAL(parm[0].memory_space) &&
-       ISGENERAL(parm[1].memory_space) &&
-       ISMEM(parm[2].memory_space) &&
-       ISMEM(parm[3].memory_space) &&
-       ISMEM(parm[4].memory_space) &&
-       ISMEM(parm[5].memory_space)) {
+  if (ISGENERAL(parm[0].memory_space) && ISGENERAL(parm[1].memory_space)
+      && ISMEM(parm[2].memory_space) && ISMEM(parm[3].memory_space)
+      && ISMEM(parm[4].memory_space) && ISMEM(parm[5].memory_space))
+    {
       if (parm[2].address > 1)
          return (EMSYNTAX);
       if (parm[3].address > 0x07)
@@ -1391,14 +1570,12 @@ asm_convert(instr, parm, parm_count)
       instr->c = (BYTE) (parm[0].address & 0xff);
       instr->a = (BYTE) (parm[1].address & 0xff);
       instr->b = (ui | rnd | fd | fs);
-      }
+    }
    else
       return(EMSYNTAX);
 
    return (0);
-   }  /* end asm_convert() */
-
-
+} /* end asm_convert() */
 
 /*
 ** Formats:   <nmemonic> RC, RA
@@ -1409,22 +1586,19 @@ asm_convert(instr, parm, parm_count)
 */
 
 int
-asm_div0(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
-   {
-   if (parm_count != 2)
-      return (EMSYNTAX);
+asm_div0(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
+{
+  if (parm_count != 2)
+    return (EMSYNTAX);
 
-   if (ISGENERAL(parm[0].memory_space) &&
-       ISGENERAL(parm[1].memory_space)) {
+  if (ISGENERAL(parm[0].memory_space) && ISGENERAL(parm[1].memory_space))
+    {
       /* Make sure M flag is cleared */
       instr->op = (BYTE) (instr->op & 0xfe);
       instr->c = (BYTE) (parm[0].address & 0xff);
       instr->a = 0;
       instr->b = (BYTE) (parm[1].address & 0xff);
-      }
+    }
    else
    if (ISGENERAL(parm[0].memory_space) &&
        ISMEM(parm[1].memory_space)) {
@@ -1441,8 +1615,7 @@ asm_div0(instr, parm, parm_count)
       return(EMSYNTAX);
 
    return (0);
-   }  /* end asm_div0() */
-
+} /* end asm_div0() */
 
 /*
 ** Formats:   <nmemonic> RC, RA
@@ -1453,28 +1626,22 @@ asm_div0(instr, parm, parm_count)
 */
 
 int
-asm_exhws(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
-   {
-   if (parm_count != 2)
-      return (EMSYNTAX);
+asm_exhws(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
+{
+  if (parm_count != 2)
+    return (EMSYNTAX);
 
-   if (ISGENERAL(parm[0].memory_space) &&
-       ISGENERAL(parm[1].memory_space)){
+  if (ISGENERAL(parm[0].memory_space) && ISGENERAL(parm[1].memory_space))
+    {
       instr->c = (BYTE) (parm[0].address & 0xff);
       instr->a = (BYTE) (parm[1].address & 0xff);
       instr->b = 0;
-      }
+    }
    else
       return(EMSYNTAX);
 
    return (0);
-   }  /* end asm_exhws() */
-
-
-
+} /* end asm_exhws() */
 
 /*
 ** Formats:   <nmemonic>  <target>
@@ -1487,15 +1654,13 @@ asm_exhws(instr, parm, parm_count)
 */
 
 int
-asm_jmp(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
-   {
-   if (parm_count != 1)
-      return (EMSYNTAX);
+asm_jmp(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
+{
+  if (parm_count != 1)
+    return (EMSYNTAX);
 
-   if (ISMEM(parm[0].memory_space)) {
+  if (ISMEM(parm[0].memory_space))
+    {
       /* Make sure M flag is set */
       if (parm[0].memory_space != PC_RELATIVE)
         instr->op = (BYTE) (instr->op | 0x01);
@@ -1521,11 +1686,8 @@ asm_jmp(instr, parm, parm_count)
 **        operation.
 */
 
-int
-asm_jmpi(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
+   int
+   asm_jmpi(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
    {
    if (parm_count != 1)
       return (EMSYNTAX);
@@ -1551,11 +1713,8 @@ asm_jmpi(instr, parm, parm_count)
 **        operation.
 */
 
-int
-asm_mfsr(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
+   int
+   asm_mfsr(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
    {
    if (parm_count != 2)
       return (EMSYNTAX);
@@ -1582,11 +1741,8 @@ asm_mfsr(instr, parm, parm_count)
 **        operation.
 */
 
-int
-asm_mtsr(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
+   int
+   asm_mtsr(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
    {
    if (parm_count != 2)
       return (EMSYNTAX);
@@ -1614,11 +1770,8 @@ asm_mtsr(instr, parm, parm_count)
 **        operation.
 */
 
-int
-asm_mtsrim(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
+   int
+   asm_mtsrim(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
    {
    if (parm_count != 2)
       return (EMSYNTAX);
@@ -1646,11 +1799,8 @@ asm_mtsrim(instr, parm, parm_count)
 **        operation.
 */
 
-int
-asm_mftlb(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
+   int
+   asm_mftlb(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
    {
    if (parm_count != 2)
       return (EMSYNTAX);
@@ -1676,11 +1826,8 @@ asm_mftlb(instr, parm, parm_count)
 **        operation.
 */
 
-int
-asm_mttlb(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
+   int
+   asm_mttlb(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
    {
    if (parm_count != 2)
       return (EMSYNTAX);
@@ -1708,11 +1855,8 @@ asm_mttlb(instr, parm, parm_count)
 **        operation.
 */
 
-int
-asm_sqrt(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
+   int
+   asm_sqrt(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
    {
    if (parm_count != 3)
       return (EMSYNTAX);
@@ -1741,11 +1885,8 @@ asm_sqrt(instr, parm, parm_count)
 **
 */
 
-int
-asm_emulate(instr, parm, parm_count)
-   struct   instr_t    *instr;
-   struct   addr_29k_t *parm;
-   int      parm_count;
+   int
+   asm_emulate(struct instr_t *instr, struct addr_29k_t *parm, int parm_count)
    {
    if (parm_count != 3)
       return (EMSYNTAX);
@@ -1763,7 +1904,4 @@ asm_emulate(instr, parm, parm_count)
    return (0);
    }  /* end asm_emulate() */
 
-
-
-
-
+   /* EOF */

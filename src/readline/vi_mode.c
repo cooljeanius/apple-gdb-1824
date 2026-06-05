@@ -1,4 +1,4 @@
-/* vi_mode.c -- A vi emulation mode for Bash.
+/* vi_mode.c -- A vi emulation mode for Bash.  -*- C -*-
    Derived from code written by Jeff Sparkes (jsparkes@bnr.ca).  */
 
 /* Copyright (C) 1987, 1989, 1992 Free Software Foundation, Inc.
@@ -1372,7 +1372,7 @@ rl_vi_replace(int count, int key)
    the previous character.  A space matches everything.  Word delimiters are
    space and ;. */
 int
-rl_vi_possible_completions()
+rl_vi_possible_completions (void)
 {
   int save_pos = rl_point;
 

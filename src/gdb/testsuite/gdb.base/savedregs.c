@@ -49,7 +49,8 @@ thrower (void)
   *(char *)0 = 0;
 }
 
-main ()
+int
+main(void)
 {
   signal (SIGSEGV, catcher);
   thrower ();

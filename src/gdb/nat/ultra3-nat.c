@@ -63,8 +63,7 @@ struct ptrace_user pt_struct;
  */
 
 void
-fetch_inferior_registers (regno)
-  int regno;
+fetch_inferior_registers(int regno)
 {
   register int i,j,ret_val=0;
   char buf[128];
@@ -132,8 +131,7 @@ fetch_inferior_registers (regno)
  */
 
 void
-store_inferior_registers (regno)
-     int regno;
+store_inferior_registers(int regno)
 {
   register unsigned int regaddr;
   char buf[80];
@@ -215,8 +213,7 @@ store_inferior_registers (regno)
  * NOTE: Assumes AMD's Binary Compatibility Standard for ptrace().
  */
 static void
-fetch_register (regno)
-     int regno;
+fetch_register(int regno)
 {
   char buf[128];
   int	val;
@@ -323,7 +320,7 @@ static struct core_fns ultra3_core_fns =
 };
 
 void
-_initialize_core_ultra3 ()
+_initialize_core_ultra3(void)
 {
   add_core_fns (&ultra3_core_fns);
 }

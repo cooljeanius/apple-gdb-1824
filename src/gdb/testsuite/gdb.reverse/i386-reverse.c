@@ -38,8 +38,8 @@ inc_dec_tests (void)
   asm ("dec %edi");
 } /* end inc_dec_tests */
 
-int 
-main ()
+int
+main(void)
 {
   inc_dec_tests ();
   return 0;	/* end of main */

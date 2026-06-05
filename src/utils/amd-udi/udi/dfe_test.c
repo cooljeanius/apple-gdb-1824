@@ -53,9 +53,8 @@ sig_handler()
 
 /***************************************************************** MAIN
 */
-main(argc, argv)
-int 	argc;
-char*	argv[];
+int
+main(int argc, char *argv[])
 {
     char	*session = argv[1];
     char	buf[256];

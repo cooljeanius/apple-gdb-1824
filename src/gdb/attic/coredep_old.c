@@ -27,7 +27,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 /* Some of these are needed on various systems, perhaps, to expand
    REGISTER_U_ADDR appropriately?  */
-/* #include <sys/core.h> */
+#ifdef HAVE_SYS_CORE_H
+# include <sys/core.h>
+#endif /* HAVE_SYS_CORE_H */
 #include <sys/param.h>
 #include <sys/dir.h>
 #include <sys/file.h>
@@ -39,9 +41,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
    them where `read_register' will find them.  */
 
 void
-fetch_core_registers (core_reg_sect, core_reg_size)
-     char *core_reg_sect;
-     unsigned core_reg_size;
+fetch_core_registers(char *core_reg_sect, unsigned core_reg_size)
 {
   register int regno;
   register unsigned int addr;
@@ -70,9 +70,7 @@ fetch_core_registers (core_reg_sect, core_reg_size)
    BLOCKEND is the address of the end of the user structure.  */
 
 unsigned int
-register_addr (regno, blockend)
-     int regno;
-     int blockend;
+register_addr(int regno, int blockend)
 {
   int addr;
 

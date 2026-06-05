@@ -15,14 +15,13 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-__attribute__((__noinline__)) static int
-callee (int x)
+__attribute__ static int
+callee(int x)
 {
   return x * 2;
 }
 
-static inline int __attribute__((__always_inline__))
-compute (int x)
+static inline int __attribute__ compute(int x)
 {
   return callee (x);
 }
@@ -45,7 +44,7 @@ return_value (int x)
 }
 
 int
-main ()
+main(void)
 {
   int value = return_value (23);
   return value > 0 ? 0 : 1;

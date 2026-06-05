@@ -38,7 +38,7 @@ AS_CASE(["${CC}"],
 -Wmissing-parameter-type -Wabi=11 -Whsa -Wmemset-elt-size -Wswitch-unreachable \
 -Wscalar-storage-order -Wrestrict -Walloca-larger-than=4032 \
 -Wvla-larger-than=4032 -Wformat-overflow=2 -Wformat-truncation=2 \
--Wstringop-overflow=2 -Wzero-length-bounds"])
+-Wstringop-overflow=2 -Wzero-length-bounds -Wtrailing-whitespace"])
 # (4032 is MAX_ALLOCA_SIZE in "libiberty.h")
 if test "x${WANT_CONVERSION_WARNS}" = "x1"; then
   test -n "${WANT_CONVERSION_WARNS}" && echo "WANT_CONVERSION_WARNS is '${WANT_CONVERSION_WARNS}'"

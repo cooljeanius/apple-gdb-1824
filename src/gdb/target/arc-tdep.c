@@ -99,9 +99,8 @@ static int codestream_cnt;
    ? codestream_fill (0) \
    : codestream_buf[codestream_off++])
 
-static unsigned int 
-codestream_fill (peek_flag)
-    int peek_flag;
+static unsigned int
+codestream_fill(int peek_flag)
 {
   codestream_addr = codestream_next_addr;
   codestream_next_addr += CODESTREAM_BUFSIZ * sizeof (codestream_buf[0]);
@@ -143,9 +142,7 @@ codestream_seek (place)
 /* This function is currently unused but leave in for now.  */
 
 static void
-codestream_read (buf, count)
-     unsigned int *buf;
-     int count;
+codestream_read(unsigned int *buf, int count)
 {
   unsigned int *p;
   int i;
@@ -344,9 +341,7 @@ arc_frame_saved_pc (frame)
  */
 
 void
-frame_find_saved_regs (fip, fsrp)
-     struct frame_info *fip;
-     struct frame_saved_regs *fsrp;
+frame_find_saved_regs(struct frame_info *fip, struct frame_saved_regs *fsrp)
 {
   long locals;
   unsigned int insn;
@@ -395,7 +390,7 @@ frame_find_saved_regs (fip, fsrp)
 }
 
 void
-push_dummy_frame ()
+push_dummy_frame(void)
 {
   CORE_ADDR sp = read_register (SP_REGNUM);
   int regnum;
@@ -416,7 +411,7 @@ push_dummy_frame ()
 }
 
 void
-pop_frame ()
+pop_frame(void)
 {
   struct frame_info *frame = get_current_frame ();
   CORE_ADDR fp;
@@ -517,9 +512,9 @@ get_insn_type (insn, pc, target)
    set up a simulated single-step, we undo our damage.  */
 
 void
-arc_software_single_step (ignore, insert_breakpoints_p)
-     enum target_signal ignore; /* sig but we don't need it */
-     int insert_breakpoints_p;
+arc_software_single_step(
+  enum target_signal ignore, /* sig but we don't need it */
+  int insert_breakpoints_p)
 {
   static CORE_ADDR next_pc, target;
   static int brktrg_p;
@@ -627,9 +622,7 @@ arc_print_insn (vma, info)
 /* Command to set cpu type.  */
 
 void
-arc_set_cpu_type_command (args, from_tty)
-     char *args;
-     int from_tty;
+arc_set_cpu_type_command(char *args, int from_tty)
 {
   int i;
 
@@ -654,9 +647,7 @@ arc_set_cpu_type_command (args, from_tty)
 }
 
 static void
-arc_show_cpu_type_command (args, from_tty)
-     char *args;
-     int from_tty;
+arc_show_cpu_type_command(char *args, int from_tty)
 {
 }
 
@@ -664,8 +655,7 @@ arc_show_cpu_type_command (args, from_tty)
    Result is a boolean indicating success.  */
 
 int
-arc_set_cpu_type (str)
-     char *str;
+arc_set_cpu_type(char *str)
 {
   int i, j;
 
@@ -684,9 +674,9 @@ arc_set_cpu_type (str)
 
   return 0;
 }
-
+
 void
-_initialize_arc_tdep ()
+_initialize_arc_tdep(void)
 {
   struct cmd_list_element *c;
 

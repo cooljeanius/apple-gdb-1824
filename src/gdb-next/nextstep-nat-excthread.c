@@ -226,7 +226,7 @@ static void next_exception_thread (void *arg)
 }
 
 void
-_initialize_nextstep_nat_excthread ()
+_initialize_nextstep_nat_excthread(void)
 {
   struct cmd_list_element *cmd = NULL;
 

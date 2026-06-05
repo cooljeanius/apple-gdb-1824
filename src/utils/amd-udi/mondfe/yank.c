@@ -427,41 +427,41 @@ Mini_load_coff(filename, mspace, sym, Section, quietmode)
 
    }   /* end Mini_loadcoff() */
 
+   int
+   SetSections(char *string)
+   {
+     int i;
 
-int
-SetSections(string)
-char	*string;
-{
-  int	i;
+     if (string[0] != '-')
+       return (-1); /* not section options */
 
-  if (string[0] != '-')
-    return (-1);  /* not section options */
-
-  Sections = STYP_ABS;
-  for (i=1; string[i] != '\0'; i++) {
-     switch (string[i]) {
-       case	't':
-       case	'T':
-	 Sections = Sections | STYP_TEXT;
-	 break;
-       case	'd':
-       case	'D':
-	 Sections = Sections | STYP_DATA;
-	 break;
-       case	'b':
-       case	'B':
-	 Sections = Sections | STYP_BSS;
-	 break;
-       case	'l':
-       case	'L':
-	 Sections = Sections | STYP_LIT;
-	 break;
-       default:
-         return (EMSYNTAX);
-     }
-  }
-  return (0);
-}
+     Sections = STYP_ABS;
+     for (i = 1; string[i] != '\0'; i++)
+       {
+	 switch (string[i])
+	   {
+	   case 't':
+	   case 'T':
+	     Sections = Sections | STYP_TEXT;
+	     break;
+	   case 'd':
+	   case 'D':
+	     Sections = Sections | STYP_DATA;
+	     break;
+	   case 'b':
+	   case 'B':
+	     Sections = Sections | STYP_BSS;
+	     break;
+	   case 'l':
+	   case 'L':
+	     Sections = Sections | STYP_LIT;
+	     break;
+	   default:
+	     return (EMSYNTAX);
+	   }
+       }
+     return (0);
+   }
 
 void
 print_ld_msg(flags, mode, address, byte_count)

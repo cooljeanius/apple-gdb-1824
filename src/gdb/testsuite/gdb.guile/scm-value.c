@@ -58,7 +58,8 @@ void ptr_ref(int*& rptr_int)
 }
 #endif
 
-void func1 ()
+void
+func1(void)
 {
   printf ("void function called\n");
 }

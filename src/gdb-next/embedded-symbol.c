@@ -181,7 +181,7 @@ static void info_embedded_symbol_command (char *exp, int from_tty)
 }
 
 void
-_initialize_embedded_symbol ()
+_initialize_embedded_symbol(void)
 {
   add_info ("embedded-symbol", info_embedded_symbol_command,
 	    "Show embedded symbol information for a specified address");

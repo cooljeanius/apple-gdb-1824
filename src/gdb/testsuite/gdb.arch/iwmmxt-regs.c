@@ -74,7 +74,7 @@ write_regs (unsigned long long regs[16], unsigned long control_regs[6])
 }
 
 int
-main ()
+main(void)
 {
   unsigned long long regs[16];
   unsigned long control_regs[6];

@@ -24,7 +24,7 @@ char32_t u32 = -1;
 wchar_t wchar = -1;
 
 int
-main ()
+main(void)
 {
   return 0;
 }

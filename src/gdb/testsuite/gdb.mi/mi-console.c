@@ -1,5 +1,5 @@
 void
-hello ()
+hello(void)
 {
   char *hello = "Hello \\\"!\r\n";
   int i;
@@ -8,7 +8,7 @@ hello ()
 }
 
 int
-main ()
+main(void)
 {
   hello ();
 }

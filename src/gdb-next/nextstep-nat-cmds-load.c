@@ -104,7 +104,7 @@ void info_plugins_command (char *arg, int from_tty)
 }
 
 void
-_initialize_load_plugin ()
+_initialize_load_plugin(void)
 {
   struct cmd_list_element *cmd;
 
@@ -136,10 +136,10 @@ void
 **_plugin_private_data (char *plugin_name)
 {
   size_t i;
-  char   *p;
+  char *p;
 
   if (plugin_name == NULL)
-      return &_plugin_global_data;
+    return &_plugin_global_data;
 
   for (i = 0; i < pstate.num; i++) {
     p = strrchr (pstate.names[i], '/');

@@ -35,7 +35,7 @@ int nothing;
 
 /* private function */
 int
-_foo1_helper()
+_foo1_helper(void)
 {
   sub();
   return FOO_RET;

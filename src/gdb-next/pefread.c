@@ -41,14 +41,13 @@ struct pef_symfile_info {
 };
 
 static void
-pef_new_init (objfile)
-     struct objfile *objfile;
+pef_new_init(struct objfile *objfile)
 {
+  (void) objfile;
 }
 
 static void
-pef_symfile_init (objfile)
-     struct objfile *objfile;
+pef_symfile_init(struct objfile *objfile)
 {
   objfile->sym_stab_info =
     xmmalloc (objfile->md, sizeof (struct dbx_symfile_info));
@@ -65,9 +64,7 @@ pef_symfile_init (objfile)
 }
 
 static void
-pef_symfile_read (objfile, mainline)
-     struct objfile *objfile;
-     int mainline;
+pef_symfile_read(struct objfile *objfile, int mainline)
 {
   bfd *abfd = objfile->obfd;
   size_t storage_needed;
@@ -135,15 +132,12 @@ pef_symfile_read (objfile, mainline)
 }
 
 static void
-pef_symfile_finish (objfile)
-     struct objfile *objfile;
+pef_symfile_finish(struct objfile *objfile)
 {
 }
 
 static void
-pef_symfile_offsets (objfile, addrs)
-     struct objfile *objfile;
-     struct section_addr_info *addrs;
+pef_symfile_offsets(struct objfile *objfile, struct section_addr_info *addrs)
 {
   unsigned int i;
 
@@ -180,35 +174,29 @@ static struct sym_fns pef_sym_fns =
 };
 
 static void
-pef_xlib_new_init (objfile)
-     struct objfile *objfile;
+pef_xlib_new_init(struct objfile *objfile)
 {
 }
 
 static void
-pef_xlib_symfile_init (objfile)
-     struct objfile *objfile;
+pef_xlib_symfile_init(struct objfile *objfile)
 {
   init_entry_point_info (objfile);
 }
 
 static void
-pef_xlib_symfile_read (objfile, mainline)
-     struct objfile *objfile;
-     int mainline;
+pef_xlib_symfile_read(struct objfile *objfile, int mainline)
 {
 }
 
 static void
-pef_xlib_symfile_finish (objfile)
-     struct objfile *objfile;
+pef_xlib_symfile_finish(struct objfile *objfile)
 {
 }
 
 static void
-pef_xlib_symfile_offsets (objfile, addrs)
-     struct objfile *objfile;
-     struct section_addr_info *addrs;
+pef_xlib_symfile_offsets(struct objfile *objfile,
+			 struct section_addr_info *addrs)
 {
 }
 
@@ -225,7 +213,7 @@ static struct sym_fns pef_xlib_sym_fns =
 };
 
 void
-_initialize_pefread ()
+_initialize_pefread(void)
 {
   add_symtab_fns (&pef_sym_fns);
   add_symtab_fns (&pef_xlib_sym_fns);

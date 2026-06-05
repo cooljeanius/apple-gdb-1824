@@ -54,7 +54,8 @@ static int regmap[] =
 /* blockend is the value of u.u_ar0, and points to the
  * place where GS is stored
  */
-i386_register_u_addr (blockend, regnum)
+int
+i386_register_u_addr(int blockend, int regnum)
 {
 #if 0
   /* this will be needed if fp registers are reinstated */
@@ -91,9 +92,8 @@ always be for i387 floating-point formats) extended<->double converter
 not standardize formats for extended floats (387 is 10 bytes, 68881 is
 12 bytes), so this won't work.  */
 
-i387_to_double (from, to)
-     char *from;
-     char *to;
+int
+i387_to_double(char *from, char *to)
 {
   long *lp;
   /* push extended mode on 387 stack, then pop in double mode
@@ -121,9 +121,8 @@ i387_to_double (from, to)
   asm ("popl %eax");		/* flush saved copy */
 }
 
-double_to_i387 (from, to)
-     char *from;
-     char *to;
+int
+double_to_i387(char *from, char *to)
 {
   /* push double mode on 387 stack, then pop in extended mode
    * no errors are possible because every 64-bit pattern
@@ -154,8 +153,7 @@ struct env387
   unsigned char regs[8][10];
 };
 
-static print_387_control_word(control)
-	unsigned short control;
+static print_387_control_word(int control)
 {
   printf("control 0x%04x: ", control);
   printf("compute to ");
@@ -201,8 +199,7 @@ static print_387_control_word(control)
   }
 }
 
-static print_387_status_word(status)
-     unsigned short status;
+static print_387_status_word(int status)
 {
   printf("status 0x%04x: ", status);
   if (status & 0xff) {
@@ -239,10 +236,7 @@ static print_387_status_word(status)
   printf("top %d\n", (status >> 11) & 7);
 }
 
-static
-print_387_status (status, ep)
-     unsigned short status;
-     struct env387 *ep;
+static print_387_status(int status, struct env387 *ep)
 {
   int i;
   int bothstatus;
@@ -307,7 +301,8 @@ print_387_status (status, ep)
 #define U_FPSTATE(u) u.u_fpstate
 #endif
 
-i386_float_info ()
+int
+i386_float_info(void)
 {
   struct user u; /* just for address computations */
   int i;

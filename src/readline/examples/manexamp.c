@@ -34,7 +34,7 @@ static char *line_read = (char *)NULL;
 
 /* Read a string, and return a pointer to it.  Returns NULL on EOF. */
 char *
-rl_gets ()
+rl_gets(void)
 {
   /* If the buffer has already been allocated, return the memory
      to the free pool. */
@@ -61,8 +61,8 @@ rl_gets ()
 /* **************************************************************** */
 
 /* Invert the case of the COUNT following characters. */
-invert_case_line (count, key)
-     int count, key;
+int
+invert_case_line(int count, int key)
 {
   register int start, end;
 

@@ -30,7 +30,7 @@ handle (int sig)
 }
 
 int
-main ()
+main(void)
 {
   signal (SIGHUP, handle);
   signal (SIGUSR1, SIG_IGN);

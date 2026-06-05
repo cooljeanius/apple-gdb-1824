@@ -8,7 +8,8 @@
 
 int  should_exit = 0;
 
-int main ()
+int
+main(void)
 {
   int  local_i = 0;
 

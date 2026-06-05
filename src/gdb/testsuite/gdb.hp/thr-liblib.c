@@ -19,7 +19,8 @@ extern int the_code_saw[NTHREADS][ELEMS_PER_THREAD];
 __thread int sum;
 __thread int x[ ELEMS_PER_THREAD ]; /* [3] */
 
-void sumup()
+void
+sumup(void)
 {
    int j;
 
@@ -37,8 +38,8 @@ void sumup()
    x[0] = x[2];  /* Another no-op for debugger use */
 }
 
-void *adder( vid )
-   void * vid;
+void *
+adder(void *vid)
 {
    int id;
    int i, j;

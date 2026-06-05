@@ -20,19 +20,20 @@
 #include <ctype.h>
 #include <string.h>
 
-char *pb_gdb_util_prompt ()
+char *
+pb_gdb_util_prompt(void)
 {
     return get_prompt();
 }
 
-
-struct ui_file *pb_gdb_util_stdout ()
+struct ui_file *
+pb_gdb_util_stdout(void)
 {
     return gdb_stdout;
 }
 
-
-struct ui_file *pb_gdb_util_stderr ()
+struct ui_file *
+pb_gdb_util_stderr(void)
 {
   return gdb_stderr;
 }
@@ -68,7 +69,8 @@ count_frames(char *ptr)
 /* count number of frames in current stack;
    return negative number of frames if stack is malformed
  */
-int pb_gdb_util_count_frames()
+int
+pb_gdb_util_count_frames(void)
 {
     int	num_frames = 0;
     int was_error;
@@ -176,14 +178,16 @@ pb_gdb_util_add_set_cmd_string(const char *name, void *var_ptr, const char *desc
 
 extern next_inferior_status *next_status;
 
-int pb_gdb_util_inferior_pid()
+int
+pb_gdb_util_inferior_pid(void)
 {
   return PIDGET (inferior_ptid);
 }
 
-#else /* HOST != TARGET */
+#else /* HOST != TARGET: */
 
-int pb_gdb_util_inferior_pid()
+int
+pb_gdb_util_inferior_pid(void)
 {
   return -1;
 }
@@ -193,7 +197,7 @@ int pb_gdb_util_inferior_pid()
 void
 pb_gdb_util_add_cmd(const char *name, void *func_ptr, const char *desc)
 {
-    add_com (name, class_obscure, func_ptr, desc);
+  add_com(name, class_obscure, func_ptr, desc);
 }
 
 /* EOF */

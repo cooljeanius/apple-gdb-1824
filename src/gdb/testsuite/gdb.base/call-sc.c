@@ -37,7 +37,8 @@ typedef t T;
 
 T foo = '1', L;
 
-T fun()
+T
+fun(void)
 {
   return foo;  
 }
@@ -52,12 +53,14 @@ void Fun(foo)
   L = foo;
 }
 
-zed ()
+int
+zed(void)
 {
   L = 'Z';
 }
 
-int main()
+int
+main(void)
 {
 #ifdef usestubs
   set_debug_traps();

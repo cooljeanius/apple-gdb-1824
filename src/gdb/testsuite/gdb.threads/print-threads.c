@@ -9,28 +9,31 @@ int slow = 0;
 
 #define NUM 5
 
-int main() {
-    int res;
-    pthread_t threads[NUM];
-    void *thread_result;
-    int args[NUM];
-    int i;
+int
+main(void)
+{
+  int res;
+  pthread_t threads[NUM];
+  void *thread_result;
+  int args[NUM];
+  int i;
 
-    for (i = 0; i < NUM; i++)
-      {
-	args[i] = i;
-	res = pthread_create(&threads[i], NULL, thread_function, (void *)&args[i]);
-      }
+  for (i = 0; i < NUM; i++)
+    {
+      args[i] = i;
+      res = pthread_create(&threads[i], NULL, thread_function,
+			   (void *) &args[i]);
+    }
 
-    for (i = 0; i < NUM; i++)
-      res = pthread_join(threads[i], &thread_result);
+  for (i = 0; i < NUM; i++)
+    res = pthread_join(threads[i], &thread_result);
 
-    printf ("Done\n");
+  printf("Done\n");
 
-    if (slow)
-      sleep (4);
+  if (slow)
+    sleep(4);
 
-    exit(EXIT_SUCCESS);
+  exit(EXIT_SUCCESS);
 }
 
 void *thread_function(void *arg) {

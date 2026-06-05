@@ -64,7 +64,7 @@ main (void)
 }
 
 void
-foo ()
+foo(void)
 {
   printf ("foo in break\n");
   return;

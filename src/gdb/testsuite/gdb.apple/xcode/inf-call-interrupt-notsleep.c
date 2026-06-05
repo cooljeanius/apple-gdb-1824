@@ -17,8 +17,8 @@ void subroutine6 (int);
 
 void handler (int);
 
-
-main ()
+int
+main(void)
 {
   int c = 0;
   puts ("Starting up");

@@ -35,7 +35,8 @@ struct s
 
 struct s global;
 
-int main ()
+int
+main(void)
 {
   return 0;
 }

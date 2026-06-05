@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
-int main()
+int
+main(void)
 {
   puts ("ABOUT TO SLEEP");
   sleep (20);

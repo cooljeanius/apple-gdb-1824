@@ -17,14 +17,14 @@
 #include <stdio.h>
 
 void
-foo ()
+foo(void)
 {
   printf ("foo in lib\n");
   return;
 }
 
 void
-foo2()
+foo2(void)
 {
   printf ("foo2 in lib\n");
   return;

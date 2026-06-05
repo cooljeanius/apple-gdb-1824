@@ -15,14 +15,14 @@ AC_MSG_NOTICE([host is "${host}"])
 dnl# TODO: fix this test:
 case "${host}" in
   *-*-msdosdjgpp* | *-moss-msdos)
-    if test ! -z "${DEFS}"; then
+    if test -n "${DEFS}"; then
       if test -z "`echo ${DEFS} | grep MSDOS`"; then
         AC_MSG_WARN([You are on a DOS system but do not appear to define MSDOS])
       fi
     fi
     ;;
   *-*-*)
-    if test ! -z "${DEFS}"; then
+    if test -n "${DEFS}"; then
       AC_MSG_NOTICE([DEFS are ${DEFS}])
     fi
     ;;

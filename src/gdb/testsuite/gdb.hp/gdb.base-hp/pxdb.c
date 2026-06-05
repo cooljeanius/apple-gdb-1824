@@ -11,7 +11,8 @@ int x;
     return (y - 2);
 }
 
-int main()
+int
+main(void)
 {
     int i;
     for (i = 1; i < 10; i++)

@@ -17,7 +17,8 @@ void marker2 ();
 void marker3 ();
 void marker4 ();
 
-int main ()
+int
+main(void)
 {
 #ifdef usestubs
   set_debug_traps();
@@ -31,14 +32,16 @@ int main ()
 
 /* On some systems, such as AIX, unreferenced variables are deleted
    from the executable.  */
-void usestatics ()
+void
+usestatics(void)
 {
   useit (filelocal);
   useit (filelocal_bss);
   useit (filelocal_ro);
 }
 
-void init0 ()
+void
+init0(void)
 {
   filelocal_bss = 101;
   init1 ();
@@ -202,7 +205,19 @@ localscopes (x)
     return retval;
 }
 
-void marker1 () {}
-void marker2 () {}
-void marker3 () {}
-void marker4 () {}
+void
+marker1(void)
+{
+}
+void
+marker2(void)
+{
+}
+void
+marker3(void)
+{
+}
+void
+marker4(void)
+{
+}

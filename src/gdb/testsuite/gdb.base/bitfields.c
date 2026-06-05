@@ -23,43 +23,53 @@ struct fields
   signed char	sc    ;
 } flags;
 
-void break1 ()
+void
+break1(void)
 {
 }
 
-void break2 ()
+void
+break2(void)
 {
 }
 
-void break3 ()
+void
+break3(void)
 {
 }
 
-void break4 ()
+void
+break4(void)
 {
 }
 
-void break5 ()
+void
+break5(void)
 {
 }
 
-void break6 ()
+void
+break6(void)
 {
 }
 
-void break7 ()
+void
+break7(void)
 {
 }
 
-void break8 ()
+void
+break8(void)
 {
 }
 
-void break9 ()
+void
+break9(void)
 {
 }
 
-void break10 ()
+void
+break10(void)
 {
 }
 
@@ -67,7 +77,8 @@ void break10 ()
    signed bitfields.  */
 int i;
 
-int main ()
+int
+main(void)
 {
   /* For each member, set that member to 1, allow gdb to verify that the
      member (and only that member) is 1, and then reset it back to 0. */

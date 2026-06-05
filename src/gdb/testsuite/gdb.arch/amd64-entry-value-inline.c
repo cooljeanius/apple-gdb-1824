@@ -17,8 +17,8 @@
 
 static volatile int v;
 
-static __attribute__((noinline, noclone)) void
-fn1 (int x)
+static __attribute__ void
+fn1(int x)
 {
   v++;
 }
@@ -36,14 +36,14 @@ fn2 (int x, int y)
   return x;
 }
 
-__attribute__((noinline, noclone)) int
-fn3 (int x, int y)
+__attribute__ int
+fn3(int x, int y)
 {
   return fn2 (x, y);
 }
 
 int
-main ()
+main(void)
 {
   fn3 (6, 25);
   return 0;

@@ -1,4 +1,4 @@
-/* Host-dependent code for GDB, for NYU Ultra3 running Sym1 OS.
+/* ultra3-xdep.c: Host-dependent code for GDB, for NYU Ultra3 running Sym1 OS.
    Copyright (C) 1988, 1989, 1991, 1992 Free Software Foundation, Inc.
    Contributed by David Wood (wood@nyu.edu) at New York University.
 
@@ -40,14 +40,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #ifdef SYM1
 
-/* FIXME: Kludge this for now. It really should be system call. */
+/* FIXME: Kludge this for now. It really should be system call: */
 int
-getpagesize()
+getpagesize(void)
 { return(8192); }
 
-/* FIXME: Fake out the fcntl() call, which we don't have.  */
-fcntl(fd, cmd, arg)
-int fd, cmd, arg;
+/* FIXME: Fake out the fcntl() call, which is missing here:  */
+int
+fcntl(int fd, int cmd, int arg)
 {
 
   switch (cmd) {
@@ -65,21 +65,22 @@ int fd, cmd, arg;
 static int	_SigMask;
 #define sigbit(s)       (1L << ((s)-1))
 
-init_SigMask()
+int
+init_SigMask(void)
 {
 	/* Taken from the sym1 kernel in machdep.c:startup() */
 	_SigMask = sigbit (SIGTSTP) | sigbit (SIGTTOU) | sigbit (SIGTTIN) |
                         sigbit (SIGCHLD) | sigbit (SIGTINT);
 }
 
-sigmask(signo)
-	int signo;
+int
+sigmask(int signo)
 {
 	return (1 << (signo-1));
 }
 
-sigsetmask(sigmask)
-unsigned int sigmask;
+int
+sigsetmask(unsigned int sigmask)
 {
 	int i, mask = 1;
 	int lastmask = _SigMask;
@@ -99,8 +100,8 @@ unsigned int sigmask;
 	return (lastmask);
 }
 
-sigblock(sigmask)
-unsigned int sigmask;
+int
+sigblock(unsigned int sigmask)
 {
 	int i, mask = 1;
 	int lastmask = _SigMask;
@@ -120,7 +121,7 @@ unsigned int sigmask;
 /* Initialization code for this module.  */
 
 void
-_initialize_ultra3 ()
+_initialize_ultra3(void)
 {
 #ifdef SYM1
 	init_SigMask();

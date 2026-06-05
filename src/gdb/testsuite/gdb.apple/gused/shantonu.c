@@ -9,7 +9,7 @@ struct thread {
 struct thread foo = {  0 };
 
 int
-main ()
+main(void)
 {
   foo.wait_event = 5;
   puts ("");  /* a good place to put a breakpoint */

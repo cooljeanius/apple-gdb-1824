@@ -18,7 +18,7 @@
 #include <stdio.h>
 
 static void
-my_tbegin ()
+my_tbegin(void)
 {
   __asm__ volatile
     ( "1:  .byte 0xe5,0x60,0x00,0x00,0xff,0x00\n"
@@ -29,7 +29,7 @@ my_tbegin ()
 }
 
 static void
-my_tend ()
+my_tend(void)
 {
   __asm__ volatile
     ( "    .byte 0xb2,0xf8,0x00,0x00"

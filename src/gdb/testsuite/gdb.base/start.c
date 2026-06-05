@@ -23,17 +23,20 @@
 
 int x;
 
-void bar()
+void
+bar(void)
 {
   x--;
 }
 
-void foo()
+void
+foo(void)
 {
   x++;
 }
 
-int main()
+int
+main(void)
 {
   foo();
   bar();

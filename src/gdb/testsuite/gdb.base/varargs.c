@@ -23,7 +23,9 @@ float fa,fb,fc,fd;
 double da,db,dc,dd;
 double dmax_val;
 
-int main() {
+int
+main(void)
+{
   c = -1;
   uc = 1;
   s = -2;

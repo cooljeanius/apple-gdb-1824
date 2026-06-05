@@ -21,7 +21,8 @@ __thread int global_scope;
 
 static __thread int static_scope;
 
-int foo ()
+int
+foo(void)
 {
   /* Ensure we link against pthreads even with --as-needed.  */
   pthread_testcancel();

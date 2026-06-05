@@ -247,7 +247,7 @@ eval_sub (void)
 }
 
 static void
-bug_14741()
+bug_14741(void)
 {
   zzz_type c = make_container ("bug_14741");
   add_item (&c, 71);
@@ -256,7 +256,7 @@ bug_14741()
 }
 
 int
-main ()
+main(void)
 {
   struct ss  ss;
   struct ss  ssa[2];

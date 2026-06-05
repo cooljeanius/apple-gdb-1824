@@ -16,19 +16,19 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 void
-spacer ()
+spacer(void)
 {
   /* Nothing.  */
 }
 
 void
-breakpt ()
+breakpt(void)
 {
   /* Nothing.  */
 }
 
 int
-main ()
+main(void)
 {
   spacer ();
 

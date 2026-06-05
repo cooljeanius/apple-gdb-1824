@@ -7,7 +7,8 @@
 #include <stdio.h>
 #include <dl.h>
 
-int main ()
+int
+main(void)
 {
   shl_t  solib_handle;
   int  dummy;

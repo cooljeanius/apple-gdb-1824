@@ -8,7 +8,8 @@ extern int bar PARAMS((int));
 extern int baz PARAMS((int));
 extern int grbx PARAMS((int));
 
-int main ()
+int
+main(void)
 {
   int a, b, c, d, e;
 

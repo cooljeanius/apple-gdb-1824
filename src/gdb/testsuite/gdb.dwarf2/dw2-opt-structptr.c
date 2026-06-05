@@ -33,7 +33,7 @@ func01 (void)
 }
 
 int
-main ()
+main(void)
 {
   asm ("main_label: .globl main_label");
   func01 ();

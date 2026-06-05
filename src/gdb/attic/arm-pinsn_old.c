@@ -33,10 +33,8 @@ static char *shift_names[] = {
     "lsl", "lsr", "asr", "ror",
 };
 
-static char *cond_names[] = {
-	"eq", "ne", "cs", "cc", "mi", "pl", "vs", "vc",
-	"hi", "ls", "ge", "lt", "gt", "le", "", "nv"
-};
+static char *cond_names[] = { "eq", "ne", "cs", "cc", "mi", "pl", "vs", "vc",
+			      "hi", "ls", "ge", "lt", "gt", "le", "",   "nv" };
 
 static char float_precision[] = "sdep";
 static char float_rounding[] = " pmz";
@@ -64,7 +62,7 @@ print_insn (memaddr, stream)
     for (i = 0, op = opcodes; i < N_OPCODES; i++, op++)
 	if ((ins & op->mask) == op->value) break;
     assert(i != N_OPCODES);
-    
+
     for (p = op->assembler; *p;) {
 	c = *p++;
 	if (c == '%') {
@@ -235,8 +233,7 @@ print_insn (memaddr, stream)
 }
 
 static long
-immediate_value(operand)
-int operand;
+immediate_value(int operand)
 {
     int val = operand & 0xff;
     int shift = 2*(operand >> 8);

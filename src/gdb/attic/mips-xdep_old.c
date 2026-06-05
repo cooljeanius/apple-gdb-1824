@@ -1,4 +1,4 @@
-/* mips-xdep.c
+/* mips-xdep.c  -*- C -*-
    Low level MIPS interface to ptrace, for GDB when running under Unix.
    Copyright (C) 1988, 1989, 1991 Free Software Foundation, Inc.
    Contributed by Alessandro Forin(af@cs.cmu.edu) at CMU
@@ -48,7 +48,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 /* Get all registers from the inferior */
 
 void
-fetch_inferior_registers ()
+fetch_inferior_registers(void)
 {
   register int regno;
   register unsigned int regaddr;
@@ -73,8 +73,8 @@ fetch_inferior_registers ()
    If REGNO is -1, do this for all registers.
    Otherwise, REGNO specifies which register (so we can save time).  */
 
-store_inferior_registers (regno)
-     int regno;
+int
+store_inferior_registers(int regno)
 {
   register unsigned int regaddr;
   char buf[80];
@@ -113,7 +113,7 @@ store_inferior_registers (regno)
 
 #if 0
 void
-fetch_core_registers ()
+fetch_core_registers (void)
 {
   register int regno;
   int val;

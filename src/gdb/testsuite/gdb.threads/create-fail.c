@@ -61,7 +61,7 @@ mythread (void *_arg)
 }
 
 int
-main ()
+main(void)
 {
   int i;
 

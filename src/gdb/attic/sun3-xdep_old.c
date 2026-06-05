@@ -35,7 +35,7 @@ extern int errno;
 #if defined (GDB_TARGET_IS_SUN3)
 /* All of this stuff is only relevant if both host and target are sun3.  */
 void
-fetch_inferior_registers ()
+fetch_inferior_registers(void)
 {
   struct regs inferior_registers;
 #ifdef FP0_REGNUM
@@ -68,8 +68,8 @@ fetch_inferior_registers ()
    If REGNO is -1, do this for all registers.
    Otherwise, REGNO specifies which register (so we can save time).  */
 
-store_inferior_registers (regno)
-     int regno;
+int
+store_inferior_registers(int regno)
 {
   struct regs inferior_registers;
 #ifdef FP0_REGNUM
@@ -100,10 +100,7 @@ store_inferior_registers (regno)
 /* Machine-dependent code for pulling registers out of a Sun-3 core file. */
 
 void
-fetch_core_registers (core_reg_sect, core_reg_size, which)
-     char *core_reg_sect;
-     unsigned core_reg_size;
-     int which;
+fetch_core_registers(char *core_reg_sect, unsigned core_reg_size, int which)
 {
   extern char registers[];
   struct regs *regs = (struct regs *) core_reg_sect;
@@ -141,22 +138,19 @@ fetch_core_registers (core_reg_sect, core_reg_size, which)
 /* These functions should NOT be called when we are cross-debugging.  */
 
 void
-fetch_inferior_registers ()
+fetch_inferior_registers(void)
 {
 }
 
 /* ARGSUSED */
-store_inferior_registers (regno)
-     int regno;
+int
+store_inferior_registers(int regno)
 {
 }
 
 /* ARGSUSED */
 void
-fetch_core_registers (core_reg_sect, core_reg_size, which)
-     char *core_reg_sect;
-     unsigned core_reg_size;
-     int which;
+fetch_core_registers(char *core_reg_sect, unsigned core_reg_size, int which)
 {
 }
 #endif /* Not sun3 target.  */

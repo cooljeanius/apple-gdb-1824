@@ -21,43 +21,53 @@ struct fields
   signed long long   s3 : 16;
 } flags;
 
-void break1 ()
+void
+break1(void)
 {
 }
 
-void break2 ()
+void
+break2(void)
 {
 }
 
-void break3 ()
+void
+break3(void)
 {
 }
 
-void break4 ()
+void
+break4(void)
 {
 }
 
-void break5 ()
+void
+break5(void)
 {
 }
 
-void break6 ()
+void
+break6(void)
 {
 }
 
-void break7 ()
+void
+break7(void)
 {
 }
 
-void break8 ()
+void
+break8(void)
 {
 }
 
-void break9 ()
+void
+break9(void)
 {
 }
 
-void break10 ()
+void
+break10(void)
 {
 }
 
@@ -65,7 +75,8 @@ void break10 ()
    signed bitfields.  */
 int i;
 
-void tester ()
+void
+tester(void)
 {
   memset ((char *) &flags, 0, sizeof (flags));
 
@@ -159,7 +170,8 @@ void tester ()
   break5 ();
 }
 
-int main () 
+int
+main(void)
 {
   int i;
 #ifdef usestubs

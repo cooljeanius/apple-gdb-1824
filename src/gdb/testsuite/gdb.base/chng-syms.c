@@ -9,12 +9,14 @@
 
 int VARIABLE = 42;
 
-void stop_here ()
+void
+stop_here(void)
 {
   VARIABLE *= 2;
 }
 
-int main ()
+int
+main(void)
 {
   stop_here ();
   exit (0);

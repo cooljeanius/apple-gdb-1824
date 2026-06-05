@@ -18,7 +18,7 @@
 #include "dtrace-probe.h"
 
 int
-main ()
+main(void)
 {
   char *name = "application";
 

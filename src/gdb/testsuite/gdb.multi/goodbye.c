@@ -19,7 +19,8 @@ int gglob = 2;
 
 int glob = 45;
 
-int verylongfun()
+int
+verylongfun(void)
 {
   glob += 2;
   glob *= 2;
@@ -39,7 +40,9 @@ int verylongfun()
   glob *= 9;
 }
 
-main() {
+int
+main(void)
+{
   mailand();
   foo(glob);
   verylongfun();
@@ -50,13 +53,20 @@ foo(int x) {
   return x + 92;
 }
 
-mailand()
+int
+mailand(void)
 {
   glob = 46;
 }
 
-void commonfun() { mailand(); } /* from goodbye */
+void
+commonfun(void)
+{
+  mailand();
+} /* from goodbye */
 
-goodbye() {
+int
+goodbye(void)
+{
   ++glob;
 }

@@ -22,7 +22,7 @@
 #endif
 
 static void
-foo ()
+foo(void)
 {}
 
 void

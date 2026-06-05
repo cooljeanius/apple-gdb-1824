@@ -24,7 +24,8 @@ int k = 0;
 
 #define SHLIB_NAME SHLIB_DIR "/unloadshr.sl"
 
-int main()
+int
+main(void)
 {
   void *handle;
   int (*unloadshr) (int);

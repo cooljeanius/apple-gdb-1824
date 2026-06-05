@@ -18,7 +18,7 @@
 */
 
 int
-main ()
+main(void)
 {
     volatile int i = 1;
 

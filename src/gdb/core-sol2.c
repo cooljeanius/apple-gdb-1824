@@ -127,7 +127,7 @@ static struct core_fns solaris_core_fns =
 };
 
 void
-_initialize_core_solaris ()
+_initialize_core_solaris(void)
 {
   add_core_fns (&solaris_core_fns);
 }

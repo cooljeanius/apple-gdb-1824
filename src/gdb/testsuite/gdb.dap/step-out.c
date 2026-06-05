@@ -29,7 +29,7 @@ function_breakpoint_here (int q)
 }
 
 int
-main ()
+main(void)
 {
   int q = 23;
   return function_breakpoint_here (q).x - q;

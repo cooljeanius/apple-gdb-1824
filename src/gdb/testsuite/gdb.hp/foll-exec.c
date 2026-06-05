@@ -2,7 +2,8 @@
 
 int  global_i = 100;
 
-main ()
+int
+main(void)
 {
   int  local_j = global_i+1;
   int  local_k = local_j+1;

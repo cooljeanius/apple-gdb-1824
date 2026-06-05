@@ -20,7 +20,8 @@
 
 #include <sys/sdt.h>
 
-int main ()
+int
+main(void)
 {
   int a = 40;
 

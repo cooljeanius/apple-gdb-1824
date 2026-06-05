@@ -46,14 +46,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <sys/user.h>		/* After a.out.h  */
 #include <sys/file.h>
 #include <sys/stat.h>
-
-/* Work with core dump and executable files, for GDB. 
+
+/* Work with core dump and executable files, for GDB.
    This code would be in core.c if it weren't machine-dependent. */
 
 void
-core_file_command (filename, from_tty)
-     char *filename;
-     int from_tty;
+core_file_command(char *filename, int from_tty)
 {
   int val;
   extern char registers[];
@@ -82,7 +80,7 @@ core_file_command (filename, from_tty)
     {
       filename = tilde_expand (filename);
       make_cleanup (free, filename);
-      
+
 		if (have_inferior_p ()) {
 			error ("To look at a core file, you must kill the inferior with \"kill\".");
 		}
@@ -148,7 +146,7 @@ core_file_command (filename, from_tty)
 						   + 30);
 		  strcpy (buffer, "Reading register ");
 		  strcat (buffer, reg_names[regno]);
-						   
+
 		  perror_with_name (buffer);
 		}
 
@@ -167,8 +165,8 @@ core_file_command (filename, from_tty)
       select_frame (get_current_frame (), 0);
       validate_files ();
     } else if (from_tty) {
-		printf ("No core file now.\n");
-	}
+      printf("No core file now.\n");
+    }
 }
 
 /* EOF */

@@ -39,42 +39,50 @@ union {
   char      ffff[80];
 } testval;
 
-void void_func ()
+void
+void_func(void)
 {
   void_test = 1;		/* VOID FUNC */
 }
 
-char char_func ()
+char
+char_func(void)
 {
   return char_returnval;	/* CHAR FUNC */
 }
 
-short short_func ()
+short
+short_func(void)
 {
   return short_returnval;	/* SHORT FUNC */
 }
 
-int int_func ()
+int
+int_func(void)
 {
   return int_returnval;		/* INT FUNC */
 }
 
-long long_func ()
+long
+long_func(void)
 {
   return long_returnval;	/* LONG FUNC */
 }
 
-long long long_long_func ()
+long long
+long_long_func(void)
 {
   return long_long_returnval;	/* LONG LONG FUNC */
 }
 
-float float_func ()
+float
+float_func(void)
 {
   return float_returnval;	/* FLOAT FUNC */
 }
 
-double double_func ()
+double
+double_func(void)
 {
   return double_returnval;	/* DOUBLE FUNC */
 }

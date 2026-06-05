@@ -64,7 +64,7 @@ thread_function1 (void *arg)
 }
 
 int
-main ()
+main(void)
 {
   int res;
   pthread_t threads[2];

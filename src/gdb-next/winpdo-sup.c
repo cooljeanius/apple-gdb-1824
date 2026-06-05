@@ -82,16 +82,15 @@ getcwd (char *buf, size_t len)
 }
 
 int
-ScreenRows ()
+ScreenRows(void)
 {
   CONSOLE_SCREEN_BUFFER_INFO p;
   GetConsoleScreenBufferInfo (GetStdHandle(STD_OUTPUT_HANDLE), &p);
   return (p.srWindow.Bottom - p.srWindow.Top + 1);
 }
 
-
 int
-ScreenCols ()
+ScreenCols(void)
 {
   CONSOLE_SCREEN_BUFFER_INFO p;
   GetConsoleScreenBufferInfo (GetStdHandle(STD_OUTPUT_HANDLE), &p);
@@ -147,7 +146,8 @@ ioctl (int fd, int cmd, void *buf)
   return 0;
 }
 
-int kbhit ()
+int
+kbhit(void)
 {
   INPUT_RECORD i;
   unsigned long n;
@@ -160,7 +160,8 @@ int kbhit ()
   return n;
 }
 
-int getkey ()
+int
+getkey(void)
 {
 
   INPUT_RECORD i;
@@ -222,13 +223,13 @@ kill (int pid, int sig)
 }
 
 int
-getuid()
+getuid(void)
 {
   return getpid();	/* really just a stub! */
 }
 
 int
-getgid()
+getgid(void)
 {
   return getpid();	/* really just a stub! */
 }
@@ -236,37 +237,31 @@ getgid()
 #include <string.h>
 
 void
-path_to_real_path(in, out)
-     char *in;
-     char *out;
+path_to_real_path(char *in, char *out)
 {
   strcpy(out, in);
 }
 
-void dos_path_to_unix_path_keep_rel(in, out)
-     char *in;
-     char *out;
+void
+dos_path_to_unix_path_keep_rel(char *in, char *out)
 {
   strcpy(out, in);
 }
 
-void dos_path_to_unix_path(in, out)
-     char *in;
-     char *out;
+void
+dos_path_to_unix_path(char *in, char *out)
 {
   strcpy(out, in);
 }
 
-void unix_path_to_dos_path_keep_rel(in, out)
-     char *in;
-     char *out;
+void
+unix_path_to_dos_path_keep_rel(char *in, char *out)
 {
   strcpy(out, in);
 }
 
-void unix_path_to_dos_path(in, out)
-     char *in;
-     char *out;
+void
+unix_path_to_dos_path(char *in, char *out)
 {
   strcpy(out, in);
 }
@@ -542,16 +537,22 @@ tcgetattr (int fd, struct termios *t)
   return res;
 }
 
-void tcgetpgrp ()
+void
+tcgetpgrp(void)
 {
+  return;
 }
 
-void tcsetpgrp ()
+void
+tcsetpgrp(void)
 {
+  return;
 }
 
-void setpgid ()
+void
+setpgid(void)
 {
+  return;
 }
 
 /* EOF */

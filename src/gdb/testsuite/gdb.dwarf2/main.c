@@ -20,7 +20,7 @@
 /* Dummy main function.  */
 
 int
-main()
+main(void)
 {
   return 0;
 }

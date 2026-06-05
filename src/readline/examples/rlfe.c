@@ -304,7 +304,7 @@ null_prep_terminal (int meta)
 }
 
 static void
-null_deprep_terminal ()
+null_deprep_terminal(void)
 {
 }
 
@@ -391,7 +391,7 @@ my_rl_getc (FILE *dummy)
 }
 
 static void
-usage()
+usage(void)
 {
   fprintf (stderr, "%s: usage: %s [-l filename] [-a] [-n appname] [-hv] [command [arguments...]]\n",
 		   progname, progname);
@@ -832,9 +832,7 @@ main(int argc, char** argv)
 			} while (0)
 
 static int
-get_inferior_cwd (path, psize)
-     char *path;
-     size_t psize;
+get_inferior_cwd(char *path, size_t psize)
 {
   int n;
   static char procfsbuf[PATH_MAX] = { '\0' };
@@ -851,8 +849,7 @@ get_inferior_cwd (path, psize)
 }
 
 static int
-rlfe_directory_rewrite_hook (dirnamep)
-     char **dirnamep;
+rlfe_directory_rewrite_hook(char **dirnamep)
 {
   char *ldirname, cwd[PATH_MAX], *retdir, *ld;
   int n, ldlen;
@@ -902,8 +899,7 @@ rlfe_directory_rewrite_hook (dirnamep)
 /* Translate *DIRNAMEP to be relative to the inferior's CWD.  Leave a trailing
    slash on the result. */
 static int
-rlfe_directory_completion_hook (dirnamep)
-     char **dirnamep;
+rlfe_directory_completion_hook(char **dirnamep)
 {
   char *ldirname, *retdir;
   int n, ldlen;
@@ -941,9 +937,7 @@ rlfe_directory_completion_hook (dirnamep)
 }
 
 static char *
-rlfe_filename_completion_function (text, state)
-     const char *text;
-     int state;
+rlfe_filename_completion_function(const char *text, int state)
 {
   static DIR *directory;
   static char *filename = (char *)NULL;

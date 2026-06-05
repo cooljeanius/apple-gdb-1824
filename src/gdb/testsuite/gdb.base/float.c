@@ -16,7 +16,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 float
-foo ()
+foo(void)
 {
   float x = 0.0;
   x = 1.0 / x;
@@ -24,7 +24,7 @@ foo ()
 }
 
 int
-main ()
+main(void)
 {
   foo ();
   return 0;

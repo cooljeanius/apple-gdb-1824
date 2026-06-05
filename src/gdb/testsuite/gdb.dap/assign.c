@@ -27,7 +27,7 @@ struct special_type empty = { 0, 23 };
 struct special_type full = { 1, 23 };
 
 int
-main ()
+main(void)
 {
   struct special_type value = full;
 

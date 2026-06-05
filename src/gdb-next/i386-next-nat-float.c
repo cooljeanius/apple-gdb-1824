@@ -48,9 +48,7 @@ not standardize formats for extended floats (387 is 10 bytes, 68881 is
 12 bytes), so this will NOT work.  */
 
 void
-i387_to_double (from, to)
-     char *from;
-     char *to;
+i387_to_double(char *from, char *to)
 {
   long *lp;
   /* push extended mode on 387 stack, then pop in double mode
@@ -79,9 +77,7 @@ i387_to_double (from, to)
 }
 
 void
-double_to_i387 (from, to)
-     char *from;
-     char *to;
+double_to_i387(char *from, char *to)
 {
   /* push double mode on 387 stack, then pop in extended mode
    * no errors are possible because every 64-bit pattern
@@ -196,7 +192,7 @@ print_387_status (fp)
 }
 
 void
-i386_float_info ()
+i386_float_info(void)
 {
   i386_thread_fpstate_t fpstate;
   unsigned int fpstate_size = i386_THREAD_FPSTATE_COUNT;

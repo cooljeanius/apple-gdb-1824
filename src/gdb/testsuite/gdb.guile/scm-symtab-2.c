@@ -16,13 +16,13 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 void
-func1 ()
+func1(void)
 {
   return;
 }
 
 int
-func2 ()
+func2(void)
 {
   return 0;
 }

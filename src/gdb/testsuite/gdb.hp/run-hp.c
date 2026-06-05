@@ -9,8 +9,7 @@
 
 /* VxWorks does not supply atoi.  */
 static int
-atoi (z)
-     char *z;
+atoi(char *z)
 {
   int i = 0;
 
@@ -22,8 +21,8 @@ atoi (z)
 /* I don't know of any way to pass an array to VxWorks.  This function
    can be called directly from gdb.  */
 
-vxmain (arg)
-char *arg;
+int
+vxmain(char *arg)
 {
   char *argv[2];
 
@@ -36,9 +35,8 @@ char *arg;
 #  include <stdio.h>
 #endif /* ! vxworks */
 
-main (argc, argv, envp)
-int argc;
-char *argv[], **envp;
+int
+main(int argc, char *argv[], char **envp)
 {
 #ifdef usestubs
     set_debug_traps();
@@ -57,8 +55,8 @@ char *argv[], **envp;
     return 0;
 }
 
-int factorial (value)
-int value;
+int
+factorial(int value)
 {
     int  local_var;
 

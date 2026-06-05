@@ -34,7 +34,8 @@ void my_gamma (int *parray)
   return;
 }
 
-void beta ()
+void
+beta(void)
 {
   int array [4];
   array [0] = global++;
@@ -45,14 +46,16 @@ void beta ()
   abort ();
 }
 
-int alpha ()
+int
+alpha(void)
 {
   global++;
   beta ();
   return 0;
 }
 
-int main ()
+int
+main(void)
 {
   int i;
   global++;

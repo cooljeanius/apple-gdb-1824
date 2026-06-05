@@ -124,75 +124,93 @@ struct struct16 foo16 = {'a','2','c','4','e','6','g','8','i','A','k','C','m','E'
 struct struct17 foo17 = {'1','b','3','d','5','f','7','h','9','j','B','l','D','n','F','p','H'}, L17;
 struct struct18 foo18 = {'a','2','c','4','e','6','g','8','i','A','k','C','m','E','o','G','q','I'}, L18;
 
-struct struct1  fun1()
+struct struct1
+fun1(void)
 {
   return foo1;  
 }
-struct struct2  fun2()
+struct struct2
+fun2(void)
 {
   return foo2;
 }
-struct struct3  fun3()
+struct struct3
+fun3(void)
 {
   return foo3;
 }
-struct struct4  fun4()
+struct struct4
+fun4(void)
 {
   return foo4;
 }
-struct struct5  fun5()
+struct struct5
+fun5(void)
 {
   return foo5;
 }
-struct struct6  fun6()
+struct struct6
+fun6(void)
 {
   return foo6;
 }
-struct struct7  fun7()
+struct struct7
+fun7(void)
 {
   return foo7;
 }
-struct struct8  fun8()
+struct struct8
+fun8(void)
 {
   return foo8;
 }
-struct struct9  fun9()
+struct struct9
+fun9(void)
 {
   return foo9;
 }
-struct struct10 fun10()
+struct struct10
+fun10(void)
 {
   return foo10; 
 }
-struct struct11 fun11()
+struct struct11
+fun11(void)
 {
   return foo11; 
 }
-struct struct12 fun12()
+struct struct12
+fun12(void)
 {
   return foo12; 
 }
-struct struct13 fun13()
+struct struct13
+fun13(void)
 {
   return foo13; 
 }
-struct struct14 fun14()
+struct struct14
+fun14(void)
 {
   return foo14; 
 }
-struct struct15 fun15()
+struct struct15
+fun15(void)
 {
   return foo15; 
 }
-struct struct16 fun16()
+struct struct16
+fun16(void)
 {
   return foo16; 
 }
-struct struct17 fun17()
+struct struct17
+fun17(void)
 {
   return foo17; 
 }
-struct struct18 fun18()
+struct struct18
+fun18(void)
 {
   return foo18; 
 }
@@ -360,7 +378,8 @@ void Fun18(foo18)
   L18 = foo18; 
 }
 
-zed ()
+int
+zed(void)
 {
 
   L1.a = L2.a = L3.a = L4.a = L5.a = L6.a = L7.a = L8.a = L9.a = L10.a = L11.a = L12.a = L13.a = L14.a = L15.a = L16.a = L17.a = L18.a = 'Z';
@@ -400,7 +419,8 @@ zed ()
   L18.r = 'Z';
 }
 
-int main()
+int
+main(void)
 {
 #ifdef usestubs
   set_debug_traps();

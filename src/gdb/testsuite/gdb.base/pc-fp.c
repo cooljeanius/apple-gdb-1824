@@ -8,7 +8,7 @@ foo (int i)
 }
 
 int
-main ()
+main(void)
 {
   foo (1);
 }

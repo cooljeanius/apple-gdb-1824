@@ -18,14 +18,16 @@
 extern int foo ();
 
 int main_global = 44;
-int bar ()
+int
+bar(void)
 {
   int a_local = 45;
   static int a_static = 46;
   return main_global + a_local + a_static; /* break here */
 }
 
-int main ()
+int
+main(void)
 {
   bar ();
   return foo ();

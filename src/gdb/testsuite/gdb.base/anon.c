@@ -21,7 +21,8 @@ struct outer
   } data;
 };
 
-int main ()
+int
+main(void)
 {
   struct outer val;
 

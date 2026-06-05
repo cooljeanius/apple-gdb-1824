@@ -27,7 +27,7 @@ enum enum_type {
   TWO = 2
 };
 
-typedef int v4 __attribute__ ((vector_size (16)));
+typedef int v4 __attribute__;
 
 union union_type;
 
@@ -93,7 +93,7 @@ func_global (int subtrahend)
 }
 
 void
-no_args_or_locals ()
+no_args_or_locals(void)
 {
   /* no_args_or_locals breakpoint */
 }
@@ -205,7 +205,7 @@ int Foo::public_method ()
 }
 
 int
-main ()
+main(void)
 {
   int localvar = 50;
   int shadowed = 51;

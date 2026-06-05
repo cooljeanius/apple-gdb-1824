@@ -13,28 +13,32 @@ int bar (int y)
   return z;
 }
 
-void func()
+void
+func(void)
 {
   x = x + 5;
   func2 ();
 }
 
-int func2 ()
+int
+func2(void)
 {
   x = 6;
 }
 
-int func3 ()
+int
+func3(void)
 {
   x = 4;
 }
 
-void marker1 ()
+void
+marker1(void)
 {
 }
 
 int
-main ()
+main(void)
 {
   int result;
   int b, c;

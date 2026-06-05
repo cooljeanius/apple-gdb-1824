@@ -301,7 +301,7 @@ static int core_thread_alive (int pid)
 }
 
 static void
-init_macho_core_ops ()
+init_macho_core_ops(void)
 {
   macho_core_ops.to_shortname = "core-macho";
   macho_core_ops.to_longname = "Mach-O core dump file";
@@ -326,7 +326,7 @@ init_macho_core_ops ()
 };
 
 void
-_initialize_core_macho ()
+_initialize_core_macho(void)
 {
   init_macho_core_ops ();
   add_target (&macho_core_ops);

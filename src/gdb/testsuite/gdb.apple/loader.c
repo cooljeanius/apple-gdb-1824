@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 int
-main ()
+main(void)
 {
   char curDir[1024];
   char tst_name[1024];

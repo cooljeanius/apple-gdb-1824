@@ -1,5 +1,5 @@
 
-/*  A Bison parser, made from ./expread.y  */
+/*  A Bison parser, originally made from ./expread.y  */
 
 #define	INT	258
 #define	CHAR	259
@@ -553,7 +553,7 @@ int yydebug;			/*  nonzero means print parse trace	*/
 
 #line 90 "bison.simple"
 int
-yyparse()
+yyparse(void)
 {
   register int yystate;
   register int yyn;
@@ -1179,7 +1179,7 @@ case 67:
 			    {
 			      enum misc_function_type mft =
 				  misc_function_vector[i].type;
-			      
+
 			      write_exp_elt_opcode (OP_LONG);
 			      write_exp_elt_type (builtin_type_int);
 			      write_exp_elt_longcst ((LONGEST) misc_function_vector[i].address);
@@ -1215,9 +1215,9 @@ case 68:
 				case LOC_REGPARM:
 				case LOC_LOCAL:
 				case LOC_LOCAL_ARG:
-				  if (innermost_block == 0 ||
-				      contained_in (block_found, 
-						    innermost_block))
+				  if (innermost_block == 0
+				      || contained_in(block_found,
+						      innermost_block))
 				    innermost_block = block_found;
 				case LOC_UNDEF:
 				case LOC_CONST:
@@ -1247,8 +1247,9 @@ case 68:
 			      /* C++: it hangs off of `this'.  Must
 			         not inadvertently convert from a method call
 				 to data ref.  */
-			      if (innermost_block == 0 || 
-				  contained_in (block_found, innermost_block))
+			      if (innermost_block == 0
+				  || contained_in(block_found,
+						  innermost_block))
 				innermost_block = block_found;
 			      write_exp_elt_opcode (OP_THIS);
 			      write_exp_elt_opcode (OP_THIS);
@@ -1271,7 +1272,7 @@ case 68:
 				{
 				  enum misc_function_type mft =
 				      misc_function_vector[i].type;
-				  
+
 				  write_exp_elt_opcode (OP_LONG);
 				  write_exp_elt_type (builtin_type_int);
 				  write_exp_elt_longcst ((LONGEST) misc_function_vector[i].address);
@@ -1301,7 +1302,7 @@ case 70:
 		  int done = 0;
 		  int array_size;
 		  struct type *follow_type = yyvsp[-1].tval;
-		  
+
 		  while (!done)
 		    switch (pop_type ())
 		      {
@@ -1700,7 +1701,7 @@ yyerrhandle:
    saving the data about any containing call.  */
 
 static void
-start_arglist ()
+start_arglist(void)
 {
   register struct funcall *new = (struct funcall *) xmalloc (sizeof (struct funcall));
 
@@ -1714,7 +1715,7 @@ start_arglist ()
    and restore the data for the containing function call.  */
 
 static int
-end_arglist ()
+end_arglist(void)
 {
   register int val = arglist_len;
   register struct funcall *call = funcall_chain;
@@ -1728,7 +1729,7 @@ end_arglist ()
    Used when there is an error inside parsing.  */
 
 static void
-free_funcalls ()
+free_funcalls(void)
 {
   register struct funcall *call, *next;
 
@@ -1748,8 +1749,7 @@ free_funcalls ()
    a register through here */
 
 static void
-write_exp_elt (expelt)
-     union exp_element expelt;
+write_exp_elt(union exp_element expelt)
 {
   if (expout_ptr >= expout_size)
     {
@@ -1762,8 +1762,7 @@ write_exp_elt (expelt)
 }
 
 static void
-write_exp_elt_opcode (expelt)
-     enum exp_opcode expelt;
+write_exp_elt_opcode(enum exp_opcode expelt)
 {
   union exp_element tmp;
 
@@ -1773,8 +1772,7 @@ write_exp_elt_opcode (expelt)
 }
 
 static void
-write_exp_elt_sym (expelt)
-     struct symbol *expelt;
+write_exp_elt_sym(struct symbol *expelt)
 {
   union exp_element tmp;
 
@@ -1784,8 +1782,7 @@ write_exp_elt_sym (expelt)
 }
 
 static void
-write_exp_elt_longcst (expelt)
-     LONGEST expelt;
+write_exp_elt_longcst(LONGEST expelt)
 {
   union exp_element tmp;
 
@@ -1795,8 +1792,7 @@ write_exp_elt_longcst (expelt)
 }
 
 static void
-write_exp_elt_dblcst (expelt)
-     double expelt;
+write_exp_elt_dblcst(double expelt)
 {
   union exp_element tmp;
 
@@ -1806,8 +1802,7 @@ write_exp_elt_dblcst (expelt)
 }
 
 static void
-write_exp_elt_type (expelt)
-     struct type *expelt;
+write_exp_elt_type(struct type *expelt)
 {
   union exp_element tmp;
 
@@ -1817,8 +1812,7 @@ write_exp_elt_type (expelt)
 }
 
 static void
-write_exp_elt_intern (expelt)
-     struct internalvar *expelt;
+write_exp_elt_intern(struct internalvar *expelt)
 {
   union exp_element tmp;
 
@@ -1831,8 +1825,7 @@ write_exp_elt_intern (expelt)
    Follow it by its length in bytes, as a separate exp_element.  */
 
 static void
-write_exp_string (str)
-     struct stoken str;
+write_exp_string(struct stoken str)
 {
   register int len = str.length;
   register int lenelt
@@ -1883,11 +1876,8 @@ static int comma_terminates;
 /*** Needs some error checking for the float case ***/
 
 static int
-parse_number (p, len, parsed_float, putithere)
-     register char *p;
-     register int len;
-     int parsed_float;
-     YYSTYPE *putithere;
+parse_number(register char *p, register int len, int parsed_float,
+	     YYSTYPE *putithere)
 {
   register LONGEST n = 0;
   register int i;
@@ -2008,7 +1998,7 @@ const static struct token tokentab2[] =
     {">=", GEQ, BINOP_END}
   };
 
-/* assign machine-independent names to certain registers 
+/* assign machine-independent names to certain registers
  * (unless overridden by the REGISTER_NAMES table)
  */
 struct std_regs {
@@ -2034,7 +2024,7 @@ struct std_regs {
 /* Read one token, getting characters through lexptr.  */
 
 static int
-yylex ()
+yylex(void)
 {
   register int c;
   register int namelen;
@@ -2221,7 +2211,7 @@ yylex ()
        c = tokstart[++namelen])
     ;
 
-  /* The token "if" terminates the expression and is NOT 
+  /* The token "if" terminates the expression and is NOT
      removed from the input stream.  */
   if (namelen == 2 && tokstart[0] == 'i' && tokstart[1] == 'f')
     {
@@ -2295,7 +2285,7 @@ yylex ()
 	return STRUCT;
       if (!strncmp (tokstart, "signed", 6))
 	return SIGNED;
-      if (!strncmp (tokstart, "sizeof", 6))      
+      if (!strncmp(tokstart, "sizeof", 6))
 	return SIZEOF;
       break;
     case 5:
@@ -2369,9 +2359,9 @@ yylex ()
     /* Input names that aren't symbols but ARE valid hex numbers,
        when the input radix permits them, can be names or numbers
        depending on the parse.  Note we support radixes > 16 here.  */
-    if (!sym && 
-        ((tokstart[0] >= 'a' && tokstart[0] < 'a' + input_radix - 10) ||
-         (tokstart[0] >= 'A' && tokstart[0] < 'A' + input_radix - 10)))
+    if (!sym
+	&& ((tokstart[0] >= 'a' && tokstart[0] < 'a' + input_radix - 10)
+	    || (tokstart[0] >= 'A' && tokstart[0] < 'A' + input_radix - 10)))
       {
  	YYSTYPE newlval;	/* Its value is ignored.  */
 	hextype = parse_number (tokstart, namelen, 0, &newlval);
@@ -2398,8 +2388,7 @@ yylex ()
 
 /* ARGSUSED */
 static void
-yyerror (msg)
-     char *msg;
+yyerror(char *msg)
 {
   error ("Invalid syntax in expression.");
 }
@@ -2408,8 +2397,7 @@ yyerror (msg)
    of a string token.  */
 
 static char *
-copy_name (token)
-     struct stoken token;
+copy_name(struct stoken token)
 {
   bcopy (token.ptr, namecopy, token.length);
   namecopy[token.length] = 0;
@@ -2422,8 +2410,7 @@ copy_name (token)
 static void prefixify_subexp ();
 
 static void
-prefixify_expression (expr)
-     register struct expression *expr;
+prefixify_expression(register struct expression *expr)
 {
   register int len = sizeof (struct expression) +
 				    expr->nelts * sizeof (union exp_element);
@@ -2442,9 +2429,7 @@ prefixify_expression (expr)
    whose last exp_element is at index ENDPOS - 1 in EXPR.  */
 
 static int
-length_of_subexp (expr, endpos)
-     register struct expression *expr;
-     register int endpos;
+length_of_subexp(register struct expression *expr, register int endpos)
 {
   register int oplen = 1;
   register int args = 0;
@@ -2528,11 +2513,8 @@ length_of_subexp (expr, endpos)
    In the process, convert it from suffix to prefix form.  */
 
 static void
-prefixify_subexp (inexpr, outexpr, inend, outbeg)
-     register struct expression *inexpr;
-     struct expression *outexpr;
-     register int inend;
-     int outbeg;
+prefixify_subexp(register struct expression *inexpr,
+		 struct expression *outexpr, register int inend, int outbeg)
 {
   register int oplen = 1;
   register int args = 0;
@@ -2584,7 +2566,7 @@ prefixify_subexp (inexpr, outexpr, inend, outbeg)
       oplen = 3 + ((inexpr->elts[inend - 2].longconst
 		    + sizeof (union exp_element))
 		   / sizeof (union exp_element));
-		   
+
       break;
 
     case TERNOP_COND:
@@ -2649,10 +2631,7 @@ prefixify_subexp (inexpr, outexpr, inend, outbeg)
    If COMMA is nonzero, stop if a comma is reached.  */
 
 struct expression *
-parse_c_1 (stringptr, block, comma)
-     char **stringptr;
-     struct block *block;
-     int comma;
+parse_c_1(char **stringptr, struct block *block, int comma)
 {
   struct cleanup *old_chain;
 
@@ -2695,8 +2674,7 @@ parse_c_1 (stringptr, block, comma)
    to use up all of the contents of STRING.  */
 
 struct expression *
-parse_c_expression (string)
-     char *string;
+parse_c_expression(char *string)
 {
   register struct expression *exp;
   exp = parse_c_1 (&string, 0, 0);
@@ -2705,9 +2683,8 @@ parse_c_expression (string)
   return exp;
 }
 
-static void 
-push_type (tp)
-     enum type_pieces tp;
+static void
+push_type(enum type_pieces tp)
 {
   if (type_stack_depth == type_stack_size)
     {
@@ -2719,8 +2696,7 @@ push_type (tp)
 }
 
 static void
-push_type_int (n)
-     int n;
+push_type_int(int n)
 {
   if (type_stack_depth == type_stack_size)
     {
@@ -2731,8 +2707,8 @@ push_type_int (n)
   type_stack[type_stack_depth++].int_val = n;
 }
 
-static enum type_pieces 
-pop_type ()
+static enum type_pieces
+pop_type(void)
 {
   if (type_stack_depth)
     return type_stack[--type_stack_depth].piece;
@@ -2740,7 +2716,7 @@ pop_type ()
 }
 
 static int
-pop_type_int ()
+pop_type_int(void)
 {
   if (type_stack_depth)
     return type_stack[--type_stack_depth].int_val;
@@ -2749,7 +2725,7 @@ pop_type_int ()
 }
 
 void
-_initialize_expread ()
+_initialize_expread(void)
 {
   type_stack_size = 80;
   type_stack_depth = 0;

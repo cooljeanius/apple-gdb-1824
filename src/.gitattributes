@@ -53,7 +53,7 @@ ChangeLog       merge=merge-changelog
 
 # Autoconf.
 
-*.ac	whitespace=space-before-tab,indent-with-non-tab,trailing-space
+*.ac	whitespace=space-before-tab,trailing-space
 *.m4	whitespace=space-before-tab,indent-with-non-tab,trailing-space
 
 # Generated files.

@@ -22,7 +22,8 @@ function_breakpoint_here (void)
 {
 }
 
-int main ()
+int
+main(void)
 {
   no_debug_info ();
   return 0;

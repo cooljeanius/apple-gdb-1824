@@ -33,8 +33,8 @@ foo (unbounded a)
     return 1;
 }
 
-
-main ()
+int
+main(void)
 {
   unbounded t;
   char data[6];

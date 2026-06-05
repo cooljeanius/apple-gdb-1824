@@ -19,7 +19,8 @@ int k = 0;
 
 extern void pendfunc (int x);
 
-int main()
+int
+main(void)
 {
   pendfunc (3); /* break main here */
   pendfunc (4);

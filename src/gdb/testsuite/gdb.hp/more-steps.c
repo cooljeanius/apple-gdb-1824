@@ -43,8 +43,8 @@ int phase[ N_THREADS ];
 
 /* Routine for each thread to run.
  */
-void *spin( vp )
-    void * vp;
+void *
+spin(void *vp)
 {
     int me = (int) vp;
     int i;
@@ -65,7 +65,7 @@ void *spin( vp )
 }
 
 void
-do_pass()
+do_pass(void)
 {
     int i;
     pthread_t t[ N_THREADS ];
@@ -120,9 +120,8 @@ do_pass()
     i = 10;  /* Line 109.  Null line for setting bpts on. */
 }
 
-main( argc, argv )
-int    argc;
-char **argv;
+int
+main(int argc, char **argv)
 {
     int i;
     

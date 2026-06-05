@@ -165,8 +165,7 @@ ADDR32	*inst;
 }
 
 int
-remove_from_bp_table(id)
-BreakIdType	id;
+remove_from_bp_table(BreakIdType id)
 {
   struct  break_table	*temp, *temp2;
 

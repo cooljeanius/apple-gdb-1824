@@ -170,7 +170,7 @@ int gdb_m32r_vector = -1;
 
 #if 0
 #include "syscall.h"		/* for SYS_exit, SYS_write etc. */
-#endif
+#endif /* 0 */
 
 /* Global entry points:
  */
@@ -1161,8 +1161,9 @@ static unsigned short trap1 = TRAP1;
 static unsigned short noop = NOOP;
 
 static int
-prepare_to_step (continue_p)
-     int continue_p;		/* if this isn't REALLY a single-step (see below) */
+prepare_to_step(
+  int continue_p /* if this isn't REALLY a single-step (see below) */
+)
 {
   unsigned long pc = registers[PC];
   int branchCode = isBranch ((unsigned char *) pc);
@@ -1760,8 +1761,7 @@ strlen (const unsigned char *src)
 
 #if 0
 void
-exit (code)
-     int code;
+exit (int code)
 {
   _exit (code);
 }

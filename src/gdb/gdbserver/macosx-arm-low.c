@@ -20,7 +20,7 @@
 #include "arm-macosx-thread-status.h"
 
 int
-arm_mach_o_query_v6 ()
+arm_mach_o_query_v6(void)
 {
   host_basic_info_data_t info;
   mach_msg_type_number_t count;
@@ -727,7 +727,7 @@ set_single_step_breakpoint (unsigned int where, int is_thumb)
 }
 
 void
-delete_single_step_breakpoint ()
+delete_single_step_breakpoint(void)
 {
   if (single_step_breakpoint.where == 0)
     return;

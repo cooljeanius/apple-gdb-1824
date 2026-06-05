@@ -201,8 +201,7 @@ pbx_backtrace_command(char *args, int from_tty)
 
 }
 void
-print_sel_frame (just_source)
-     int just_source;
+print_sel_frame(int just_source)
 {
   print_stack_frame (selected_frame, -1, just_source ? -1 : 1);
 }
@@ -211,13 +210,13 @@ print_sel_frame (just_source)
  * but not source.  */
 
 void
-print_selected_frame ()
+print_selected_frame(void)
 {
   print_stack_frame (selected_frame, selected_frame_level, 0);
 }
 
 void
-_XXXinitXXXialize_cmds_pbx ()
+_XXXinitXXXialize_cmds_pbx(void)
 {
     add_com ("pbx-command-with-context", class_obscure, pbx_command_with_context_command,
            "<thread_number> <frame_number> <cmd> : execute <cmd> in the given frame number of the given thread.");

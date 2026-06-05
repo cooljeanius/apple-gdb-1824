@@ -54,8 +54,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
    
    */
 
-execle(name, args)
-     char *name, *args;
+int
+execle(char *name, char *args)
 {
   register char	**env = &args;
   while (*env++)

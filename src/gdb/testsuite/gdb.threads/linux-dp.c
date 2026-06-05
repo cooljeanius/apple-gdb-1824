@@ -68,8 +68,8 @@ shared_printf (char *format, ...)
   va_end (ap);
 }
 
-int 
-shared_random ()
+int
+shared_random(void)
 {
   static unsigned int seed;
   int result;
@@ -92,7 +92,7 @@ my_usleep (long usecs)
 }
 
 void
-random_delay ()
+random_delay(void)
 {
   my_usleep ((shared_random () % 2000) * 100);
 }

@@ -18,7 +18,9 @@
 #include <unistd.h>
 
 static void
-marker () {}
+marker(void)
+{
+}
 
 int
 main (void)

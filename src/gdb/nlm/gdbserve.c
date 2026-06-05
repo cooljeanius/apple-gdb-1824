@@ -180,7 +180,7 @@ char *hex2mem(char *buf, void *mem, int count, int may_fault);
 extern void set_step_traps(struct StackFrame *);
 extern void clear_step_traps(struct StackFrame *);
 
-static int __main() {};
+static int __main(void) {};
 
 /* Read a character from the serial port.  This must busy wait, but that is OK
  * because we will be the only thread running anyhow: */

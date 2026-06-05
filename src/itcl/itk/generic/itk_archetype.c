@@ -343,8 +343,8 @@ Itk_ArchetypeInit(interp)
  * ------------------------------------------------------------------------
  */
 static void
-Itk_DelMergeInfo(cdata)
-    char* cdata;  /* data to be destroyed */
+Itk_DelMergeInfo(char *cdata /* data to be destroyed */
+)
 {
     ArchMergeInfo *mergeInfo = (ArchMergeInfo*)cdata;
 
@@ -3186,8 +3186,8 @@ Itk_CreateArchComponent(interp, info, name, cdefn, accessCmd)
  * ------------------------------------------------------------------------
  */
 static void
-Itk_DelArchComponent(archComp)
-    ArchComponent *archComp;  /* pointer to component data */
+Itk_DelArchComponent(ArchComponent *archComp /* pointer to component data */
+)
 {
     ckfree((char*)archComp->member);
     ckfree((char*)archComp);
@@ -3431,8 +3431,8 @@ Itk_InitArchOption(interp, info, archOpt, defVal, currVal)
  * ------------------------------------------------------------------------
  */
 static void
-Itk_DelArchOption(archOpt)
-    ArchOption *archOpt;  /* pointer to option data */
+Itk_DelArchOption(ArchOption *archOpt /* pointer to option data */
+)
 {
     Itcl_ListElem *elem;
     ArchOptionPart *optPart;
@@ -3766,9 +3766,9 @@ Itk_RemoveArchOptionPart(info, switchName, from)
  * ------------------------------------------------------------------------
  */
 static int
-Itk_IgnoreArchOptionPart(info, opt)
-    ArchInfo *info;                /* info for Archetype mega-widget */
-    GenericConfigOpt *opt;         /* part to be ignored */
+Itk_IgnoreArchOptionPart(ArchInfo *info, /* info for Archetype mega-widget */
+			 GenericConfigOpt *opt /* part to be ignored */
+)
 {
     int result = 0;
 
@@ -3832,8 +3832,9 @@ Itk_IgnoreArchOptionPart(info, opt)
  * ------------------------------------------------------------------------
  */
 static void
-Itk_DelOptionPart(optPart)
-    ArchOptionPart *optPart;  /* option part data to be destroyed */
+Itk_DelOptionPart(
+  ArchOptionPart *optPart /* option part data to be destroyed */
+)
 {
     if (optPart->clientData && optPart->deleteProc) {
         (*optPart->deleteProc)(optPart->clientData);
@@ -4139,8 +4140,8 @@ optionDone:
  * ------------------------------------------------------------------------
  */
 static void
-Itk_DelGenericOpt(opt)
-    GenericConfigOpt *opt;  /* option info to be destroyed */
+Itk_DelGenericOpt(GenericConfigOpt *opt /* option info to be destroyed */
+)
 {
     ckfree((char*)opt->storage);
     ckfree((char*)opt);

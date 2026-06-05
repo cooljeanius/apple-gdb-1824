@@ -24,7 +24,7 @@ int sigfoo8 (int);
    optimized away if compiled w/ opt.  */
 
 int
-main ()
+main(void)
 {
   int rslt;
 
@@ -86,13 +86,13 @@ handler (int sig)
 }
 
 static void
-func1 ()
+func1(void)
 {
   ++count;
 }
 
 static void
-func2 ()
+func2(void)
 {
   ++count;
 }

@@ -60,9 +60,7 @@ static void setst ();
 	'T' if the file is sticky but not executable. */
 
 void
-filemodestring (statp, str)
-     struct stat *statp;
-     char *str;
+filemodestring(struct stat *statp, char *str)
 {
   mode_string (statp->st_mode, str);
 }
@@ -71,9 +69,7 @@ filemodestring (statp, str)
    is given as an argument. */
 
 void
-mode_string (mode, str)
-     unsigned short mode;
-     char *str;
+mode_string(int mode, char *str)
 {
   str[0] = ftypelet (mode);
   rwx ((mode & 0700) << 0, &str[1]);
@@ -94,8 +90,7 @@ mode_string (mode, str)
    '-' for any other file type. */
 
 static char
-ftypelet (bits)
-     unsigned short bits;
+ftypelet(int bits)
 {
   switch (bits & S_IFMT)
     {
@@ -141,9 +136,7 @@ ftypelet (bits)
    flags in CHARS accordingly. */
 
 static void
-rwx (bits, chars)
-     unsigned short bits;
-     char *chars;
+rwx(int bits, char *chars)
 {
   chars[0] = (bits & S_IREAD) ? 'r' : '-';
   chars[1] = (bits & S_IWRITE) ? 'w' : '-';
@@ -154,9 +147,7 @@ rwx (bits, chars)
    according to the file mode BITS. */
 
 static void
-setst (bits, chars)
-     unsigned short bits;
-     char *chars;
+setst(int bits, char *chars)
 {
 #ifdef S_ISUID
   if (bits & S_ISUID)

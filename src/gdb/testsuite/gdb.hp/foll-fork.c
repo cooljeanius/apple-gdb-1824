@@ -1,12 +1,13 @@
 #include <stdio.h>
 
-void callee (i)
-  int  i;
+void
+callee(int i)
 {
   printf("callee: %d\n", i);
 }
 
-main ()
+int
+main(void)
 {
   int  pid;
   int  v = 5;

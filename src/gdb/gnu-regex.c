@@ -158,7 +158,7 @@ extern char *re_syntax_table;
 static char re_syntax_table[CHAR_SET_SIZE];
 
 static void
-init_syntax_once ()
+init_syntax_once(void)
 {
    register int c;
    static int done = 0;
@@ -533,9 +533,7 @@ typedef enum
 #ifdef DEBUG
 static void extract_number _RE_ARGS ((int *dest, unsigned char *source));
 static void
-extract_number (dest, source)
-    int *dest;
-    unsigned char *source;
+extract_number(int *dest, unsigned char *source)
 {
   int temp = SIGN_EXTEND_CHAR (*(source + 1));
   *dest = *source & 0377;
@@ -562,9 +560,7 @@ extract_number (dest, source)
 static void extract_number_and_incr _RE_ARGS ((int *destination,
 					       unsigned char **source));
 static void
-extract_number_and_incr (destination, source)
-    int *destination;
-    unsigned char **source;
+extract_number_and_incr(int *destination, unsigned char **source)
 {
   extract_number (destination, *source);
   *source += 2;
@@ -608,8 +604,7 @@ static int debug = 0;
 /* Print the fastmap in human-readable form.  */
 
 void
-print_fastmap (fastmap)
-    char *fastmap;
+print_fastmap(char *fastmap)
 {
   unsigned was_a_range = 0;
   unsigned i = 0;
@@ -640,9 +635,7 @@ print_fastmap (fastmap)
    the START pointer into it and ending just before the pointer END.  */
 
 void
-print_partial_compiled_pattern (start, end)
-    unsigned char *start;
-    unsigned char *end;
+print_partial_compiled_pattern(unsigned char *start, unsigned char *end)
 {
   int mcnt, mcnt2;
   unsigned char *p1;
@@ -873,10 +866,8 @@ print_partial_compiled_pattern (start, end)
   printf ("%d:\tend of pattern.\n", p - start);
 }
 
-
 void
-print_compiled_pattern (bufp)
-    struct re_pattern_buffer *bufp;
+print_compiled_pattern(struct re_pattern_buffer *bufp)
 {
   unsigned char *buffer = bufp->buffer;
 
@@ -901,14 +892,9 @@ print_compiled_pattern (bufp)
   /* Perhaps we should print the translate table?  */
 }
 
-
 void
-print_double_string (where, string1, size1, string2, size2)
-    const char *where;
-    const char *string1;
-    const char *string2;
-    int size1;
-    int size2;
+print_double_string(const char *where, const char *string1, int size1,
+		    const char *string2, int size2)
 {
   int this_char;
 
@@ -930,8 +916,7 @@ print_double_string (where, string1, size1, string2, size2)
 }
 
 void
-printchar (c)
-     int c;
+printchar(int c)
 {
   putc (c, stderr);
 }
@@ -1755,9 +1740,7 @@ static register_info_type *reg_info_dummy;
 /* Make the register vectors big enough for NUM_REGS registers,
    but don't make them smaller.  */
 
-static
-regex_grow_registers (num_regs)
-     int num_regs;
+static regex_grow_registers(int num_regs)
 {
   if (num_regs > regs_allocated_size)
     {
@@ -2916,10 +2899,7 @@ regex_compile (pattern, size, syntax, bufp)
 /* Store OP at LOC followed by two-byte integer parameter ARG.  */
 
 static void
-store_op1 (op, loc, arg)
-    re_opcode_t op;
-    unsigned char *loc;
-    int arg;
+store_op1(re_opcode_t op, unsigned char *loc, int arg)
 {
   *loc = (unsigned char) op;
   STORE_NUMBER (loc + 1, arg);
@@ -2929,10 +2909,7 @@ store_op1 (op, loc, arg)
 /* Like `store_op1', but for two two-byte parameters ARG1 and ARG2.  */
 
 static void
-store_op2 (op, loc, arg1, arg2)
-    re_opcode_t op;
-    unsigned char *loc;
-    int arg1, arg2;
+store_op2(re_opcode_t op, unsigned char *loc, int arg1, int arg2)
 {
   *loc = (unsigned char) op;
   STORE_NUMBER (loc + 1, arg1);
@@ -2944,11 +2921,7 @@ store_op2 (op, loc, arg1, arg2)
    for OP followed by two-byte integer parameter ARG.  */
 
 static void
-insert_op1 (op, loc, arg, end)
-    re_opcode_t op;
-    unsigned char *loc;
-    int arg;
-    unsigned char *end;
+insert_op1(re_opcode_t op, unsigned char *loc, int arg, unsigned char *end)
 {
   register unsigned char *pfrom = end;
   register unsigned char *pto = end + 3;
@@ -2963,11 +2936,8 @@ insert_op1 (op, loc, arg, end)
 /* Like `insert_op1', but for two two-byte parameters ARG1 and ARG2.  */
 
 static void
-insert_op2 (op, loc, arg1, arg2, end)
-    re_opcode_t op;
-    unsigned char *loc;
-    int arg1, arg2;
-    unsigned char *end;
+insert_op2(re_opcode_t op, unsigned char *loc, int arg1, int arg2,
+	   unsigned char *end)
 {
   register unsigned char *pfrom = end;
   register unsigned char *pto = end + 5;
@@ -3025,9 +2995,7 @@ at_endline_loc_p (p, pend, syntax)
    false if it's not.  */
 
 static boolean
-group_in_compile_stack (compile_stack, regnum)
-    compile_stack_type compile_stack;
-    regnum_t regnum;
+group_in_compile_stack(compile_stack_type compile_stack, regnum_t regnum)
 {
   int this_element;
 
@@ -3112,8 +3080,7 @@ compile_range (p_ptr, pend, translate, syntax, b)
    Returns 0 if we succeed, -2 if an internal error.   */
 
 int
-re_compile_fastmap (bufp)
-     struct re_pattern_buffer *bufp;
+re_compile_fastmap(struct re_pattern_buffer *bufp)
 {
   int j, k;
 #ifdef MATCH_MAY_ALLOCATE
@@ -3751,13 +3718,9 @@ static int bcmp_translate _RE_ARGS ((const char *s1, const char *s2,
    matched substring.  */
 
 int
-re_match_2 (bufp, string1, size1, string2, size2, pos, regs, stop)
-     struct re_pattern_buffer *bufp;
-     const char *string1, *string2;
-     int size1, size2;
-     int pos;
-     struct re_registers *regs;
-     int stop;
+re_match_2(struct re_pattern_buffer *bufp, const char *string1, int size1,
+	   const char *string2, int size2, int pos, struct re_registers *regs,
+	   int stop)
 {
   int result = re_match_2_internal (bufp, string1, size1, string2, size2,
 				    pos, regs, stop);
@@ -5178,9 +5141,8 @@ re_match_2_internal (bufp, string1, size1, string2, size2, pos, regs, stop)
    We don't handle duplicates properly (yet).  */
 
 static boolean
-group_match_null_string_p (p, end, reg_info)
-    unsigned char **p, *end;
-    register_info_type *reg_info;
+group_match_null_string_p(unsigned char **p, unsigned char *end,
+			  register_info_type *reg_info)
 {
   int mcnt;
   /* Point to after the args to the start_memory.  */
@@ -5287,9 +5249,8 @@ group_match_null_string_p (p, end, reg_info)
    byte past the last. The alternative can contain groups.  */
 
 static boolean
-alt_match_null_string_p (p, end, reg_info)
-    unsigned char *p, *end;
-    register_info_type *reg_info;
+alt_match_null_string_p(unsigned char *p, unsigned char *end,
+			register_info_type *reg_info)
 {
   int mcnt;
   unsigned char *p1 = p;
@@ -5324,9 +5285,8 @@ alt_match_null_string_p (p, end, reg_info)
    Sets P to one after the op and its arguments, if any.  */
 
 static boolean
-common_op_match_null_string_p (p, end, reg_info)
-    unsigned char **p, *end;
-    register_info_type *reg_info;
+common_op_match_null_string_p(unsigned char **p, unsigned char *end,
+			      register_info_type *reg_info)
 {
   int mcnt;
   boolean ret;
@@ -5412,10 +5372,8 @@ common_op_match_null_string_p (p, end, reg_info)
    bytes; nonzero otherwise.  */
 
 static int
-bcmp_translate (s1, s2, len, translate)
-     const char *s1, *s2;
-     register int len;
-     RE_TRANSLATE_TYPE translate;
+bcmp_translate(const char *s1, const char *s2, register int len,
+	       RE_TRANSLATE_TYPE translate)
 {
   register const unsigned char *p1 = (const unsigned char *) s1;
   register const unsigned char *p2 = (const unsigned char *) s2;
@@ -5439,10 +5397,8 @@ bcmp_translate (s1, s2, len, translate)
    We call regex_compile to do the actual compilation.  */
 
 const char *
-re_compile_pattern (pattern, length, bufp)
-     const char *pattern;
-     size_t length;
-     struct re_pattern_buffer *bufp;
+re_compile_pattern(const char *pattern, size_t length,
+		   struct re_pattern_buffer *bufp)
 {
   reg_errcode_t ret;
 

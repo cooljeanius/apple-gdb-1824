@@ -32,7 +32,8 @@ void *func (void *arg)
   return NULL;	/* thread-sleep */
 }
 
-int main ()
+int
+main(void)
 {
   pthread_t t1,t2;
   int ret;

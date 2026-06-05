@@ -1,19 +1,20 @@
 #include <stdio.h>
 /*  Test "return" command.  */
 
-void func1 ()
+void
+func1(void)
 {
   printf("in func1\n");
 }
 
 int
-func2 ()
+func2(void)
 {
   return -5;
 }
 
 double
-func3 ()
+func3(void)
 {
   return -5.0;
 }
@@ -21,7 +22,8 @@ func3 ()
 int tmp2;
 double tmp3;
 
-int main ()
+int
+main(void)
 {
 #ifdef usestubs
   set_debug_traps();

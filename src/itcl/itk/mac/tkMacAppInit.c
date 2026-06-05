@@ -234,7 +234,7 @@ Tcl_AppInit(
  */
 
 static int
-MacintoshInit()
+MacintoshInit(void)
 {
     int i;
     long result, mask = 0x0700; 		/* mask = system 7.x */

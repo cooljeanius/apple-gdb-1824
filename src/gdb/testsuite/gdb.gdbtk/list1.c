@@ -13,15 +13,14 @@ void bar (x) int x;
 }
 
 static void
-unused ()
+unused(void)
 {
     /* Not used for anything */
 }
 /* This routine has a very long line that will break searching in older versions of GDB.  */
 #ifdef PROTOTYPES
 void
-#endif
-long_line ()
+long_line(void)
 {
   oof (67);
 

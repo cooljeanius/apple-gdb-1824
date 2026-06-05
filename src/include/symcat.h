@@ -1,4 +1,4 @@
-/* symcat.h: Symbol concatenation utilities.
+/* symcat.h: Symbol concatenation utilities.  -*- C -*-
 
    Copyright (C) 1998, 2000 Free Software Foundation, Inc.
 
@@ -69,9 +69,9 @@
 /* in case the popping failed: */
 #if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__clang__) && \
     !defined(__cplusplus)
-# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2)) 
- #  pragma GCC diagnostic ignored "-Wtraditional"
-# endif /* gcc 4.2+ */
+#  if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))
+#   pragma GCC diagnostic ignored "-Wtraditional"
+#  endif /* gcc 4.2+ */
 #endif /* gcc && !__clang__ && !__cplusplus */
 
 #endif /* SYM_CAT_H */

@@ -1,4 +1,5 @@
-main()
+int
+main(void)
 {
 	function_from_primary();
 	function_from_secondary();

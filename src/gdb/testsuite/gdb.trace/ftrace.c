@@ -28,8 +28,7 @@ begin (void)
 {}
 
 /* Called from asm.  */
-static void __attribute__((used))
-func (void)
+static void __attribute__ func(void)
 {}
 
 static void
@@ -62,7 +61,7 @@ end (void)
 {}
 
 int
-main ()
+main(void)
 {
   begin ();
 

@@ -152,7 +152,7 @@ value_free_to_mark (mark)
    Called after each command, successful or not.  */
 
 void
-free_all_values ()
+free_all_values(void)
 {
   register value_ptr val, next;
 
@@ -330,7 +330,7 @@ access_value_history (num)
    because the type pointers become invalid.  */
 
 void
-clear_value_history ()
+clear_value_history(void)
 {
   register struct value_history_chunk *next;
   register int i;
@@ -349,9 +349,7 @@ clear_value_history ()
 }
 
 static void
-show_values (num_exp, from_tty)
-     char *num_exp;
-     int from_tty;
+show_values(char *num_exp, int from_tty)
 {
   register int i;
   register value_ptr val;
@@ -408,8 +406,7 @@ static struct internalvar *internalvars;
    one is created, with a void value.  */
 
 struct internalvar *
-lookup_internalvar (name)
-     char *name;
+lookup_internalvar(char *name)
 {
   register struct internalvar *var;
 
@@ -499,8 +496,7 @@ set_internalvar (var, val)
 }
 
 char *
-internalvar_name (var)
-     struct internalvar *var;
+internalvar_name(struct internalvar *var)
 {
   return var->name;
 }
@@ -509,7 +505,7 @@ internalvar_name (var)
    because that makes the values invalid.  */
 
 void
-clear_internalvars ()
+clear_internalvars(void)
 {
   register struct internalvar *var;
 
@@ -524,9 +520,7 @@ clear_internalvars ()
 }
 
 static void
-show_convenience (ignore, from_tty)
-     char *ignore;
-     int from_tty;
+show_convenience(char *ignore, int from_tty)
 {
   register struct internalvar *var;
   int varseen = 0;
@@ -612,9 +606,7 @@ value_as_pointer (val)
    to an INT (or some size).  After all, it is only an offset.  */
 
 LONGEST
-unpack_long (type, valaddr)
-     struct type *type;
-     char *valaddr;
+unpack_long(struct type *type, char *valaddr)
 {
   register enum type_code code = TYPE_CODE (type);
   register int len = TYPE_LENGTH (type);
@@ -666,10 +658,7 @@ unpack_long (type, valaddr)
    format, result is in host format.  */
 
 DOUBLEST
-unpack_double (type, valaddr, invp)
-     struct type *type;
-     char *valaddr;
-     int *invp;
+unpack_double(struct type *type, char *valaddr, int *invp)
 {
   enum type_code code;
   int len;
@@ -1213,10 +1202,7 @@ value_from_vtable_info (arg, type)
    pointer which is for the base class whose type is BASECLASS.  */
 
 static int
-vb_match (type, index, basetype)
-     struct type *type;
-     int index;
-     struct type *basetype;
+vb_match(struct type *type, int index, struct type *basetype)
 {
   struct type *fieldtype;
   char *name = TYPE_FIELD_NAME (type, index);
@@ -1325,10 +1311,7 @@ baseclass_offset (type, index, valaddr, address)
    If the field is signed, we also do sign extension. */
 
 LONGEST
-unpack_field_as_long (type, valaddr, fieldno)
-     struct type *type;
-     char *valaddr;
-     int fieldno;
+unpack_field_as_long(struct type *type, char *valaddr, int fieldno)
 {
   ULONGEST val;
   ULONGEST valmask;
@@ -1373,10 +1356,7 @@ unpack_field_as_long (type, valaddr, fieldno)
    indicate which bits (in target bit order) comprise the bitfield.  */
 
 void
-modify_field (addr, fieldval, bitpos, bitsize)
-     char *addr;
-     LONGEST fieldval;
-     int bitpos, bitsize;
+modify_field(char *addr, LONGEST fieldval, int bitpos, int bitsize)
 {
   LONGEST oword;
 
@@ -1557,9 +1537,7 @@ value_being_returned (valtype, retbuf, struct_return)
    handled wrong.  */
 
 int
-generic_use_struct_convention (gcc_p, value_type)
-     int gcc_p;
-     struct type *value_type;
+generic_use_struct_convention(int gcc_p, struct type *value_type)
 {     
   return !((gcc_p == 1)
 	    && (TYPE_LENGTH (value_type) == 1
@@ -1629,9 +1607,9 @@ set_return_value (val)
 
   STORE_RETURN_VALUE (type, VALUE_CONTENTS (val));
 }
-
+
 void
-_initialize_values ()
+_initialize_values(void)
 {
   add_cmd ("convenience", no_class, show_convenience,
 	    "Debugger convenience (\"$foo\") variables.\n\

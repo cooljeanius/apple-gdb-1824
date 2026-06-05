@@ -684,7 +684,8 @@ re_comp (const char *s)
 }
 
 #ifdef _LIBC
-libc_freeres_fn (free_mem)
+int
+libc_freeres_fn(int free_mem)
 {
   __regfree (&re_comp_buf);
 }

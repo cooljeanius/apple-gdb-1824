@@ -23,7 +23,7 @@
 #include <stdlib.h>
 
 int
-main ()
+main(void)
 {
   sigset_t mask;
 

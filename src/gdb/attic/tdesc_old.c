@@ -228,8 +228,8 @@ typedef tdesc_elem_t *tdesc_table_t;
 
 void dc_correct_cr_data();
 
-int dc_compare_tdesc_elems (elem1, elem2)
-   char *elem1, *elem2;
+int
+dc_compare_tdesc_elems(char *elem1, char *elem2)
 {
    dc_word_t s1, s2, e1, e2;
    s1 = ((tdesc_elem_t *) elem1)->start_address;
@@ -334,9 +334,8 @@ void dc_warn(va_alist)  /* (handle, format, args... ) */
 
 /* Commonize memory allocation call so failure diagnosis is easier */
 
-char* dc_malloc( handle, size )
-    dc_handle_t handle;
-    int         size;
+char *
+dc_malloc(dc_handle_t handle, int size)
 {
     char* space = malloc( size );
     if (space == (char *)NULL)
@@ -348,10 +347,8 @@ char* dc_malloc( handle, size )
 
 /* Commonize memory allocation call so failure diagnosis is easier */
 
-char* dc_calloc( handle,nelem, size )
-    dc_handle_t handle;
-    int         nelem;
-    int		size;
+char *
+dc_calloc(dc_handle_t handle, int nelem, int size)
 {
     char* space = calloc( nelem, size );
     if (space == (char *)NULL)
@@ -589,9 +586,8 @@ dc_handle_t dc_initiate (debug_info_ptr,
    return (dc_handle_t) handle;
 }
 
-
-void dc_terminate (handle)
-   dc_handle_t handle;
+void
+dc_terminate(dc_handle_t handle)
 {
    if (((dc_handle_t)handle)->tdesc_table) {
       free((char *)(((dc_handle_t)handle)->tdesc_table));
@@ -860,11 +856,9 @@ void dc_set_value (handle, info, flags, pos, value)
    dc_set_value(dcontext->handle, dcontext->aux_info, dcontext->aux_flags, reg, \
       value)
 
-
-
-void dc_check_dcontext (dc)
-   dc_dcontext_t dc;
-   /* Check consistency of information supplied to make a dcontext. */
+void
+dc_check_dcontext(dc_dcontext_t dc)
+/* Check consistency of information supplied to make a dcontext. */
 {
    int i;
 
@@ -1004,10 +998,8 @@ dc_dcontext_t dc_make_dcontext (handle,
    return (dc_dcontext_t) dc;
 }
 
-
-
-void dc_free_dcontext (dcontext)
-   dc_dcontext_t dcontext;
+void
+dc_free_dcontext(dc_dcontext_t dcontext)
 {
 /****************************************************************/
 /* BUG 9/19/89 Found by hls.  Freeing non-pointer value.        */
@@ -1018,10 +1010,8 @@ void dc_free_dcontext (dcontext)
    free((char *)dcontext);
 }
 
-
-
-dc_register_state_t dc_location_state (dcontext)
-   dc_dcontext_t dcontext;
+dc_register_state_t
+dc_location_state(dc_dcontext_t dcontext)
 {
    return AUX_STATE(((dc_dcontext_t)dcontext), DC_AUX_LOC);
 }
@@ -1075,11 +1065,8 @@ void dc_set_location (dcontext, value)
       ((dc_dcontext_t)dcontext)->aux_info[DC_AUX_LOC], ~3, value);
 }
 
-
-
-dc_register_state_t dc_general_register_state (dcontext, reg)
-   dc_dcontext_t dcontext;
-   int reg;
+dc_register_state_t
+dc_general_register_state(dc_dcontext_t dcontext, int reg)
 {
    CHECK_REG (((dc_dcontext_t)dcontext), reg);
    return REG_STATE(((dc_dcontext_t)dcontext), reg);
@@ -1106,11 +1093,8 @@ void dc_set_general_register (dcontext, reg, value)
    SET_REG_VALUE (((dc_dcontext_t)dcontext), reg, value);
 }
 
-
-
-dc_register_state_t dc_auxiliary_register_state (dcontext, reg)
-   dc_dcontext_t dcontext;
-   int reg;
+dc_register_state_t
+dc_auxiliary_register_state(dc_dcontext_t dcontext, int reg)
 {
    CHECK_AUX (((dc_dcontext_t)dcontext), reg);
    return AUX_STATE(((dc_dcontext_t)dcontext), reg);
@@ -1137,11 +1121,8 @@ void dc_set_auxiliary_register (dcontext, reg, value)
    SET_AUX_VALUE (((dc_dcontext_t)dcontext), reg, value);
 }
 
-
-
-dc_register_state_t dc_psr_register_bit_state (dcontext, bit)
-   dc_dcontext_t dcontext;
-   int bit;
+dc_register_state_t
+dc_psr_register_bit_state(dc_dcontext_t dcontext, int bit)
 {
    CHECK_BIT (((dc_dcontext_t)dcontext), bit);
    return PSR_STATE(((dc_dcontext_t)dcontext), bit);
@@ -1213,9 +1194,8 @@ dc_kind_t dc_context_kind (dcontext)
 
 /* operations valid for call contexts only */
 
-
-dc_register_state_t dc_return_address_state (dcontext)
-   dc_dcontext_t dcontext;
+dc_register_state_t
+dc_return_address_state(dc_dcontext_t dcontext)
 {
    tdesc_elem_t *tep = ((dc_dcontext_t)dcontext)->info_ptr.tdesc_elem_ptr;
    int reg;
@@ -1369,10 +1349,9 @@ void dc_get_special_info (dcontext, kind, datum)
 
 /* operations valid for all contexts (again) */
 
-
-dc_dcontext_t dc_previous_dcontext (dcontext)
-   dc_dcontext_t dcontext;
-   /* Return NULL if there is no previous context. */
+dc_dcontext_t
+dc_previous_dcontext(dc_dcontext_t dcontext)
+/* Return NULL if there is no previous context. */
 {
    dc_dcontext_t old = (dc_dcontext_t) dcontext;
    dcontext_info_t new;    /* to serve as temporary storage only */
@@ -1565,11 +1544,8 @@ dc_word_t instr;
 
 }
 
-
-
-dc_init_cr_data(cdp,tep)
-dc_cr_data_t *cdp;
-tdesc_elem_t *tep;
+int
+dc_init_cr_data(dc_cr_data_t *cdp, tdesc_elem_t *tep)
 {
 int reg;
 dc_word_t rai;
@@ -1627,9 +1603,8 @@ dc_word_t frpos;
    cdp->how = 0;
 	}
 }
-void dc_correct_cr_data(cdp,handle)
-dc_cr_data_t *cdp;
-dc_handle_t handle;
+void
+dc_correct_cr_data(dc_cr_data_t *cdp, dc_handle_t handle)
 {
 long sr,r;
 dc_word_t save_regs = 0;  /* registers used to save others */

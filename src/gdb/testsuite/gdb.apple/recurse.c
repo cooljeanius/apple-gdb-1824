@@ -14,7 +14,8 @@ recurse (int a)
   return b;
 }
 
-int main()
+int
+main(void)
 {
   recurse (10);
   return 0;

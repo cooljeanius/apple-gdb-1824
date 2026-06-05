@@ -140,13 +140,41 @@ float  t_structs_f (struct struct1 tstruct) { return (tstruct.f); }
 double t_structs_d (struct struct1 tstruct) { return (tstruct.d); }
 char  *t_structs_a (struct struct1 tstruct) { return (tstruct.a); }
 #else
-char   t_structs_c (tstruct) struct struct1 tstruct; { return (tstruct.c); }
-short  t_structs_s (tstruct) struct struct1 tstruct; { return (tstruct.s); }
-int    t_structs_i (tstruct) struct struct1 tstruct; { return (tstruct.i); }
-long   t_structs_l (tstruct) struct struct1 tstruct; { return (tstruct.l); }
-float  t_structs_f (tstruct) struct struct1 tstruct; { return (tstruct.f); }
-double t_structs_d (tstruct) struct struct1 tstruct; { return (tstruct.d); }
-char  *t_structs_a (tstruct) struct struct1 tstruct; { return (tstruct.a); }
+char
+t_structs_c(struct struct1 tstruct)
+{
+  return (tstruct.c);
+}
+short
+t_structs_s(struct struct1 tstruct)
+{
+  return (tstruct.s);
+}
+int
+t_structs_i(struct struct1 tstruct)
+{
+  return (tstruct.i);
+}
+long
+t_structs_l(struct struct1 tstruct)
+{
+  return (tstruct.l);
+}
+float
+t_structs_f(struct struct1 tstruct)
+{
+  return (tstruct.f);
+}
+double
+t_structs_d(struct struct1 tstruct)
+{
+  return (tstruct.d);
+}
+char *
+t_structs_a(struct struct1 tstruct)
+{
+  return (tstruct.a);
+}
 #endif
 
 /* Test that calling functions works if there are a lot of arguments.  */

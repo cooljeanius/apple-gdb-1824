@@ -34,7 +34,8 @@ typedef struct Two tTwo;
 tOne *onep = &two.one;
 tTwo *twop = &two;
 
-int main()
+int
+main(void)
 {
   onep->x = twop->y;
   return 0;

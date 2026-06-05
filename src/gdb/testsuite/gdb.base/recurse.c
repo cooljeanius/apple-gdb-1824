@@ -20,7 +20,8 @@ recurse (a)
   return b;
 }
 
-int main()
+int
+main(void)
 {
 #ifdef usestubs
   set_debug_traps();

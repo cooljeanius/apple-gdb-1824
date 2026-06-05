@@ -355,8 +355,8 @@ union utag un;
 
 /* Test shuffling of args */
 
-
-void call6k ()
+void
+call6k(void)
 {
 }
 
@@ -599,9 +599,10 @@ typedef struct s
   short s;
   int i;
   long l;
-} SVAL;	
+} SVAL;
 
-void hitbottom ()
+void
+hitbottom(void)
 {
 }
 
@@ -620,7 +621,8 @@ int depth;
     recurse (a, depth);
 }
 
-void test_struct_args ()
+void
+test_struct_args(void)
 {
   SVAL s; s.s = 5; s.i = 5; s.l = 5;
 
@@ -710,12 +712,17 @@ double d1;
 /* Dummy functions which the testsuite can use to run to, etc.  */
 
 void
-marker_indirect_call () {}
+marker_indirect_call(void)
+{
+}
 
 void
-marker_call_with_trampolines () {}
-
-int main ()
+marker_call_with_trampolines(void)
+{
+}
+
+int
+main(void)
 {
   void (*pointer_to_call0a) (char, short, int, long) = (void (*)(char, short, int, long))call0a;
   double (*pointer_to_call_with_trampolines) (double) = call_with_trampolines;

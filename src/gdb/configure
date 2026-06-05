@@ -55362,7 +55362,8 @@ build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wenum-conversion -Wbuiltin-declaration-mismatch \
 -Walloc-zero -Walloc-size-larger-than=2147483647 \
 -Wmultistatement-macros -Wif-not-aligned -Wattribute-alias \
--Wmissing-attributes -Wstring-compare -Wzero-length-bounds"
+-Wmissing-attributes -Wstring-compare -Wzero-length-bounds \
+-Wtrailing-whitespace"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -55659,6 +55660,7 @@ fi
 #  * -Wpacked-not-aligned (triggers in headers outside of our control)
 #  * -Wexpansion-to-defined (triggers in headers outside of our control)
 #  * -Wfloat-conversion (triggers in headers outside of our control)
+#  * -Wleading-whitespace=kind (need to decide the kind)
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)

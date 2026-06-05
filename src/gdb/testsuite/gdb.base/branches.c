@@ -79,9 +79,13 @@ int while3(int a)
   return a ;
 }
 
-void done (int x) { } 
+void
+done(int x)
+{
+}
 
-int main()
+int
+main(void)
 {
   int a,b,c,d ;
   done(1) ;

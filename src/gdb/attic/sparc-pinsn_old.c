@@ -78,21 +78,20 @@ union sparc_insn
   };
 
 /* Nonzero if INSN is the opcode for a delayed branch.  */
-static int
-is_delayed_branch (insn)
-     union sparc_insn insn;
-{
-  unsigned int i;
+  static int
+  is_delayed_branch(union sparc_insn insn)
+  {
+    unsigned int i;
 
-  for (i = 0; i < NUMOPCODES; ++i)
-    {
-      const struct sparc_opcode *opcode = &sparc_opcodes[i];
-      if ((opcode->match & insn.code) == opcode->match
-	  && (opcode->lose & insn.code) == 0)
-	return (opcode->flags & F_DELAYED);
-    }
-  return 0;
-}
+    for (i = 0; i < NUMOPCODES; ++i)
+      {
+	const struct sparc_opcode *opcode = &sparc_opcodes[i];
+	if ((opcode->match & insn.code) == opcode->match
+	    && (opcode->lose & insn.code) == 0)
+	  return (opcode->flags & F_DELAYED);
+      }
+    return 0;
+  }
 
 static int opcodes_sorted = 0;
 
@@ -365,8 +364,7 @@ print_insn (memaddr, stream)
 /* Compare opcodes A and B.  */
 
 static int
-compare_opcodes (a, b)
-     char *a, *b;
+compare_opcodes(char *a, char *b)
 {
   struct sparc_opcode *op0 = (struct sparc_opcode *) a;
   struct sparc_opcode *op1 = (struct sparc_opcode *) b;

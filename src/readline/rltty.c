@@ -255,9 +255,7 @@ get_tty_settings(int tty, TIOTYPE *tiop)
 }
 
 static int
-set_tty_settings (tty, tiop)
-     int tty;
-     TIOTYPE *tiop;
+set_tty_settings(int tty, TIOTYPE *tiop)
 {
   if (tiop->flags & SGTTY_SET)
     {
@@ -294,9 +292,7 @@ set_tty_settings (tty, tiop)
 }
 
 static void
-prepare_terminal_settings (meta_flag, oldtio, tiop)
-     int meta_flag;
-     TIOTYPE oldtio, *tiop;
+prepare_terminal_settings(int meta_flag, TIOTYPE oldtio, TIOTYPE *tiop)
 {
   readline_echoing_p = (oldtio.sgttyb.sg_flags & ECHO);
 

@@ -15,17 +15,20 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-int bar ()
+int
+bar(void)
 {
   return 1; /* break in bar */
 }
 
-int foo ()
+int
+foo(void)
 {
   return bar ();
 }
 
-int main ()
+int
+main(void)
 {
   foo ();
   return 0;

@@ -942,9 +942,9 @@ Itcl_Protection(interp, newLevel)
  *  a pointer to this string.
  * ------------------------------------------------------------------------
  */
-char*
-Itcl_ProtectionStr(pLevel)
-    int pLevel;     /* protection level */
+char *
+Itcl_ProtectionStr(int pLevel /* protection level */
+)
 {
     switch (pLevel) {
     case ITCL_PUBLIC:

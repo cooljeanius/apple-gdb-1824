@@ -16,7 +16,8 @@ int foo (int my_var)
   return my_var * 10;
 }
 
-int main ()
+int
+main(void)
 {
   int my_var = 5;
 

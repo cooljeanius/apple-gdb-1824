@@ -30,23 +30,22 @@ void *thread_function (void *arg); /* Pointer to function executed by each threa
 
 static unsigned int shared_var = 1;
 
-int main () {
-    int res;
-    pthread_t threads[NUM];
-    void *thread_result;
-    long i;
+int
+main(void)
+{
+  int res;
+  pthread_t threads[NUM];
+  void *thread_result;
+  long i;
 
-    for (i = 0; i < NUM; i++)
-      {
-        res = pthread_create (&threads[i],
-                             NULL,
-                             thread_function,
-			     (void *) i);
-      }
+  for (i = 0; i < NUM; i++)
+    {
+      res = pthread_create(&threads[i], NULL, thread_function, (void *) i);
+    }
 
-    thread_result = thread_function ((void *) i);
+  thread_result = thread_function((void *) i);
 
-    exit (EXIT_SUCCESS);
+  exit(EXIT_SUCCESS);
 }
 
 void *thread_function (void *arg) {

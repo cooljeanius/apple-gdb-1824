@@ -23,7 +23,7 @@
 #pragma GCC user_expression
 
 static void
-foo ()
+foo(void)
 {
   jmp_buf env;
 

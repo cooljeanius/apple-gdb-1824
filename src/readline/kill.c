@@ -615,8 +615,7 @@ rl_yank_last_arg(int count, int key)
 #include <windows.h>
 
 int
-rl_paste_from_clipboard (count, key)
-     int count, key;
+rl_paste_from_clipboard(int count, int key)
 {
   char *data, *ptr;
   int len;

@@ -1,5 +1,6 @@
 __thread int i_tls = 2;
-int main ()
+int
+main(void)
 {
   int result;
   result = foo (); /* Call to foo should return 2, not 1.  */

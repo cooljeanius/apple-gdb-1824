@@ -19,17 +19,20 @@
  
    This file is part of the gdb testsuite.  */
 
-sub1 ()
+int
+sub1(void)
 {
   printf ("In sub1\n");
 }
-  
-sub2 ()
+
+int
+sub2(void)
 {
   printf ("In sub2\n");
 }
-  
-main ()
+
+int
+main(void)
 {
   sub1 ();
   sub2 ();

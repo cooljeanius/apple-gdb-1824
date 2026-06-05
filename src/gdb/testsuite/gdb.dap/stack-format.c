@@ -35,7 +35,8 @@ int z_3 (int x, char y)
   return z_2 (x, y);
 }
 
-int main ()
+int
+main(void)
 {
   return z_3 (64, 'A');
 }

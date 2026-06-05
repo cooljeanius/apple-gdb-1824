@@ -252,7 +252,7 @@ wack_field_4 (void)
 /* */
 
 int
-main ()
+main(void)
 {
   /* These calls are for current frame test.  */
   wack_charest (-1, -2);

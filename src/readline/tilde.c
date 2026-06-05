@@ -396,9 +396,8 @@ tilde_expand_word(const char *filename)
 # undef NULL
 # include <stdio.h>
 
-int main (argc, argv)
-     int argc;
-     char **argv;
+int
+main(int argc, char **argv)
 {
   char *result, line[512];
   int done = 0;
@@ -429,8 +428,7 @@ int main (argc, argv)
 static void memory_error_and_abort ();
 
 static void *
-xmalloc (bytes)
-     size_t bytes;
+xmalloc(size_t bytes)
 {
   void *temp = (char *)malloc (bytes);
 
@@ -440,9 +438,7 @@ xmalloc (bytes)
 }
 
 static void *
-xrealloc (pointer, bytes)
-     void *pointer;
-     int bytes;
+xrealloc(void *pointer, int bytes)
 {
   void *temp;
 
@@ -458,7 +454,7 @@ xrealloc (pointer, bytes)
 }
 
 static void
-memory_error_and_abort()
+memory_error_and_abort(void)
 {
   fprintf(stderr, "readline: out of virtual memory\n");
   abort();

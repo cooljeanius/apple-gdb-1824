@@ -440,7 +440,7 @@ void next_debug_notification_message (struct next_inferior_status *inferior, msg
 }
 
 void
-_initialize_next_inferior_debug ()
+_initialize_next_inferior_debug(void)
 {
   struct cmd_list_element *cmd;
 

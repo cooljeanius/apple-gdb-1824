@@ -64,7 +64,7 @@ hack (const struct dummy *t, const enum dummy_enum *e)
 }
 
 int
-main ()
+main(void)
 {
   struct dummy tt;
   tt.x = 5;

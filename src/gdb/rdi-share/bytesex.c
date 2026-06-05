@@ -20,12 +20,13 @@
 
 static int reversing_bytes = 0;
 
-void bytesex_reverse(yes_or_no)
-int yes_or_no;
+void
+bytesex_reverse(int yes_or_no)
 { reversing_bytes = yes_or_no;
 }
 
-int bytesex_reversing()
+int
+bytesex_reversing(void)
 {
   return reversing_bytes;
 }

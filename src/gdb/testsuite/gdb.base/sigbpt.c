@@ -39,7 +39,7 @@ bowler (void)
 }
 
 int
-main ()
+main(void)
 {
   static volatile int i;
 

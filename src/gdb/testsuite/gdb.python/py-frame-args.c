@@ -48,7 +48,7 @@ foo (int x, struct ss ss)
 }
 
 int
-main ()
+main(void)
 {
   struct ss ss;
 

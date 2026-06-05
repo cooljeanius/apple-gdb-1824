@@ -26,7 +26,7 @@ func (int arg)
 }
 
 int
-main ()
+main(void)
 {
   foo.x = 1;
   return func (-1);

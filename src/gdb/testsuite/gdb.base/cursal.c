@@ -17,22 +17,20 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-
 void
-func2 ()
+func2(void)
 {
   int v2 = 2;
 }
 
 void
-func1 ()
+func1(void)
 {
   func2 ();
 }
 
-
 int
-main ()
+main(void)
 {
   int v0 = 0;
   func1 ();

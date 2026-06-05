@@ -22,7 +22,7 @@ func (int arg)
 }
 
 int
-main ()
+main(void)
 {
   return func (-1);
 }

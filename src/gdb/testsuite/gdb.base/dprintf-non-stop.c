@@ -16,12 +16,12 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 void
-foo ()
+foo(void)
 {
 }
 
 int
-main ()
+main(void)
 {
   sleep (1);
   foo ();

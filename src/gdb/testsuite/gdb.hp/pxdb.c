@@ -1,13 +1,14 @@
 #include <stdio.h>
 
-int callee( x )
-int x;
+int
+callee(int x)
 {
     int y = x * x;
     return (y - 2);
 }
 
-main()
+int
+main(void)
 {
     int i;
     for (i = 1; i < 10; i++)

@@ -33,10 +33,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
    Doesn't really work for dummy frames, but it does pass back
    an empty frame_saved_regs, so I guess that's better than total failure */
 
-void 
-tic80_frame_find_saved_regs (fi, regaddr)
-     struct frame_info *fi;
-     struct frame_saved_regs *regaddr;
+void
+tic80_frame_find_saved_regs(struct frame_info *fi,
+			    struct frame_saved_regs *regaddr)
 {
   memcpy (regaddr, &fi->fsr, sizeof (struct frame_saved_regs));
 }
@@ -79,8 +78,7 @@ tic80_skip_prologue (pc)
    This information is stored in the "extra" fields of the frame_info.  */
 
 static void
-tic80_scan_prologue (fi)
-     struct frame_info *fi;
+tic80_scan_prologue(struct frame_info *fi)
 {
   struct symtab_and_line sal;
   CORE_ADDR prologue_start, prologue_end, current_pc;
@@ -168,8 +166,7 @@ tic80_scan_prologue (fi)
    examine the prologue.  */
 
 void
-tic80_init_extra_frame_info (fi)
-     struct frame_info *fi;
+tic80_init_extra_frame_info(struct frame_info *fi)
 {
   int reg;
 
@@ -270,8 +267,7 @@ tic80_frame_chain (fi)
    restoring all saved registers.  */
 
 struct frame_info *
-tic80_pop_frame (frame)
-     struct frame_info *frame;
+tic80_pop_frame(struct frame_info *frame)
 {
   int regnum;
 
@@ -476,7 +472,7 @@ tic80_write_sp (val)
 }
 
 void
-_initialize_tic80_tdep ()
+_initialize_tic80_tdep(void)
 {
   tm_print_insn = print_insn_tic80;
 }

@@ -1,7 +1,6 @@
 /* bfd.h: Main header for the bfd library: portable access to object files.
 
-   Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
-   1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+   Copyright 1990-2005 Free Software Foundation, Inc.
 
    Contributed by Cygnus Support.
 
@@ -322,7 +321,7 @@ carsym;			/* To make these you call a carsymogen.  */
 
 /* Used in generating armaps (archive tables of contents).
    Perhaps just a forward definition would do?  */
-struct orl 			/* Output ranlib.  */
+struct orl /* Output ranlib.  */
 {
   char **name;		/* Symbol name.  */
   union
@@ -375,7 +374,7 @@ typedef struct bfd_section *sec_ptr;
 #define bfd_get_section_limit(bfd, sec) \
   (((sec)->rawsize ? (sec)->rawsize : (sec)->size) \
    / bfd_octets_per_byte(bfd))
-  
+
 /* Return TRUE if input section SEC has been discarded: */
 #ifndef discarded_section
 # define discarded_section(sec)				\
@@ -909,7 +908,7 @@ extern bfd_boolean bfd_is_arm_mapping_symbol_name(const char *name)
 extern bfd_boolean bfd_arm_merge_machines(bfd *, bfd *);
 extern bfd_boolean bfd_arm_update_notes(bfd *, const char *);
 extern unsigned int bfd_arm_get_mach_from_notes(bfd *, const char *);
-  
+
   /* ARM stub generation support.  Called from the linker.  */
 extern int elf32_arm_setup_section_lists
   (bfd *, struct bfd_link_info *);

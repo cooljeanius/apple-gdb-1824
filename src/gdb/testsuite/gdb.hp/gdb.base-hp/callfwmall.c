@@ -145,13 +145,38 @@ char  *t_structs_a (struct struct1 tstruct)
   return buf;
 }
 #else
-char   t_structs_c (tstruct) struct struct1 tstruct; { return (tstruct.c); }
-short  t_structs_s (tstruct) struct struct1 tstruct; { return (tstruct.s); }
-int    t_structs_i (tstruct) struct struct1 tstruct; { return (tstruct.i); }
-long   t_structs_l (tstruct) struct struct1 tstruct; { return (tstruct.l); }
-float  t_structs_f (tstruct) struct struct1 tstruct; { return (tstruct.f); }
-double t_structs_d (tstruct) struct struct1 tstruct; { return (tstruct.d); }
-char  *t_structs_a (tstruct) struct struct1 tstruct;
+char
+t_structs_c(struct struct1 tstruct)
+{
+  return (tstruct.c);
+}
+short
+t_structs_s(struct struct1 tstruct)
+{
+  return (tstruct.s);
+}
+int
+t_structs_i(struct struct1 tstruct)
+{
+  return (tstruct.i);
+}
+long
+t_structs_l(struct struct1 tstruct)
+{
+  return (tstruct.l);
+}
+float
+t_structs_f(struct struct1 tstruct)
+{
+  return (tstruct.f);
+}
+double
+t_structs_d(struct struct1 tstruct)
+{
+  return (tstruct.d);
+}
+char *
+t_structs_a(struct struct1 tstruct)
 {
   static char buf[8];
   strcpy (buf, tstruct.a);
@@ -258,9 +283,9 @@ long long_arg1, long_arg2;
    There must be one version of "t_float_values" (this one)
    that is not prototyped, and one (if supported) that is (following).
    That way GDB can be tested against both cases.  */
-   
-int t_float_values (float_arg1, float_arg2)
-float float_arg1, float_arg2;
+
+int
+t_float_values(double float_arg1, double float_arg2)
 {
   return ((float_arg1 - float_val1) < DELTA
 	  && (float_arg1 - float_val1) > -DELTA

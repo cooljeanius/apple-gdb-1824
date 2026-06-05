@@ -18,25 +18,25 @@
 int global_variable = 23;
 
 void
-function_breakpoint_here ()
+function_breakpoint_here(void)
 {
   ++global_variable;
   ++global_variable;
 }
 
 void
-do_not_stop_here ()
+do_not_stop_here(void)
 {
   /* This exists to test that breakpoints are cleared.  */
 }
 
 void
-address_breakpoint_here ()
+address_breakpoint_here(void)
 {
 }
 
 int
-line_breakpoint_here ()
+line_breakpoint_here(void)
 {
   do_not_stop_here ();		/* FIRST */
   function_breakpoint_here ();
@@ -44,9 +44,8 @@ line_breakpoint_here ()
   return 0;			/* BREAK */
 }
 
-
 int
-main ()
+main(void)
 {
   return line_breakpoint_here ();
 }

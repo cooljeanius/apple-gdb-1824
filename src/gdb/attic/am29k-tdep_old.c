@@ -104,10 +104,10 @@ examine_prologue (pc, rsize, msize, mfp_used)
   if ((insn & 0xffffff00) != 0x25010100)
     {
       /* If the frame is large, instead of a single instruction, it might
-	   * be a pair of instructions:
-	   * const <reg>, <rsize * 4>
-	   * sub gr1,gr1,<reg>
-	  */
+       * be a pair of instructions:
+       * const <reg>, <rsize * 4>
+       * sub gr1,gr1,<reg>
+       */
       int reg;
       /* Possible value for rsize.  */
       unsigned int rsize0;
@@ -295,9 +295,7 @@ skip_prologue (pc)
    because we need to know it to get the other stuff.  See the diagram
    of stacks and the frame cache in tm-29k.h for more detail.  */
 static void
-init_frame_info (innermost_frame, fci)
-     int innermost_frame;
-     struct frame_info *fci;
+init_frame_info(int innermost_frame, struct frame_info *fci)
 {
   CORE_ADDR p;
   long insn;
@@ -377,8 +375,7 @@ init_frame_info (innermost_frame, fci)
 }
 
 void
-init_extra_frame_info (fci)
-     struct frame_info *fci;
+init_extra_frame_info(struct frame_info *fci)
 {
   if (fci->next == 0)
     /* Assume innermost frame.  May produce strange results for "info frame"
@@ -391,9 +388,7 @@ init_extra_frame_info (fci)
 }
 
 void
-init_frame_pc (fromleaf, fci)
-     int fromleaf;
-     struct frame_info *fci;
+init_frame_pc(int fromleaf, struct frame_info *fci)
 {
   fci->pc = (fromleaf ? SAVED_PC_AFTER_CALL (fci->next) :
 	     fci->next ? FRAME_SAVED_PC (fci->next) : read_pc ());
@@ -587,7 +582,7 @@ get_saved_register (raw_buffer, optimized, addrp, frame, regnum, lvalp)
    restoring all saved registers.  */
 
 void
-pop_frame ()
+pop_frame(void)
 {
   FRAME frame = get_current_frame ();
   struct frame_info *fi = get_frame_info (frame);
@@ -643,7 +638,7 @@ pop_frame ()
 /* Push an empty stack frame, to record the current PC, etc.  */
 
 void
-push_dummy_frame ()
+push_dummy_frame(void)
 {
   long w;
   CORE_ADDR rab, gr1;

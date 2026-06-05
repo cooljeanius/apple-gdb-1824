@@ -28,7 +28,8 @@
 #include <dlfcn.h>
 #endif
 
-int main()
+int
+main(void)
 {
   void *handle;
   void (*func) (void);

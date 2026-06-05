@@ -18,7 +18,7 @@
 int x;
 
 int
-main ()
+main(void)
 {
   int i, j;
 

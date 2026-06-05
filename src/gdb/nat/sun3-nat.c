@@ -28,8 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 static void fetch_core_registers PARAMS ((char *, unsigned, int, CORE_ADDR));
 
 void
-fetch_inferior_registers (regno)
-     int regno;
+fetch_inferior_registers(int regno)
 {
   struct regs inferior_registers;
 #ifdef FP0_REGNUM
@@ -64,8 +63,7 @@ fetch_inferior_registers (regno)
    Otherwise, REGNO specifies which register (so we can save time).  */
 
 void
-store_inferior_registers (regno)
-     int regno;
+store_inferior_registers(int regno)
 {
   struct regs inferior_registers;
 #ifdef FP0_REGNUM
@@ -148,7 +146,7 @@ static struct core_fns sun3_core_fns =
 };
 
 void
-_initialize_core_sun3 ()
+_initialize_core_sun3(void)
 {
   add_core_fns (&sun3_core_fns);
 }

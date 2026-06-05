@@ -26,7 +26,7 @@ static char _[] = "@(#)mini2udi.c	5.23 93/08/18 13:48:08, Srini, AMD. ";
  *****************************************************************************
  *      Engineer:  Srini Subramanian.
  *****************************************************************************
- * Definitions of the functions that define Minimon's Interface 
+ * Definitions of the functions that define Minimon's Interface
  * to the UDI
  * interface The minimon functions are declared in miniint.h The UDI
  * functions are declared in udi/udiproc.h
@@ -36,7 +36,9 @@ static char _[] = "@(#)mini2udi.c	5.23 93/08/18 13:48:08, Srini, AMD. ";
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning mini2udi.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning mini2udi.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 #include <stdio.h>
 #ifdef MSDOS
@@ -204,12 +206,12 @@ static	void		PrintErrorMessage PARAMS((UDIError num));
 static	void		udi_warning PARAMS((int num));
 static	CPUSpace	xlate_mspace_mon2udi PARAMS((INT32 mspace));
 static	INT32		xlate_mspace_udi2mon PARAMS((CPUSpace mspace));
-static UDIError 	FillString PARAMS(( UDIResource from, 
-					   UDIHostMemPtr pattern, 
+static UDIError 	FillString PARAMS(( UDIResource from,
+					   UDIHostMemPtr pattern,
 					   UDISizeT   pattern_count,
 					   UDICount   fill_count));
-static UDIError 	FillWords PARAMS(( UDIResource from, 
-					   UDIHostMemPtr pattern, 
+static UDIError 	FillWords PARAMS(( UDIResource from,
+					   UDIHostMemPtr pattern,
 					   UDISizeT   pattern_count,
 					   UDICount   fill_count));
 
@@ -226,7 +228,7 @@ Mini_TIP_init(connect_string, mon_session_id)
   /* First connect the target  */
   if ((UDIretval = UDIConnect(connect_string,
 			   &session)) <= TIPFAILURE) {
-    SessionID = session; 
+    SessionID = session;
     *mon_session_id = (int) session;
     PrintErrorMessage (UDIretval);
     return ((INT32) UDIretval);
@@ -258,7 +260,7 @@ Mini_TIP_Capabilities()
     (void) strcpy (TIPString,"");
     DFEId = (UDIUInt32) UDIID (UDIProductCode_Mondfe, MONDFERev, MONDFESubRev, MONDFESubSubRev);
     DFE = (UDIUInt32) MONDFEUDIVers;
-    if ((UDIretval = UDICapabilities ( &TIPId, 
+    if ((UDIretval = UDICapabilities ( &TIPId,
 				       &TargetId,
 				       DFEId,
 				       DFE,
@@ -361,7 +363,7 @@ Mini_TIP_disc()
 {
   UDIError	UDIretval;
 
-  if ((UDIretval = UDIDisconnect(SessionID, 
+  if ((UDIretval = UDIDisconnect(SessionID,
 			      UDIContinueSession)) <= TIPFAILURE) {
        PrintErrorMessage (UDIretval);
        return (FAILURE);
@@ -429,7 +431,7 @@ Mini_TIP_exit()
 {
   UDIError	UDIretval;
 
-     if ((UDIretval = UDIDisconnect(SessionID, 
+     if ((UDIretval = UDIDisconnect(SessionID,
 			      UDITerminateSession)) <= TIPFAILURE) {
        PrintErrorMessage (UDIretval);
        return (FAILURE);
@@ -506,7 +508,7 @@ Mini_bkpt_set(m_space, address, pass_count, type, break_id)
 
 INT32
 /**********************************************Mini_bkpt_stat   */
-Mini_bkpt_stat(break_id, address, m_space, pass_count, 
+Mini_bkpt_stat(break_id, address, m_space, pass_count,
 	       bkpt_type, current_cnt)
   int       break_id;
   INT32       *m_space;
@@ -687,7 +689,7 @@ Mini_fill(m_space, start, fill_count, pattern_count, pattern)
   UDIResource	from;
   UDICount	count_done;
   UDIError	UDIretval;
-  
+
   host_endian = FALSE;
 
   from.Offset = start;
@@ -710,14 +712,14 @@ Mini_fill(m_space, start, fill_count, pattern_count, pattern)
      };
   } else {
      /* Handle arbitrary length strings to Data memory separately */
-     if ((pattern_count > (INT32) 4) && 
+     if ((pattern_count > (INT32) 4) &&
 			       ((int) (pattern_count % 4) != (int) 0)){
 	if (from.Space != UDI29KDRAMSpace)
 	  return (FAILURE);
 	return((INT32) FillString(from, (UDIHostMemPtr) pattern,
 			   (UDISizeT) pattern_count, (UDICount) fill_count));
      } else {
-	return((INT32) FillWords(from, (UDIHostMemPtr) pattern, 
+	return((INT32) FillWords(from, (UDIHostMemPtr) pattern,
 			   (UDISizeT) pattern_count, (UDICount) fill_count));
      }
   };
@@ -774,7 +776,7 @@ Mini_go()
 
 INT32
 /**********************************************Mini_init   */
-Mini_init(txt_start, txt_end, dat_start, dat_end, 
+Mini_init(txt_start, txt_end, dat_start, dat_end,
 	  entry_point, m_stack, r_stack,
 	  arg_string)
   ADDR32          txt_start,
@@ -858,8 +860,8 @@ Mini_read_req(m_space, address, byte_count, size, count_done,
   }
 }
 
-/* 
- * Reset target processor   
+/*
+ * Reset target processor
  */
 INT32
 /**********************************************Mini_reset_processor   */
@@ -1102,7 +1104,7 @@ char	*buffer;
         udi_warning(UDIretval);
         return(FAILURE);
   };
-  
+
 }
 
 
@@ -1192,9 +1194,8 @@ CPUSpace  	mspace;
    };
 }
 
-static
-void udi_warning(num)
-int	num;
+static void
+udi_warning (int num)
 {
   fprintf(stderr, "UDIERROR: %d : %s\n", num, udi_errmsg[num]);
   fflush(stderr);
@@ -1219,8 +1220,8 @@ UDIError	UDIretval;
 
     ErrorMsgCnt = (UDISizeT) 0;
     do {
-       if (UDIGetErrorMsg(UDIretval, 
-			     (UDISizeT) MONErrorMsgSize, 
+       if (UDIGetErrorMsg(UDIretval,
+			     (UDISizeT) MONErrorMsgSize,
 			     MONErrorMsg, &ErrorMsgCnt) != UDINoError) {
 	   fprintf(stderr, "TIPERROR: Could not get TIP error message.\n");
 	   fflush(stderr);
@@ -1267,7 +1268,7 @@ UDICount	fill_count;
 	   if (fill_count > (INT32) 0) { /* do copy */
 	      if (isregspace)
 	   	   to.Offset = from.Offset + (pattern_count/4);
-	      else		
+	      else
 		   to.Offset = from.Offset + pattern_count;
 	      to.Space = from.Space; /* already translated */
 	      direction = TRUE; /* front to back */
@@ -1324,7 +1325,7 @@ UDICount	fill_count;
 	   fill_count = fill_count - 1; /* one less */
 	   if (fill_count > (INT32) 0) { /* do copy */
 	      to.Offset = from.Offset + pattern_count;
-	      to.Space = from.Space; 
+	      to.Space = from.Space;
 	      direction = TRUE; /* front to back */
 	      if ((UDIretval = UDICopy (from,
 			     to,

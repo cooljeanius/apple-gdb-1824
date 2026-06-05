@@ -99,7 +99,8 @@ UDIHostMemPtr  msg;		/* out -- text of msg */
      UDITerminate() is used to tell the  TIP  that  the
      DFE is finished.
 */
-UDITerminate()
+int
+UDITerminate(void)
 {
 }
 
@@ -472,7 +473,8 @@ UDIResource	*stop_pc;	/* out -- value of PC where we stopped */
 
 /******************************************************************* SIG_TIMER
 */
-void	sig_timer()
+void
+sig_timer(void)
 {
 }
 

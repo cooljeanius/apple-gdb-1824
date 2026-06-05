@@ -19,7 +19,7 @@
 #include <unistd.h>
 
 int
-main ()
+main(void)
 {
   execl ("gdb.multi/multi-arch-exec-hello",
          "gdb.multi/multi-arch-exec-hello",

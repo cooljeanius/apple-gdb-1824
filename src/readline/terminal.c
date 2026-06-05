@@ -177,8 +177,7 @@ int _rl_enable_meta = 1;
 
 #if defined (__EMX__)
 static void
-_emx_get_screensize (swp, shp)
-     int *swp, *shp;
+_emx_get_screensize(int *swp, int *shp)
 {
   int sz[2];
 

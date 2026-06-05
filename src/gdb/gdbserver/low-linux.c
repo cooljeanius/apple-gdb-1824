@@ -61,9 +61,7 @@ int query ();
    ENV is the environment vector to pass.  */
 
 int
-create_inferior (program, allargs)
-     char *program;
-     char **allargs;
+create_inferior(char *program, char **allargs)
 {
   int pid;
 
@@ -89,7 +87,7 @@ create_inferior (program, allargs)
 /* Kill the inferior process.  Make us have no inferior.  */
 
 void
-kill_inferior ()
+kill_inferior(void)
 {
   if (inferior_pid == 0)
     return;
@@ -100,8 +98,7 @@ kill_inferior ()
 
 /* Return nonzero if the given thread is still alive.  */
 int
-mythread_alive (pid)
-     int pid;
+mythread_alive(int pid)
 {
   return 1;
 }
@@ -109,8 +106,7 @@ mythread_alive (pid)
 /* Wait for process, returns status */
 
 unsigned char
-mywait (status)
-     char *status;
+mywait(char *status)
 {
   int pid;
   union wait w;
@@ -143,9 +139,7 @@ mywait (status)
    If SIGNAL is nonzero, give it that signal.  */
 
 void
-myresume (step, signal)
-     int step;
-     int signal;
+myresume(int step, int signal)
 {
   errno = 0;
   ptrace (step ? PTRACE_SINGLESTEP : PTRACE_CONT, inferior_pid, 1, signal);
@@ -178,9 +172,7 @@ static int regmap[] =
 };
 
 int
-i386_register_u_addr (blockend, regnum)
-     int blockend;
-     int regnum;
+i386_register_u_addr(int blockend, int regnum)
 {
 #if 0
   /* this will be needed if fp registers are reinstated */
@@ -224,9 +216,7 @@ static int regmap[] =
    is stored.  */
 
 int
-m68k_linux_register_u_addr (blockend, regnum)
-     int blockend;
-     int regnum;
+m68k_linux_register_u_addr(int blockend, int regnum)
 {
     return (blockend + 4 * regmap[regnum]);
 }
@@ -250,8 +240,7 @@ register_addr (regno, blockend)
 /* Fetch one register.  */
 
 static void
-fetch_register (regno)
-     int regno;
+fetch_register(int regno)
 {
   register unsigned int regaddr;
   register int i;
@@ -285,8 +274,7 @@ fetch_register (regno)
 /* Fetch all registers, or just one, from the child process.  */
 
 void
-fetch_inferior_registers (regno)
-     int regno;
+fetch_inferior_registers(int regno)
 {
   if (regno == -1 || regno == 0)
     for (regno = 0; regno < NUM_REGS-NUM_FREGS; regno++)
@@ -300,8 +288,7 @@ fetch_inferior_registers (regno)
    Otherwise, REGNO specifies which register (so we can save time).  */
 
 void
-store_inferior_registers (regno)
-     int regno;
+store_inferior_registers(int regno)
 {
   register unsigned int regaddr;
   register int i;
@@ -437,15 +424,15 @@ write_inferior_memory (memaddr, myaddr, len)
 
   return 0;
 }
-
+
 void
-initialize ()
+initialize(void)
 {
   inferior_pid = 0;
 }
 
 int
-have_inferior_p ()
+have_inferior_p(void)
 {
   return inferior_pid != 0;
 }

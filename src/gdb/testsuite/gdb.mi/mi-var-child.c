@@ -107,7 +107,7 @@ void incr_a (char a)
 }
 
 void
-do_locals_tests ()
+do_locals_tests(void)
 {
   int linteger;
   int *lpinteger;
@@ -157,7 +157,7 @@ do_locals_tests ()
 }
 
 void
-nothing ()
+nothing(void)
 {
 }
 
@@ -170,7 +170,7 @@ subroutine1 (int i, long *l)
 }
 
 void
-do_block_tests ()
+do_block_tests(void)
 {
   int cb = 12;
 
