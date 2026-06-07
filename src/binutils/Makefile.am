@@ -68,9 +68,9 @@ am__v_LFLAG_0 = -w # (or maybe "-n" for POSIX)
 am__v_LFLAG_1 = -d
 
 YACC = `if [ -f ../bison/bison ]; then echo ../bison/bison -y -L$(srcdir)/../bison/; else echo @YACC@; fi`
-AM_YFLAGS = @MAINT@@EXTRA_YFLAGS_SEP@ -d $(AM_V_YFLAG) $(AM_V_v) -k @YFLAGS_SEP1@ -Wall -Wyacc
+AM_YFLAGS = @MAINT@@EXTRA_YFLAGS_SEP@ -d $(AM_V_v) -k @YFLAGS_SEP1@ $(AM_V_YFLAG) -Wall -Wyacc
 LEX = `if [ -f ../flex/flex ]; then echo ../flex/flex; else echo @LEX@; fi`
-AM_LFLAGS = @MAINT@ $(AM_V_LFLAG)
+AM_LFLAGS = @MAINT@@EXTRA_LFLAGS_SEP@ $(AM_V_LFLAG)
 
 ## also needed:
 HOST_ARCHITECTURE = @HOST_ARCHITECTURE@

@@ -3482,7 +3482,8 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Wclass-memaccess -Wnon-pod-varargs -Wdeprecated-copy -Wdeprecated-copy-dtor \
 -Wpessimizing-move -Wredundant-move -Wclass-conversion -Wctad-maybe-unsupported \
 -Wrange-loop-construct -Wdeprecated-enum-enum-conversion \
--Wdeprecated-enum-float-conversion -Wmismatched-new-delete -Wvexing-parse"
+-Wdeprecated-enum-float-conversion -Wmismatched-new-delete -Wvexing-parse \
+-Wdangling-reference"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
@@ -3490,7 +3491,7 @@ else
 -Woverride-init -Woverride-init-side-effects -Wduplicate-decl-specifier \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
 -Wstrict-prototypes -Wnested-externs -Wabsolute-value -Warray-parameter \
--fno-common -fstrict-flex-arrays=0"
+-Wunterminated-string-initialization -fno-common -fstrict-flex-arrays=0"
   if test -f /usr/X11/include/X11/Xlib.h && test "x${enable_gdbtk}" = "xyes"; then
     AC_MSG_WARN([Disabling C++ compatibility warnings for gdbtk])
   else

@@ -23055,7 +23055,6 @@ printf '%s\n' "$ax_cv_prog_flex" >&6; }
   if test "$ax_cv_prog_flex" = "yes"
 then :
 
-  # (this is not currently used, but it could be)
   EXTRA_LFLAGS_SEP=''
 
 else case e in #(
@@ -26787,7 +26786,7 @@ then :
 
 fi
 
-if test "x${GCC}" = "xyes" && test "x${CC}" != "xclang"
+if test "x${GCC}" = "xyes" && test "x${CC}" != "xclang" && test -d ../libssp
 then :
 
   { printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for __chk_fail in -lssp" >&5
@@ -26949,6 +26948,11 @@ fi
 esac
 fi
 
+else case e in #(
+  e)
+  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: skipping checks for libssp" >&5
+printf '%s\n' "$as_me: skipping checks for libssp" >&6;} ;;
+esac
 fi  ## check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
@@ -31782,7 +31786,10 @@ then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 fi
-{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for library containing __chk_fail" >&5
+if test "x${GCC}" = "xyes" && test "x${CC}" != "xclang" && test -d ../libssp
+then :
+
+  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for library containing __chk_fail" >&5
 printf %s "checking for library containing __chk_fail... " >&6; }
 if test ${ac_cv_search___chk_fail+y}
 then :
@@ -31848,7 +31855,7 @@ then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 fi
-{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for library containing __memcpy_chk" >&5
+  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for library containing __memcpy_chk" >&5
 printf %s "checking for library containing __memcpy_chk... " >&6; }
 if test ${ac_cv_search___memcpy_chk+y}
 then :
@@ -31914,7 +31921,7 @@ then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 fi
-{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for library containing __strcpy_chk" >&5
+  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for library containing __strcpy_chk" >&5
 printf %s "checking for library containing __strcpy_chk... " >&6; }
 if test ${ac_cv_search___strcpy_chk+y}
 then :
@@ -31981,6 +31988,12 @@ then :
 
 fi
 
+else case e in #(
+  e)
+  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: skipping checks for symbols usually found in libssp" >&5
+printf '%s\n' "$as_me: skipping checks for symbols usually found in libssp" >&6;} ;;
+esac
+fi
 ac_fn_c_check_func "$LINENO" "mkstemp" "ac_cv_func_mkstemp"
 if test "x$ac_cv_func_mkstemp" = xyes
 then :

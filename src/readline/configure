@@ -3412,7 +3412,7 @@ then :
 fi
 
 if test "${opt_curses}" = "yes"; then
-	prefer_curses=yes
+  prefer_curses=yes
 fi
 
 opt_static_libs=yes
