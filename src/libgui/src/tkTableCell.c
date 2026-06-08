@@ -1,4 +1,4 @@
-/* 
+/*
  * tkTableCell.c --
  *
  *	This module implements cell oriented functions for table
@@ -534,7 +534,7 @@ VALUE:
 		result = Tcl_GetStringResult(interp);
 	    }
 	    Tcl_FreeResult(interp);
-	    Tcl_DStringFree(&script);      
+	    Tcl_DStringFree(&script);
 	    Tcl_DeleteHashEntry(entryPtr);
 	}
     }
@@ -705,8 +705,7 @@ TableMoveCellValue(Table *tablePtr, int fromr, int fromc, char *frombuf,
 			TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG) == NULL) {
 		    return TCL_ERROR;
 		}
-	    }     
-      
+	      }
 
 	    return TCL_OK;
 	}
@@ -784,12 +783,12 @@ TableGetIcursor(Table *tablePtr, const char *arg, int *posn)
  *--------------------------------------------------------------
  */
 int
-TableGetIndex(tablePtr, str, row_p, col_p)
-    register Table *tablePtr;	/* Table for which the index is being
+TableGetIndex(register Table *tablePtr, /* Table for which the index is being
 				 * specified. */
-    char *str;			/* Symbolic specification of cell in table. */
-    int *row_p;		/* Where to store converted row. */
-    int *col_p;		/* Where to store converted col. */
+	      char *str, /* Symbolic specification of cell in table. */
+	      int *row_p, /* Where to store converted row. */
+	      int *col_p /* Where to store converted col. */
+)
 {
     int r, c, len = strlen(str);
     char dummy;
@@ -797,7 +796,8 @@ TableGetIndex(tablePtr, str, row_p, col_p)
     /*
      * Note that all of these values will be adjusted by row/ColOffset
      */
-    if (str[0] == '@') {	/* @x,y coordinate */ 
+    if (str[0] == '@')
+      { /* @x,y coordinate */
 	int x, y;
 
 	if (sscanf(str+1, "%d,%d%c", &x, &y, &dummy) != 2) {
@@ -807,7 +807,9 @@ TableGetIndex(tablePtr, str, row_p, col_p)
 	TableWhatCell(tablePtr, x, y, &r, &c);
 	r += tablePtr->rowOffset;
 	c += tablePtr->colOffset;
-    } else if (*str == '-' || isdigit(str[0])) {
+      }
+    else if (*str == '-' || isdigit(str[0]))
+      {
 	if (sscanf(str, "%d,%d%c", &r, &c, &dummy) != 2) {
 	    /* Make sure it won't work for "2,3extrastuff" */
 	    goto IndexError;
@@ -817,7 +819,9 @@ TableGetIndex(tablePtr, str, row_p, col_p)
 		tablePtr->rows-1+tablePtr->rowOffset);
 	CONSTRAIN(c, tablePtr->colOffset,
 		tablePtr->cols-1+tablePtr->colOffset);
-    } else if (len > 1 && strncmp(str, "active", len) == 0 ) {	/* active */
+      }
+    else if (len > 1 && strncmp(str, "active", len) == 0)
+      { /* active */
 	if (tablePtr->flags & HAS_ACTIVE) {
 	    r = tablePtr->activeRow+tablePtr->rowOffset;
 	    c = tablePtr->activeCol+tablePtr->colOffset;
@@ -826,7 +830,9 @@ TableGetIndex(tablePtr, str, row_p, col_p)
 			     "no \"active\" cell in table", -1);
 	    return TCL_ERROR;
 	}
-    } else if (len > 1 && strncmp(str, "anchor", len) == 0) {	/* anchor */
+      }
+    else if (len > 1 && strncmp(str, "anchor", len) == 0)
+      { /* anchor */
 	if (tablePtr->flags & HAS_ANCHOR) {
 	    r = tablePtr->anchorRow+tablePtr->rowOffset;
 	    c = tablePtr->anchorCol+tablePtr->colOffset;
@@ -835,16 +841,24 @@ TableGetIndex(tablePtr, str, row_p, col_p)
 			     "no \"anchor\" cell in table", -1);
 	    return TCL_ERROR;
 	}
-    } else if (strncmp(str, "end", len) == 0) {		/* end */
+      }
+    else if (strncmp(str, "end", len) == 0)
+      { /* end */
 	r = tablePtr->rows-1+tablePtr->rowOffset;
 	c = tablePtr->cols-1+tablePtr->colOffset;
-    } else if (strncmp(str, "origin", len) == 0) {	/* origin */
+      }
+    else if (strncmp(str, "origin", len) == 0)
+      { /* origin */
 	r = tablePtr->titleRows+tablePtr->rowOffset;
 	c = tablePtr->titleCols+tablePtr->colOffset;
-    } else if (strncmp(str, "topleft", len) == 0) {	/* topleft */
+      }
+    else if (strncmp(str, "topleft", len) == 0)
+      { /* topleft */
 	r = tablePtr->topRow+tablePtr->rowOffset;
 	c = tablePtr->leftCol+tablePtr->colOffset;
-    } else if (strncmp(str, "bottomright", len) == 0) {	/* bottomright */
+      }
+    else if (strncmp(str, "bottomright", len) == 0)
+      { /* bottomright */
 	/*
 	 * FIX: Should this avoid spans, or consider them in the bottomright?
 	 tablePtr->flags |= AVOID_SPANS;
@@ -853,16 +867,18 @@ TableGetIndex(tablePtr, str, row_p, col_p)
 	TableGetLastCell(tablePtr, &r, &c);
 	r += tablePtr->rowOffset;
 	c += tablePtr->colOffset;
-    } else {
-    IndexError:
+      }
+    else
+      {
+      IndexError:
 	Tcl_AppendStringsToObj(Tcl_GetObjResult(tablePtr->interp),
 		"bad table index \"", str, "\": must be active, anchor, end, ",
 		"origin, topleft, bottomright, @x,y, or <row>,<col>",
 		(char *)NULL);
 	return TCL_ERROR;
-    }
+      }
 
-    /* Note: values are expected to be properly constrained 
+    /* Note: values are expected to be properly constrained
      * as a user index by this point */
     if (row_p) *row_p = r;
     if (col_p) *col_p = c;
@@ -1380,3 +1396,5 @@ TableSpanSanCheck(register Table *tablePtr)
 	}
     }
 }
+
+/* EOF */

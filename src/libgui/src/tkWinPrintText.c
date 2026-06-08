@@ -1,3 +1,4 @@
+/* tkWinPrintText.c  -*- C -*- */
 
 #ifdef _WIN32
 
@@ -217,15 +218,15 @@ DisplayDLineToDrawable(TkText *textPtr, DLine *dlPtr, DLine *prevPtr, TkWinDrawa
 
 /*
  *--------------------------------------------------------------
- * 
- * PrintTextCmd -- 
+ *
+ * PrintTextCmd --
  *      When invoked with the correct args this will bring up a
  *      standard Windows print dialog box and then print the
  *	contence of the text wiget.
  *
  * Results:
  *      Standard Tcl result.
- * 
+ *
  *--------------------------------------------------------------
  */
 
@@ -236,44 +237,43 @@ PrintTextCmd(clientData, interp, argc, argv)
      int argc;
      char **argv;
 {
-    PRINTDLG pd; 
-    Tcl_CmdInfo textCmd;
-    TkText *textPtr;
-    TextDInfo *dInfoPtr;
-    DLine *dlPtr;
-    TkWinDrawable *PrinterDrawable;
-    Tk_Window tkwin;
-    Tk_Item *itemPtr;
-    int maxHeight;
-    DLine *prevPtr;
-    Pixmap pixmap;
-    int bottomY = 0;		/* Initialization needed only to stop
+  PRINTDLG pd;
+  Tcl_CmdInfo textCmd;
+  TkText *textPtr;
+  TextDInfo *dInfoPtr;
+  DLine *dlPtr;
+  TkWinDrawable *PrinterDrawable;
+  Tk_Window tkwin;
+  Tk_Item *itemPtr;
+  int maxHeight;
+  DLine *prevPtr;
+  Pixmap pixmap;
+  int bottomY = 0; /* Initialization needed only to stop
 				 * compiler warnings. */
-    DOCINFO *lpdi = (DOCINFO *) ckalloc(sizeof(DOCINFO));
-    TkTextIndex first, last;
-    int numLines;
-    HDC hDCpixmap;
-    TkWinDCState pixmapState;
-    DEVMODE dm;
-    float Ptr_pixX,Ptr_pixY,Ptr_mmX,Ptr_mmY;
-    float canv_pixX,canv_pixY,canv_mmX,canv_mmY;
-    int page_Y_size,tiles_high,tile_y;
-    int screenX1, screenX2, screenY1, screenY2, width, height;
+  DOCINFO *lpdi = (DOCINFO *) ckalloc(sizeof(DOCINFO));
+  TkTextIndex first, last;
+  int numLines;
+  HDC hDCpixmap;
+  TkWinDCState pixmapState;
+  DEVMODE dm;
+  float Ptr_pixX, Ptr_pixY, Ptr_mmX, Ptr_mmY;
+  float canv_pixX, canv_pixY, canv_mmX, canv_mmY;
+  int page_Y_size, tiles_high, tile_y;
+  int screenX1, screenX2, screenY1, screenY2, width, height;
 
-    int saved_x;
-    int saved_y;
-    int saved_w;
-    int saved_h;
-    int saved_maxX;
-    int saved_maxY;
-    int saved_eof;
+  int saved_x;
+  int saved_y;
+  int saved_w;
+  int saved_h;
+  int saved_maxX;
+  int saved_maxY;
+  int saved_eof;
 
-
-    if (argc < 2) {
-	Tcl_AppendResult(interp, "wrong # args: should be \"",
-			 argv[0], " text \"",
-			 (char *) NULL);
-	goto error;
+  if (argc < 2)
+    {
+      Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
+		       " text \"", (char *) NULL);
+      goto error;
     }
 
     /*
@@ -284,7 +284,7 @@ PrintTextCmd(clientData, interp, argc, argv)
 			 argv[1], "\"", (char *) NULL);
 	goto error;
     }
-    
+
     memset(&dm,0,sizeof(DEVMODE));
     dm.dmSize = sizeof(DEVMODE);
     dm.dmScale = 500;
@@ -296,7 +296,7 @@ PrintTextCmd(clientData, interp, argc, argv)
     lpdi->lpszOutput=NULL;
 
     textPtr = (TkText *)(textCmd.clientData);
- 
+
     tkwin = textPtr->tkwin;
     dInfoPtr = textPtr->dInfoPtr;
     dlPtr=dInfoPtr->dLinePtr;
@@ -322,7 +322,7 @@ PrintTextCmd(clientData, interp, argc, argv)
     Ptr_pixY=(float)GetDeviceCaps(PrinterDrawable->winDC.hdc,VERTRES);
     Ptr_mmX=(float)GetDeviceCaps(PrinterDrawable->winDC.hdc,HORZSIZE);
     Ptr_mmY=(float)GetDeviceCaps(PrinterDrawable->winDC.hdc,VERTSIZE);
- 
+
     screenX1=0; screenY1=0;
     screenX2=dInfoPtr->maxX; screenY2=dInfoPtr->maxY;
     pixmap = Tk_GetPixmap(Tk_Display(tkwin), Tk_WindowId(tkwin),
@@ -351,7 +351,7 @@ PrintTextCmd(clientData, interp, argc, argv)
     saved_eof = dInfoPtr->topOfEof;
     dInfoPtr->maxX = MAXINT;
     Tk_Width(textPtr->tkwin) = MAXINT;
- 
+
     dInfoPtr->maxY  = MAXINT;
     Tk_Height(textPtr->tkwin) = MAXINT;
 
@@ -414,11 +414,9 @@ PrintTextCmd(clientData, interp, argc, argv)
 			(dlPtr != NULL) && (dlPtr->y < dInfoPtr->maxY);
 			prevPtr = dlPtr, dlPtr = dlPtr->nextPtr) {
 	        DisplayDLineToDrawable(textPtr, dlPtr, prevPtr, PrinterDrawable);
-	    
 	    }
 	}
 
-    
 	EndPage(pd.hDC);
     }
     EndDoc(pd.hDC);
@@ -455,9 +453,7 @@ error:
     return TCL_ERROR;
 }
 
-
-
-static void 
+static void
 ide_delete_print_text_command(ClientData clientData)
 {
   /* destructor code here.*/
@@ -466,13 +462,11 @@ ide_delete_print_text_command(ClientData clientData)
 int
 ide_create_print_text_command (Tcl_Interp *interp)
 {
+  if (Tcl_CreateCommand(interp, "ide_print_text", PrintTextCmd, NULL, NULL)
+      == NULL)
+    return TCL_ERROR;
 
-    if (Tcl_CreateCommand(interp, "ide_print_text", 
-	PrintTextCmd, 
-			  NULL, NULL) == NULL)
-	return TCL_ERROR;
-
-    return TCL_OK;
+  return TCL_OK;
 }
 
 /*
@@ -486,14 +480,15 @@ ide_create_print_text_command (Tcl_Interp *interp)
  */
 
 static void
-DisplayDLineToDrawable(textPtr, dlPtr, prevPtr, drawable)
-    TkText *textPtr;		/* Text widget in which to draw line. */
-    register DLine *dlPtr;	/* Information about line to draw. */
-    DLine *prevPtr;		/* Line just before one to draw, or NULL
+DisplayDLineToDrawable(
+  TkText *textPtr, /* Text widget in which to draw line. */
+  register DLine *dlPtr, /* Information about line to draw. */
+  DLine *prevPtr, /* Line just before one to draw, or NULL
 				 * if dlPtr is the top line. */
-    TkWinDrawable *drawable;	/* drawable to use for displaying.
+  TkWinDrawable *drawable /* drawable to use for displaying.
 				 * Caller must make sure it's large enough
 				 * to hold line. */
+)
 {
     register TkTextDispChunk *chunkPtr;
     TextDInfo *dInfoPtr = textPtr->dInfoPtr;
@@ -536,3 +531,5 @@ DisplayDLineToDrawable(textPtr, dlPtr, prevPtr, drawable)
 }
 
 #endif /* _WIN */
+
+/* EOF */

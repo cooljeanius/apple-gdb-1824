@@ -25,8 +25,8 @@
 #include "tkTable.h"
 
 #ifdef DEBUG
-#include "dprint.h"
-#endif
+# include "dprint.h"
+#endif /* DEBUG */
 
 static char **	StringifyObjects _ANSI_ARGS_((int objc,
 			Tcl_Obj *CONST objv[]));
@@ -2750,8 +2750,7 @@ TableVarProc(clientData, interp, name, index, flags)
  *----------------------------------------------------------------------
  */
 void
-TableGeometryRequest(tablePtr)
-     register Table *tablePtr;
+TableGeometryRequest(register Table *tablePtr)
 {
     int x, y;
 
@@ -2788,8 +2787,8 @@ TableGeometryRequest(tablePtr)
  *----------------------------------------------------------------------
  */
 void
-TableAdjustActive(tablePtr)
-     register Table *tablePtr;		/* Widget record for table */
+TableAdjustActive(register Table *tablePtr /* Widget record for table */
+)
 {
     if (tablePtr->flags & HAS_ACTIVE) {
 	/*
@@ -3600,12 +3599,13 @@ TableRestrictProc(serial, eventPtr)
  *--------------------------------------------------------------
  */
 int
-TableValidateChange(tablePtr, r, c, old, new, index)
-     register Table *tablePtr;	/* Table that needs validation. */
-     int r, c;			/* row,col index of cell in user coords */
-     char *old;			/* current value of cell */
-     char *new;			/* potential new value of cell */
-     int index;			/* index of insert/delete, -1 otherwise */
+TableValidateChange(
+  register Table *tablePtr, /* Table that needs validation. */
+  int r, int c, /* row,col index of cell in user coords */
+  char *old, /* current value of cell */
+  char *new, /* potential new value of cell */
+  int index /* index of insert/delete, -1 otherwise */
+)
 {
     register Tcl_Interp *interp = tablePtr->interp;
     int code, bool;

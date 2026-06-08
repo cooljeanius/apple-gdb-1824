@@ -322,10 +322,10 @@ Table_EditCmd(ClientData clientData, register Tcl_Interp *interp,
  *----------------------------------------------------------------------
  */
 void
-TableDeleteChars(tablePtr, index, count)
-    register Table *tablePtr;	/* Table widget to modify. */
-    int index;			/* Index of first character to delete. */
-    int count;			/* How many characters to delete. */
+TableDeleteChars(register Table *tablePtr, /* Table widget to modify. */
+		 int index, /* Index of first character to delete. */
+		 int count /* How many characters to delete. */
+)
 {
 #ifdef TCL_UTF_MAX
     int byteIndex, byteCount, newByteCount, numBytes, numChars;
@@ -412,11 +412,12 @@ TableDeleteChars(tablePtr, index, count)
  *----------------------------------------------------------------------
  */
 void
-TableInsertChars(tablePtr, index, value)
-    register Table *tablePtr;	/* Table that is to get the new elements. */
-    int index;			/* Add the new elements before this element. */
-    char *value;		/* New characters to add (NULL-terminated
+TableInsertChars(
+  register Table *tablePtr, /* Table that is to get the new elements. */
+  int index, /* Add the new elements before this element. */
+  char *value /* New characters to add (NULL-terminated
 				 * string). */
+)
 {
 #ifdef TCL_UTF_MAX
     int oldlen, byteIndex, byteCount;
@@ -683,3 +684,5 @@ TableModifyRC(tablePtr, doRows, flags, tagTblPtr, dimTblPtr,
 	}
     }
 }
+
+/* EOF */
