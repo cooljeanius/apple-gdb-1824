@@ -128,7 +128,6 @@ def may_have_copyright_notice(filename):
     # For now, it may have a copyright notice if we find the word
     # "Copyright" at the (reasonable) start of the given file, say
     # 50 lines...
-    MAX_LINES = 50
 
     fd = open(filename)
 

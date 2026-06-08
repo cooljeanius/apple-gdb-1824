@@ -60,17 +60,17 @@ class TestUnwinder(Unwinder):
 
         if TestUnwinder.test == "check_user_reg_pc":
             pc = pending_frame.read_register("pc")
-            pc_as_int = int(pc.cast(gdb.lookup_type("int")))
+            int(pc.cast(gdb.lookup_type("int")))
             # gdb.write("In unwinder: pc=%x\n" % pc_as_int)
 
         elif TestUnwinder.test == "check_pae_pc":
             pc = gdb.parse_and_eval("$pc")
-            pc_as_int = int(pc.cast(gdb.lookup_type("int")))
+            int(pc.cast(gdb.lookup_type("int")))
             # gdb.write("In unwinder: pc=%x\n" % pc_as_int)
 
         elif TestUnwinder.test == "check_undefined_symbol":
             try:
-                val = gdb.parse_and_eval("undefined_symbol")
+                gdb.parse_and_eval("undefined_symbol")
 
             except Exception:
                 pass

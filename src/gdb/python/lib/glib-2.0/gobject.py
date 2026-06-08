@@ -14,7 +14,7 @@ def g_type_to_name(gtype):
         if typenode == 0:
             return None
         val = read_global_var("static_fundamental_type_nodes")
-        if val == None:
+        if val is None:
             return None
         return val[typenode >> 2].address()
 
@@ -25,7 +25,7 @@ def g_type_to_name(gtype):
             gdb.lookup_type("TypeNode").pointer())
     else:
         typenode = lookup_fundamental_type(typenode)
-    if typenode != None:
+    if typenode is not None:
         return glib.g_quark_to_string(typenode["qname"])
     return None
 
@@ -89,7 +89,7 @@ def pretty_printer_lookup(val):
 
 
 def get_signal_name(id):
-    if id == None:
+    if id is None:
         return None
     id = int(id)
     if id == 0:
@@ -155,9 +155,9 @@ class SignalFrame:
     def read_var(self, frame, name, array=None):
         try:
             v = frame.read_var(name)
-            if v == None or v.is_optimized_out:
+            if v is None or v.is_optimized_out:
                 return None
-            if array != None:
+            if array is not None:
                 array.append(v)
             return v
         except ValueError:
@@ -166,12 +166,12 @@ class SignalFrame:
     def read_object(self, frame, name, array=None):
         try:
             v = frame.read_var(name)
-            if v == None or v.is_optimized_out:
+            if v is None or v.is_optimized_out:
                 return None
             v = v.cast(gdb.lookup_type("GObject").pointer())
             # Ensure this is a somewhat correct object pointer
-            if v != None and g_type_name_from_instance(v):
-                if array != None:
+            if v is not None and g_type_name_from_instance(v):
+                if array is not None:
                     array.append(v)
                 return v
             return None
@@ -179,7 +179,7 @@ class SignalFrame:
             return None
 
     def append(self, array, obj):
-        if obj != None:
+        if obj is not None:
             array.append(obj)
 
     def or_join_array(self, array):
@@ -209,7 +209,7 @@ class SignalFrame:
                     signal = node["name"].string()
                     detail = self.read_var(frame, "detail")
                     detail = glib.g_quark_to_string(detail)
-                    if detail != None:
+                    if detail is not None:
                         signal = signal + ":" + detail
                     self.append(signals, signal)
 
@@ -226,7 +226,7 @@ class SignalFrame:
                 if signal:
                     detail = self.read_var(frame, "detail")
                     detail = glib.g_quark_to_string(detail)
-                    if detail != None:
+                    if detail is not None:
                         signal = signal + ":" + detail
                     self.append(signals, signal)
 
@@ -237,7 +237,7 @@ class SignalFrame:
                 if signal:
                     detail = self.read_var(frame, "detail")
                     detail = glib.g_quark_to_string(detail)
-                    if detail != None:
+                    if detail is not None:
                         signal = signal + ":" + detail
                     self.append(signals, signal)
 
@@ -321,7 +321,7 @@ class GFrameFilter:
 
 
 def register(obj):
-    if obj == None:
+    if obj is None:
         obj = gdb
 
     gdb.backtrace.push_frame_filter(GFrameFilter)

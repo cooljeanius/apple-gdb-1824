@@ -30,10 +30,12 @@ class GmonsterRuntoMain(perftest.TestCaseWithBasicMeasurements):
 
     def execute_test(self):
         for run in self.run_names:
-            this_run_binfile = "%s-%s" % (self.binfile, utils.convert_spaces(run))
+            this_run_binfile = "%s-%s" % (self.binfile,
+                                          utils.convert_spaces(run))
             utils.select_file(this_run_binfile)
             iteration = 5
             while iteration > 0:
-                func = lambda: utils.runto_main()
+                def func():
+                    return utils.runto_main()
                 self.measure.measure(func, run)
                 iteration -= 1
