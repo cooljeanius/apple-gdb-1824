@@ -80,9 +80,9 @@ char *exp_pty_slave_name;
 char *exp_pty_error;
 
 static void
-pty_stty(s,name)
-char *s;		/* args to stty */
-char *name;		/* name of pty */
+pty_stty(char *s,  /* args to stty */
+	 char *name  /* name of pty */
+)
 {
 #define MAX_ARGLIST 10240
 	char buf[MAX_ARGLIST];	/* overkill is easier */
@@ -114,13 +114,10 @@ exp_tty exp_tty_original;
 #define GET_TTYTYPE	0
 #define SET_TTYTYPE	1
 static void
-ttytype(request,fd,ttycopy,ttyinit,s)
-int request;
-int fd;
-		/* following are used only if request == SET_TTYTYPE */
-int ttycopy;	/* true/false, copy from /dev/tty */
-int ttyinit;	/* if true, initialize to sane state */
-char *s;	/* stty args, used only if request == SET_TTYTYPE */
+ttytype(int request, int fd, int ttycopy, /* true/false, copy from /dev/tty */
+	int ttyinit, /* if true, initialize to sane state */
+	char *s /* stty args, used only if request == SET_TTYTYPE */
+)
 {
 	if (request == GET_TTYTYPE) {
 		if (-1 == ioctl(fd, TCGETA, (char *)&exp_tty_original)) {
@@ -157,7 +154,7 @@ char *s;	/* stty args, used only if request == SET_TTYTYPE */
 }
 
 void
-exp_init_pty()
+exp_init_pty(void)
 {
 	int npty;
 	char *myline;
@@ -273,9 +270,7 @@ getptymaster()
 /* see comment in pty_termios.c */
 /*ARGSUSED*/
 void
-exp_slave_control(master,control)
-int master;
-int control;
+exp_slave_control(int master, int control)
 {
 }
 
@@ -312,7 +307,8 @@ char *stty_args;
 	return(slave);
 }
 
-setptyutmp()
+int
+setptyutmp(void)
 {
 	struct utmp utmp;
 
@@ -336,8 +332,8 @@ setptyutmp()
 	return(0);
 }
 
-setptypid(pid)
-int pid;
+int
+setptypid(int pid)
 {
         int npty;
 
@@ -350,7 +346,8 @@ int pid;
         }
 }
 
-ttyp_reset()
+int
+ttyp_reset(void)
 {
         int npty;
 
@@ -382,12 +379,13 @@ ttyp_reset()
 }
 
 void
-exp_pty_exit()
+exp_pty_exit(void)
 {
 	ttyp_reset();
 }
 
-resetptyutmp()
+int
+resetptyutmp(void)
 {
         struct utmp utmp;
 

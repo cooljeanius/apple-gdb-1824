@@ -1,4 +1,4 @@
-/* expect.c - expect commands
+/* expect.c - expect commands  -*- C -*-
 
 Written by: Don Libes, NIST, 2/6/90
 
@@ -54,7 +54,7 @@ would appreciate credit if this program or parts of it are used.
 #include "exp_event.h"
 #include "exp_tty.h"
 #include "exp_tstamp.h"	/* this should disappear when interact */
-			            /* loses ref's to it */
+				    /* loses ref's to it */
 #ifdef TCL_DEBUGGER
 # include "Dbg.h"
 #endif /* TCL_DEBUGGER */
@@ -136,10 +136,7 @@ struct exp_cmd_descriptor {
    just a few of its fields that we need. */
 
 static void
-exp_cmd_init(cmd,cmdtype,duration)
-struct exp_cmd_descriptor *cmd;
-int duration;
-int cmdtype;
+exp_cmd_init(struct exp_cmd_descriptor *cmd, int cmdtype, int duration)
 {
 	cmd->duration = duration;
 	cmd->cmdtype = cmdtype;
@@ -172,8 +169,8 @@ static int	exp_i_read _ANSI_ARGS_((Tcl_Interp *,int,int,int));
 #ifdef SIMPLE_EVENT
 /*ARGSUSED*/
 static RETSIGTYPE
-sigalarm_handler(n)
-int n;		       	/* unused, for compatibility with STDC */
+sigalarm_handler(int n /* unused, for compatibility with STDC */
+)
 {
 	alarm_fired = TRUE;
 # if 0
@@ -187,8 +184,9 @@ int n;		       	/* unused, for compatibility with STDC */
 #if 0
 /*ARGSUSED*/
 static RETSIGTYPE
-sigalarm_handler(n)
-int n;		       	/* unused, for compatibility with STDC */
+sigalarm_handler (
+    int n		       	/* unused, for compatibility with STDC */
+)
 {
 # ifdef REARM_SIG
 	signal(SIGALRM,sigalarm_handler);
@@ -205,8 +203,9 @@ int n;		       	/* unused, for compatibility with STDC */
 /* upon interrupt, act like timeout */
 /*ARGSUSED*/
 static RETSIGTYPE
-sigint_handler(n)
-int n;			/* unused, for compatibility with STDC */
+sigint_handler (
+    int n			/* unused, for compatibility with STDC */
+)
 {
 # ifdef REARM_SIG
 	signal(SIGINT,sigint_handler);/* not nec. for BSD, but does NOT hurt */
@@ -245,9 +244,7 @@ int n;			/* unused, for compatibility with STDC */
 /* not strlen(s).  This count does not include the trailing null. */
 /* returns number of nulls removed. */
 static int
-rm_nulls(s,c)
-char *s;
-int c;
+rm_nulls(char *s, int c)
 {
 	char *s2 = s;	/* points to place in original string to put */
 			/* next non-null character */
@@ -312,8 +309,8 @@ int free_ilist;		/* if true, free ilists */
 #if 0
 /* no standard defn for this, and some systems do NOT even have it, so avoid */
 /* the whole quagmire by calling it something else */
-static char *exp_strdup(s)
-char *s;
+static char *
+exp_strdup (char *s)
 {
 	char *news = ckalloc(strlen(s) + 1);
 	strcpy(news,s);
@@ -324,10 +321,9 @@ char *s;
 /* In many places, there is no need to malloc a copy of a string, since it */
 /* will be freed before we return to Tcl */
 static void
-save_str(lhs,rhs,nosave)
-char **lhs;	/* left hand side */
-char *rhs;	/* right hand side */
-int nosave;
+save_str(char **lhs, /* left hand side */
+	 char *rhs, /* right hand side */
+	 int nosave)
 {
 	if (nosave || (rhs == 0)) {
 		*lhs = rhs;
@@ -354,8 +350,7 @@ int nosave;
    Current test is very cheap and almost always right :-)
 */
 int
-exp_one_arg_braced(p)
-char *p;
+exp_one_arg_braced(char *p)
 {
 	int seen_nl = FALSE;
 
@@ -419,8 +414,7 @@ char **argv;
 }
 
 static void
-ecase_clear(ec)
-struct ecase *ec;
+ecase_clear(struct ecase *ec)
 {
 	ec->i_list = 0;
 	ec->pat = 0;
@@ -436,7 +430,7 @@ struct ecase *ec;
 }
 
 static struct ecase *
-ecase_new()
+ecase_new(void)
 {
 	struct ecase *ec = (struct ecase *)ckalloc(sizeof(struct ecase));
 
@@ -997,9 +991,7 @@ struct exp_fd_list *fdl;
 
 /* return TRUE if this ecase is used by this fd */
 static int
-exp_i_uses_fd(exp_i,fd)
-struct exp_i *exp_i;
-int fd;
+exp_i_uses_fd(struct exp_i *exp_i, int fd)
 {
 	struct exp_fd_list *fdp;
 
@@ -1409,8 +1401,7 @@ char **argv;
 
 /* adjusts file according to user's size request */
 void
-exp_adjust(f)
-struct exp_f *f;
+exp_adjust(struct exp_f *f)
 {
 	int new_msize;
 
@@ -1642,8 +1633,7 @@ char *caller_name;
 /* map EXP_ style return value to TCL_ style return value */
 /* not defined to work on TCL_OK */
 int
-exp_tcl2_returnvalue(x)
-int x;
+exp_tcl2_returnvalue(int x)
 {
 	switch (x) {
 	case TCL_ERROR:			return EXP_TCLERROR;
@@ -1660,8 +1650,7 @@ int x;
 
 /* map from EXP_ style return value to TCL_ style return values */
 int
-exp_2tcl_returnvalue(x)
-int x;
+exp_2tcl_returnvalue(int x)
 {
 	switch (x) {
 	case EXP_TCLERROR:		return TCL_ERROR;
@@ -1767,9 +1756,7 @@ Tcl_Interp *interp;
 /* make a copy of a linked list (1st arg) and attach to end of another (2nd
 arg) */
 static int
-update_expect_fds(i_list,fd_union)
-struct exp_i *i_list;
-struct exp_fd_list **fd_union;
+update_expect_fds(struct exp_i *i_list, struct exp_fd_list **fd_union)
 {
 	struct exp_i *p;
 
@@ -1799,8 +1786,7 @@ struct exp_fd_list **fd_union;
 }
 
 char *
-exp_cmdtype_printable(cmdtype)
-int cmdtype;
+exp_cmdtype_printable(int cmdtype)
 {
 	switch (cmdtype) {
 	case EXP_CMD_FG: return("expect");
@@ -1901,7 +1887,7 @@ struct exp_i *exp_i;
 }
 
 void
-exp_background_filehandlers_run_all()
+exp_background_filehandlers_run_all(void)
 {
 	int m;
 	struct exp_f *f;
@@ -2703,10 +2689,7 @@ char **argv;
 
 /* lowmemcpy - like memcpy but it lowercases result */
 void
-exp_lowmemcpy(dest,src,n)
-char *dest;
-char *src;
-int n;
+exp_lowmemcpy(char *dest, char *src, int n)
 {
 	for (;n>0;n--) {
 		*dest = ((isascii(*src) && isupper(*src))?tolower(*src):*src);
@@ -2921,8 +2904,7 @@ char **argv;
 /* This big chunk of code is just for debugging the permanent */
 /* expect cases */
 void
-exp_fd_print(fdl)
-struct exp_fd_list *fdl;
+exp_fd_print(struct exp_fd_list *fdl)
 {
 	if (!fdl) return;
 	printf("%d ",fdl->fd);
@@ -2930,8 +2912,7 @@ struct exp_fd_list *fdl;
 }
 
 void
-exp_i_print(exp_i)
-struct exp_i *exp_i;
+exp_i_print(struct exp_i *exp_i)
 {
 	if (!exp_i) return;
 	printf("exp_i %x",exp_i);
@@ -2947,16 +2928,14 @@ struct exp_i *exp_i;
 }
 
 void
-exp_ecase_print(ecase)
-struct ecase *ecase;
+exp_ecase_print(struct ecase *ecase)
 {
 	printf("pat <%s>\n",ecase->pat);
 	printf("exp_i = %x\n",ecase->i_list);
 }
 
 void
-exp_ecases_print(ecd)
-struct exp_cases_descriptor *ecd;
+exp_ecases_print(struct exp_cases_descriptor *ecd)
 {
 	int i;
 
@@ -2965,8 +2944,7 @@ struct exp_cases_descriptor *ecd;
 }
 
 void
-exp_cmd_print(ecmd)
-struct exp_cmd_descriptor *ecmd;
+exp_cmd_print(struct exp_cmd_descriptor *ecmd)
 {
 	printf("expect cmd type: %17s",exp_cmdtype_printable(ecmd->cmdtype));
 	printf((ecmd->duration==EXP_PERMANENT)?" perm ": "tmp ");
@@ -2976,7 +2954,7 @@ struct exp_cmd_descriptor *ecmd;
 }
 
 void
-exp_cmds_print()
+exp_cmds_print(void)
 {
 	exp_cmd_print(&exp_cmds[EXP_CMD_BEFORE]);
 	exp_cmd_print(&exp_cmds[EXP_CMD_AFTER]);
@@ -3049,7 +3027,8 @@ Tcl_Interp *interp;
 }
 
 void
-exp_init_sig() {
+exp_init_sig(void)
+{
 #if 0
 	signal(SIGALRM,sigalarm_handler);
 	signal(SIGINT,sigint_handler);

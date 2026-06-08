@@ -42,8 +42,7 @@ would appreciate credit if this program or parts of it are used.
 /* generate printable versions of random ASCII strings. Primarily used */
 /* by cmdExpect when -d forces it to print strings it is examining. */
 char *
-exp_printify(s)
-char *s;
+exp_printify(char *s)
 {
 	static int destlen = 0;
 	static char *dest = 0;

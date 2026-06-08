@@ -182,8 +182,7 @@ FILE *fp;
 }
 
 static struct f *
-fd_new(fd)
-int fd;
+fd_new(int fd)
 {
 	int i, low;
 	struct f *fp;
@@ -221,9 +220,8 @@ int fd;
 
 /* returns fd of master side of pty */
 int
-exp_spawnv(file,argv)
-char *file;
-char *argv[];	/* some compiler complains about **argv? */
+exp_spawnv(char *file, char *argv[] /* some compiler complains about **argv? */
+)
 {
 	int cc;
 	int errorfd;	/* place to stash fileno(stderr) in child */
@@ -613,8 +611,7 @@ exp_spawnl TCL_VARARGS_DEF(char *,arg1)
 
 /* allow user-provided fd to be passed to expect funcs */
 int
-exp_spawnfd(fd)
-int fd;
+exp_spawnfd(int fd)
 {
 	if (!fd_new(fd)) {
 		errno = ENOMEM;
@@ -627,9 +624,7 @@ int fd;
 /* not strlen(s). This count does not include the trailing null. */
 /* returns number of nulls removed. */
 static int
-rm_nulls(s,c)
-char *s;
-int c;
+rm_nulls(char *s, int c)
 {
 	char *s2 = s;	/* points to place in original string to put */
 					/* next non-null character */
@@ -652,8 +647,8 @@ static int i_read_errno;/* place to save errno, if i_read() == -1, so it
 
 /*ARGSUSED*/
 static void
-sigalarm_handler(n)
-int n;			/* signal number, unused by us */
+sigalarm_handler(int n /* signal number, unused by us */
+)
 {
 #ifdef REARM_SIG
 	signal(SIGALRM,sigalarm_handler);
@@ -1041,9 +1036,7 @@ struct exp_case *ecases;
 }
 
 int
-exp_expectv(fd,ecases)
-int fd;
-struct exp_case *ecases;
+exp_expectv(int fd, struct exp_case *ecases)
 {
 	return(expectv(fd,(FILE *)0,ecases));
 }
@@ -1196,7 +1189,7 @@ char *program;
 }
 
 int
-exp_disconnect()
+exp_disconnect(void)
 {
 	int ttyfd;
 

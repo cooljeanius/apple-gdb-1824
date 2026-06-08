@@ -77,8 +77,8 @@ static int env_valid = FALSE;	/* whether we can longjmp or not */
 
 /*ARGSUSED*/
 static RETSIGTYPE
-sigalarm_handler(n)
-int n;		/* unused, for compatibility with STDC */
+sigalarm_handler(int n /* unused, for compatibility with STDC */
+)
 {
 #ifdef REARM_SIG
 	signal(SIGALRM,sigalarm_handler);
@@ -91,11 +91,7 @@ int n;		/* unused, for compatibility with STDC */
 
 /* interruptable read */
 static int
-i_read(fd,buffer,length,timeout)
-int fd;
-char *buffer;
-int length;
-int timeout;
+i_read(int fd, char *buffer, int length, int timeout)
 {
 	int cc = -2;
 
@@ -125,7 +121,7 @@ static time_t current_time;	/* time when testing began */
 /* if TRUE, begin testing, else end testing */
 /* returns -1 for failure, 0 for success */
 int
-exp_pty_test_start()
+exp_pty_test_start(void)
 {
 	int lfd;	/* locksrc file descriptor */
 
@@ -155,7 +151,7 @@ exp_pty_test_start()
 }
 
 void
-exp_pty_test_end()
+exp_pty_test_end(void)
 {
 	signal(SIGALRM,oldAlarmHandler);
 #ifndef O_NOCTTY
@@ -166,11 +162,9 @@ exp_pty_test_end()
 
 /* returns non-negative if successful */
 int
-exp_pty_test(master_name,slave_name,bank,num)
-char *master_name;
-char *slave_name;
-int bank;
-char *num;	/* string representation of number */
+exp_pty_test(char *master_name, char *slave_name, int bank,
+	     char *num /* string representation of number */
+)
 {
 	int master, slave;
 	int cc;
@@ -241,7 +235,7 @@ char *num;	/* string representation of number */
 }
 
 void
-exp_pty_unlock()
+exp_pty_unlock(void)
 {
 	if (locked) {
 		(void) unlink(lock);
@@ -251,9 +245,8 @@ exp_pty_unlock()
 
 /* returns 1 if successfully locked, 0 otherwise */
 int
-exp_pty_lock(bank,num)
-int bank;
-char *num;	/* string representation of number */
+exp_pty_lock(int bank, char *num /* string representation of number */
+)
 {
 	struct stat statbuf;
 

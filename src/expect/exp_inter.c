@@ -163,14 +163,13 @@ we are ready). The other is to return can-match.
 */
 
 static int
-in_keymap(string,stringlen,keymap,km_match,match_length,skip,rm_nulls)
-char *string;
-int stringlen;
-struct keymap *keymap;		/* linked list of keymaps */
-struct keymap **km_match;	/* keymap that matches or can match */
-int *match_length;		/* # of chars that matched */
-int *skip;			/* # of chars to skip */
-int rm_nulls;			/* skip nulls if true */
+in_keymap(char *string, int stringlen,
+	  struct keymap *keymap,  /* linked list of keymaps */
+	  struct keymap **km_match, /* keymap that matches or can match */
+	  int *match_length,  /* # of chars that matched */
+	  int *skip,   /* # of chars to skip */
+	  int rm_nulls   /* skip nulls if true */
+)
 {
 	struct keymap *km;
 	char *ks;		/* string from a keymap */
@@ -342,7 +341,8 @@ static int deferred_interrupt = FALSE;	/* if signal is received, but not */
 				/* in i_read record this here, so it will */
 				/* be handled next time through i_read */
 
-void sigchld_handler()
+void
+sigchld_handler(void)
 {
 	if (reading) longjmp(env,1);
 
@@ -353,10 +353,7 @@ void sigchld_handler()
 
 /* interruptable read */
 static int
-i_read(fd,buffer,length)
-int fd;
-char *buffer;
-int length;
+i_read(int fd, char *buffer, int length)
 {
 	int cc = EXP_CHILD_EOF;
 
@@ -2201,8 +2198,7 @@ int spawn_id;
 }
 
 static void
-free_keymap(km)
-struct keymap *km;
+free_keymap(struct keymap *km)
 {
 	if (km == 0) return;
 	free_keymap(km->next);
@@ -2211,8 +2207,7 @@ struct keymap *km;
 }
 
 static void
-free_action(a)
-struct action *a;
+free_action(struct action *a)
 {
 	struct action *next;
 
@@ -2238,8 +2233,7 @@ struct input *i;
 }
 
 static struct action *
-new_action(base)
-struct action **base;
+new_action(struct action **base)
 {
 	struct action *o = new(struct action);
 

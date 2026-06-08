@@ -9,8 +9,9 @@
 void (*exp_close_in_child)() = 0;
 
 void
-exp_close_tcl_files() {
-	int i;
+exp_close_tcl_files(void)
+{
+  int i;
 
 	/* So much for close-on-exec. Tcl does NOT mark its files that way */
 	/* everything has to be closed explicitly. */

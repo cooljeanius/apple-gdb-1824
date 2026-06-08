@@ -106,8 +106,7 @@ static int got_sig;		/* this records the last signal received */
 static Tcl_AsyncHandler async_handler;
 
 static char *
-signal_to_string(sig)
-int sig;
+signal_to_string(int sig)
 {
 	if (sig <= 0 || sig > NSIG) return("SIGNAL OUT OF RANGE");
 	return(traps[sig].name);
@@ -213,8 +212,7 @@ static int rearming_sigchld = FALSE;
 
 /* called upon receipt of a user-declared signal */
 static void
-bottomhalf(sig)
-int sig;
+bottomhalf(int sig)
 {
 #ifdef REARM_SIG
 	/*
@@ -277,9 +275,8 @@ Tcl_Interp *interp;
 #endif /* REARM_SIG */
 }
 
-
 void
-exp_init_trap()
+exp_init_trap(void)
 {
 	int i;
 

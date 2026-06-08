@@ -322,11 +322,7 @@ static char const month_name[][10] =
   size_t _strftime_copytm __P ((char *, size_t, char const *,
                                 const struct tm *));
   size_t
-  strftime (s, maxsize, format, tp)
-      char *s;
-      size_t maxsize;
-      char const *format;
-      const struct tm *tp;
+  strftime(char *s, size_t maxsize, char const *format, const struct tm *tp)
   {
     struct tm tmcopy;
     tmcopy = *tp;

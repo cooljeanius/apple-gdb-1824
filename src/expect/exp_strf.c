@@ -112,9 +112,7 @@ extern int daylight;
 # else
 #  if defined(HAVE_TIMEZONE)
 
-char           *
-zone_name (tp)
-struct tm      *tp;
+  char *zone_name(struct tm *tp)
 {
 	char           *timezone ();
 	struct timeval  tv;
@@ -130,8 +128,7 @@ struct tm      *tp;
 #endif /* HAVE_STRFTIME */
 
 static int
-range(low,item,hi)
-int low, item, hi;
+range(int low, int item, int hi)
 {
 	if (item < low) return low;
 	if (item > hi) return hi;

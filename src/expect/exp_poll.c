@@ -142,7 +142,7 @@ static int		FileHandlerEventProc _ANSI_ARGS_((Tcl_Event *evPtr,
  */
 
 static void
-InitNotifier()
+InitNotifier(void)
 {
     initialized = 1;
     memset(&notifier, 0, sizeof(notifier));
@@ -329,8 +329,9 @@ Tcl_CreateFileHandler(fd, mask, proc, clientData)
  */
 
 void
-Tcl_DeleteFileHandler(fd)
-    int fd;		/* Stream id for which to remove callback procedure. */
+Tcl_DeleteFileHandler(
+  int fd /* Stream id for which to remove callback procedure. */
+)
 {
     FileHandler *filePtr, *prevPtr, *lastPtr;
     int index, bit, mask, i;
@@ -833,8 +834,8 @@ Tcl_WaitForEvent(timePtr)
  */
 
 void
-Tcl_Sleep(ms)
-    int ms;			/* Number of milliseconds to sleep. */
+Tcl_Sleep(int ms   /* Number of milliseconds to sleep. */
+)
 {
     static struct timeval delay;
     Tcl_Time before, after;

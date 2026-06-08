@@ -48,15 +48,15 @@ static char *ScriptEnd(char *p, char *lastChar, int nested);
  */
 
 char *
-TclWordEnd(start, lastChar, nested, semiPtr)
-    char *start;		/* Beginning of a word of a Tcl command. */
-    char *lastChar;		/* Terminating character in string. */
-    int nested;			/* Zero means this is a top-level command.
+TclWordEnd(char *start,  /* Beginning of a word of a Tcl command. */
+	   char *lastChar,  /* Terminating character in string. */
+	   int nested,   /* Zero means this is a top-level command.
 				         * One means this is a nested command (close
 				         * bracket is a word terminator). */
-    int *semiPtr;		/* Set to 1 if word ends with a command-
+	   int *semiPtr  /* Set to 1 if word ends with a command-
 				         * terminating semi-colon, zero otherwise.
 				         * If NULL then ignored. */
+)
 {
     register char *p;
     int count;
@@ -198,12 +198,12 @@ TclWordEnd(start, lastChar, nested, semiPtr)
  */
 
 static char *
-QuoteEnd(string, lastChar, term)
-    char *string;		/* Pointer to character just after opening
+QuoteEnd(char *string,  /* Pointer to character just after opening
 						 * "quote". */
-    char *lastChar;		/* Terminating character in string. */
-    int term;			/* This character will terminate the
+	 char *lastChar,  /* Terminating character in string. */
+	 int term   /* This character will terminate the
 				         * quoted string (e.g. '"' or ')'). */
+)
 {
     register char *p = string;
     int count;
@@ -256,9 +256,9 @@ QuoteEnd(string, lastChar, term)
  */
 
 static char *
-VarNameEnd(string, lastChar)
-    char *string;		/* Pointer to dollar-sign character. */
-    char *lastChar;		/* Terminating character in string. */
+VarNameEnd(char *string,  /* Pointer to dollar-sign character. */
+	   char *lastChar  /* Terminating character in string. */
+)
 {
     register char *p = string+1;
 
@@ -299,13 +299,13 @@ VarNameEnd(string, lastChar)
  */
 
 static char *
-ScriptEnd(p, lastChar, nested)
-    char *p;			/* Script to check. */
-    char *lastChar;		/* Terminating character in string. */
-    int nested;			/* Zero means this is a top-level command.
+ScriptEnd(char *p,   /* Script to check. */
+	  char *lastChar,  /* Terminating character in string. */
+	  int nested   /* Zero means this is a top-level command.
 				         * One means this is a nested command (the
 				         * last character of the script must be
 				         * an unquoted ]). */
+)
 {
     int commentOK = 1;
     int length;

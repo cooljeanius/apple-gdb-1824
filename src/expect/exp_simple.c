@@ -63,10 +63,10 @@ static int numFdBits;		/* Number of valid bits in checkMasks
 void
 Tcl_WatchFile(file, mask)
     Tcl_File file;	/* Generic file handle for a stream. */
-    int mask;			/* OR'ed combination of TCL_READABLE,
-				         * TCL_WRITABLE, and TCL_EXCEPTION:
-				         * indicates conditions to wait for
-				         * in select. */
+int mask; /* OR'ed combination of TCL_READABLE,
+				 * TCL_WRITABLE, and TCL_EXCEPTION:
+				 * indicates conditions to wait for
+				 * in select. */
 {
     int fd, type, index;
     fd_mask bit;
@@ -122,32 +122,37 @@ Tcl_WatchFile(file, mask)
 int
 Tcl_FileReady(file, mask)
     Tcl_File file;	/* Generic file handle for a stream. */
-    int mask;			/* OR'ed combination of TCL_READABLE,
-				         * TCL_WRITABLE, and TCL_EXCEPTION:
-				         * indicates conditions caller cares about. */
-{
-    int index, result, type, fd;
-    fd_mask bit;
+    int mask; /* OR'ed combination of TCL_READABLE,
+				 * TCL_WRITABLE, and TCL_EXCEPTION:
+				 * indicates conditions caller cares about. */
+    {
+      int index, result, type, fd;
+      fd_mask bit;
 
-    fd = (int) Tcl_GetFileInfo(file, &type);
-    if (type != TCL_UNIX_FD) {
-	panic("Tcl_FileReady: unexpected file type");
-    }
+      fd = (int) Tcl_GetFileInfo(file, &type);
+      if (type != TCL_UNIX_FD)
+	{
+	  panic("Tcl_FileReady: unexpected file type");
+	}
 
-    index = fd/(NBBY*sizeof(fd_mask));
-    bit = 1 << (fd%(NBBY*sizeof(fd_mask)));
-    result = 0;
-    if ((mask & TCL_READABLE) && (readyMasks[index] & bit)) {
-	result |= TCL_READABLE;
+      index = fd / (NBBY * sizeof(fd_mask));
+      bit = 1 << (fd % (NBBY * sizeof(fd_mask)));
+      result = 0;
+      if ((mask & TCL_READABLE) && (readyMasks[index] & bit))
+	{
+	  result |= TCL_READABLE;
+	}
+      if ((mask & TCL_WRITABLE) && ((readyMasks + MASK_SIZE)[index] & bit))
+	{
+	  result |= TCL_WRITABLE;
+	}
+      if ((mask & TCL_EXCEPTION)
+	  && ((readyMasks + (2 * MASK_SIZE))[index] & bit))
+	{
+	  result |= TCL_EXCEPTION;
+	}
+      return result;
     }
-    if ((mask & TCL_WRITABLE) && ((readyMasks+MASK_SIZE)[index] & bit)) {
-	result |= TCL_WRITABLE;
-    }
-    if ((mask & TCL_EXCEPTION) && ((readyMasks+(2*MASK_SIZE))[index] & bit)) {
-	result |= TCL_EXCEPTION;
-    }
-    return result;
-}
 
 /*
  *----------------------------------------------------------------------
@@ -229,8 +234,8 @@ Tcl_WaitForEvent(timePtr)
  */
 
 void
-Tcl_Sleep(ms)
-    int ms;			/* Number of milliseconds to sleep. */
+Tcl_Sleep(int ms /* Number of milliseconds to sleep. */
+)
 {
     static struct timeval delay;
     Tcl_Time before, after;
@@ -314,43 +319,37 @@ it successfully, please mail back the changes to me.  - Don
 
 /*ARGSUSED*/
 void
-exp_arm_background_filehandler(m)
-int m;
+exp_arm_background_filehandler (int m)
 {
 }
 
 /*ARGSUSED*/
 void
-exp_disarm_background_filehandler(m)
-int m;
+exp_disarm_background_filehandler (int m)
 {
 }
 
 /*ARGSUSED*/
 void
-exp_disarm_background_filehandler_force(m)
-int m;
+exp_disarm_background_filehandler_force (int m)
 {
 }
 
 /*ARGSUSED*/
 void
-exp_unblock_background_filehandler(m)
-int m;
+exp_unblock_background_filehandler (int m)
 {
 }
 
 /*ARGSUSED*/
 void
-exp_block_background_filehandler(m)
-int m;
+exp_block_background_filehandler (int m)
 {
 }
 
 /*ARGSUSED*/
 void
-exp_event_disarm(fd)
-int fd;
+exp_event_disarm (int fd)
 {
 }
 
@@ -453,7 +452,7 @@ long usec;		/* microseconds */
 
 /* set things up for later calls to event handler */
 void
-exp_init_event()
+exp_init_event (void)
 {
 	exp_event_exit = 0;
 }
