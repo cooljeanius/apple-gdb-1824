@@ -234,9 +234,7 @@ const int tic80_num_predefined_symbols = sizeof (tic80_predefined_symbols) / siz
  */
 
 int
-tic80_symbol_to_value (name, class)
-     char *name;
-     int class;
+tic80_symbol_to_value(char *name, int class)
 {
   const struct predefined_symbol *pdsp;
   int low = 0;
@@ -276,9 +274,7 @@ tic80_symbol_to_value (name, class)
    is zero, the first matching symbol is returned. */
 
 const char *
-tic80_value_to_symbol (val, class)
-     int val;
-     int class;
+tic80_value_to_symbol(int val, int class)
 {
   const struct predefined_symbol *pdsp;
   int ival;
@@ -311,8 +307,7 @@ tic80_value_to_symbol (val, class)
    returns NULL. */
 
 const struct predefined_symbol *
-tic80_next_predefined_symbol (pdsp)
-     const struct predefined_symbol *pdsp;
+tic80_next_predefined_symbol(const struct predefined_symbol *pdsp)
 {
   if (pdsp == NULL)
     {
