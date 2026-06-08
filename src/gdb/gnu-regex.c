@@ -863,7 +863,7 @@ print_partial_compiled_pattern(unsigned char *start, unsigned char *end)
       putchar ('\n');
     }
 
-  printf ("%d:\tend of pattern.\n", p - start);
+  printf ("%ld:\tend of pattern.\n", (long) (p - start));
 }
 
 void
