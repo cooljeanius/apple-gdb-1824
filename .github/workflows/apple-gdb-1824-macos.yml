@@ -14,7 +14,7 @@ jobs:
     runs-on: macos-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v6.0.2
+      uses: actions/checkout@v6.0.3
     - name: Run sccache-cache only on non-release runs
       if: github.event_name != 'release' && github.event_name != 'workflow_dispatch'
       uses: mozilla-actions/sccache-action@v0.0.10
