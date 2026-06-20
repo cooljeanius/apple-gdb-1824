@@ -2,7 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     coderay (1.1.3)
-    concurrent-ruby (1.2.2)
+    concurrent-ruby (1.3.7)
     dentaku (3.5.1)
       concurrent-ruby
     gdb (1.0.0)
@@ -21,6 +21,7 @@ GEM
 
 PLATFORMS
   x86_64-darwin-20
+  x86_64-linux
 
 DEPENDENCIES
   gdb (~> 1.0)
