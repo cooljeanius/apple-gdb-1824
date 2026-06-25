@@ -24,19 +24,19 @@ handler (sig)
 }
 
 static void
-func1 ()
+func1(void)
 {
   ++count;
 }
 
 static void
-func2 ()
+func2(void)
 {
   ++count;
 }
 
 int
-main ()
+main(void)
 {
 #ifdef usestubs
   set_debug_traps();

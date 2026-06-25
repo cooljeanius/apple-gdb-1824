@@ -38,7 +38,7 @@
 #define SIZE 16
 
 int
-main ()
+main(void)
 {
   int err, i;
   cl_platform_id platform;

@@ -36,7 +36,7 @@ int f1 (int a, int b)
 }
 
 static void
-init_bufs ()
+init_bufs(void)
 {
   search_buf_size = BUF_SIZE;
   search_buf = malloc (search_buf_size);

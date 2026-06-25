@@ -16,13 +16,14 @@ static struct teststruct {
   int g;
 } intstruct, intstruct2;
 
-void checkpoint1 ()
+void
+checkpoint1(void)
 {
   /* intarray and teststruct have been initialized. */
 }
 
 void
-zero_all ()
+zero_all(void)
 {
   memset ((char *) &intarray,   0, sizeof (intarray));
   memset ((char *) &intarray2,  0, sizeof (intarray2));
@@ -30,7 +31,8 @@ zero_all ()
   memset ((char *) &intstruct2, 0, sizeof (intstruct2));
 }
 
-main()
+int
+main(void)
 {
   int i;
 

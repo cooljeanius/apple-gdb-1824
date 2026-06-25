@@ -874,11 +874,7 @@ lookup_cmd(const char **line, struct cmd_list_element *list,
    CMDTYPE precedes the word "command" in the error message.  */
 
 struct cmd_list_element *
-lookup_cmd (line, list, cmdtype, allow_unknown)
-     char **line;
-     struct cmd_list_element *list;
-     char *cmdtype;
-     int allow_unknown;
+lookup_cmd (char **line, struct cmd_list_element *list, char *cmdtype, int allow_unknown)
 {
   register char *p;
   register struct cmd_list_element *c, *found;

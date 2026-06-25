@@ -21,9 +21,12 @@
 extern void pendfunc (int x);
 
 static void
-marker () {}
+marker(void)
+{
+}
 
-int main()
+int
+main(void)
 {
   const char *libname = "pendshr2.sl";
   void *h;

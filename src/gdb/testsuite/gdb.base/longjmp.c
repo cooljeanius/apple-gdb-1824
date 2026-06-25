@@ -42,7 +42,7 @@ hidden_longjmp (void)
 }
 
 int
-main ()
+main(void)
 {
   volatile int i = 0;
 

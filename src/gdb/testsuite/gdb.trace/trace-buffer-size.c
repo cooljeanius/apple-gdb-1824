@@ -18,13 +18,13 @@
 int var = 10;
 
 int
-test_function ()
+test_function(void)
 {
   return 0;
 }
 
 int
-main ()
+main(void)
 {
   test_function ();
   return 0; /*breakpoint1*/

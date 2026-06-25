@@ -16,7 +16,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 int
-main()
+main(void)
 {
   asm ("main_label: .globl main_label");
   return 0;

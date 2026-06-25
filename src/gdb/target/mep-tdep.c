@@ -62,7 +62,7 @@
 /* A quick recap for GDB hackers not familiar with the whole Toshiba
    Media Processor story:
 
-   The MeP media engine is a configureable processor: users can design
+   The MeP media engine is a configurable processor: users can design
    their own coprocessors, implement custom instructions, adjust cache
    sizes, select optional standard facilities like add-and-saturate
    instructions, and so on.  Then, they can build custom versions of
@@ -119,7 +119,6 @@
      optional processor features, overriding the defaults for the
      selected me_module.  The MeP $OPT register indicates which
      options are present on the current processor.  */
-
 
 struct gdbarch_tdep
 {
@@ -286,10 +285,9 @@ me_module_register_set (CONFIG_ATTR me_module,
   return hw;
 }
 
-
 /* Given a hardware table entry HW representing a register set, return
    a pointer to the keyword table with all the register names.  If HW
-   is NULL, return NULL, to propage the "no such register set" info
+   is NULL, return NULL, to propagate the "no such register set" info
    along.  */
 static CGEN_KEYWORD *
 register_set_keyword_table (const CGEN_HW_ENTRY *hw)
@@ -868,7 +866,7 @@ current_me_module ()
    then use the 'module_opt' field we computed when we build the
    gdbarch object for this module.  */
 static unsigned int
-current_options ()
+current_options(void)
 {
   if (target_has_registers)
     {
@@ -885,7 +883,7 @@ current_options ()
 /* Return the width of the current me_module's coprocessor data bus,
    in bits.  This is either 32 or 64.  */
 static int
-current_cop_data_bus_width ()
+current_cop_data_bus_width(void)
 {
   return me_module_cop_data_bus_width (current_me_module ());
 }
@@ -906,7 +904,7 @@ current_cr_names ()
 /* Return non-zero if the coprocessor general-purpose registers are
    floating-point values, zero otherwise.  */
 static int
-current_cr_is_float ()
+current_cr_is_float(void)
 {
   const CGEN_HW_ENTRY *hw
     = me_module_register_set (current_me_module (), "h-cr-", HW_H_CR);

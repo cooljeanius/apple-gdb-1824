@@ -30,7 +30,8 @@ void func2(int *foo)
   global2++;
 }
 
-int main()
+int
+main(void)
 {
   int q = 0;
 

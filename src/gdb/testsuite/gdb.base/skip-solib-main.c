@@ -1,6 +1,7 @@
 int square(int num);
 
-int main()
+int
+main(void)
 {
   return square(0);
 }

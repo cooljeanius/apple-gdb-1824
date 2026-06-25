@@ -265,7 +265,8 @@ decimal_many_args_mixed (_Decimal32 f1, _Decimal32 f2, _Decimal32 f3,
 	  && (sum_args - sum_values) > -DELTA);
 }
 
-int main()
+int
+main(void)
 {
   /* An finite 32-bits decimal floating point.  */
   d32 = 1.2345df;		/* Initialize d32.  */

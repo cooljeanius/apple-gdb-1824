@@ -18,23 +18,35 @@
 /* We need a few extra functions here to ensure that the dictionary
    for the global block has more than one slot.  */
 
-void f1 () { }
-void f2 () { }
-void f3 () { }
-void f4 () { }
-
 void
-__gnat_debug_raise_exception ()
+f1(void)
+{
+}
+void
+f2(void)
+{
+}
+void
+f3(void)
+{
+}
+void
+f4(void)
 {
 }
 
 void
-__gnat_begin_handler_v1 ()
+__gnat_debug_raise_exception(void)
+{
+}
+
+void
+__gnat_begin_handler_v1(void)
 {
 }
 
 int
-main ()
+main(void)
 {
   return 0;
 }

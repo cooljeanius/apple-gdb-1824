@@ -21,7 +21,9 @@ int b_global = 42;
 #endif
 int c_global = 43;
 
-int foo () {
+int
+foo(void)
+{
   return a_global +
 #ifndef NO_B_GLOBAL
     b_global +

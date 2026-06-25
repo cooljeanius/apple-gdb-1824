@@ -20,7 +20,8 @@ int f (char * restrict x)
   return x[0];
 }
 
-int main()
+int
+main(void)
 {
   return f("hi bob");
 }

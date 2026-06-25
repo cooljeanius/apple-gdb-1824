@@ -1635,9 +1635,7 @@ static char upcase[0400] =
   };
 
 int
-main (argc, argv)
-     int argc;
-     char **argv;
+main(int argc, char **argv)
 {
   char pat[80];
   struct re_pattern_buffer buf;
@@ -1684,8 +1682,8 @@ main (argc, argv)
 }
 
 #ifdef NOTDEF
-print_buf (bufp)
-     struct re_pattern_buffer *bufp;
+int
+print_buf(struct re_pattern_buffer *bufp)
 {
   int i;
 
@@ -1709,8 +1707,8 @@ print_buf (bufp)
 }
 #endif /* NOTDEF */
 
-printchar (c)
-     char c;
+int
+printchar(int c)
 {
   if (c < 041 || c >= 0177)
     {
@@ -1723,8 +1721,8 @@ printchar (c)
   }
 }
 
-error (string)
-     char *string;
+int
+error(char *string)
 {
   puts (string);
   exit (1);

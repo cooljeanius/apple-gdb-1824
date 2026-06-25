@@ -52,7 +52,7 @@ run2 (void)
 }
 
 int
-main ()
+main(void)
 {
   if (setjmp (jmp) == 0) /* test-pass */
     infcall ();

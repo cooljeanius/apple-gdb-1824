@@ -15,7 +15,8 @@ int x;
     return (y - 2);
 }
 
-int main()
+int
+main(void)
 {
 
     int *p;

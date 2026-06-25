@@ -18,18 +18,20 @@
 void func3();
 void func2();
 
-static func()
+static func(void)
 {
 }
 
-void func1()
+void
+func1(void)
 {
   func3();
   func2();
   func();
 }
 
-int main()
+int
+main(void)
 {
   func1();
 }

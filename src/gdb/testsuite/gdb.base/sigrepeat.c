@@ -75,7 +75,7 @@ handler (int sig)
 } /* handler */
 
 int
-main ()
+main(void)
 {
   int i;
   /* Set up the signal handler.  */

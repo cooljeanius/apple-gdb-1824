@@ -42,10 +42,7 @@ extern char *reg_names[];
  */
 
 int
-bit_extract (buffer, offset, count)
-     char *buffer;
-     int offset;
-     int count;
+bit_extract(char *buffer, int offset, int count)
 {
   int result;
   int mask;
@@ -70,7 +67,7 @@ bit_extract (buffer, offset, count)
 }
 
 float
-fbit_extract (buffer, offset, count)
+fbit_extract(int buffer, int offset, int count)
 {
   union {
     int ival;
@@ -82,7 +79,7 @@ fbit_extract (buffer, offset, count)
 }
 
 double
-dbit_extract (buffer, offset, count)
+dbit_extract(int buffer, int offset, int count)
 {
   union {
     struct {int low, high; } ival;
@@ -94,7 +91,8 @@ dbit_extract (buffer, offset, count)
   return foo.dval;
 }
 
-sign_extend (value, bits)
+int
+sign_extend(int value, int bits)
 {
   value = value & ((1 << bits) - 1);
   return (value & (1 << (bits-1))
@@ -102,9 +100,8 @@ sign_extend (value, bits)
 	  : value);
 }
 
-flip_bytes (ptr, count)
-     char *ptr;
-     int count;
+int
+flip_bytes(char *ptr, int count)
 {
   char tmp;
 
@@ -437,9 +434,8 @@ print_insn_arg (d, ioffset, aoffsetp, buffer, addr, result, index_offset)
   return ioffset;
 }
 
-get_displacement (buffer, aoffsetp)
-     char *buffer;
-     int *aoffsetp;
+int
+get_displacement(char *buffer, int *aoffsetp)
 {
   int Ivalue;
 

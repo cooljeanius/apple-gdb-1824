@@ -62,12 +62,13 @@ char * s7;
 }
 
 char *
-link_malloc ()
+link_malloc(void)
 {
   return (char*) malloc (1);
 }
 
-int main()
+int
+main(void)
 {
   s = &buf[0];
   strcpy(buf, "test string");

@@ -154,7 +154,7 @@ static unsigned long bytes_allocated;
 #endif
 
 int
-main ()
+main(void)
 {
   size_t max_chunk_size;
   large_off_t max_core_size;

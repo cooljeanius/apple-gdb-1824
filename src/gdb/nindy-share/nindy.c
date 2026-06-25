@@ -1,4 +1,4 @@
-/* nindy-share/nindy.c */
+/* nindy-share/nindy.c  -*- C -*- */
 /* This file is part of GDB.
 
    This program is free software; you can redistribute it and/or modify
@@ -157,17 +157,18 @@ say (va_alist)
  *		by caller).
  *****************************************************************************/
 static char *
-exists( base, c1, c2, c3, env )
-    char *base;		/* Base directory of path */
-    char *c1, *c2, *c3; /* Components (subdirectories and/or file name) to be
+exists(char *base, /* Base directory of path */
+       char *c1, char *c2,
+       char *c3, /* Components (subdirectories and/or file name) to be
 			             * appended onto the base directory name. One or
 			             * more may be omitted by passing NULL pointers.
 			             */
-    int env; /* If 1, '*base' is the name of an environment variable
+       int env /* If 1, '*base' is the name of an environment variable
 			  *	to be examined for the base directory name;
 			  *	otherwise, '*base' is the actual name of the
 			  *	base directory.
 			  */
+)
 {
 	struct stat buf;/* For call to 'stat' -- never examined */
 	char *path;	/* Pointer to full pathname (malloc'd memory) */
@@ -235,10 +236,10 @@ exists( base, c1, c2, c3, env )
    any input.  */
 
 static int
-rdnin (buf,n,timeout)
-    unsigned char * buf;	/* Where to place characters read	*/
-    int n;			/* Number of characters to read		*/
-    int timeout;		/* Timeout, in seconds			*/
+rdnin(unsigned char *buf, /* Where to place characters read	*/
+      int n, /* Number of characters to read		*/
+      int timeout /* Timeout, in seconds			*/
+)
 {
   int escape_seen;	/* 1 => last character of a read was an ESC */
   int c;
@@ -280,10 +281,8 @@ rdnin (buf,n,timeout)
  *
  *	Return packet status byte on success, TIMEOUT on failure.
  ******************************************************************************/
-static
-int
-getpkt(buf)
-     unsigned char *buf;
+static int
+getpkt(unsigned char *buf)
 {
 	int i;
 	unsigned char hdr[3];	/* Packet header:
@@ -351,9 +350,10 @@ getpkt(buf)
 	}
 
 static int
-putpkt( msg, len )
-    unsigned char *msg;	/* Command to be sent, without lead ^P (\020) or checksum */
-    int len;	/* Number of bytes in message			*/
+putpkt(unsigned char
+	 *msg, /* Command to be sent, without lead ^P (\020) or checksum */
+       int len /* Number of bytes in message			*/
+)
 {
 	static char *buf = NULL;/* Local buffer -- build packet here	*/
 	static int maxbuf = 0;	/* Current length of buffer		*/
@@ -426,10 +426,10 @@ putpkt( msg, len )
  *	for error responses.  If no error, return NINDY reponse (if any).
  ******************************************************************************/
 static int
-send( out, len, in )
-    unsigned char *out;	/* Message to be sent to NINDY			*/
-    int len;		/* Number of meaningful bytes in out buffer	*/
-    unsigned char *in;	/* Where to put response received from NINDY	*/
+send(unsigned char *out, /* Message to be sent to NINDY			*/
+     int len, /* Number of meaningful bytes in out buffer	*/
+     unsigned char *in /* Where to put response received from NINDY	*/
+)
 {
 	char *fmt;
 	int status;
@@ -500,10 +500,9 @@ static struct baudrate baudtab[] = {
  *
  *	Return pointer to baudrate structure on success, NULL on failure.
  ******************************************************************************/
-static
-struct baudrate *
-parse_baudrate(s)
-    char *s;	/* Desired baud rate, as an ASCII (decimal) string */
+static struct baudrate *
+parse_baudrate(char *s /* Desired baud rate, as an ASCII (decimal) string */
+)
 {
 	int i;
 
@@ -526,9 +525,7 @@ parse_baudrate(s)
  ***************************************************************************/
 
 static int
-try_baudrate (serial, brp)
-     struct serial *serial;
-     struct baudrate *brp;
+try_baudrate(struct serial *serial, struct baudrate *brp)
 {
   unsigned char c;
 
@@ -553,9 +550,7 @@ try_baudrate (serial, brp)
  * Returns 0 by default.
  ******************************************************************************/
 static int
-autobaud( serial, brp )
-     struct serial *serial;
-     struct baudrate *brp;
+autobaud(struct serial *serial, struct baudrate *brp)
 {
   int i;
   int failures;
@@ -609,10 +604,11 @@ autobaud( serial, brp )
  *	Assumes we know the baud rate at which NINDY's currently talking.
  * Returns 0 by default
  ******************************************************************************/
-int ninBaud( baudrate )
-    char *baudrate;	/* Desired baud rate, as a string of ASCII decimal
+int
+ninBaud(char *baudrate /* Desired baud rate, as a string of ASCII decimal
 			         * digits.
 			         */
+)
 {
   unsigned char msg[100];
 
@@ -650,9 +646,10 @@ int ninBaud( baudrate )
  *	the specified type are deleted.
  * Returns 0 by default, 1 if old_nindy
  ***************************************************************************/
-int ninBptDel( addr, type )
-    long addr;	/* Address in 960 memory	*/
-    char type;	/* 'd' => data bkpt, 'i' => instruction breakpoint */
+int
+ninBptDel(long addr, /* Address in 960 memory	*/
+	  int type /* 'd' => data bkpt, 'i' => instruction breakpoint */
+)
 {
 	unsigned char buf[10];
 
@@ -680,9 +677,10 @@ int ninBptDel( addr, type )
  *	the specified address.
  * Returns 0 by default, 1 if old_nindy
  ******************************************************************************/
-int ninBptSet( addr, type )
-    long addr;	/* Address in 960 memory	*/
-    char type;	/* 'd' => data bkpt, 'i' => instruction breakpoint */
+int
+ninBptSet(long addr, /* Address in 960 memory	*/
+	  int type /* 'd' => data bkpt, 'i' => instruction breakpoint */
+)
 {
 	unsigned char buf[10];
 
@@ -708,14 +706,14 @@ int ninBptSet( addr, type )
  *	Return the file descriptor, or -1 on failure.
  ******************************************************************************/
 int
-ninConnect( name, baudrate, brk, silent, old_protocol )
-    char *name;		/* "/dev/ttyXX" to be opened			*/
-    char *baudrate;/* baud rate: a string of ascii decimal digits (eg,"9600")*/
-    int brk;		/* 1 => send break to tty first thing after opening it*/
-    int silent;		/* 1 => stifle unnecessary messages when talking to
+ninConnect(
+  char *name, /* "/dev/ttyXX" to be opened			*/
+  char *baudrate, /* baud rate: a string of ascii decimal digits (eg,"9600")*/
+  int brk, /* 1 => send break to tty first thing after opening it*/
+  int silent, /* 1 => stifle unnecessary messages when talking to
 			 *	this tty.
 			 */
-    int old_protocol;
+  int old_protocol)
 {
 	int i;
 	char *p;
@@ -778,7 +776,8 @@ ninConnect( name, baudrate, brk, silent, old_protocol )
  *	Ask NINDY to leave GDB mode and print a NINDY prompt.
  * Returns 0 by default, 1 if old_nindy
  ****************************************************************************/
-int ninGdbExit()
+int
+ninGdbExit (void)
 {
 	if ( old_nindy ){
 		OninGdbExit();
@@ -795,8 +794,9 @@ int ninGdbExit()
  *	in its memory at the current ip.
  * Returns 0 by default, 1 if old_nindy
  ******************************************************************************/
-int ninGo( step_flag )
-    int step_flag;	/* 1 => run in single-step mode */
+int
+ninGo(int step_flag /* 1 => run in single-step mode */
+)
 {
 	if ( old_nindy ){
 		OninGo( step_flag );
@@ -812,10 +812,11 @@ int ninGo( step_flag )
  *	Read a string of bytes from NINDY's address space (960 memory).
  ******************************************************************************/
 int
-ninMemGet(ninaddr, hostaddr, len)
-     long ninaddr;	/* Source address, in the 960 memory space	*/
-     unsigned char *hostaddr;	/* Destination address, in our memory space */
-     int len;		/* Number of bytes to read			*/
+ninMemGet(
+  long ninaddr, /* Source address, in the 960 memory space	*/
+  unsigned char *hostaddr, /* Destination address, in our memory space */
+  int len /* Number of bytes to read			*/
+)
 {
 	unsigned char buf[BUFSIZE+20];
 	int cnt;		/* Number of bytes in next transfer	*/
@@ -848,10 +849,11 @@ ninMemGet(ninaddr, hostaddr, len)
  *	Write a string of bytes into NINDY's address space (960 memory).
  ******************************************************************************/
 int
-ninMemPut( ninaddr, hostaddr, len )
-     long ninaddr;	/* Destination address, in NINDY memory space	*/
-     unsigned char *hostaddr;	/* Source address, in our memory space	*/
-     int len;		/* Number of bytes to write			*/
+ninMemPut(
+  long ninaddr, /* Destination address, in NINDY memory space	*/
+  unsigned char *hostaddr, /* Source address, in our memory space	*/
+  int len /* Number of bytes to write			*/
+)
 {
 	unsigned char buf[BUFSIZE+20];
 	int cnt;		/* Number of bytes in next transfer	*/
@@ -885,10 +887,10 @@ ninMemPut( ninaddr, hostaddr, len )
  *
  ******************************************************************************/
 long
-ninRegGet( regname )
-    char *regname;	/* Register name recognized by NINDY, subject to the
+ninRegGet(char *regname /* Register name recognized by NINDY, subject to the
 			 * above limitations.
 			 */
+)
 {
 	unsigned char outbuf[10];
 	unsigned char inbuf[20];
@@ -912,11 +914,12 @@ ninRegGet( regname )
  * Returns 0 by default, 1 if old_nindy
  *
  ******************************************************************************/
-int ninRegPut( regname, val )
-    char *regname; /* Register name recognized by NINDY, subject to the
+int
+ninRegPut(char *regname, /* Register name recognized by NINDY, subject to the
 					* above limitations.
 					*/
-    long val; /* New contents of register, in host byte-order */
+	  long val /* New contents of register, in host byte-order */
+)
 {
 	unsigned char buf[20];
 	int len;
@@ -951,8 +954,9 @@ int ninRegPut( regname, val )
  * Returns 0 by default, 1 if old_nindy
  *
  ******************************************************************************/
-int ninRegsGet( regp )
-    unsigned char *regp;		/* Where to place the register dump */
+int
+ninRegsGet(unsigned char *regp /* Where to place the register dump */
+)
 {
 	if ( old_nindy ){
 		OninRegsGet( regp );
@@ -975,8 +979,9 @@ int ninRegsGet( regp )
  * Returns 0 by default, 1 if old_nindy
  *
  ******************************************************************************/
-int ninRegsPut( regp )
-    char *regp;		/* Pointer to desired values of registers */
+int
+ninRegsPut(char *regp /* Pointer to desired values of registers */
+)
 {
 /* Number of bytes that we send to nindy.  I believe this is defined by
    the protocol (it does not agree with REGISTER_BYTES).  */
@@ -1002,7 +1007,8 @@ int ninRegsPut( regp )
  * Returns 0 by default, 1 if old_nindy, 2 under special circumstances
  *
  ******************************************************************************/
-int ninReset()
+int
+ninReset(void)
 {
 	unsigned char ack;
 
@@ -1037,7 +1043,8 @@ int ninReset()
  * Returns 0 by default, 1 if old_nindy
  *
  ******************************************************************************/
-int ninSrq()
+int
+ninSrq(void)
 {
   /* FIXME: Imposes arbitrary limits on lengths of pathnames and such.  */
 	unsigned char buf[BUFSIZE];
@@ -1128,11 +1135,12 @@ int ninSrq()
  *	    - contents of register fp (little-endian byte order)
  ******************************************************************************/
 char
-ninStopWhy( whyp, ipp, fpp, spp )
-    unsigned char *whyp; /* Return the 'why' code through this pointer	*/
-    long *ipp;	/* Return contents of register ip through this pointer	*/
-    long *fpp;	/* Return contents of register fp through this pointer	*/
-    long *spp;	/* Return contents of register sp through this pointer	*/
+ninStopWhy(
+  unsigned char *whyp, /* Return the 'why' code through this pointer	*/
+  long *ipp, /* Return contents of register ip through this pointer	*/
+  long *fpp, /* Return contents of register fp through this pointer	*/
+  long *spp /* Return contents of register sp through this pointer	*/
+)
 {
 	unsigned char buf[30];
 	extern char OninStopWhy ();
@@ -1154,10 +1162,12 @@ ninStopWhy( whyp, ipp, fpp, spp )
  *	Read a '\0'-terminated string of data out of the 960 memory space.
  *
  ******************************************************************************/
-static int ninStrGet(ninaddr, hostaddr)
-     unsigned long ninaddr;	/* Address of string in NINDY memory space */
-     unsigned char *hostaddr; /* Address of the buffer to which string should
+static int
+ninStrGet(
+  unsigned long ninaddr, /* Address of string in NINDY memory space */
+  unsigned char *hostaddr /* Address of the buffer to which string should
 				               * be copied. */
+)
 {
 	unsigned char cmd[5];
 
@@ -1179,8 +1189,10 @@ static int ninStrGet(ninaddr, hostaddr)
  *		<arch>	is the processor architecture: "KA", "KB", "MC", "CA" *
  *
  ******************************************************************************/
-int ninVersion(p)
-     unsigned char *p;		/* Where to place version string */
+int
+ninVersion (
+    unsigned char *p		/* Where to place version string */
+)
 {
 
 	if (old_nindy) {

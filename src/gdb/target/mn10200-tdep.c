@@ -31,9 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
   	
 /* Should call_function allocate stack space for a struct return?  */
 int
-mn10200_use_struct_convention (gcc_p, type)
-     int gcc_p;
-     struct type *type;
+mn10200_use_struct_convention(int gcc_p, struct type *type)
 {
   return (TYPE_NFIELDS (type) > 1 || TYPE_LENGTH (type) > 8);
 }
@@ -685,8 +683,7 @@ mn10200_skip_prologue (pc)
    command, or the call dummy breakpoint gets hit.  */
 
 void
-mn10200_pop_frame (frame)
-     struct frame_info *frame;
+mn10200_pop_frame(struct frame_info *frame)
 {
   int regnum;
 
@@ -886,8 +883,7 @@ mn10200_frame_saved_pc (fi)
    pointer just prior to calling the target function (see run_stack_dummy).  */
 
 void
-mn10200_init_extra_frame_info (fi)
-     struct frame_info *fi;
+mn10200_init_extra_frame_info(struct frame_info *fi)
 {
   if (fi->next)
     fi->pc = FRAME_SAVED_PC (fi->next);
@@ -900,7 +896,7 @@ mn10200_init_extra_frame_info (fi)
 }
 
 void
-_initialize_mn10200_tdep ()
+_initialize_mn10200_tdep(void)
 {
   tm_print_insn = print_insn_mn10200;
 }

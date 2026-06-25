@@ -1,4 +1,5 @@
-int main()
+int
+main(void)
 {
         char lave = 'B';
         char *const lamprey = &lave;

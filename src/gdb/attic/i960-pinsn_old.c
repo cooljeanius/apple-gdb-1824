@@ -128,9 +128,7 @@ struct tabent {
 };
 
 static int
-pinsn( memaddr, word1, word2 )
-    unsigned long memaddr;
-    unsigned long word1, word2;
+pinsn(unsigned long memaddr, unsigned long word1, unsigned long word2)
 {
 	int instr_len;
 
@@ -172,9 +170,7 @@ pinsn( memaddr, word1, word2 )
 /* CTRL format				*/
 /****************************************/
 static void
-ctrl( memaddr, word1, word2 )
-    unsigned long memaddr;
-    unsigned long word1, word2;
+ctrl(unsigned long memaddr, unsigned long word1, unsigned long word2)
 {
 	int i;
 	static struct tabent ctrl_tab[] = {
@@ -238,9 +234,7 @@ ctrl( memaddr, word1, word2 )
 /* COBR format				*/
 /****************************************/
 static void
-cobr( memaddr, word1, word2 )
-    unsigned long memaddr;
-    unsigned long word1, word2;
+cobr(unsigned long memaddr, unsigned long word1, unsigned long word2)
 {
 	int src1;
 	int src2;
@@ -322,12 +316,11 @@ cobr( memaddr, word1, word2 )
 /****************************************/
 /* MEM format				*/
 /****************************************/
-static int				/* returns instruction length: 4 or 8 */
-mem( memaddr, word1, word2, noprint )
-    unsigned long memaddr;
-    unsigned long word1, word2;
-    int noprint;		/* If TRUE, return instruction length, but
+static int
+mem(unsigned long memaddr, unsigned long word1, unsigned long word2,
+    int noprint /* If TRUE, return instruction length, but
 				   don't output any text.  */
+)
 {
 	int i, j;
 	int len;
@@ -455,8 +448,7 @@ mem( memaddr, word1, word2, noprint )
 /* REG format				*/
 /****************************************/
 static void
-reg( word1 )
-    unsigned long word1;
+reg(unsigned long word1)
 {
 	int i, j;
 	int opcode;
@@ -704,11 +696,8 @@ reg( word1 )
  * Print out effective address for memb instructions.
  */
 static void
-ea( memaddr, mode, reg2, reg3, word1, word2 )
-    unsigned long memaddr;
-    int mode;
-    char *reg2, *reg3;
-    unsigned int word2;
+ea(unsigned long memaddr, int mode, char *reg2, char *reg3, int word1,
+   unsigned int word2)
 {
 	int scale;
 	static int scale_tab[] = { 1, 2, 4, 8, 16 };
@@ -768,8 +757,7 @@ ea( memaddr, mode, reg2, reg3, word1, word2 )
 /* Register Instruction Operand  		*/
 /************************************************/
 static void
-regop( mode, spec, reg, fp )
-    int mode, spec, reg, fp;
+regop(int mode, int spec, int reg, int fp)
 {
 	if ( fp ){				/* FLOATING POINT INSTRUCTION */
 		if ( mode == 1 ){			/* FP operand */
@@ -802,8 +790,7 @@ regop( mode, spec, reg, fp )
 /* Register Instruction Destination Operand	*/
 /************************************************/
 static void
-dstop( mode, reg, fp )
-    int mode, reg, fp;
+dstop(int mode, int reg, int fp)
 {
 	/* 'dst' operand can't be a literal. On non-FP instructions,  register
 	 * mode is assumed and "m3" acts as if were "s3";  on FP-instructions,
@@ -816,23 +803,20 @@ dstop( mode, reg, fp )
 	 }
 }
 
-
 static void
-invalid( word1 )
-    int word1;
+invalid(int word1)
 {
 	fprintf( stream, ".word\t0x%08x", word1 );
-}	
+}
 
 static void
-print_addr(a)
+print_addr(int a)
 {
 	fprintf( stream, "0x%x", a );
 }
 
 static void
-put_abs( word1, word2 )
-    unsigned long word1, word2;
+put_abs(unsigned long word1, unsigned long word2)
 {
 #ifdef IN_GDB
 	return;

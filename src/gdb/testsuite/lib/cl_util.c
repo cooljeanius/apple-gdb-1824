@@ -131,8 +131,8 @@ const char *get_clerror_string (int errcode)
     };
 }
 
-
-void print_clinfo ()
+void
+print_clinfo(void)
 {
   char *s = NULL;
   size_t len;

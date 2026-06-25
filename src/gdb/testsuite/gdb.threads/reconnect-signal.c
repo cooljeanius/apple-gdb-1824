@@ -56,7 +56,7 @@ handle (int sig)
 }
 
 int
-main ()
+main(void)
 {
   signal (SIGUSR1, handle);
 

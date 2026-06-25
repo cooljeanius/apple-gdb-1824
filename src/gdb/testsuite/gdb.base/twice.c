@@ -1,13 +1,14 @@
 #include <stdio.h>
-int nothing ()
+int
+nothing(void)
 
 {
     int x = 3 ;
     return x ;
 }
 
-
-int main ()
+int
+main(void)
 
 {
     int y ;

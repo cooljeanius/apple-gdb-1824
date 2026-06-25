@@ -3,9 +3,8 @@
 #include <stdio.h>
 #include "expect.h"
 
-main(argc,argv)
-int argc;
-char *argv[];
+int
+main(int argc, char *argv[])
 {
 	argv++;
 	exp_timeout = -1;

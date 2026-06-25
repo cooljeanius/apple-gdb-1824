@@ -18,4 +18,8 @@
 /* This simulates a JIT library.  The function is "renamed" after being
    loaded into memory.  */
 
-int jit_function_XXXX() { return 42; }
+int
+jit_function_XXXX(void)
+{
+  return 42;
+}

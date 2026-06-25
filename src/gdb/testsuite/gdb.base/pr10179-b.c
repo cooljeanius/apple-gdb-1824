@@ -1,6 +1,6 @@
 #include <stdio.h>
 
 int
-foo2()
+foo2(void)
 {
 }

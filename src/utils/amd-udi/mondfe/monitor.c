@@ -261,7 +261,7 @@ static char	*TrapMsg[] = {
 };
 
 void
-Mini_monitor()
+Mini_monitor(void)
 {
   /* Initialize breakpoint table */
 
@@ -330,7 +330,7 @@ Mini_monitor()
 }
 
 void
-Mini_loop()
+Mini_loop(void)
 {
    INT32	retval;
    int    	token_count;
@@ -662,17 +662,16 @@ Mini_loop()
 */
 
 int
-tokenize_cmd(cmd, token)
-   char  *cmd;
-   char  *token[];
-   {
-   int  token_count;
+tokenize_cmd(char *cmd, char *token[])
+{
+  int token_count;
 
-   /* Break input into tokens */
-   token_count = 0;
-   token[0] = cmd;
+  /* Break input into tokens */
+  token_count = 0;
+  token[0] = cmd;
 
-   if (cmd[0] != '\0') {
+  if (cmd[0] != '\0')
+    {
       token[token_count] = strtok(cmd, " \t,;\n\r");
 
       if (token[token_count] != NULL) {
@@ -686,13 +685,11 @@ tokenize_cmd(cmd, token)
          token[0] = cmd;
          *token[0] = '\0';
          }
-      }
+    }
 
    return (token_count);
 
-   }  /* end tokenize_cmd() */
-
-
+} /* end tokenize_cmd() */
 
 /*
 ** This function is used to convert a list of tokens
@@ -700,23 +697,22 @@ tokenize_cmd(cmd, token)
 */
 
 void
-lcase_tokens(token, token_count)
-   char *token[MAX_TOKENS];
-   int   token_count;
+lcase_tokens(char *token[MAX_TOKENS], int token_count)
 {
-   int   i;
-   char *temp_str;
+  int i;
+  char *temp_str;
 
-   for (i = 0; i < token_count; i = (i + 1)) {
+  for (i = 0; i < token_count; i = (i + 1))
+    {
       temp_str = token[i];
-      while (*temp_str != '\0') {
-         if (isupper(*temp_str))
-            *temp_str = (char) tolower(*temp_str);
-         temp_str++;
-         }
-      }  /* end for() */
-}  /* end lcase_string() */
-
+      while (*temp_str != '\0')
+	{
+	  if (isupper(*temp_str))
+	    *temp_str = (char) tolower(*temp_str);
+	  temp_str++;
+	}
+    } /* end for() */
+} /* end lcase_string() */
 
 INT32
 Mini_go_forever()
@@ -1024,7 +1020,7 @@ BYTE	*inst;
 }
 
 void
-display_msg()
+display_msg(void)
 {
 		ADDR32	c_pc1;
 		ADDR32	c_cps;
@@ -1073,9 +1069,7 @@ display_msg()
 }
 
 int
-Mini_cmdfile_input(cmd_buffer, size)
-char	*cmd_buffer;
-int	size;
+Mini_cmdfile_input(char *cmd_buffer, int size)
 {
  if (fgets(cmd_buffer, size, io_config.cmd_file) == NULL) {
    io_config.cmd_file_io = FALSE;
@@ -1088,8 +1082,7 @@ int	size;
 }
 
 void
-Mini_Ctrl_C_Handler(num)
-int	num;
+Mini_Ctrl_C_Handler(int num)
 {
    CtrlCHit = 1;  /* used for run-only mode, no debugging */
    if (io_config.io_control == TERM_29K) {
@@ -1111,9 +1104,8 @@ int	num;
   return;
 }
 
-static	int
-FindCmdIndx(CmdString)
-char	*CmdString;
+static int
+FindCmdIndx(char *CmdString)
 {
   int	i;
 
@@ -1496,8 +1488,7 @@ Mini_poll_channel0()
 } /* end Mini_poll_channel0() */
 
 void
-PrintTrapMsg(num)
-int	num;
+PrintTrapMsg(int num)
 {
   if ((num >= 0) && (num <= 22)) {
     fprintf(stderr, "%s Trap occurred at ", TrapMsg[num]);
@@ -1511,7 +1502,7 @@ int	num;
 }
 
 void
-display_term29k()
+display_term29k(void)
 {
     fprintf(stderr,"\nTerminal controlled 29K target...Type Ctrl-U <ret> for mondfe prompt\n");
     fflush (stderr);
@@ -1528,7 +1519,7 @@ display_term29k()
 }
 
 void
-display_termuser()
+display_termuser(void)
 {
 #if !defined MSDOS && !defined __APPLE__
     ioctl (fileno(stdin), TCSETA, &OldTermbuf); /*reset settings */

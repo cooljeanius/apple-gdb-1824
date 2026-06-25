@@ -791,14 +791,14 @@ handle_TERM (sig)
 
 /* Functions to send signals.  These also serve as markers.  */
 int
-gen_ABRT ()
+gen_ABRT(void)
 {
   kill (getpid (), SIGABRT);
   return 0;
-}  
+}
 
 int
-gen_HUP ()
+gen_HUP(void)
 {
 #ifdef SIGHUP
   kill (getpid (), SIGHUP);
@@ -806,10 +806,10 @@ gen_HUP ()
   handle_HUP (0);
 #endif
 return 0;
-}  
+}
 
 int
-gen_QUIT ()
+gen_QUIT(void)
 {
 #ifdef SIGQUIT
   kill (getpid (), SIGQUIT);
@@ -820,7 +820,7 @@ return 0;
 }
 
 int
-gen_ILL ()
+gen_ILL(void)
 {
 #ifdef SIGILL
   kill (getpid (), SIGILL);
@@ -831,7 +831,7 @@ return 0;
 }
 
 int
-gen_EMT ()
+gen_EMT(void)
 {
 #ifdef SIGEMT
   kill (getpid (), SIGEMT);
@@ -844,7 +844,7 @@ return 0;
 int x;
 
 int
-gen_FPE ()
+gen_FPE(void)
 {
   /* The intent behind generating SIGFPE this way is to check the mapping
      from the CPU exception itself to the signals.  It would be nice to
@@ -864,7 +864,7 @@ return 0;
 }
 
 int
-gen_BUS ()
+gen_BUS(void)
 {
 #ifdef SIGBUS
   kill (getpid (), SIGBUS);
@@ -875,7 +875,7 @@ return 0;
 }
 
 int
-gen_SEGV ()
+gen_SEGV(void)
 {
 #ifdef SIGSEGV
   kill (getpid (), SIGSEGV);
@@ -886,7 +886,7 @@ return 0;
 }
 
 int
-gen_SYS ()
+gen_SYS(void)
 {
 #ifdef SIGSYS
   kill (getpid (), SIGSYS);
@@ -897,7 +897,7 @@ return 0;
 }
 
 int
-gen_PIPE ()
+gen_PIPE(void)
 {
 #ifdef SIGPIPE
   kill (getpid (), SIGPIPE);
@@ -908,7 +908,7 @@ return 0;
 }
 
 int
-gen_ALRM ()
+gen_ALRM(void)
 {
 #ifdef SIGALRM
   kill (getpid (), SIGALRM);
@@ -919,7 +919,7 @@ return 0;
 }
 
 int
-gen_URG ()
+gen_URG(void)
 {
 #ifdef SIGURG
   kill (getpid (), SIGURG);
@@ -930,7 +930,7 @@ return 0;
 }
 
 int
-gen_TSTP ()
+gen_TSTP(void)
 {
 #ifdef SIGTSTP
   kill (getpid (), SIGTSTP);
@@ -941,7 +941,7 @@ return 0;
 }
 
 int
-gen_CONT ()
+gen_CONT(void)
 {
 #ifdef SIGCONT
   kill (getpid (), SIGCONT);
@@ -952,7 +952,7 @@ return 0;
 }
 
 int
-gen_CHLD ()
+gen_CHLD(void)
 {
 #ifdef SIGCHLD
   kill (getpid (), SIGCHLD);
@@ -963,7 +963,7 @@ return 0;
 }
 
 int
-gen_TTIN ()
+gen_TTIN(void)
 {
 #ifdef SIGTTIN
   kill (getpid (), SIGTTIN);
@@ -974,7 +974,7 @@ return 0;
 }
 
 int
-gen_TTOU ()
+gen_TTOU(void)
 {
 #ifdef SIGTTOU
   kill (getpid (), SIGTTOU);
@@ -985,7 +985,7 @@ return 0;
 }
 
 int
-gen_IO ()
+gen_IO(void)
 {
 #ifdef SIGIO
   kill (getpid (), SIGIO);
@@ -996,7 +996,7 @@ return 0;
 }
 
 int
-gen_XCPU ()
+gen_XCPU(void)
 {
 #ifdef SIGXCPU
   kill (getpid (), SIGXCPU);
@@ -1007,7 +1007,7 @@ return 0;
 }
 
 int
-gen_XFSZ ()
+gen_XFSZ(void)
 {
 #ifdef SIGXFSZ
   kill (getpid (), SIGXFSZ);
@@ -1018,7 +1018,7 @@ return 0;
 }
 
 int
-gen_VTALRM ()
+gen_VTALRM(void)
 {
 #ifdef SIGVTALRM
   kill (getpid (), SIGVTALRM);
@@ -1029,7 +1029,7 @@ return 0;
 }
 
 int
-gen_PROF ()
+gen_PROF(void)
 {
 #ifdef SIGPROF
   kill (getpid (), SIGPROF);
@@ -1040,7 +1040,7 @@ return 0;
 }
 
 int
-gen_WINCH ()
+gen_WINCH(void)
 {
 #ifdef SIGWINCH
   kill (getpid (), SIGWINCH);
@@ -1051,7 +1051,7 @@ return 0;
 }
 
 int
-gen_LOST ()
+gen_LOST(void)
 {
 #if defined(SIGLOST) && (!defined(SIGABRT) || SIGLOST != SIGABRT)
   kill (getpid (), SIGLOST);
@@ -1062,7 +1062,7 @@ return 0;
 }
 
 int
-gen_USR1 ()
+gen_USR1(void)
 {
 #ifdef SIGUSR1
   kill (getpid (), SIGUSR1);
@@ -1073,7 +1073,7 @@ return 0;
 }
 
 int
-gen_USR2 ()
+gen_USR2(void)
 {
 #ifdef SIGUSR2
   kill (getpid (), SIGUSR2);
@@ -1081,10 +1081,10 @@ gen_USR2 ()
   handle_USR2 (0);
 #endif
 return 0;
-}  
+}
 
 int
-gen_PWR ()
+gen_PWR(void)
 {
 #ifdef SIGPWR
   kill (getpid (), SIGPWR);
@@ -1095,7 +1095,7 @@ return 0;
 }
 
 int
-gen_POLL ()
+gen_POLL(void)
 {
 #if defined (SIGPOLL) && (!defined (SIGIO) || SIGPOLL != SIGIO)
   kill (getpid (), SIGPOLL);
@@ -1106,7 +1106,7 @@ return 0;
 }
 
 int
-gen_WIND ()
+gen_WIND(void)
 {
 #ifdef SIGWIND
   kill (getpid (), SIGWIND);
@@ -1117,7 +1117,7 @@ return 0;
 }
 
 int
-gen_PHONE ()
+gen_PHONE(void)
 {
 #ifdef SIGPHONE
   kill (getpid (), SIGPHONE);
@@ -1128,7 +1128,7 @@ return 0;
 }
 
 int
-gen_WAITING ()
+gen_WAITING(void)
 {
 #ifdef SIGWAITING
   kill (getpid (), SIGWAITING);
@@ -1139,7 +1139,7 @@ return 0;
 }
 
 int
-gen_LWP ()
+gen_LWP(void)
 {
 #ifdef SIGLWP
   kill (getpid (), SIGLWP);
@@ -1150,7 +1150,7 @@ return 0;
 }
 
 int
-gen_DANGER ()
+gen_DANGER(void)
 {
 #ifdef SIGDANGER
   kill (getpid (), SIGDANGER);
@@ -1161,7 +1161,7 @@ return 0;
 }
 
 int
-gen_GRANT ()
+gen_GRANT(void)
 {
 #ifdef SIGGRANT
   kill (getpid (), SIGGRANT);
@@ -1172,7 +1172,7 @@ return 0;
 }
 
 int
-gen_RETRACT ()
+gen_RETRACT(void)
 {
 #ifdef SIGRETRACT
   kill (getpid (), SIGRETRACT);
@@ -1183,7 +1183,7 @@ return 0;
 }
 
 int
-gen_MSG ()
+gen_MSG(void)
 {
 #ifdef SIGMSG
   kill (getpid (), SIGMSG);
@@ -1194,7 +1194,7 @@ return 0;
 }
 
 int
-gen_SOUND ()
+gen_SOUND(void)
 {
 #ifdef SIGSOUND
   kill (getpid (), SIGSOUND);
@@ -1205,7 +1205,7 @@ return 0;
 }
 
 int
-gen_SAK ()
+gen_SAK(void)
 {
 #ifdef SIGSAK
   kill (getpid (), SIGSAK);
@@ -1216,7 +1216,7 @@ return 0;
 }
 
 int
-gen_PRIO ()
+gen_PRIO(void)
 {
 #ifdef SIGPRIO
   kill (getpid (), SIGPRIO);
@@ -1227,7 +1227,7 @@ return 0;
 }
 
 int
-gen_33 ()
+gen_33(void)
 {
 #ifdef SIG33
   kill (getpid (), 33);
@@ -1238,7 +1238,7 @@ return 0;
 }
 
 int
-gen_34 ()
+gen_34(void)
 {
 #ifdef SIG34
   kill (getpid (), 34);
@@ -1249,7 +1249,7 @@ return 0;
 }
 
 int
-gen_35 ()
+gen_35(void)
 {
 #ifdef SIG35
   kill (getpid (), 35);
@@ -1260,7 +1260,7 @@ return 0;
 }
 
 int
-gen_36 ()
+gen_36(void)
 {
 #ifdef SIG36
   kill (getpid (), 36);
@@ -1271,7 +1271,7 @@ return 0;
 }
 
 int
-gen_37 ()
+gen_37(void)
 {
 #ifdef SIG37
   kill (getpid (), 37);
@@ -1282,7 +1282,7 @@ return 0;
 }
 
 int
-gen_38 ()
+gen_38(void)
 {
 #ifdef SIG38
   kill (getpid (), 38);
@@ -1293,7 +1293,7 @@ return 0;
 }
 
 int
-gen_39 ()
+gen_39(void)
 {
 #ifdef SIG39
   kill (getpid (), 39);
@@ -1304,7 +1304,7 @@ return 0;
 }
 
 int
-gen_40 ()
+gen_40(void)
 {
 #ifdef SIG40
   kill (getpid (), 40);
@@ -1315,7 +1315,7 @@ return 0;
 }
 
 int
-gen_41 ()
+gen_41(void)
 {
 #ifdef SIG41
   kill (getpid (), 41);
@@ -1326,7 +1326,7 @@ return 0;
 }
 
 int
-gen_42 ()
+gen_42(void)
 {
 #ifdef SIG42
   kill (getpid (), 42);
@@ -1337,7 +1337,7 @@ return 0;
 }
 
 int
-gen_43 ()
+gen_43(void)
 {
 #ifdef SIG43
   kill (getpid (), 43);
@@ -1348,7 +1348,7 @@ return 0;
 }
 
 int
-gen_44 ()
+gen_44(void)
 {
 #ifdef SIG44
   kill (getpid (), 44);
@@ -1359,7 +1359,7 @@ return 0;
 }
 
 int
-gen_45 ()
+gen_45(void)
 {
 #ifdef SIG45
   kill (getpid (), 45);
@@ -1370,7 +1370,7 @@ return 0;
 }
 
 int
-gen_46 ()
+gen_46(void)
 {
 #ifdef SIG46
   kill (getpid (), 46);
@@ -1381,7 +1381,7 @@ return 0;
 }
 
 int
-gen_47 ()
+gen_47(void)
 {
 #ifdef SIG47
   kill (getpid (), 47);
@@ -1392,7 +1392,7 @@ return 0;
 }
 
 int
-gen_48 ()
+gen_48(void)
 {
 #ifdef SIG48
   kill (getpid (), 48);
@@ -1403,7 +1403,7 @@ return 0;
 }
 
 int
-gen_49 ()
+gen_49(void)
 {
 #ifdef SIG49
   kill (getpid (), 49);
@@ -1414,7 +1414,7 @@ return 0;
 }
 
 int
-gen_50 ()
+gen_50(void)
 {
 #ifdef SIG50
   kill (getpid (), 50);
@@ -1425,7 +1425,7 @@ return 0;
 }
 
 int
-gen_51 ()
+gen_51(void)
 {
 #ifdef SIG51
   kill (getpid (), 51);
@@ -1436,7 +1436,7 @@ return 0;
 }
 
 int
-gen_52 ()
+gen_52(void)
 {
 #ifdef SIG52
   kill (getpid (), 52);
@@ -1447,7 +1447,7 @@ return 0;
 }
 
 int
-gen_53 ()
+gen_53(void)
 {
 #ifdef SIG53
   kill (getpid (), 53);
@@ -1458,7 +1458,7 @@ return 0;
 }
 
 int
-gen_54 ()
+gen_54(void)
 {
 #ifdef SIG54
   kill (getpid (), 54);
@@ -1469,7 +1469,7 @@ return 0;
 }
 
 int
-gen_55 ()
+gen_55(void)
 {
 #ifdef SIG55
   kill (getpid (), 55);
@@ -1480,7 +1480,7 @@ return 0;
 }
 
 int
-gen_56 ()
+gen_56(void)
 {
 #ifdef SIG56
   kill (getpid (), 56);
@@ -1491,7 +1491,7 @@ return 0;
 }
 
 int
-gen_57 ()
+gen_57(void)
 {
 #ifdef SIG57
   kill (getpid (), 57);
@@ -1502,7 +1502,7 @@ return 0;
 }
 
 int
-gen_58 ()
+gen_58(void)
 {
 #ifdef SIG58
   kill (getpid (), 58);
@@ -1513,7 +1513,7 @@ return 0;
 }
 
 int
-gen_59 ()
+gen_59(void)
 {
 #ifdef SIG59
   kill (getpid (), 59);
@@ -1524,7 +1524,7 @@ return 0;
 }
 
 int
-gen_60 ()
+gen_60(void)
 {
 #ifdef SIG60
   kill (getpid (), 60);
@@ -1535,7 +1535,7 @@ return 0;
 }
 
 int
-gen_61 ()
+gen_61(void)
 {
 #ifdef SIG61
   kill (getpid (), 61);
@@ -1546,7 +1546,7 @@ return 0;
 }
 
 int
-gen_62 ()
+gen_62(void)
 {
 #ifdef SIG62
   kill (getpid (), 62);
@@ -1557,7 +1557,7 @@ return 0;
 }
 
 int
-gen_63 ()
+gen_63(void)
 {
 #ifdef SIG63
   kill (getpid (), 63);
@@ -1568,14 +1568,14 @@ return 0;
 }
 
 int
-gen_TERM ()
+gen_TERM(void)
 {
   kill (getpid (), SIGTERM);
 return 0;
-}  
-
+}
+
 int
-main ()
+main(void)
 {
 #ifdef usestubs
   set_debug_traps ();

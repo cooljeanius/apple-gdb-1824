@@ -1,3 +1,4355 @@
+2026-05-24  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #202 from zaidanfaiz/fix-cgen-guile3-conditional-defines
+
+	Fix CGEN conditional definitions for Guile 3
+
+2026-05-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Testing cgen subdir Makefile targets
+
+	The following Makefile targets work in the cgen subdir with --target=arm-apple-darwin:
+	- html-local
+	- sim-arch
+	The following ones fail:
+	- opcodes
+	- sim-cpu
+	- gas-test
+	- sim-test
+
+	Change-Id: I32144ef234c439c59e97d6b6bbfcf9da7bcf2764
+
+2026-05-24  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #203 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-07f3ad912e
+
+	Bump the npm group across 1 directory with 2 updates
+
+2026-05-24  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the npm group across 1 directory with 2 updates
+
+	Bumps the npm group with 2 updates in the /src/texinfo/js directory: [dompurify](https://github.com/cure53/DOMPurify) and [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `dompurify` from 3.4.2 to 3.4.3
+	- [Release notes](https://github.com/cure53/DOMPurify/releases)
+	- [Commits](https://github.com/cure53/DOMPurify/compare/3.4.2...3.4.3)
+
+	Updates `eslint` from 10.3.0 to 10.4.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Commits](https://github.com/eslint/eslint/compare/v10.3.0...v10.4.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: dompurify
+	  dependency-version: 3.4.3
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	- dependency-name: eslint
+	  dependency-version: 10.4.0
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2026-05-24  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #201 from cooljeanius/dependabot/github_actions/actions-0f1baada16
+
+	Bump the actions group across 1 directory with 4 updates
+
+2026-05-23  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the actions group across 1 directory with 4 updates
+
+	Bumps the actions group with 4 updates in the / directory: [actions/checkout](https://github.com/actions/checkout), [mozilla-actions/sccache-action](https://github.com/mozilla-actions/sccache-action), [actions/upload-artifact](https://github.com/actions/upload-artifact) and [github/codeql-action](https://github.com/github/codeql-action).
+
+
+	Updates `actions/checkout` from 4 to 6
+	- [Release notes](https://github.com/actions/checkout/releases)
+	- [Changelog](https://github.com/actions/checkout/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/actions/checkout/compare/v4...v6)
+
+	Updates `mozilla-actions/sccache-action` from 0.0.9 to 0.0.10
+	- [Release notes](https://github.com/mozilla-actions/sccache-action/releases)
+	- [Commits](https://github.com/mozilla-actions/sccache-action/compare/v0.0.9...v0.0.10)
+
+	Updates `actions/upload-artifact` from 4 to 7
+	- [Release notes](https://github.com/actions/upload-artifact/releases)
+	- [Commits](https://github.com/actions/upload-artifact/compare/v4...v7)
+
+	Updates `github/codeql-action` from 4.35.3 to 4.35.5
+	- [Release notes](https://github.com/github/codeql-action/releases)
+	- [Changelog](https://github.com/github/codeql-action/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/github/codeql-action/compare/v4.35.3...v4.35.5)
+
+	---
+	updated-dependencies:
+	- dependency-name: actions/checkout
+	  dependency-version: '6'
+	  dependency-type: direct:production
+	  update-type: version-update:semver-major
+	  dependency-group: actions
+	- dependency-name: actions/upload-artifact
+	  dependency-version: '7'
+	  dependency-type: direct:production
+	  update-type: version-update:semver-major
+	  dependency-group: actions
+	- dependency-name: github/codeql-action
+	  dependency-version: 4.35.4
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: actions
+	- dependency-name: mozilla-actions/sccache-action
+	  dependency-version: 0.0.10
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: actions
+	...
+
+2026-05-16  Codex  <codex@openai.com>
+
+	Fix CGEN conditional definitions for Guile 3
+
+2026-05-16  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #200 from cooljeanius/dependabot/gradle/gradle-2978c64675
+
+	Bump com.google.guava:guava from 33.5.0-jre to 33.6.0-jre in the gradle group
+
+2026-05-16  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump com.google.guava:guava in the gradle group
+
+	Bumps the gradle group with 1 update: [com.google.guava:guava](https://github.com/google/guava).
+
+
+	Updates `com.google.guava:guava` from 33.5.0-jre to 33.6.0-jre
+	- [Release notes](https://github.com/google/guava/releases)
+	- [Commits](https://github.com/google/guava/commits)
+
+	---
+	updated-dependencies:
+	- dependency-name: com.google.guava:guava
+	  dependency-version: 33.6.0-jre
+	  dependency-type: direct:production
+	  update-type: version-update:semver-minor
+	  dependency-group: gradle
+	...
+
+2026-05-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	shuffle workflows around a bit more
+
+	Change-Id: I8a9136fcca0d7f0ed02238a70c0ef212155bb25b
+
+2026-05-12  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #199 from cooljeanius/macos_arm
+
+	Add aarch64-apple-darwin support
+
+2026-05-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	noticed things during review
+
+	Change-Id: I3c14c7cdbb1963b16a9e8490a10b896e0a342e62
+
+2026-05-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' into macos_arm
+
+	Change-Id: Ic0f04a827eb5c57bbd7de9e39342f69dc5895572
+
+2026-05-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	a few minor workflow updates
+
+	Change-Id: Ie69cce10eb05a518ad49389ab260d80080387185
+
+2026-05-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more frustrations, mig and (separately) gettext
+
+	Change-Id: I6f3bb782bcd1921bf139286f57143440b20cf5c7
+
+2026-05-12  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #198 from cooljeanius/dependabot/github_actions/actions-937d73b4db
+
+	Bump github/codeql-action from 4 to 4.35.3 in the actions group
+
+2026-05-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	grumble grumble
+
+	Change-Id: I1d13c0cbf57d33aabd9e716eba081e5181099cef
+
+2026-05-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Vendor in one more defs-file for mig
+
+	Change-Id: I9a1a1f032010719dbde01c67df300dd2922ee627
+
+2026-05-11  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump github/codeql-action from 4 to 4.35.3 in the actions group
+
+	Bumps the actions group with 1 update: [github/codeql-action](https://github.com/github/codeql-action).
+
+
+	Updates `github/codeql-action` from 4 to 4.35.3
+	- [Release notes](https://github.com/github/codeql-action/releases)
+	- [Changelog](https://github.com/github/codeql-action/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/github/codeql-action/compare/v4...v4.35.3)
+
+	---
+	updated-dependencies:
+	- dependency-name: github/codeql-action
+	  dependency-version: 4.35.3
+	  dependency-type: direct:production
+	  update-type: version-update:semver-minor
+	  dependency-group: actions
+	...
+
+2026-05-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update dependabot.yml
+
+	ran `zizmor .github --fix`
+
+	Change-Id: Id0f297fe5914165ce19136a3d4ea0b4400b140c0
+
+2026-05-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	Change-Id: I2893b6fe71901475cd1e8c1d7f4e82537b618d85
+	electric-fence: just do framework headers
+
+2026-05-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	attempt to address CI failures
+
+	Change-Id: I564c515513970d3e6d31de5fbb5bb20c57a3011a
+
+2026-05-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	giving up on the linking step on CI for now
+
+	Change-Id: Ib5282aaeef2a4bd8294867924d7af926e14382e0
+
+2026-05-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try harder to figure out if we can use system(3)
+
+	Change-Id: Ibd9c6020b5dd300e7ccbbe9153f65ccb4c56a5c4
+
+2026-05-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	vendor in defs-files for mig
+
+	copied from latest SDK bundled with Xcode
+
+	Change-Id: I6de1c0fe23b88a954cc2f37959682e2f7d979bf4
+
+2026-05-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	stop special-casing 64-bit mach exceptions for arm
+
+	Change-Id: Ibd2e2c2357ed2c1b605f2ec66848acc3315a99f9
+
+2026-05-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	symlink CLAUDE.md to some other names for it
+
+	Change-Id: I1f30ef5979339966fd99a7b1b1488383c97abb55
+
+2026-05-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	check for "system" function
+
+	Change-Id: I2a161e65e86a2b1ee51f1b6cec1504af80d34811
+
+2026-05-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	adjust pre-commit hooks
+
+	need to account for our somewhat different directory layout
+
+	Change-Id: I491b94f22d95838d4aabe34529285ecdc9771660
+
+2026-05-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Updating stuff
+
+	Change-Id: Id95d6e9bc538f2a3ece62cd468c6f572bb9d8d07
+
+2026-05-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	oops, forgot to commit...
+
+	looks like mostly another gnulib import
+
+	Change-Id: I78200c5e7750d6a82207034eacf5c58fb49f4cab
+
+2026-05-04  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #197 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-16c1fa549f
+
+	Bump the npm group across 1 directory with 2 updates
+
+2026-05-04  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the npm group across 1 directory with 2 updates
+
+	Bumps the npm group with 2 updates in the /src/texinfo/js directory: [dompurify](https://github.com/cure53/DOMPurify) and [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `dompurify` from 3.4.0 to 3.4.2
+	- [Release notes](https://github.com/cure53/DOMPurify/releases)
+	- [Commits](https://github.com/cure53/DOMPurify/compare/3.4.0...3.4.2)
+
+	Updates `eslint` from 10.2.1 to 10.3.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Commits](https://github.com/eslint/eslint/compare/v10.2.1...v10.3.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: dompurify
+	  dependency-version: 3.4.2
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	- dependency-name: eslint
+	  dependency-version: 10.3.0
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2026-04-27  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #195 from cooljeanius/dependabot/github_actions/actions-2e3850f479
+
+	Bump mozilla-actions/sccache-action from 0.0.9 to 0.0.10 in the actions group
+
+2026-04-27  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump mozilla-actions/sccache-action in the actions group
+
+	Bumps the actions group with 1 update: [mozilla-actions/sccache-action](https://github.com/mozilla-actions/sccache-action).
+
+
+	Updates `mozilla-actions/sccache-action` from 0.0.9 to 0.0.10
+	- [Release notes](https://github.com/mozilla-actions/sccache-action/releases)
+	- [Commits](https://github.com/mozilla-actions/sccache-action/compare/v0.0.9...v0.0.10)
+
+	---
+	updated-dependencies:
+	- dependency-name: mozilla-actions/sccache-action
+	  dependency-version: 0.0.10
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: actions
+	...
+
+2026-04-22  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #193 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-c0a4c972e8
+
+	Bump the npm group in /src/texinfo/js with 2 updates
+
+2026-04-20  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the npm group in /src/texinfo/js with 2 updates
+
+	Bumps the npm group in /src/texinfo/js with 2 updates: [eslint](https://github.com/eslint/eslint) and [typescript](https://github.com/microsoft/TypeScript).
+
+
+	Updates `eslint` from 10.2.0 to 10.2.1
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Commits](https://github.com/eslint/eslint/compare/v10.2.0...v10.2.1)
+
+	Updates `typescript` from 6.0.2 to 6.0.3
+	- [Release notes](https://github.com/microsoft/TypeScript/releases)
+	- [Commits](https://github.com/microsoft/TypeScript/compare/v6.0.2...v6.0.3)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-version: 10.2.1
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	- dependency-name: typescript
+	  dependency-version: 6.0.3
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	...
+
+2026-04-16  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #192 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/dompurify-3.4.0
+
+	Bump dompurify from 3.3.3 to 3.4.0 in /src/texinfo/js
+
+2026-04-16  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump dompurify from 3.3.3 to 3.4.0 in /src/texinfo/js
+
+	Bumps [dompurify](https://github.com/cure53/DOMPurify) from 3.3.3 to 3.4.0.
+	- [Release notes](https://github.com/cure53/DOMPurify/releases)
+	- [Commits](https://github.com/cure53/DOMPurify/compare/3.3.3...3.4.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: dompurify
+	  dependency-version: 3.4.0
+	  dependency-type: direct:production
+	...
+
+2026-04-06  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #191 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/lodash-4.18.1
+
+	Bump lodash from 4.17.23 to 4.18.1 in /src/texinfo/js
+
+2026-04-06  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump lodash from 4.17.23 to 4.18.1 in /src/texinfo/js
+
+	Bumps [lodash](https://github.com/lodash/lodash) from 4.17.23 to 4.18.1.
+	- [Release notes](https://github.com/lodash/lodash/releases)
+	- [Commits](https://github.com/lodash/lodash/compare/4.17.23...4.18.1)
+
+	---
+	updated-dependencies:
+	- dependency-name: lodash
+	  dependency-version: 4.18.1
+	  dependency-type: indirect
+	...
+
+2026-04-06  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #190 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-dca4fe5df6
+
+	Bump eslint from 10.1.0 to 10.2.0 in /src/texinfo/js in the npm group
+
+2026-04-06  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 10.1.0 to 10.2.0 in /src/texinfo/js in the npm group
+
+	Bumps the npm group in /src/texinfo/js with 1 update: [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `eslint` from 10.1.0 to 10.2.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Commits](https://github.com/eslint/eslint/compare/v10.1.0...v10.2.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-version: 10.2.0
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2026-03-30  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #189 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-574b0d5a74
+
+	Bump typescript from 5.9.3 to 6.0.2 in /src/texinfo/js in the npm group
+
+2026-03-30  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #188 from cooljeanius/dependabot/github_actions/actions-73651558a9
+
+	Bump gradle/actions from 5 to 6 in the actions group
+
+2026-03-30  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump typescript from 5.9.3 to 6.0.2 in /src/texinfo/js in the npm group
+
+	Bumps the npm group in /src/texinfo/js with 1 update: [typescript](https://github.com/microsoft/TypeScript).
+
+
+	Updates `typescript` from 5.9.3 to 6.0.2
+	- [Release notes](https://github.com/microsoft/TypeScript/releases)
+	- [Commits](https://github.com/microsoft/TypeScript/compare/v5.9.3...v6.0.2)
+
+	---
+	updated-dependencies:
+	- dependency-name: typescript
+	  dependency-version: 6.0.2
+	  dependency-type: direct:development
+	  update-type: version-update:semver-major
+	  dependency-group: npm
+	...
+
+2026-03-30  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump gradle/actions from 5 to 6 in the actions group
+
+	Bumps the actions group with 1 update: [gradle/actions](https://github.com/gradle/actions).
+
+
+	Updates `gradle/actions` from 5 to 6
+	- [Release notes](https://github.com/gradle/actions/releases)
+	- [Commits](https://github.com/gradle/actions/compare/v5...v6)
+
+	---
+	updated-dependencies:
+	- dependency-name: gradle/actions
+	  dependency-version: '6'
+	  dependency-type: direct:production
+	  update-type: version-update:semver-major
+	  dependency-group: actions
+	...
+
+2026-03-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	new gnulib import
+
+	Change-Id: I1b4d72f78c59c13aa4088b39febc88d200003748
+
+2026-03-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	trying again
+
+	Change-Id: Ifaf969ee5e6df99e1549b03a022949b7f9a6b493
+
+2026-03-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ok it builds for target aarch64 for me locally now
+
+	let's hope CI succeeds, so that I can get this merged
+
+	Change-Id: I413147c94d3df633b57debf4b96b169819ef30d2
+
+2026-03-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	floatformat stuff
+
+	Change-Id: If92297636c720acd0c8de5283632ed7b14764a37
+
+2026-03-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	More xml stuff
+
+	Change-Id: Ia211bc7573ea87f8a1b9018fc56d18215c8395e1
+
+2026-03-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	build some additional files
+
+	Change-Id: Ia55a74a4650fc7038e9c34a70b1418e8896a8d51
+
+2026-03-23  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #186 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-4a2bcddb0b
+
+	Bump eslint from 10.0.3 to 10.1.0 in /src/texinfo/js in the npm group
+
+2026-03-23  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 10.0.3 to 10.1.0 in /src/texinfo/js in the npm group
+
+	Bumps the npm group in /src/texinfo/js with 1 update: [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `eslint` from 10.0.3 to 10.1.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Commits](https://github.com/eslint/eslint/compare/v10.0.3...v10.1.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-version: 10.1.0
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2026-03-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Some frame unwinder stuff
+
+	Change-Id: I3a8175cb276f92ab295427bd5d4f156faf2039bc
+
+2026-03-20  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #185 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/flatted-3.4.2
+
+	Bump flatted from 3.3.1 to 3.4.2 in /src/texinfo/js
+
+2026-03-19  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump flatted from 3.3.1 to 3.4.2 in /src/texinfo/js
+
+	Bumps [flatted](https://github.com/WebReflection/flatted) from 3.3.1 to 3.4.2.
+	- [Commits](https://github.com/WebReflection/flatted/compare/v3.3.1...v3.4.2)
+
+	---
+	updated-dependencies:
+	- dependency-name: flatted
+	  dependency-version: 3.4.2
+	  dependency-type: indirect
+	...
+
+2026-03-16  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #183 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-c75e45a4f6
+
+	Bump dompurify from 3.3.2 to 3.3.3 in /src/texinfo/js in the npm group
+
+2026-03-16  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump dompurify from 3.3.2 to 3.3.3 in /src/texinfo/js in the npm group
+
+	Bumps the npm group in /src/texinfo/js with 1 update: [dompurify](https://github.com/cure53/DOMPurify).
+
+
+	Updates `dompurify` from 3.3.2 to 3.3.3
+	- [Release notes](https://github.com/cure53/DOMPurify/releases)
+	- [Commits](https://github.com/cure53/DOMPurify/compare/3.3.2...3.3.3)
+
+	---
+	updated-dependencies:
+	- dependency-name: dompurify
+	  dependency-version: 3.3.3
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	...
+
+2026-03-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	dwarf2-frame stuff (tailcalls)
+
+	Change-Id: Id829bf2b8f88d11c87a5e0426e969c494d799e5d
+
+2026-03-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	frame unwinder stuff
+
+	Change-Id: Ib56a3311b1f3d15892560772b0cc909351f687cd
+
+2026-03-09  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #182 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-31ddaeefbb
+
+	Bump the npm group in /src/texinfo/js with 2 updates
+
+2026-03-09  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the npm group in /src/texinfo/js with 2 updates
+
+	Bumps the npm group in /src/texinfo/js with 2 updates: [dompurify](https://github.com/cure53/DOMPurify) and [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `dompurify` from 3.3.1 to 3.3.2
+	- [Release notes](https://github.com/cure53/DOMPurify/releases)
+	- [Commits](https://github.com/cure53/DOMPurify/compare/3.3.1...3.3.2)
+
+	Updates `eslint` from 10.0.2 to 10.0.3
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Commits](https://github.com/eslint/eslint/compare/v10.0.2...v10.0.3)
+
+	---
+	updated-dependencies:
+	- dependency-name: dompurify
+	  dependency-version: 3.3.2
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	- dependency-name: eslint
+	  dependency-version: 10.0.3
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	...
+
+2026-03-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	tdesc stuff
+
+	Change-Id: I5370fcf8dd2727309492476c114a4518ee6a78cf
+
+2026-03-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	implement aarch64_macosx_fast_show_stack
+
+	copied from arm_macosx_fast_show_stack
+
+	Change-Id: I89f72c0c0a8bcb73cca9e9dafc9aea730b35ad3b
+
+2026-03-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ran `cproto -a` on tcl
+
+	among other things
+	(in the process of porting to GCC 15; up to readline subdir)
+
+	Change-Id: I1d1c8873c2b662390447861ddfdad55e63be8949
+
+2026-03-04  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update aarch64-tdep.c
+
+	OK *now* it ought to get to the linking step before failing
+
+	Change-Id: Idb13ef4a6443393fbc6e7e2bc8b8c4c7225fbc32
+
+2026-03-04  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	just a few more implicit funcs in aarch64-tdep.c
+
+	the remaining ones will all involve messing around with that `gdbarch.sh` shell script, which is annoying
+	also ran `cproto -a` on "sim"
+
+	Change-Id: I4c56f6f22fad63b7204bc1507a92b84bd606e1b3
+
+2026-03-03  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	should now get up to the linking step
+
+	(...before failing)
+
+	Change-Id: I58c6ab734456bcd42adf7d8e43a8f809f0a1e565
+
+2026-03-02  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	progress on getting aarch64-tdep.c to compile
+
+	(still incomplete)
+
+	Change-Id: I6422ac2cdd3eb94a9100bb333b130ba627700019
+
+2026-03-02  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #181 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-8d1f687a62
+
+	Bump eslint from 10.0.1 to 10.0.2 in /src/texinfo/js in the npm group
+
+2026-03-02  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #180 from cooljeanius/dependabot/github_actions/actions-674967a53d
+
+	Bump actions/upload-artifact from 6 to 7 in the actions group
+
+2026-03-02  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	copying over some more stuff from upstream
+
+	specifically "gdb-7.12-branch" in the binutils-gdb repository, since that was the last release before they started requiring a C++ compiler
+
+	Change-Id: Ide23769d37597d02c57931efc72c86bdd2edcdd1
+
+2026-03-02  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 10.0.1 to 10.0.2 in /src/texinfo/js in the npm group
+
+	Bumps the npm group in /src/texinfo/js with 1 update: [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `eslint` from 10.0.1 to 10.0.2
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Commits](https://github.com/eslint/eslint/compare/v10.0.1...v10.0.2)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-version: 10.0.2
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	...
+
+2026-03-02  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump actions/upload-artifact from 6 to 7 in the actions group
+
+	Bumps the actions group with 1 update: [actions/upload-artifact](https://github.com/actions/upload-artifact).
+
+
+	Updates `actions/upload-artifact` from 6 to 7
+	- [Release notes](https://github.com/actions/upload-artifact/releases)
+	- [Commits](https://github.com/actions/upload-artifact/compare/v6...v7)
+
+	---
+	updated-dependencies:
+	- dependency-name: actions/upload-artifact
+	  dependency-version: '7'
+	  dependency-type: direct:production
+	  update-type: version-update:semver-major
+	  dependency-group: actions
+	...
+
+2026-02-28  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #179 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/minimatch-10.2.4
+
+	Bump minimatch from 10.2.2 to 10.2.4 in /src/texinfo/js
+
+2026-02-28  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump minimatch from 10.2.2 to 10.2.4 in /src/texinfo/js
+
+	Bumps [minimatch](https://github.com/isaacs/minimatch) from 10.2.2 to 10.2.4.
+	- [Changelog](https://github.com/isaacs/minimatch/blob/main/changelog.md)
+	- [Commits](https://github.com/isaacs/minimatch/compare/v10.2.2...v10.2.4)
+
+	---
+	updated-dependencies:
+	- dependency-name: minimatch
+	  dependency-version: 10.2.4
+	  dependency-type: indirect
+	...
+
+2026-02-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ran `cproto -a` on tk subdir
+
+	or more specifically:
+	`find tk -name '*.c' -print | xargs cproto -a`
+	...followed by cleaning up some of the excess whitespace it inserted
+
+	Change-Id: I4ff271c885ea0d4bf145949d9db6a1cd538776fa
+
+2026-02-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	still trying to get readline to link properly
+
+	Change-Id: Ib1bc92930dd037ec34b834bcedcb2c57cc008616
+
+2026-02-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	huh, didn't expect the failure in readline
+
+	Change-Id: Idd4a42c6e5784881cf76f23d3e5168be3eea1bab
+
+2026-02-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	More bringing subdirs up-to-date
+
+	binutils, gdb, libgui
+
+	Change-Id: I2f099b1815248835c39b10e3237fc9b1dc7fcf07
+
+2026-02-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ran `cproto -a` on libgui
+
+	specifically:
+	`find libgui -name '*.c' -print | xargs cproto -a`
+
+	Change-Id: Iccff10971d1c89625a1f19f54db374a4ab47c375
+
+2026-02-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	Update XQuartz URL
+
+	Change-Id: I1b9be8bc51f703ac490209e4616f655784df97e7
+
+2026-02-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	Install XQuartz using instructions copied from actions/runner-images#771
+
+	Change-Id: I5862ca63a72eb7e202e8e9bed348e8d8f35e40ad
+
+2026-02-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	too many errors to work through
+
+	Change-Id: Ie74e8ab97a3ff74c52802d1e0ab7f44776b62d6d
+
+2026-02-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ran `cproto -a` on zlib
+
+	specifically, `find zlib -name '*.c' -print | xargs cproto -a`
+	...and then try building again, and make changes that result from doing so
+
+	Change-Id: I3fd086f78029681f6dbac9d6c7120bbfce833c5c
+
+2026-02-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	copy over some files from master
+
+	Change-Id: I066a4f0134619b5adcaf20a06ca3a9abd9c2a4ce
+
+2026-02-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	now it's libgui that's failing to find X11
+
+	Change-Id: Ibf0545ec02df80a15374cd9a9684e0f8dfe88120
+
+2026-02-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	bringing zlib up to modern standards
+
+	(WIP)
+
+	Change-Id: Ic8942d738db4965762b89cd6dab8b8c856ad4f0e
+
+2026-02-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	oops, runner didn't have X11...
+
+	Change-Id: I9f74fd57033956c86dd46d72f217b8ad28e015aa
+
+2026-02-23  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #178 from cooljeanius/dependabot/gradle/gradle-5cb79c2943
+
+	Bump the gradle group with 2 updates
+
+2026-02-23  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the gradle group with 2 updates
+
+	Bumps the gradle group with 2 updates: org.gradle.toolchains.foojay-resolver-convention and [com.google.guava:guava](https://github.com/google/guava).
+
+
+	Updates `org.gradle.toolchains.foojay-resolver-convention` from 0.9.0 to 1.0.0
+
+	Updates `com.google.guava:guava` from 33.4.6-jre to 33.5.0-jre
+	- [Release notes](https://github.com/google/guava/releases)
+	- [Commits](https://github.com/google/guava/commits)
+
+	---
+	updated-dependencies:
+	- dependency-name: org.gradle.toolchains.foojay-resolver-convention
+	  dependency-version: 1.0.0
+	  dependency-type: direct:production
+	  update-type: version-update:semver-major
+	  dependency-group: gradle
+	- dependency-name: com.google.guava:guava
+	  dependency-version: 33.5.0-jre
+	  dependency-type: direct:production
+	  update-type: version-update:semver-minor
+	  dependency-group: gradle
+	...
+
+2026-02-22  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	next step: frame-unwind junk
+
+	find version of frame_unwind_got_constant from before upstream converted to C++
+
+	Change-Id: I468f9af9d0bef3099ccbe956780db3d6a22ad6e4
+
+2026-02-22  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	it should get farther now
+
+	previous failure was in bfd subdir; now the failure ought to be moved up to the gdb subdir
+
+	Change-Id: I06bb306269cac026ff84a832a41633459bf2f670
+
+2026-02-22  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	updating autotools again
+
+	seeing if I can get the right file built for arm_mach_o_vec at least
+	(nope)
+
+	Change-Id: Iff17472755ea59ba94723d4e51024e7e34affc73
+
+2026-02-22  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #176 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-6f17dd8aa1
+
+	Bump the npm group across 1 directory with 5 updates
+
+2026-02-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	use different cache variable for CXX
+
+	also try to handle DVIPS failure
+
+	Change-Id: Ibc7f5035aaec7b7e3a8cc7a0192f190b814a2789
+
+2026-02-21  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the npm group across 1 directory with 5 updates
+
+	Bumps the npm group with 5 updates in the /src/texinfo/js directory:
+
+	| Package | From | To |
+	| --- | --- | --- |
+	| [dompurify](https://github.com/cure53/DOMPurify) | `3.2.5` | `3.3.1` |
+	| [eslint](https://github.com/eslint/eslint) | `9.24.0` | `9.39.2` |
+	| [finalhandler](https://github.com/pillarjs/finalhandler) | `2.1.0` | `2.1.1` |
+	| [serve-static](https://github.com/expressjs/serve-static) | `2.2.0` | `2.2.1` |
+	| [typescript](https://github.com/microsoft/TypeScript) | `5.8.3` | `5.9.3` |
+
+
+
+	Updates `dompurify` from 3.2.5 to 3.3.1
+	- [Release notes](https://github.com/cure53/DOMPurify/releases)
+	- [Commits](https://github.com/cure53/DOMPurify/compare/3.2.5...3.3.1)
+
+	Updates `eslint` from 9.24.0 to 9.39.2
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.24.0...v9.39.2)
+
+	Updates `finalhandler` from 2.1.0 to 2.1.1
+	- [Release notes](https://github.com/pillarjs/finalhandler/releases)
+	- [Changelog](https://github.com/pillarjs/finalhandler/blob/master/HISTORY.md)
+	- [Commits](https://github.com/pillarjs/finalhandler/compare/v2.1.0...v2.1.1)
+
+	Updates `serve-static` from 2.2.0 to 2.2.1
+	- [Release notes](https://github.com/expressjs/serve-static/releases)
+	- [Changelog](https://github.com/expressjs/serve-static/blob/master/HISTORY.md)
+	- [Commits](https://github.com/expressjs/serve-static/compare/v2.2.0...v2.2.1)
+
+	Updates `typescript` from 5.8.3 to 5.9.3
+	- [Release notes](https://github.com/microsoft/TypeScript/releases)
+	- [Commits](https://github.com/microsoft/TypeScript/compare/v5.8.3...v5.9.3)
+
+	---
+	updated-dependencies:
+	- dependency-name: dompurify
+	  dependency-version: 3.3.1
+	  dependency-type: direct:production
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	- dependency-name: eslint
+	  dependency-version: 9.39.2
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	- dependency-name: finalhandler
+	  dependency-version: 2.1.1
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	- dependency-name: serve-static
+	  dependency-version: 2.2.1
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	- dependency-name: typescript
+	  dependency-version: 5.9.3
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2026-02-21  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #173 from cooljeanius/dependabot/github_actions/actions-b9bddcc409
+
+	Bump the actions group across 1 directory with 4 updates
+
+2026-02-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	update some autotools stuff
+
+	Change-Id: I8d3f2718cb0ab2160ad29f4aa2eb0953d4740d60
+
+2026-02-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update macosx-nat-mutils.c
+
+	handle possibility where neither HAVE_64_BIT_STACK_LOGGING nor HAVE_32_BIT_STACK_LOGGING are true
+
+	Change-Id: Iee0c9d1f84a1d3b78c060413824d20a90434270d
+
+2026-02-21  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the actions group across 1 directory with 4 updates
+
+	Bumps the actions group with 4 updates in the / directory: [actions/checkout](https://github.com/actions/checkout), [actions/upload-artifact](https://github.com/actions/upload-artifact), [github/codeql-action](https://github.com/github/codeql-action) and [gradle/actions](https://github.com/gradle/actions).
+
+
+	Updates `actions/checkout` from 4 to 5
+	- [Release notes](https://github.com/actions/checkout/releases)
+	- [Changelog](https://github.com/actions/checkout/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/actions/checkout/compare/v4...v5)
+
+	Updates `actions/upload-artifact` from 4 to 5
+	- [Release notes](https://github.com/actions/upload-artifact/releases)
+	- [Commits](https://github.com/actions/upload-artifact/compare/v4...v5)
+
+	Updates `github/codeql-action` from 3 to 4
+	- [Release notes](https://github.com/github/codeql-action/releases)
+	- [Changelog](https://github.com/github/codeql-action/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/github/codeql-action/compare/v3...v4)
+
+	Updates `gradle/actions` from 4 to 5
+	- [Release notes](https://github.com/gradle/actions/releases)
+	- [Commits](https://github.com/gradle/actions/compare/v4...v5)
+
+	---
+	updated-dependencies:
+	- dependency-name: actions/checkout
+	  dependency-version: '5'
+	  dependency-type: direct:production
+	  update-type: version-update:semver-major
+	  dependency-group: actions
+	- dependency-name: actions/upload-artifact
+	  dependency-version: '5'
+	  dependency-type: direct:production
+	  update-type: version-update:semver-major
+	  dependency-group: actions
+	- dependency-name: github/codeql-action
+	  dependency-version: '4'
+	  dependency-type: direct:production
+	  update-type: version-update:semver-major
+	  dependency-group: actions
+	- dependency-name: gradle/actions
+	  dependency-version: '5'
+	  dependency-type: direct:production
+	  update-type: version-update:semver-major
+	  dependency-group: actions
+	...
+
+2026-02-21  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #170 from cooljeanius/dependabot/maven/src/zlib/contrib/java/jzlib-1.1.2/maven-cb2d2ff304
+
+	Bump org.apache.maven.plugins:maven-compiler-plugin from 3.14.0 to 3.14.1 in /src/zlib/contrib/java/jzlib-1.1.2 in the maven group
+
+2026-02-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	debugging build further
+
+	Change-Id: I94162086742f0164ece063d78465e67356f070c8
+
+2026-02-21  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump org.apache.maven.plugins:maven-compiler-plugin
+
+	Bumps the maven group in /src/zlib/contrib/java/jzlib-1.1.2 with 1 update: [org.apache.maven.plugins:maven-compiler-plugin](https://github.com/apache/maven-compiler-plugin).
+
+
+	Updates `org.apache.maven.plugins:maven-compiler-plugin` from 3.14.0 to 3.14.1
+	- [Release notes](https://github.com/apache/maven-compiler-plugin/releases)
+	- [Commits](https://github.com/apache/maven-compiler-plugin/compare/maven-compiler-plugin-3.14.0...maven-compiler-plugin-3.14.1)
+
+	---
+	updated-dependencies:
+	- dependency-name: org.apache.maven.plugins:maven-compiler-plugin
+	  dependency-version: 3.14.1
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: maven
+	...
+
+2026-02-20  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #177 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/lodash-4.17.23
+
+	Bump lodash from 4.17.21 to 4.17.23 in /src/texinfo/js
+
+2026-02-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	making progress
+
+	Change-Id: I9d25d19a34e93fda0b0cbcafafacc225e3817c8c
+
+2026-02-20  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump lodash from 4.17.21 to 4.17.23 in /src/texinfo/js
+
+	Bumps [lodash](https://github.com/lodash/lodash) from 4.17.21 to 4.17.23.
+	- [Release notes](https://github.com/lodash/lodash/releases)
+	- [Commits](https://github.com/lodash/lodash/compare/4.17.21...4.17.23)
+
+	---
+	updated-dependencies:
+	- dependency-name: lodash
+	  dependency-version: 4.17.23
+	  dependency-type: indirect
+	...
+
+2026-02-20  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Merge pull request #174 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/js-yaml-4.1.1
+
+	Bump js-yaml from 4.1.0 to 4.1.1 in /src/texinfo/js
+
+2026-02-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ok, it got a bit farther this time...
+
+	Change-Id: Iebcec6d25c6ebd37afe0a275a8827bcc6b773adf
+
+2026-02-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	still trying to solve same failures
+
+	Change-Id: I2e9e548a05b7ea29408f02936d78773becb54712
+
+2026-02-20  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump js-yaml from 4.1.0 to 4.1.1 in /src/texinfo/js
+
+	Bumps [js-yaml](https://github.com/nodeca/js-yaml) from 4.1.0 to 4.1.1.
+	- [Changelog](https://github.com/nodeca/js-yaml/blob/master/CHANGELOG.md)
+	- [Commits](https://github.com/nodeca/js-yaml/compare/4.1.0...4.1.1)
+
+	---
+	updated-dependencies:
+	- dependency-name: js-yaml
+	  dependency-version: 4.1.1
+	  dependency-type: indirect
+	...
+
+2026-02-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	2 separate failures
+
+	- macos: adjust condition around fdopen define in zlib
+	- ubuntu: adjust dependencies
+
+	Change-Id: I041959503953e784d0aa431332b30f87e41f52a4
+
+2026-02-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	attempt to address CI failures
+
+	Change-Id: I0625f170916b8170772b2bec29bb51b27bcec7de
+
+2026-02-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	copying over some stuff from upstream
+
+	Change-Id: Ia7afee8ed6a333f89842f031be641decd2bb8263
+
+2026-01-12  Eric Gallager  <1388660+cooljeanius@users.noreply.github.com>
+
+	Update apple-gdb-1824-macos.yml
+
+	bump macos version used to macos-latest
+
+2025-04-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #164 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-a88de3f6f8
+
+	Bump the npm group in /src/texinfo/js with 3 updates
+
+2025-04-07  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the npm group in /src/texinfo/js with 3 updates
+
+	Bumps the npm group in /src/texinfo/js with 3 updates: [dompurify](https://github.com/cure53/DOMPurify), [eslint](https://github.com/eslint/eslint) and [typescript](https://github.com/microsoft/TypeScript).
+
+
+	Updates `dompurify` from 3.2.4 to 3.2.5
+	- [Release notes](https://github.com/cure53/DOMPurify/releases)
+	- [Commits](https://github.com/cure53/DOMPurify/compare/3.2.4...3.2.5)
+
+	Updates `eslint` from 9.23.0 to 9.24.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.23.0...v9.24.0)
+
+	Updates `typescript` from 5.8.2 to 5.8.3
+	- [Release notes](https://github.com/microsoft/TypeScript/releases)
+	- [Changelog](https://github.com/microsoft/TypeScript/blob/main/azure-pipelines.release-publish.yml)
+	- [Commits](https://github.com/microsoft/TypeScript/commits)
+
+	---
+	updated-dependencies:
+	- dependency-name: dompurify
+	  dependency-version: 3.2.5
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	- dependency-name: eslint
+	  dependency-version: 9.24.0
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	- dependency-name: typescript
+	  dependency-version: 5.8.3
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	...
+
+2025-03-31  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #163 from cooljeanius/dependabot/github_actions/actions-92d22e214d
+
+	Bump mozilla-actions/sccache-action from 0.0.8 to 0.0.9 in the actions group
+
+2025-03-31  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #162 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-772e13fae4
+
+	Bump serve-static from 1.16.2 to 2.2.0 in /src/texinfo/js in the npm group
+
+2025-03-31  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #161 from cooljeanius/dependabot/gradle/gradle-ba10bd457d
+
+	Bump com.google.guava:guava from 33.4.5-jre to 33.4.6-jre in the gradle group
+
+2025-03-31  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump mozilla-actions/sccache-action in the actions group
+
+	Bumps the actions group with 1 update: [mozilla-actions/sccache-action](https://github.com/mozilla-actions/sccache-action).
+
+
+	Updates `mozilla-actions/sccache-action` from 0.0.8 to 0.0.9
+	- [Release notes](https://github.com/mozilla-actions/sccache-action/releases)
+	- [Commits](https://github.com/mozilla-actions/sccache-action/compare/v0.0.8...v0.0.9)
+
+	---
+	updated-dependencies:
+	- dependency-name: mozilla-actions/sccache-action
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: actions
+	...
+
+2025-03-31  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump serve-static in /src/texinfo/js in the npm group
+
+	Bumps the npm group in /src/texinfo/js with 1 update: [serve-static](https://github.com/expressjs/serve-static).
+
+
+	Updates `serve-static` from 1.16.2 to 2.2.0
+	- [Release notes](https://github.com/expressjs/serve-static/releases)
+	- [Changelog](https://github.com/expressjs/serve-static/blob/master/HISTORY.md)
+	- [Commits](https://github.com/expressjs/serve-static/compare/v1.16.2...v2.2.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: serve-static
+	  dependency-type: direct:development
+	  update-type: version-update:semver-major
+	  dependency-group: npm
+	...
+
+2025-03-31  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump com.google.guava:guava in the gradle group
+
+	Bumps the gradle group with 1 update: [com.google.guava:guava](https://github.com/google/guava).
+
+
+	Updates `com.google.guava:guava` from 33.4.5-jre to 33.4.6-jre
+	- [Release notes](https://github.com/google/guava/releases)
+	- [Commits](https://github.com/google/guava/commits)
+
+	---
+	updated-dependencies:
+	- dependency-name: com.google.guava:guava
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: gradle
+	...
+
+2025-03-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #158 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-35445eb290
+
+	Bump the npm group across 1 directory with 3 updates
+
+2025-03-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #159 from cooljeanius/dependabot/github_actions/actions-2225664c58
+
+	Bump mozilla-actions/sccache-action from 0.0.7 to 0.0.8 in the actions group
+
+2025-03-24  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the npm group across 1 directory with 3 updates
+
+	Bumps the npm group with 3 updates in the /src/texinfo/js directory: [eslint](https://github.com/eslint/eslint), [finalhandler](https://github.com/pillarjs/finalhandler) and [typescript](https://github.com/microsoft/TypeScript).
+
+
+	Updates `eslint` from 9.21.0 to 9.22.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.21.0...v9.22.0)
+
+	Updates `finalhandler` from 1.3.1 to 2.1.0
+	- [Release notes](https://github.com/pillarjs/finalhandler/releases)
+	- [Changelog](https://github.com/pillarjs/finalhandler/blob/master/HISTORY.md)
+	- [Commits](https://github.com/pillarjs/finalhandler/compare/v1.3.1...v2.1.0)
+
+	Updates `typescript` from 5.7.3 to 5.8.2
+	- [Release notes](https://github.com/microsoft/TypeScript/releases)
+	- [Changelog](https://github.com/microsoft/TypeScript/blob/main/azure-pipelines.release.yml)
+	- [Commits](https://github.com/microsoft/TypeScript/compare/v5.7.3...v5.8.2)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	- dependency-name: finalhandler
+	  dependency-type: direct:development
+	  update-type: version-update:semver-major
+	  dependency-group: npm
+	- dependency-name: typescript
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2025-03-24  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump mozilla-actions/sccache-action in the actions group
+
+	Bumps the actions group with 1 update: [mozilla-actions/sccache-action](https://github.com/mozilla-actions/sccache-action).
+
+
+	Updates `mozilla-actions/sccache-action` from 0.0.7 to 0.0.8
+	- [Release notes](https://github.com/mozilla-actions/sccache-action/releases)
+	- [Commits](https://github.com/mozilla-actions/sccache-action/compare/v0.0.7...v0.0.8)
+
+	---
+	updated-dependencies:
+	- dependency-name: mozilla-actions/sccache-action
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: actions
+	...
+
+2025-03-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #160 from cooljeanius/dependabot/gradle/gradle-f70396bfe8
+
+	Bump the gradle group across 1 directory with 2 updates
+
+2025-03-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	attempt to fix CI
+
+	Change-Id: I2482fe135802fcfdb98ba018124c7e2eb682714e
+
+2025-03-24  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the gradle group across 1 directory with 2 updates
+
+	Bumps the gradle group with 2 updates in the / directory: [org.junit.jupiter:junit-jupiter](https://github.com/junit-team/junit5) and [com.google.guava:guava](https://github.com/google/guava).
+
+
+	Updates `org.junit.jupiter:junit-jupiter` from 5.11.4 to 5.12.1
+	- [Release notes](https://github.com/junit-team/junit5/releases)
+	- [Commits](https://github.com/junit-team/junit5/compare/r5.11.4...r5.12.1)
+
+	Updates `com.google.guava:guava` from 33.4.0-jre to 33.4.5-jre
+	- [Release notes](https://github.com/google/guava/releases)
+	- [Commits](https://github.com/google/guava/commits)
+
+	---
+	updated-dependencies:
+	- dependency-name: org.junit.jupiter:junit-jupiter
+	  dependency-type: direct:production
+	  update-type: version-update:semver-minor
+	  dependency-group: gradle
+	- dependency-name: com.google.guava:guava
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: gradle
+	...
+
+2025-02-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #155 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-d272d139bb
+
+	Bump eslint from 9.20.1 to 9.21.0 in /src/texinfo/js in the npm group
+
+2025-02-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #154 from cooljeanius/dependabot/maven/src/zlib/contrib/java/jzlib-1.1.2/maven-98d613b785
+
+	Bump org.apache.maven.plugins:maven-compiler-plugin from 3.13.0 to 3.14.0 in /src/zlib/contrib/java/jzlib-1.1.2 in the maven group
+
+2025-02-24  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.20.1 to 9.21.0 in /src/texinfo/js in the npm group
+
+	Bumps the npm group in /src/texinfo/js with 1 update: [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `eslint` from 9.20.1 to 9.21.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.20.1...v9.21.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2025-02-24  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump org.apache.maven.plugins:maven-compiler-plugin
+
+	Bumps the maven group in /src/zlib/contrib/java/jzlib-1.1.2 with 1 update: [org.apache.maven.plugins:maven-compiler-plugin](https://github.com/apache/maven-compiler-plugin).
+
+
+	Updates `org.apache.maven.plugins:maven-compiler-plugin` from 3.13.0 to 3.14.0
+	- [Release notes](https://github.com/apache/maven-compiler-plugin/releases)
+	- [Commits](https://github.com/apache/maven-compiler-plugin/compare/maven-compiler-plugin-3.13.0...maven-compiler-plugin-3.14.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: org.apache.maven.plugins:maven-compiler-plugin
+	  dependency-type: direct:production
+	  update-type: version-update:semver-minor
+	  dependency-group: maven
+	...
+
+2025-02-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #153 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-3e38cfd1bb
+
+	Bump eslint from 9.20.0 to 9.20.1 in /src/texinfo/js in the npm group
+
+2025-02-17  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.20.0 to 9.20.1 in /src/texinfo/js in the npm group
+
+	Bumps the npm group in /src/texinfo/js with 1 update: [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `eslint` from 9.20.0 to 9.20.1
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.20.0...v9.20.1)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	...
+
+2025-02-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #152 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-ae9ad46a5a
+
+	Bump eslint from 9.19.0 to 9.20.0 in /src/texinfo/js in the npm group
+
+2025-02-10  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.19.0 to 9.20.0 in /src/texinfo/js in the npm group
+
+	Bumps the npm group in /src/texinfo/js with 1 update: [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `eslint` from 9.19.0 to 9.20.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.19.0...v9.20.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2025-02-03  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #151 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-a48ea45f8c
+
+	Bump dompurify from 3.2.3 to 3.2.4 in /src/texinfo/js in the npm group
+
+2025-02-03  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump dompurify from 3.2.3 to 3.2.4 in /src/texinfo/js in the npm group
+
+	Bumps the npm group in /src/texinfo/js with 1 update: [dompurify](https://github.com/cure53/DOMPurify).
+
+
+	Updates `dompurify` from 3.2.3 to 3.2.4
+	- [Release notes](https://github.com/cure53/DOMPurify/releases)
+	- [Commits](https://github.com/cure53/DOMPurify/compare/3.2.3...3.2.4)
+
+	---
+	updated-dependencies:
+	- dependency-name: dompurify
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	...
+
+2025-01-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #150 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-4cecffd545
+
+	Bump eslint from 9.18.0 to 9.19.0 in /src/texinfo/js in the npm group
+
+2025-01-27  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.18.0 to 9.19.0 in /src/texinfo/js in the npm group
+
+	Bumps the npm group in /src/texinfo/js with 1 update: [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `eslint` from 9.18.0 to 9.19.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.18.0...v9.19.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2025-01-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #149 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-b141d0ccca
+
+	Bump the npm group in /src/texinfo/js with 2 updates
+
+2025-01-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	split CodeQL csharp stuff into separate file
+
+	Change-Id: I97c5ea54649b434930784fe3334e12912fafd5c2
+
+2025-01-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	2 langs remain broken; do a further attempt at fixing
+
+2025-01-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	remove/replace some outdated/missing dependency packages
+
+2025-01-13  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the npm group in /src/texinfo/js with 2 updates
+
+	Bumps the npm group in /src/texinfo/js with 2 updates: [eslint](https://github.com/eslint/eslint) and [typescript](https://github.com/microsoft/TypeScript).
+
+
+	Updates `eslint` from 9.17.0 to 9.18.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.17.0...v9.18.0)
+
+	Updates `typescript` from 5.7.2 to 5.7.3
+	- [Release notes](https://github.com/microsoft/TypeScript/releases)
+	- [Changelog](https://github.com/microsoft/TypeScript/blob/main/azure-pipelines.release.yml)
+	- [Commits](https://github.com/microsoft/TypeScript/compare/v5.7.2...v5.7.3)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	- dependency-name: typescript
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	...
+
+2024-12-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #148 from cooljeanius/dependabot/gradle/gradle-87769cdb8c
+
+	Bump the gradle group with 2 updates
+
+2024-12-23  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the gradle group with 2 updates
+
+	Bumps the gradle group with 2 updates: [org.junit.jupiter:junit-jupiter](https://github.com/junit-team/junit5) and [com.google.guava:guava](https://github.com/google/guava).
+
+
+	Updates `org.junit.jupiter:junit-jupiter` from 5.11.3 to 5.11.4
+	- [Release notes](https://github.com/junit-team/junit5/releases)
+	- [Commits](https://github.com/junit-team/junit5/compare/r5.11.3...r5.11.4)
+
+	Updates `com.google.guava:guava` from 33.3.1-jre to 33.4.0-jre
+	- [Release notes](https://github.com/google/guava/releases)
+	- [Commits](https://github.com/google/guava/commits)
+
+	---
+	updated-dependencies:
+	- dependency-name: org.junit.jupiter:junit-jupiter
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: gradle
+	- dependency-name: com.google.guava:guava
+	  dependency-type: direct:production
+	  update-type: version-update:semver-minor
+	  dependency-group: gradle
+	...
+
+2024-12-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #147 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-e7c47d0131
+
+	Bump the npm group in /src/texinfo/js with 2 updates
+
+2024-12-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #146 from cooljeanius/dependabot/github_actions/actions-89a064c588
+
+	Bump mozilla-actions/sccache-action from 0.0.6 to 0.0.7 in the actions group
+
+2024-12-16  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the npm group in /src/texinfo/js with 2 updates
+
+	Bumps the npm group in /src/texinfo/js with 2 updates: [dompurify](https://github.com/cure53/DOMPurify) and [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `dompurify` from 3.2.2 to 3.2.3
+	- [Release notes](https://github.com/cure53/DOMPurify/releases)
+	- [Commits](https://github.com/cure53/DOMPurify/compare/3.2.2...3.2.3)
+
+	Updates `eslint` from 9.16.0 to 9.17.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.16.0...v9.17.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: dompurify
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2024-12-16  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump mozilla-actions/sccache-action in the actions group
+
+	Bumps the actions group with 1 update: [mozilla-actions/sccache-action](https://github.com/mozilla-actions/sccache-action).
+
+
+	Updates `mozilla-actions/sccache-action` from 0.0.6 to 0.0.7
+	- [Release notes](https://github.com/mozilla-actions/sccache-action/releases)
+	- [Commits](https://github.com/mozilla-actions/sccache-action/compare/v0.0.6...v0.0.7)
+
+	---
+	updated-dependencies:
+	- dependency-name: mozilla-actions/sccache-action
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: actions
+	...
+
+2024-12-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #145 from cooljeanius/dependabot/gradle/gradle-9f8a9b5982
+
+	Bump org.gradle.toolchains.foojay-resolver-convention from 0.8.0 to 0.9.0 in the gradle group
+
+2024-12-09  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump org.gradle.toolchains.foojay-resolver-convention
+
+	Bumps the gradle group with 1 update: org.gradle.toolchains.foojay-resolver-convention.
+
+
+	Updates `org.gradle.toolchains.foojay-resolver-convention` from 0.8.0 to 0.9.0
+
+	---
+	updated-dependencies:
+	- dependency-name: org.gradle.toolchains.foojay-resolver-convention
+	  dependency-type: direct:production
+	  update-type: version-update:semver-minor
+	  dependency-group: gradle
+	...
+
+2024-12-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	messing around in libiberty
+
+	Change-Id: I889f1bd0ce61e48fd90087ab65705bb4f58d3707
+
+2024-12-02  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #144 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-7cc653d975
+
+	Bump the npm group in /src/texinfo/js with 2 updates
+
+2024-12-02  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the npm group in /src/texinfo/js with 2 updates
+
+	Bumps the npm group in /src/texinfo/js with 2 updates: [dompurify](https://github.com/cure53/DOMPurify) and [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `dompurify` from 3.2.1 to 3.2.2
+	- [Release notes](https://github.com/cure53/DOMPurify/releases)
+	- [Commits](https://github.com/cure53/DOMPurify/compare/3.2.1...3.2.2)
+
+	Updates `eslint` from 9.15.0 to 9.16.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.15.0...v9.16.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: dompurify
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2024-11-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	a few minor tweaks
+
+	Change-Id: I20f2748b743429c08ccb17b55a00433ba0740976
+
+2024-11-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #143 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-5530162f9f
+
+	Bump the npm group in /src/texinfo/js with 2 updates
+
+2024-11-25  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the npm group in /src/texinfo/js with 2 updates
+
+	Bumps the npm group in /src/texinfo/js with 2 updates: [dompurify](https://github.com/cure53/DOMPurify) and [typescript](https://github.com/microsoft/TypeScript).
+
+
+	Updates `dompurify` from 3.2.0 to 3.2.1
+	- [Release notes](https://github.com/cure53/DOMPurify/releases)
+	- [Commits](https://github.com/cure53/DOMPurify/compare/3.2.0...3.2.1)
+
+	Updates `typescript` from 5.6.3 to 5.7.2
+	- [Release notes](https://github.com/microsoft/TypeScript/releases)
+	- [Changelog](https://github.com/microsoft/TypeScript/blob/main/azure-pipelines.release.yml)
+	- [Commits](https://github.com/microsoft/TypeScript/compare/v5.6.3...v5.7.2)
+
+	---
+	updated-dependencies:
+	- dependency-name: dompurify
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	- dependency-name: typescript
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2024-11-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	I forget what I originally came here to do, but...
+
+	...this is what I ended up doing for now.
+
+	Change-Id: I9ce56ce1ab74600f8b4859f246f1a8a9b8826f61
+
+2024-11-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ran "unempty" script
+
+	Change-Id: Ib59857660a864ab299368be530dffca90d4ac1a6
+
+2024-11-18  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #142 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-3c74cd9733
+
+	Bump the npm group in /src/texinfo/js with 2 updates
+
+2024-11-18  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the npm group in /src/texinfo/js with 2 updates
+
+	Bumps the npm group in /src/texinfo/js with 2 updates: [dompurify](https://github.com/cure53/DOMPurify) and [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `dompurify` from 3.1.7 to 3.2.0
+	- [Release notes](https://github.com/cure53/DOMPurify/releases)
+	- [Commits](https://github.com/cure53/DOMPurify/compare/3.1.7...3.2.0)
+
+	Updates `eslint` from 9.14.0 to 9.15.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.14.0...v9.15.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: dompurify
+	  dependency-type: direct:production
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2024-11-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #141 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm_and_yarn-c3cc913ac2
+
+	Bump cross-spawn from 7.0.3 to 7.0.5 in /src/texinfo/js in the npm_and_yarn group
+
+2024-11-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	minor workflow tweaks
+
+	Change-Id: I13aadfd42df83e8d9687888b2c418c8c98cd3001
+
+2024-11-17  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump cross-spawn in /src/texinfo/js in the npm_and_yarn group
+
+	Bumps the npm_and_yarn group in /src/texinfo/js with 1 update: [cross-spawn](https://github.com/moxystudio/node-cross-spawn).
+
+
+	Updates `cross-spawn` from 7.0.3 to 7.0.5
+	- [Changelog](https://github.com/moxystudio/node-cross-spawn/blob/master/CHANGELOG.md)
+	- [Commits](https://github.com/moxystudio/node-cross-spawn/compare/v7.0.3...v7.0.5)
+
+	---
+	updated-dependencies:
+	- dependency-name: cross-spawn
+	  dependency-type: indirect
+	  dependency-group: npm_and_yarn
+	...
+
+2024-11-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #139 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm_and_yarn-7503158af6
+
+	Bump @eslint/plugin-kit from 0.2.0 to 0.2.3 in /src/texinfo/js in the npm_and_yarn group
+
+2024-11-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' into dependabot/npm_and_yarn/src/texinfo/js/npm_and_yarn-7503158af6
+
+2024-11-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #140 from cooljeanius/update-go-testsuite
+
+	copy over go testsuite files from upstream gdb
+
+2024-11-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	push `go` version back to what CodeQL has
+
+	Change-Id: I8daf0bdaae9f9ece3a11074c41c9ce05b90dd220
+
+2024-11-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more tinkering with `go` stuff
+
+	Change-Id: Ic6df35e548f577662f69baa04c9298dbc960f483
+
+2024-11-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Create go.mod
+
+	I did `go mod init src/gdb/testsuite/gdb.go` and `go mod tidy`
+
+	Change-Id: I37f771cc63dd9ad9e9df6bcd833980aa483030a4
+
+2024-11-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	copy over go testsuite files from upstream gdb
+
+	Change-Id: I9592777604eaa0ce568def3f64b0e057e2580397
+
+2024-11-15  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump @eslint/plugin-kit in /src/texinfo/js in the npm_and_yarn group
+
+	Bumps the npm_and_yarn group in /src/texinfo/js with 1 update: [@eslint/plugin-kit](https://github.com/eslint/rewrite).
+
+
+	Updates `@eslint/plugin-kit` from 0.2.0 to 0.2.3
+	- [Release notes](https://github.com/eslint/rewrite/releases)
+	- [Changelog](https://github.com/eslint/rewrite/blob/main/release-please-config.json)
+	- [Commits](https://github.com/eslint/rewrite/compare/core-v0.2.0...plugin-kit-v0.2.3)
+
+	---
+	updated-dependencies:
+	- dependency-name: "@eslint/plugin-kit"
+	  dependency-type: indirect
+	  dependency-group: npm_and_yarn
+	...
+
+2024-11-04  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #138 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-dc19e5cf35
+
+	Bump eslint from 9.13.0 to 9.14.0 in /src/texinfo/js in the npm group
+
+2024-11-04  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.13.0 to 9.14.0 in /src/texinfo/js in the npm group
+
+	Bumps the npm group in /src/texinfo/js with 1 update: [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `eslint` from 9.13.0 to 9.14.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.13.0...v9.14.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2024-11-03  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	messing with workflows some more
+
+	Change-Id: Ib7f801f190d574afa290e8c68831d9bcd9b68c1b
+
+2024-10-28  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #137 from cooljeanius/dependabot/gradle/gradle-76b1e4e9c1
+
+	Bump org.junit.jupiter:junit-jupiter from 5.11.2 to 5.11.3 in the gradle group
+
+2024-10-28  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump org.junit.jupiter:junit-jupiter in the gradle group
+
+	Bumps the gradle group with 1 update: [org.junit.jupiter:junit-jupiter](https://github.com/junit-team/junit5).
+
+
+	Updates `org.junit.jupiter:junit-jupiter` from 5.11.2 to 5.11.3
+	- [Release notes](https://github.com/junit-team/junit5/releases)
+	- [Commits](https://github.com/junit-team/junit5/compare/r5.11.2...r5.11.3)
+
+	---
+	updated-dependencies:
+	- dependency-name: org.junit.jupiter:junit-jupiter
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: gradle
+	...
+
+2024-10-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	add some more "else" branches
+
+	Change-Id: Idc1154431fc284ce204a4b4fbb6462ba96b38aa9
+
+2024-10-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	stuff from other branch
+
+	Change-Id: I820e8059883d064e121b0fbf1b0962e06d650ed3
+
+2024-10-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	configure yamllint
+
+	Change-Id: Ibc26e663627c4ae69dfac78a42413e6e849ddb89
+
+2024-10-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #135 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-3c401b8a51
+
+	Bump eslint from 9.12.0 to 9.13.0 in /src/texinfo/js in the npm group
+
+2024-10-21  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.12.0 to 9.13.0 in /src/texinfo/js in the npm group
+
+	Bumps the npm group in /src/texinfo/js with 1 update: [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `eslint` from 9.12.0 to 9.13.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.12.0...v9.13.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2024-10-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	add a few more files
+
+	Change-Id: I96db3b1d206d22b60b61e2c8447ff164d87ffa82
+
+2024-10-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	reorder some header inclusions
+
+	Change-Id: Ib168db6fd0997539192814a9329726901c5c9321
+
+2024-10-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	continuing loongarch port attempt
+
+	Change-Id: I918f6eee1edb27eca2e6edbb4463e918528cbd48
+
+2024-10-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	tweaking configury in sparclite subsubdir a bit
+
+	Change-Id: If30364b7102273db52673bc10449a5458c215a1a
+
+2024-10-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	autoreconf with new libtool (2.5.3)
+
+	Change-Id: I1738e5fb7ef862fd15001aabbc9913276acd78b4
+
+2024-10-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	initial attempt at support for loongarch
+
+	(WIP)
+
+	Change-Id: I0ac1aef31a0ea6b2f45abca2417b834b3182affd
+
+2024-10-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	intl: use configured make
+
+	Change-Id: I5b538d481ac91ed0e8fecff806f02f76d733655c
+
+2024-10-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	now up to intl/relocatable.c
+
+	Change-Id: I0b5c58bcd83f2be3216800f5a0be6b495105cc92
+
+2024-10-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more intl ifdefery
+
+	Change-Id: If33c555c64272edd41259e0ad196630544ddeddf
+
+2024-10-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	further attempt at portability to OpenBSD
+
+	Change-Id: I697b4e9f40652fa029d43671af79ddc79f741501
+
+2024-10-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	blah blah blah
+
+	Change-Id: I935264d3c373920086ab393654c48497c7c93255
+
+2024-10-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more portability attempts
+
+	Change-Id: I2f02e1a750328d37bca777522a0c2a2e7a8228f1
+
+2024-10-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more messing around with configury
+
+	Change-Id: I0cd96b72d57b1b36e692b04f231c64bf10974a9e
+
+2024-10-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	I tried building on OpenBSD
+
+	on the GCC CompileFarm
+	(cfarm220)
+
+	Change-Id: I86eced26cad8d9479bd9d0d2bc5ed1a838cff1e3
+
+2024-10-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #134 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-34cd44adba
+
+	Bump typescript from 5.6.2 to 5.6.3 in /src/texinfo/js in the npm group
+
+2024-10-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #133 from cooljeanius/dependabot/github_actions/actions-a1cff6d793
+
+	Bump actions/upload-artifact from 4.4.0 to 4.4.3 in the actions group
+
+2024-10-14  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump typescript from 5.6.2 to 5.6.3 in /src/texinfo/js in the npm group
+
+	Bumps the npm group in /src/texinfo/js with 1 update: [typescript](https://github.com/microsoft/TypeScript).
+
+
+	Updates `typescript` from 5.6.2 to 5.6.3
+	- [Release notes](https://github.com/microsoft/TypeScript/releases)
+	- [Changelog](https://github.com/microsoft/TypeScript/blob/main/azure-pipelines.release.yml)
+	- [Commits](https://github.com/microsoft/TypeScript/compare/v5.6.2...v5.6.3)
+
+	---
+	updated-dependencies:
+	- dependency-name: typescript
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	...
+
+2024-10-14  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump actions/upload-artifact from 4.4.0 to 4.4.3 in the actions group
+
+	Bumps the actions group with 1 update: [actions/upload-artifact](https://github.com/actions/upload-artifact).
+
+
+	Updates `actions/upload-artifact` from 4.4.0 to 4.4.3
+	- [Release notes](https://github.com/actions/upload-artifact/releases)
+	- [Commits](https://github.com/actions/upload-artifact/compare/v4.4.0...v4.4.3)
+
+	---
+	updated-dependencies:
+	- dependency-name: actions/upload-artifact
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: actions
+	...
+
+2024-10-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #132 from cooljeanius/dependabot/gradle/gradle-4b902d7bc8
+
+	Bump org.junit.jupiter:junit-jupiter from 5.11.1 to 5.11.2 in the gradle group
+
+2024-10-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #131 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-c7ff3e4193
+
+	Bump eslint from 9.11.1 to 9.12.0 in /src/texinfo/js in the npm group
+
+2024-10-07  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump org.junit.jupiter:junit-jupiter in the gradle group
+
+	Bumps the gradle group with 1 update: [org.junit.jupiter:junit-jupiter](https://github.com/junit-team/junit5).
+
+
+	Updates `org.junit.jupiter:junit-jupiter` from 5.11.1 to 5.11.2
+	- [Release notes](https://github.com/junit-team/junit5/releases)
+	- [Commits](https://github.com/junit-team/junit5/compare/r5.11.1...r5.11.2)
+
+	---
+	updated-dependencies:
+	- dependency-name: org.junit.jupiter:junit-jupiter
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: gradle
+	...
+
+2024-10-07  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.11.1 to 9.12.0 in /src/texinfo/js in the npm group
+
+	Bumps the npm group in /src/texinfo/js with 1 update: [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `eslint` from 9.11.1 to 9.12.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.11.1...v9.12.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2024-10-04  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more fighting with CodeQL
+
+	Change-Id: I1d6b7ac84f245566ece99293c7e5eb905227e40a
+
+2024-10-04  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #130 from cooljeanius/autofix/alert-683-d616f5a220
+
+	Fix code scanning alert no. 683: Suspicious add with sizeof
+
+2024-10-04  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert no. 683: Suspicious add with sizeof
+
+2024-10-03  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #128 from cooljeanius/autofix/alert-470-fc1f6a541b
+
+	Fix code scanning alert no. 470: Multiplication result converted to larger type
+	just some simple casts
+
+2024-10-03  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert no. 470: Multiplication result converted to larger type
+
+2024-10-03  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #127 from cooljeanius/autofix/alert-687-c4cdb52370
+
+	Fix code scanning alert no. 687: Multiplication result converted to larger type
+	just a simple cast
+
+2024-10-03  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert no. 687: Multiplication result converted to larger type
+
+2024-10-03  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #126 from cooljeanius/autofix/alert-2619-8801652ce0
+
+	Fix code scanning alert no. 2619: Multiplication result converted to larger type
+	just a simple cast
+
+2024-10-02  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert no. 2619: Multiplication result converted to larger type
+
+2024-10-02  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #125 from cooljeanius/autofix/alert-2620-b718df0b69
+
+	Fix code scanning alert no. 2620: Multiplication result converted to larger type
+	just a simple cast
+
+2024-10-02  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert no. 2620: Multiplication result converted to larger type
+
+2024-10-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #124 from cooljeanius/autofix/alert-2621-b6d8564337
+
+	Fix code scanning alert no. 2621: Multiplication result converted to larger type
+
+2024-10-01  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert no. 2621: Multiplication result converted to larger type
+
+2024-09-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	oops, I left a stray semicolon in there
+	(and some other misc. editing)
+
+	Change-Id: If1c8f9bc5581f5b087a78a7919620d4efa1b618a
+
+2024-09-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	format checking
+
+	Change-Id: Ibe20e9c1f423dee8fac93e3c9699af5b298ba34e
+
+2024-09-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	some additional dependencies
+
+	Change-Id: If4d32becd1597206ad004f65fb559b410737bd33
+
+2024-09-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	1 more thing to try with info.js
+
+	Change-Id: I7fa7ea64e15d300462b9c058a305d02b3b9e51cc
+
+2024-09-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	minor yaml updates
+
+	Change-Id: I9e1987c1c23706cdb4f889be548d6acde8e65a53
+
+2024-09-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #121 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-0afc35c102
+
+	Bump the npm group in /src/texinfo/js with 2 updates
+
+2024-09-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #120 from cooljeanius/dependabot/gradle/org.junit.jupiter-junit-jupiter-5.11.1
+
+	Bump org.junit.jupiter:junit-jupiter from 5.11.0 to 5.11.1
+
+2024-09-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #119 from cooljeanius/dependabot/gradle/com.google.guava-guava-33.3.1-jre
+
+	Bump com.google.guava:guava from 33.3.0-jre to 33.3.1-jre
+
+2024-09-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #122 from cooljeanius/dependabot/github_actions/actions-5a2e91ceed
+
+	Bump mozilla-actions/sccache-action from 0.0.5 to 0.0.6 in the actions group
+
+2024-09-30  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump mozilla-actions/sccache-action in the actions group
+
+	Bumps the actions group with 1 update: [mozilla-actions/sccache-action](https://github.com/mozilla-actions/sccache-action).
+
+
+	Updates `mozilla-actions/sccache-action` from 0.0.5 to 0.0.6
+	- [Release notes](https://github.com/mozilla-actions/sccache-action/releases)
+	- [Commits](https://github.com/mozilla-actions/sccache-action/compare/v0.0.5...v0.0.6)
+
+	---
+	updated-dependencies:
+	- dependency-name: mozilla-actions/sccache-action
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: actions
+	...
+
+2024-09-30  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the npm group in /src/texinfo/js with 2 updates
+
+	Bumps the npm group in /src/texinfo/js with 2 updates: [dompurify](https://github.com/cure53/DOMPurify) and [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `dompurify` from 3.1.6 to 3.1.7
+	- [Release notes](https://github.com/cure53/DOMPurify/releases)
+	- [Commits](https://github.com/cure53/DOMPurify/compare/3.1.6...3.1.7)
+
+	Updates `eslint` from 9.11.0 to 9.11.1
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.11.0...v9.11.1)
+
+	---
+	updated-dependencies:
+	- dependency-name: dompurify
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	...
+
+2024-09-30  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump org.junit.jupiter:junit-jupiter from 5.11.0 to 5.11.1
+
+	Bumps [org.junit.jupiter:junit-jupiter](https://github.com/junit-team/junit5) from 5.11.0 to 5.11.1.
+	- [Release notes](https://github.com/junit-team/junit5/releases)
+	- [Commits](https://github.com/junit-team/junit5/compare/r5.11.0...r5.11.1)
+
+	---
+	updated-dependencies:
+	- dependency-name: org.junit.jupiter:junit-jupiter
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	...
+
+2024-09-30  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump com.google.guava:guava from 33.3.0-jre to 33.3.1-jre
+
+	Bumps [com.google.guava:guava](https://github.com/google/guava) from 33.3.0-jre to 33.3.1-jre.
+	- [Release notes](https://github.com/google/guava/releases)
+	- [Commits](https://github.com/google/guava/commits)
+
+	---
+	updated-dependencies:
+	- dependency-name: com.google.guava:guava
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	...
+
+2024-09-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #116 from cooljeanius/autofix/alert-2801-185a0a5837
+
+	Fix code scanning alert no. 2801: Incomplete string escaping or encoding
+	via Copilot Autofix
+
+2024-09-27  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert no. 2801: Incomplete string escaping or encoding
+
+2024-09-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #115 from cooljeanius/autofix/alert-2802-90c495daca
+
+	Fix code scanning alert no. 2802: Incomplete string escaping or encoding
+
+2024-09-26  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert no. 2802: Incomplete string escaping or encoding
+
+2024-09-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824.yml
+
+	1 additional step
+
+	Change-Id: Ib4fce8484795cf7e677214de6dee08fd1e36fdde
+
+2024-09-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #114 from cooljeanius/autofix/alert-693-e06eb00ddc
+
+	Fix code scanning alert no. 693: Multiplication result converted to larger type
+	just 2 simple casts
+
+2024-09-26  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert no. 693: Multiplication result converted to larger type
+
+2024-09-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #113 from cooljeanius/autofix/alert-2803-0204912611
+
+	Fix code scanning alert no. 2803: Incomplete string escaping or encoding
+	via Copilot Autofix
+
+2024-09-26  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert no. 2803: Incomplete string escaping or encoding
+
+2024-09-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	reformat some javascript with `prettier`
+
+	Change-Id: If489f26fe753b385c227c7f7fbb2877fb4ff93cb
+
+2024-09-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #112 from cooljeanius/autofix/alert-694-53d97de879
+
+	Fix code scanning alert no. 694: Multiplication result converted to larger type
+	just 2 simple casts
+
+2024-09-25  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert no. 694: Multiplication result converted to larger type
+
+2024-09-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #111 from cooljeanius/autofix/alert-692-f0cc4e3f51
+
+	Fix code scanning alert no. 692: Multiplication result converted to larger type
+
+2024-09-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update valarith.c
+
+	I think I'd prefer to use `size_t`, actually
+
+2024-09-25  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert no. 692: Multiplication result converted to larger type
+
+2024-09-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	minor tweaks
+
+	Change-Id: I6e3166c6af79b910597dc31536b8f00b304d1a03
+
+2024-09-23  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #110 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-99fd6b92d0
+
+	Bump eslint from 9.10.0 to 9.11.0 in /src/texinfo/js in the npm group
+
+2024-09-23  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.10.0 to 9.11.0 in /src/texinfo/js in the npm group
+
+	Bumps the npm group in /src/texinfo/js with 1 update: [eslint](https://github.com/eslint/eslint).
+
+
+	Updates `eslint` from 9.10.0 to 9.11.0
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.10.0...v9.11.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2024-09-22  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #109 from cooljeanius/autofix/alert-918-a80a7ecc5e
+
+	Fix code scanning alert #918: Wrong type of arguments to formatting function
+	`%zu` is the correct format specifier for `size_t`, so this change is correct.
+
+2024-09-22  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert #918: Wrong type of arguments to formatting function
+
+2024-09-22  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #108 from cooljeanius/autofix/alert-920-2ffdc3c9e7
+
+	Fix code scanning alert #920: Wrong type of arguments to formatting function
+	`%zu` is correct format specifier for `size_t`, so this is correct
+
+2024-09-22  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert #920: Wrong type of arguments to formatting function
+
+2024-09-22  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #107 from cooljeanius/autofix/alert-921-672632946e
+
+	Fix code scanning alert #921: Wrong type of arguments to formatting function
+	`%zu` is correct for `size_t`
+
+2024-09-22  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert #921: Wrong type of arguments to formatting function
+
+2024-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	fixes for w89k-rom.c
+
+	Change-Id: I45959c16cb5171e4ad2521a703c8b219223ae024
+
+2024-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #106 from cooljeanius/autofix/alert-369-267fc067d4
+
+	Fix code scanning alert #369: Client-side cross-site scripting
+	TODO: replace the example hashes with actual ones
+
+2024-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Apply code scanning fix for client-side url redirect
+
+	let's see how deep this rabbithole goes...
+
+2024-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert #369: Client-side cross-site scripting
+
+2024-09-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	go-exp.o doesn't build locally
+
+	Change-Id: Ia98e0082000221b1c84939821b52e575cb2163bc
+
+2024-09-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #105 from cooljeanius/autofix/alert-920-b347cd66b1
+
+	Fix code scanning alert #920: Wrong type of arguments to formatting function
+
+2024-09-20  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert #920: Wrong type of arguments to formatting function
+
+2024-09-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #102 from cooljeanius/autofix/alert-922-3cb1847ca3
+
+	Fix code scanning alert #922: Wrong type of arguments to formatting function
+
+2024-09-20  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert #922: Wrong type of arguments to formatting function
+
+2024-09-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	misc. minor tweaks
+
+	Change-Id: I035cd35467a4f16c257ce857c797ef9b413d468e
+
+2024-09-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #101 from cooljeanius/autofix/alert-922-7126db6a4e
+
+	Fix code scanning alert #922: Wrong type of arguments to formatting function
+
+2024-09-19  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert #922: Wrong type of arguments to formatting function
+
+2024-09-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #100 from cooljeanius/autofix/alert-923-270c0dc63f
+
+	Fix code scanning alert #923: Wrong type of arguments to formatting function
+
+2024-09-19  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert #923: Wrong type of arguments to formatting function
+
+2024-09-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	mmalloc: check for mach_error_string
+
+	Change-Id: Ib4e2164bb836f31cec68d697802be4c0c9970395
+
+2024-09-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' of github.com:cooljeanius/apple-gdb-1824
+
+	Change-Id: I8a8f124be2b1c5bc988fd1008c8553ffd501db59
+
+2024-09-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	apply to more branches
+
+	Change-Id: I3135e20f80551de9290515ce794453a1d0215eb5
+
+2024-09-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #98 from cooljeanius/autofix/alert-176-f57ac111b5
+
+	Fix code scanning alert #176: Implicit narrowing conversion in compound assignment
+
+2024-09-19  Eric Gallager  <egall@gwmail.gwu.edu>
+	    Copilot Autofix powered by AI  <62310815+github-advanced-security[bot]@users.noreply.github.com>
+
+	Fix code scanning alert #176: Implicit narrowing conversion in compound assignment
+
+2024-09-18  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Create bandit.yml
+
+2024-09-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #96 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/npm-3209a1fc86
+
+	Bump the npm group in /src/texinfo/js with 3 updates
+
+2024-09-16  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump the npm group in /src/texinfo/js with 3 updates
+
+	Bumps the npm group in /src/texinfo/js with 3 updates: [finalhandler](https://github.com/pillarjs/finalhandler), [serve-static](https://github.com/expressjs/serve-static) and [typescript](https://github.com/microsoft/TypeScript).
+
+
+	Updates `finalhandler` from 1.3.0 to 1.3.1
+	- [Release notes](https://github.com/pillarjs/finalhandler/releases)
+	- [Changelog](https://github.com/pillarjs/finalhandler/blob/master/HISTORY.md)
+	- [Commits](https://github.com/pillarjs/finalhandler/commits)
+
+	Updates `serve-static` from 1.15.0 to 1.16.2
+	- [Release notes](https://github.com/expressjs/serve-static/releases)
+	- [Changelog](https://github.com/expressjs/serve-static/blob/v1.16.2/HISTORY.md)
+	- [Commits](https://github.com/expressjs/serve-static/compare/v1.15.0...v1.16.2)
+
+	Updates `typescript` from 5.5.4 to 5.6.2
+	- [Release notes](https://github.com/microsoft/TypeScript/releases)
+	- [Changelog](https://github.com/microsoft/TypeScript/blob/main/azure-pipelines.release.yml)
+	- [Commits](https://github.com/microsoft/TypeScript/compare/v5.5.4...v5.6.2)
+
+	---
+	updated-dependencies:
+	- dependency-name: finalhandler
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	  dependency-group: npm
+	- dependency-name: serve-static
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	- dependency-name: typescript
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	  dependency-group: npm
+	...
+
+2024-09-16  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update dependabot.yml
+
+	turn on grouping for some ecosystems
+
+2024-09-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #80 from cooljeanius/autopep8
+
+	run python through autopep8
+
+2024-09-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' into autopep8
+
+2024-09-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	reformat python with `black`
+
+	Change-Id: I4e5f138cb58471b29a90efefa341ec98e45cf2af
+
+2024-09-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	run `ruff check --fix`
+
+	Change-Id: I9938a36e5b3d5f88fb6c083de9a1bfa72d70082f
+
+2024-09-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	copying over more testsuite files
+
+	Change-Id: Iff4ccf89011cb148831416d7f1bda352cc696a7f
+
+2024-09-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	just messing around a bit
+
+	Change-Id: Ida4d395771cfcbf5055ec7bff6acbcbc41a10b86
+
+2024-09-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #92 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/finalhandler-1.3.0
+
+	Bump finalhandler from 1.2.0 to 1.3.0 in /src/texinfo/js
+
+2024-09-09  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump finalhandler from 1.2.0 to 1.3.0 in /src/texinfo/js
+
+	Bumps [finalhandler](https://github.com/pillarjs/finalhandler) from 1.2.0 to 1.3.0.
+	- [Release notes](https://github.com/pillarjs/finalhandler/releases)
+	- [Changelog](https://github.com/pillarjs/finalhandler/blob/master/HISTORY.md)
+	- [Commits](https://github.com/pillarjs/finalhandler/commits)
+
+	---
+	updated-dependencies:
+	- dependency-name: finalhandler
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	...
+
+2024-09-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #91 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/eslint-9.10.0
+
+	Bump eslint from 9.9.1 to 9.10.0 in /src/texinfo/js
+
+2024-09-09  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.9.1 to 9.10.0 in /src/texinfo/js
+
+	Bumps [eslint](https://github.com/eslint/eslint) from 9.9.1 to 9.10.0.
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.9.1...v9.10.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	...
+
+2024-09-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	stop poisoning "free"
+
+	Change-Id: I1b68fce6d2728632bcb8391831edd104c9b82400
+
+2024-09-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #87 from cooljeanius/codeql-autobuild
+
+	Changes inspired by attempting to turn on autobuild for 'c-cpp'
+	(I ended up not actually turning it on, though, as it was just too difficult to get to work)
+
+2024-09-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	clean up a bit
+
+	Change-Id: I73a447e4c3435626f0a2498590b5e327ca18d160
+
+2024-09-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	stuff inspired by failure
+
+	don't install dejagnu or expect as dependencies, as they can cause failures for check-utils
+
+	Change-Id: I8946cdba9192e7544f33d0aa8e4d3336db25e0fa
+
+2024-09-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	try turning autobuild back off and putting the old manual build step back instead
+
+	Change-Id: I5e6da0a39510b26545c5a75c3997647c4fc2929a
+
+2024-09-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	...all right, I give up.
+
+	Change-Id: I63976b5e4aaf446da6388b2e8479282b8eda478a
+
+2024-09-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	still figuring out proc-service
+
+	Change-Id: Ic7b2ae2c66aa7d929d8a81d45d5da8cb13e06d09
+
+2024-09-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	some thread-db stuff
+
+	Change-Id: I40c646cf9de2e0b0d55089d9e16b18c97ccd2804
+
+2024-09-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ugh, libtool
+
+	Change-Id: I573853b58ac332d306c8b0b9b26cb93da1f7c41f
+
+2024-09-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	darn it, looks like libtool_gnu broke
+
+	Change-Id: I9a22f248885a694b0777d3d2f3ae5ba159db66f2
+
+2024-09-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	picking up where I left off last night
+
+	Change-Id: I2512ef7984479487c8a15985b7714297ec6e0a51
+
+2024-09-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more linux-nat stuff
+
+	Change-Id: I794724bc1ff0bc7da31eace46b1ec8d7adfb8efc
+
+2024-09-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more stuff for linux-nat configuration
+
+	Change-Id: Iff8d2ceae785407e3a6007667fc2bba35e632212
+
+2024-09-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	I should build a cross-compiler...
+
+	one targeting x86_64-pc-linux-gnu, for use locally
+
+	Change-Id: I54508a88374391ffc3be63484561bd81ea343e4f
+
+2024-09-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	reviewing some stuff
+
+	Change-Id: I3984872fceb0a6df4c694c14bc011f2f8472eb6b
+
+2024-09-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	focusing on gdb subdir
+
+	Change-Id: I96ce9d36d08bf24f2955a26bd0bbede152321f3c
+
+2024-09-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	slowly plodding along
+
+	Change-Id: Icd82e50d2ff7dcee01b5114bd43e8e2cf8119eef
+
+2024-09-04  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	a bit more regeneration
+
+	and stuff
+
+	Change-Id: I1afaaa2cae4d7ef099895e5567180d42ab02b1b3
+
+2024-09-04  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	pthread_setname_np signature can vary
+
+	Change-Id: I08be515d727f3ab31085cc5cb8d3962bf866f595
+	see: https://lists.gnu.org/archive/html/bug-gnulib/2024-09/msg00017.html
+
+2024-09-02  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more automake-1.17 migration
+
+	plus a few adjustments to preprocessor conditionals
+
+	Change-Id: I388b1c75214142423de7b9b4295b1783920ee339
+
+2024-09-02  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	start using automake 1.17 in some parts
+
+	Change-Id: If9bfebf6bf0658a1421436dd6dbdaa4351b4c473
+
+2024-09-02  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	I think I'm getting close
+
+	Change-Id: I62dd84ef73297ba650b8cdb04c634def1a4066f9
+
+2024-09-02  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #90 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/uglify-js-3.19.3
+
+	Bump uglify-js from 3.19.2 to 3.19.3 in /src/texinfo/js
+
+2024-09-02  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #89 from cooljeanius/dependabot/github_actions/actions/upload-artifact-4.4.0
+
+	Bump actions/upload-artifact from 4.3.6 to 4.4.0
+
+2024-09-02  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump uglify-js from 3.19.2 to 3.19.3 in /src/texinfo/js
+
+	Bumps [uglify-js](https://github.com/mishoo/UglifyJS) from 3.19.2 to 3.19.3.
+	- [Release notes](https://github.com/mishoo/UglifyJS/releases)
+	- [Commits](https://github.com/mishoo/UglifyJS/compare/v3.19.2...v3.19.3)
+
+	---
+	updated-dependencies:
+	- dependency-name: uglify-js
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	...
+
+2024-09-02  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump actions/upload-artifact from 4.3.6 to 4.4.0
+
+	Bumps [actions/upload-artifact](https://github.com/actions/upload-artifact) from 4.3.6 to 4.4.0.
+	- [Release notes](https://github.com/actions/upload-artifact/releases)
+	- [Commits](https://github.com/actions/upload-artifact/compare/v4.3.6...v4.4.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: actions/upload-artifact
+	  dependency-type: direct:production
+	  update-type: version-update:semver-minor
+	...
+
+2024-08-28  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	oops
+
+	Change-Id: Idf54551ba13186c4ae7d96b7c115e82abec6c48c
+
+2024-08-28  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	copy over a bunch of stuff from gdb 7.12
+
+	last version still buildable as plain-C
+
+	Change-Id: Ie0bf7d40499bbf621309dde2dbaf10632fb3827e
+
+2024-08-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	a few gdb-subdir things
+
+	Change-Id: I1f6b4aa9f36e1d508cfd6e9f03892d6a99469fb7
+
+2024-08-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	puttering
+
+	Change-Id: I2da3edb8b6a6f2e144cbc98cc32287153b82afba
+
+2024-08-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	efence, libiberty, and tcl
+
+	Change-Id: I1359cde1d677ce0c21d7836ec773a045e6aaef2f
+
+2024-08-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	now the libdispatch headers dragged in by CF break
+
+	Change-Id: I465e013670e9fd6b0f5f13aef35d4dadee6d8280
+
+2024-08-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	trying configuring with --host=x86_64-w64-mingw32
+
+	fails in bfd with:
+	libbfd.h:300:46: error: initialization of ‘int (*)(bfd *, struct stat *)’ from incompatible pointer type ‘int (*)(bfd *, struct _stat64 *)’ [-Wincompatible-pointer-types]
+	  300 | #define _bfd_noarchive_generic_stat_arch_elt bfd_generic_stat_arch_elt
+	      |                                              ^~~~~~~~~~~~~~~~~~~~~~~~~
+	bfd.h:6838:3: note: in expansion of macro ‘_bfd_noarchive_generic_stat_arch_elt’
+	 6838 |   NAME##_generic_stat_arch_elt, \
+	      |   ^~~~
+	srec.c:1266:3: note: in expansion of macro ‘BFD_JUMP_TABLE_ARCHIVE’
+	 1266 |   BFD_JUMP_TABLE_ARCHIVE (_bfd_noarchive),
+	      |   ^~~~~~~~~~~~~~~~~~~~~~
+	compilation terminated due to -Wfatal-errors.
+	make[3]: *** [libbfd_a-srec.o] Error 1
+	make[2]: *** [all-recursive] Error 1
+	make[1]: *** [all] Error 2
+	make: *** [all-bfd] Error 2
+
+	Change-Id: I1d626feb871ffb3b75be11e2d09068df60ff4d21
+
+2024-08-26  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #88 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/eslint-9.9.1
+
+	Bump eslint from 9.9.0 to 9.9.1 in /src/texinfo/js
+
+2024-08-26  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.9.0 to 9.9.1 in /src/texinfo/js
+
+	Bumps [eslint](https://github.com/eslint/eslint) from 9.9.0 to 9.9.1.
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.9.0...v9.9.1)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	...
+
+2024-08-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	workflow gets a bit farther now...
+
+	Change-Id: Ib58e4d7d804703b431e72881174ec9755fe93f7c
+
+2024-08-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more trying to disable -Werror
+
+	Change-Id: Ia715fb1cbdd4ca19451dad1072426f9e691c02d7
+
+2024-08-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	-Wformat-security for opcodes
+
+	Change-Id: I95f0540720b30c15e5aef1fd3371112dbd86ba0c
+
+2024-08-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	come up with OFFSET_FMT
+
+	for coffs
+
+	Change-Id: I83373b6784c5a732c37dec2ff05bb1c96ce11171
+
+2024-08-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	check mkstemp retval
+
+	Change-Id: Iae1d899f6bef1a9ef48c6f8116c02a9bec600e43
+
+2024-08-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	warnings fixup
+
+	Change-Id: Ic03606e6a56861651516cac99d5a2b31e8cee2ce
+
+2024-08-24  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	-Werror is annoying
+
+	Change-Id: I3a7266a558e29bb2b6e3ff64759460c04c5d4cef
+
+2024-08-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #86 from cooljeanius/dependabot/gradle/org.junit.jupiter-junit-jupiter-5.11.0
+
+	Bump org.junit.jupiter:junit-jupiter from 5.10.3 to 5.11.0
+
+2024-08-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #85 from cooljeanius/dependabot/gradle/com.google.guava-guava-33.3.0-jre
+
+	Bump com.google.guava:guava from 33.2.1-jre to 33.3.0-jre
+
+2024-08-19  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump org.junit.jupiter:junit-jupiter from 5.10.3 to 5.11.0
+
+	Bumps [org.junit.jupiter:junit-jupiter](https://github.com/junit-team/junit5) from 5.10.3 to 5.11.0.
+	- [Release notes](https://github.com/junit-team/junit5/releases)
+	- [Commits](https://github.com/junit-team/junit5/compare/r5.10.3...r5.11.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: org.junit.jupiter:junit-jupiter
+	  dependency-type: direct:production
+	  update-type: version-update:semver-minor
+	...
+
+2024-08-19  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump com.google.guava:guava from 33.2.1-jre to 33.3.0-jre
+
+	Bumps [com.google.guava:guava](https://github.com/google/guava) from 33.2.1-jre to 33.3.0-jre.
+	- [Release notes](https://github.com/google/guava/releases)
+	- [Commits](https://github.com/google/guava/commits)
+
+	---
+	updated-dependencies:
+	- dependency-name: com.google.guava:guava
+	  dependency-type: direct:production
+	  update-type: version-update:semver-minor
+	...
+
+2024-08-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	hm...
+
+	Change-Id: Iea568bd73df6f6529d54b152c1fdc973cbbf7f7e
+
+2024-08-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ok, so now we get up to a binutils linking failure
+
+	Change-Id: Ic47c9f934817f6e1056b5f5f2a40ad6e3ff1c3d9
+
+2024-08-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ok, we should now at least get thru bfd
+
+	Change-Id: Iae47eca89feec11def968aaf7be94900e4d3e928
+
+2024-08-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' into autopep8
+
+2024-08-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #84 from cooljeanius/dependabot/github_actions/actions/upload-artifact-4.3.6
+
+	Bump actions/upload-artifact from 4.3.5 to 4.3.6
+
+2024-08-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more silencing conversion warnings for bfd
+
+	Change-Id: I64606cf9f2d61c149e12f415917ad5bae408410a
+
+2024-08-13  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump actions/upload-artifact from 4.3.5 to 4.3.6
+
+	Bumps [actions/upload-artifact](https://github.com/actions/upload-artifact) from 4.3.5 to 4.3.6.
+	- [Release notes](https://github.com/actions/upload-artifact/releases)
+	- [Commits](https://github.com/actions/upload-artifact/compare/v4.3.5...v4.3.6)
+
+	---
+	updated-dependencies:
+	- dependency-name: actions/upload-artifact
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	...
+
+2024-08-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #83 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/eslint-9.9.0
+
+	Bump eslint from 9.8.0 to 9.9.0 in /src/texinfo/js
+
+2024-08-13  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.8.0 to 9.9.0 in /src/texinfo/js
+
+	Bumps [eslint](https://github.com/eslint/eslint) from 9.8.0 to 9.9.0.
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.8.0...v9.9.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	...
+
+2024-08-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #82 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/uglify-js-3.19.2
+
+	Bump uglify-js from 3.19.1 to 3.19.2 in /src/texinfo/js
+
+2024-08-12  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump uglify-js from 3.19.1 to 3.19.2 in /src/texinfo/js
+
+	Bumps [uglify-js](https://github.com/mishoo/UglifyJS) from 3.19.1 to 3.19.2.
+	- [Release notes](https://github.com/mishoo/UglifyJS/releases)
+	- [Commits](https://github.com/mishoo/UglifyJS/compare/v3.19.1...v3.19.2)
+
+	---
+	updated-dependencies:
+	- dependency-name: uglify-js
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	...
+
+2024-08-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #81 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/modernizr-3.13.1
+
+	Bump modernizr from 3.13.0 to 3.13.1 in /src/texinfo/js
+
+2024-08-12  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump modernizr from 3.13.0 to 3.13.1 in /src/texinfo/js
+
+	Bumps [modernizr](https://github.com/Modernizr/Modernizr) from 3.13.0 to 3.13.1.
+	- [Release notes](https://github.com/Modernizr/Modernizr/releases)
+	- [Changelog](https://github.com/Modernizr/Modernizr/blob/v3.13.1/CHANGELOG.md)
+	- [Commits](https://github.com/Modernizr/Modernizr/compare/v3.13.0...v3.13.1)
+
+	---
+	updated-dependencies:
+	- dependency-name: modernizr
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	...
+
+2024-08-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	further warning flag tweaking
+
+	Change-Id: Icdf6e96e831301fa7eebab662281ce23cfc7acc4
+
+2024-08-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	update warning flags used
+
+	Change-Id: Ib5a85ab2f9907ac9658c7db08065d4d8a55e424b
+
+2024-08-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	remove `term` as a dependency, as apparently it has been disabled in Homebrew
+
+2024-08-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	codeql: skip zlib subdirectory
+
+	the actual error looks like this:
+	/bin/bash ./libtool  --tag=CC   --mode=link gcc  -Wall -Wextra -Wwrite-strings -Wpointer-arith -Wfloat-conversion -Wstrict-prototypes -Wmissing-prototypes -Wimplicit -Wnested-externs -Wmissing-parameter-type -Wabi -Wswitch -Wparentheses -Wold-style-definition -Wold-style-declaration -Wno-unused-parameter -pedantic -Wno-long-long -g -O2   -L./../.. -version-info 1:0:0 -lz  -o libminizip.la -rpath /usr/lib ioapi.lo mztools.lo unzip.lo zip.lo   -lz
+	  libtool: link: gcc -shared  -fPIC -DPIC  .libs/ioapi.o .libs/mztools.o .libs/unzip.o .libs/zip.o   -L./../.. -lz  -g -O2   -Wl,-soname -Wl,libminizip.so.1 -o .libs/libminizip.so.1.0.0
+	  /usr/bin/ld: ./../../libz.a(libz_a-trees.o): warning: relocation against `_length_code' in read-only section `.text'
+	  /usr/bin/ld: ./../../libz.a(libz_a-deflate.o): relocation R_X86_64_PC32 against symbol `_length_code' can not be used when making a shared object; recompile with -fPIC
+	  /usr/bin/ld: final link failed: bad value
+	  collect2: error: ld returned 1 exit status
+	  make[5]: *** [Makefile:549: libminizip.la] Error 1
+	...but I can't figure that out at the moment, so let's just avoid it for now...
+
+	Change-Id: I03dbcc973b665d26e4ab77970e43415e93e1067d
+
+2024-08-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	ok, let's try this...
+
+	Change-Id: I3935826469ccb3589a4d6ab7d58a65cc0617a443
+
+2024-08-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	try turning on autobuild for 'c-cpp'
+
+	Change-Id: I1f31e203ad4be9485cefc5200bd6ab8d8a433d17
+
+2024-08-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	tweak linting a bit
+
+	Change-Id: I56cb394d702520714a6869ae87c101b10225e90f
+
+2024-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	a bit more autopep8 stuff
+
+	Change-Id: Ifeff677ddc9de58862daf342c2f21e929e625eef
+
+2024-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	run python through autopep8
+
+	Change-Id: I47e8d5cfaf6dbf8c745b7fb914ff3da515dc5e78
+
+2024-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	a few more tweaks
+
+	Change-Id: Ic69e7ec3873182b6a09432f422d6b48775ad45b1
+
+2024-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	1 more run of black
+
+	Change-Id: Idfaf40e61d31fb1395c6c178cbc8b7f2c4a49669
+
+2024-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	run python through pyupgrade again
+
+	Change-Id: Iec568eb1117ce219c928d6c9ea5baee9789c574f
+
+2024-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update copyright.py
+
+	run `ruff check --fix`
+
+	Change-Id: I0a4ef46c9aa0e98c6572d184c081ba79583cddce
+
+2024-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	reformat python with black again
+
+	Change-Id: I922dc2b3d3161168e847707b050492b0ddf867c2
+
+2024-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	run python through 2to3
+
+	Change-Id: I9e6d62ba4ef7e725ba37bee5ec624238cf398968
+
+2024-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	run python through black again
+
+	Change-Id: Iee1ac6b5ddcc269ed79712a16d4cba29cb59a123
+
+2024-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	run pyupgrade on python files
+
+	Change-Id: I425a2f0b0d45906d5f67f1491227c0a75a7d67aa
+
+2024-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	run `ruff check --fix` on python files
+
+	Change-Id: Ic219109575143f04fbad4dbc6b8968d98643a421
+
+2024-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	run black on python files
+
+	Change-Id: I0e47e2632b7a92c6d1e434ce889c2a15b0bd0cfe
+
+2024-08-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	a bit more yamllint
+
+	Change-Id: Ic491c9c9c0c7322f94a1b590b41643bb54068823
+
+2024-08-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	a bit of yamllint
+
+	Change-Id: I0d4d530a40f6964fffef2bdbba21838c266eeae9
+
+2024-08-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #78 from cooljeanius/dependabot/github_actions/gradle/actions-4
+
+	Bump gradle/actions from 3 to 4
+
+2024-08-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #77 from cooljeanius/dependabot/github_actions/actions/upload-artifact-4.3.5
+
+	Bump actions/upload-artifact from 4.3.4 to 4.3.5
+
+2024-08-05  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump gradle/actions from 3 to 4
+
+	Bumps [gradle/actions](https://github.com/gradle/actions) from 3 to 4.
+	- [Release notes](https://github.com/gradle/actions/releases)
+	- [Commits](https://github.com/gradle/actions/compare/v3...v4)
+
+	---
+	updated-dependencies:
+	- dependency-name: gradle/actions
+	  dependency-type: direct:production
+	  update-type: version-update:semver-major
+	...
+
+2024-08-05  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump actions/upload-artifact from 4.3.4 to 4.3.5
+
+	Bumps [actions/upload-artifact](https://github.com/actions/upload-artifact) from 4.3.4 to 4.3.5.
+	- [Release notes](https://github.com/actions/upload-artifact/releases)
+	- [Commits](https://github.com/actions/upload-artifact/compare/v4.3.4...v4.3.5)
+
+	---
+	updated-dependencies:
+	- dependency-name: actions/upload-artifact
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	...
+
+2024-07-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #75 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/uglify-js-3.19.1
+
+	Bump uglify-js from 3.19.0 to 3.19.1 in /src/texinfo/js
+
+2024-07-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #76 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/eslint-9.8.0
+
+	Bump eslint from 9.7.0 to 9.8.0 in /src/texinfo/js
+
+2024-07-29  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump uglify-js from 3.19.0 to 3.19.1 in /src/texinfo/js
+
+	Bumps [uglify-js](https://github.com/mishoo/UglifyJS) from 3.19.0 to 3.19.1.
+	- [Release notes](https://github.com/mishoo/UglifyJS/releases)
+	- [Commits](https://github.com/mishoo/UglifyJS/compare/v3.19.0...v3.19.1)
+
+	---
+	updated-dependencies:
+	- dependency-name: uglify-js
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	...
+
+2024-07-29  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #74 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/typescript-5.5.4
+
+	Bump typescript from 5.5.3 to 5.5.4 in /src/texinfo/js
+
+2024-07-29  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.7.0 to 9.8.0 in /src/texinfo/js
+
+	Bumps [eslint](https://github.com/eslint/eslint) from 9.7.0 to 9.8.0.
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.7.0...v9.8.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	...
+
+2024-07-29  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump typescript from 5.5.3 to 5.5.4 in /src/texinfo/js
+
+	Bumps [typescript](https://github.com/Microsoft/TypeScript) from 5.5.3 to 5.5.4.
+	- [Release notes](https://github.com/Microsoft/TypeScript/releases)
+	- [Changelog](https://github.com/microsoft/TypeScript/blob/main/azure-pipelines.release.yml)
+	- [Commits](https://github.com/Microsoft/TypeScript/compare/v5.5.3...v5.5.4)
+
+	---
+	updated-dependencies:
+	- dependency-name: typescript
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	...
+
+2024-07-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	CodeQL is picking up conftests again...
+
+	Change-Id: I95905e723b643d898a4bfae6109d186b1199afaf
+
+2024-07-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	reacting to CI results again
+
+	Change-Id: Ia849251481db9be0e6dc695493290327aa412b93
+
+2024-07-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #73 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/requirejs-2.3.7
+
+	Bump requirejs from 2.3.6 to 2.3.7 in /src/texinfo/js
+
+2024-07-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	a bit more stuff
+
+	Change-Id: I06a770468db262ded7f058359c4ad8cb34c50a4f
+
+2024-07-27  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump requirejs from 2.3.6 to 2.3.7 in /src/texinfo/js
+
+	Bumps [requirejs](https://github.com/jrburke/r.js) from 2.3.6 to 2.3.7.
+	- [Commits](https://github.com/jrburke/r.js/compare/2.3.6...2.3.7)
+
+	---
+	updated-dependencies:
+	- dependency-name: requirejs
+	  dependency-type: indirect
+	...
+
+2024-07-27  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	minor tweaks for workflows
+
+	Change-Id: Ibca4e3b59aa0927a4aa5851cc7819ddd8ea46ee7
+
+2024-07-22  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #72 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/uglify-js-3.19.0
+
+	Bump uglify-js from 3.18.0 to 3.19.0 in /src/texinfo/js
+
+2024-07-22  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump uglify-js from 3.18.0 to 3.19.0 in /src/texinfo/js
+
+	Bumps [uglify-js](https://github.com/mishoo/UglifyJS) from 3.18.0 to 3.19.0.
+	- [Release notes](https://github.com/mishoo/UglifyJS/releases)
+	- [Commits](https://github.com/mishoo/UglifyJS/compare/v3.18.0...v3.19.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: uglify-js
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	...
+
+2024-07-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more configury tomfoolery
+
+	Change-Id: I9df10d1806621fea7195606b47b43da06fb6d1a6
+
+2024-07-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	leaving off at infrun.c in apple-gdb-1344
+
+	- restore fix-and-continue support for PPC
+	- and other misc. stuff
+
+	Change-Id: I00951b501056ea91df54c2113eecf166a7a373c4
+
+2024-07-21  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more of the same
+
+	Change-Id: I89e0affc9cdedd52125a00462c5804d81f399dbc
+
+2024-07-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more minor Makefile modifications
+
+	Change-Id: Ia75e30cb5a106bf1dcf4485b71df37d4eb65a521
+
+2024-07-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more attempting to ensure correct m4 is used
+
+	will be picking up again from fix-and-continue.c in apple-gdb-1344 next
+
+	Change-Id: I9d0546ca1927f75fc082b5c461742b3d4a7d21c1
+
+2024-07-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	apply some patches from upstream libbacktrace
+
+	Change-Id: I1ab211267c20acec25f2eebb67866750f296f024
+
+2024-07-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	really ought to be going to bed, but...
+
+	Change-Id: If8bc2c4077bc89f99f9d86d9d086e743dfa4fe26
+
+2024-07-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more messing with bluegnu
+
+	Change-Id: I60d2eba0eceac89995b93d5689f7b468cdecf2b7
+
+2024-07-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more tinkering, July 20, 2024
+
+	Change-Id: I9a799a93067d7f3d1606e8132051c300d940e517
+
+2024-07-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	check in mmalloc static analysis results
+
+	also some more tweaking of gdb's doc-building rules
+	and other stuff
+
+	Change-Id: I1ec5ed0c218dcd1a6495e16e93b2db3607671778
+
+2024-07-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	distcleaning harder
+
+	Change-Id: I44b36f9900412498f3800255a5129bff3d0d1b0f
+
+2024-07-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	cleaning again
+
+	Change-Id: I73860620c0e19d7c42f417a8a56dc99662403182
+
+2024-07-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	move profiles to subdir
+
+	closes issue #70
+	now back to apple-gdb-1344; will be picking back up again from arm-tdep.c from that revision
+
+	Change-Id: Ib86f7cc5f8e02b51a6d76a51a18b3aef4178d4c4
+
+2024-07-18  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	attempt to fix failure
+
+	Change-Id: I8ea6a8c2d4a6a6b35af801f51d62e2b02e9ab645
+
+2024-07-18  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	allow some of the doxygen output to be checked in
+
+	Change-Id: I245ff22cb5d811d9b378156f333e125422cb7ae1
+
+2024-07-18  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	messing around with doxygen output
+
+	Change-Id: I1e91532c8589a24fa6f205d15f4647f4119d9554
+
+2024-07-18  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	address some clang warnings seen on CI
+
+	and stuff
+	(now back to symfile.c in review of apple-gdb-1461.2 revision)
+
+	Change-Id: Ia9cff386e0a92a2de958b167e5101549621b5271
+
+2024-07-18  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update macosx-nat-inferior.c
+
+	avoid duplicate symbols
+
+	Change-Id: I8e02fd56aa73b2bb917e2c6d7c4e29eaef0b84fe
+
+2024-07-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	gdb-1461.2 revision review: back to remote.c
+
+	also, add Makefile rule for generation of sarif output
+
+	Change-Id: I2712a366cfabeba4eec5cba7f61fa798d0720029
+
+2024-07-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	reconsideration of gdb-1461.2 changes
+
+	made it through src/gdb/macosx/macosx-nat-inferior.c
+
+	Change-Id: Ie38b5d3da592ee46c07a3ea7c948f0a8d1ffac6a
+
+2024-07-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #71 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/eslint-9.7.0
+
+	Bump eslint from 9.6.0 to 9.7.0 in /src/texinfo/js
+
+2024-07-15  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.6.0 to 9.7.0 in /src/texinfo/js
+
+	Bumps [eslint](https://github.com/eslint/eslint) from 9.6.0 to 9.7.0.
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.6.0...v9.7.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	...
+
+2024-07-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	now back to apple-gdb-1472
+
+	Change-Id: I6b229e53d1264986426a31b841b7ce3a767ded65
+
+2024-07-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	back to apple-gdb-1515 now
+
+	the apple-gdb-1515 release had a powerpc-specific function in it, so to test I tried building targeting ppc, but that revealed that for some reason the tcl subdir gets skipped in such a build, which leads to weird errors... still investigating...
+
+	Change-Id: I84f050518f978a9975445cf33064775aa8c74059
+
+2024-07-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	learning more cgen/guile/scheme stuff
+
+	for opcodes
+	see #69
+
+	Change-Id: I1532cf60dcf64e41221a7541b34f603efd96d26b
+
+2024-07-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	time for some opcodes cleanup
+
+	back to apple-gdb-1705 in current history dive
+
+	Change-Id: I5427168ae7cdbc8bf9f882868d772c24eafdae9a
+
+2024-07-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	doing some more archaeology
+
+	Change-Id: I0bc5eabaebe247f31e630d36e7c702ab78003f98
+
+2024-07-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	modernizing chill
+
+	Change-Id: I91f763653411e4ae544a1eff0d0dbbfb5c95f1e9
+
+2024-07-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more fiddling with workflows
+
+	Change-Id: I7f6fc648937521399e77d3c7e0c6c7f5ba3868e3
+
+2024-07-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more attempting to debug for #7
+
+	Change-Id: I9e5a9648012daad3a41ca70b82e5279a0840f75d
+
+2024-07-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #68 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/typescript-5.5.3
+
+	Bump typescript from 5.5.2 to 5.5.3 in /src/texinfo/js
+
+2024-07-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #67 from cooljeanius/dependabot/github_actions/actions/upload-artifact-4.3.4
+
+	Bump actions/upload-artifact from 4.3.3 to 4.3.4
+
+2024-07-08  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump typescript from 5.5.2 to 5.5.3 in /src/texinfo/js
+
+	Bumps [typescript](https://github.com/Microsoft/TypeScript) from 5.5.2 to 5.5.3.
+	- [Release notes](https://github.com/Microsoft/TypeScript/releases)
+	- [Changelog](https://github.com/microsoft/TypeScript/blob/main/azure-pipelines.release.yml)
+	- [Commits](https://github.com/Microsoft/TypeScript/compare/v5.5.2...v5.5.3)
+
+	---
+	updated-dependencies:
+	- dependency-name: typescript
+	  dependency-type: direct:development
+	  update-type: version-update:semver-patch
+	...
+
+2024-07-08  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump actions/upload-artifact from 4.3.3 to 4.3.4
+
+	Bumps [actions/upload-artifact](https://github.com/actions/upload-artifact) from 4.3.3 to 4.3.4.
+	- [Release notes](https://github.com/actions/upload-artifact/releases)
+	- [Commits](https://github.com/actions/upload-artifact/compare/v4.3.3...v4.3.4)
+
+	---
+	updated-dependencies:
+	- dependency-name: actions/upload-artifact
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	...
+
+2024-07-02  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #66 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/eslint-9.6.0
+
+	Bump eslint from 9.5.0 to 9.6.0 in /src/texinfo/js
+
+2024-07-02  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #65 from cooljeanius/dependabot/gradle/org.junit.jupiter-junit-jupiter-5.10.3
+
+	Bump org.junit.jupiter:junit-jupiter from 5.10.2 to 5.10.3
+
+2024-07-01  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.5.0 to 9.6.0 in /src/texinfo/js
+
+	Bumps [eslint](https://github.com/eslint/eslint) from 9.5.0 to 9.6.0.
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.5.0...v9.6.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	...
+
+2024-07-01  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump org.junit.jupiter:junit-jupiter from 5.10.2 to 5.10.3
+
+	Bumps [org.junit.jupiter:junit-jupiter](https://github.com/junit-team/junit5) from 5.10.2 to 5.10.3.
+	- [Release notes](https://github.com/junit-team/junit5/releases)
+	- [Commits](https://github.com/junit-team/junit5/compare/r5.10.2...r5.10.3)
+
+	---
+	updated-dependencies:
+	- dependency-name: org.junit.jupiter:junit-jupiter
+	  dependency-type: direct:production
+	  update-type: version-update:semver-patch
+	...
+
+2024-06-25  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #64 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/typescript-5.5.2
+
+	Bump typescript from 5.4.5 to 5.5.2 in /src/texinfo/js
+
+2024-06-24  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump typescript from 5.4.5 to 5.5.2 in /src/texinfo/js
+
+	Bumps [typescript](https://github.com/Microsoft/TypeScript) from 5.4.5 to 5.5.2.
+	- [Release notes](https://github.com/Microsoft/TypeScript/releases)
+	- [Changelog](https://github.com/microsoft/TypeScript/blob/main/azure-pipelines.release.yml)
+	- [Commits](https://github.com/Microsoft/TypeScript/compare/v5.4.5...v5.5.2)
+
+	---
+	updated-dependencies:
+	- dependency-name: typescript
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	...
+
+2024-06-20  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more cleaning
+
+	Change-Id: I71abe76cf7ec5fa27b33baf6c32c04cc6a7ea37f
+
+2024-06-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	messing with gradle a bit
+
+	Change-Id: I8436abe17f89a74cf8694670e43649253b464d48
+
+2024-06-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	still messing with dependencies
+
+	Change-Id: Ifd74ba42d9b636a68ba65213a7f71a3544b6cd50
+
+2024-06-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	further dependency tweaks
+
+	Change-Id: I0decb8037072a7f0634b9bd0b067a493267e7c12
+
+2024-06-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	more rearranging
+
+	Change-Id: Id12ced4234cd85d4c6d9f86d02afe7baf1c20b7e
+
+2024-06-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more workflow updates
+
+	minor dependency tweak(s)
+
+	Change-Id: Ie737551bd672bce6ef750e61aa6aa7ac2589a7df
+
+2024-06-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more workflow updates
+
+	also some (dist)cleaning in the gdb.apple testsuite
+
+	Change-Id: I6a629695e8235074b5f7ec8637d30d57c889284b
+
+2024-06-19  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	workflow updates
+
+	Change-Id: I5193fb1e7693e864e9b9bc829f1c52f5c6c785d0
+
+2024-06-18  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	remove one of the sccache invocations
+
+	Change-Id: I1f9436106d616b2086b7385a050e40cc1368b0eb
+
+2024-06-18  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	still trying to figure out what's going wrong...
+
+	...with readline's depdir on the macOS CI
+
+	Change-Id: I2ec326e566e9046a02632a77d81361e79da4381c
+
+2024-06-18  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	darn it, looks like something broke...
+
+	Change-Id: I7284b05769fea4570ce40c11f91caf3c268020b1
+
+2024-06-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more attempting to silence codeql warnings
+
+	Change-Id: I99c6619b92aaad7148003fa4c03a9e694d88bd77
+
+2024-06-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	trying to silence some CodeQL warnings
+
+	Change-Id: Ia6a9b3c34e317c91698848d0e685a88573004480
+
+2024-06-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' of github.com:cooljeanius/apple-gdb-1824
+
+	Change-Id: Ie0b190bc945e76ebaaee726516a364c5b0f7fd6f
+
+2024-06-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	I hate Windows line endings
+
+	Change-Id: Ib99ff725830cf86ddb50baef7678c4014e6d1166
+
+2024-06-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #44 from cooljeanius/cooljeanius-patch-1
+
+	Update codeql.yml (turn CodeQL back on for C/C++)
+
+2024-06-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more sccache usage
+
+	Change-Id: I3c25b5012e15e9427f21ba5475300fe5fde34c98
+
+2024-06-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	try forcing sccache harder
+	(still not quite everywhere, though)
+
+	Change-Id: Ied93af0289552fc35e916c602d363df4e3473817
+
+2024-06-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'cooljeanius-patch-1' of https://github.com/cooljeanius/apple-gdb-1824 into cooljeanius-patch-1
+
+	Change-Id: I14629e51be3bcdf80233f202de3af00b968fe64b
+
+2024-06-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	line endings are annoying
+
+	Change-Id: I4946b5d3b440b5d521eeda5841f22cbb56996c88
+
+2024-06-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	minor workflows update
+
+	Change-Id: I8008fff3bbca76a09007a98a8d2a2b91cf96a097
+
+2024-06-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' into cooljeanius-patch-1
+
+2024-06-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	try using sccache
+
+2024-06-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try sccache
+
+	plus a few other minor tweaks
+
+	Change-Id: I622cd2bb0f3d29236c2df4d3d59ae569de4257d5
+
+2024-06-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #63 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/eslint-9.5.0
+
+	Bump eslint from 9.4.0 to 9.5.0 in /src/texinfo/js
+
+2024-06-17  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump eslint from 9.4.0 to 9.5.0 in /src/texinfo/js
+
+	Bumps [eslint](https://github.com/eslint/eslint) from 9.4.0 to 9.5.0.
+	- [Release notes](https://github.com/eslint/eslint/releases)
+	- [Changelog](https://github.com/eslint/eslint/blob/main/CHANGELOG.md)
+	- [Commits](https://github.com/eslint/eslint/compare/v9.4.0...v9.5.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: eslint
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	...
+
+2024-06-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more MacsBug fidgeting
+
+	Change-Id: I4a8bdb2ae6d6a01010bed2757e47c7e7dd974206
+
+2024-06-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	a bit of MacsBug cleaning
+
+	Change-Id: I7518ef554a12b6c74998959dc4f8b596a6553c07
+
+2024-06-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	python@3.12 is still being annoying to install with Homebrew
+
+	Change-Id: If3082059e0635def86aa16884d24e21af8df8333
+
+2024-06-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update apple-gdb-1824-macos.yml
+
+	looks like Homebrew is having trouble installing python@3.12 on GitHub's Mac CI again
+
+	Change-Id: Ibf9e29fa9202a5c1e90bd3d1f8aaedb694dca33b
+
+2024-06-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	include checking of texinfo's js subdir
+
+	Change-Id: I5a33b12968c4f2d47bd16b0ba81fd04a8ef69825
+
+2024-06-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	improve distcleaning a bit
+
+	Change-Id: I60d7bf8175b8ebf253bb60809d598b395ebbe785
+
+2024-06-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	add in some files from Apple's version of texinfo
+
+	Change-Id: Ia67e170fa9442e17fbe3d4f3ced29515d340e76b
+	see: https://github.com/apple-oss-distributions/texinfo
+
+2024-06-13  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	`make info` should now work
+
+	Change-Id: Ib19af748dab1da0936543a557430a6abd4331930
+
+2024-06-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge pull request #62 from cooljeanius/dependabot/npm_and_yarn/src/texinfo/js/uglify-js-3.18.0
+
+	Bump uglify-js from 3.17.4 to 3.18.0 in /src/texinfo/js
+
+2024-06-10  dependabot[bot]  <49699333+dependabot[bot]@users.noreply.github.com>
+
+	Bump uglify-js from 3.17.4 to 3.18.0 in /src/texinfo/js
+
+	Bumps [uglify-js](https://github.com/mishoo/UglifyJS) from 3.17.4 to 3.18.0.
+	- [Release notes](https://github.com/mishoo/UglifyJS/releases)
+	- [Commits](https://github.com/mishoo/UglifyJS/compare/v3.17.4...v3.18.0)
+
+	---
+	updated-dependencies:
+	- dependency-name: uglify-js
+	  dependency-type: direct:development
+	  update-type: version-update:semver-minor
+	...
+
+2024-06-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	minor configury update
+
+	Change-Id: I25d2b104672e5aace977fe1ed762483281690dd8
+
+2024-06-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	CI workflow updates
+
+	Change-Id: If61d4344d8acca6466e46e90c7b8969269b64269
+
+2024-06-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' of github.com:cooljeanius/apple-gdb-1824
+
+	Change-Id: Ieb73126f36cc5fc4fec7449e6d1109e4dcde1f0f
+
+2024-06-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	request more help via the THANKS files
+
+	Change-Id: Ibc6394490ee8284576872ea26f9d79a3cdc87eb1
+
+2024-06-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Create SECURITY.md
+
+2024-06-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	oops, I made a mistake previously...
+
+	Change-Id: I50d1d87d034521f802f0d229294361c66a5ca67f
+
+2024-06-08  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	a bit more messing around
+
+	Change-Id: I6b4af107213e7511f5373518cd36c648b746286a
+
+2024-06-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'cooljeanius-patch-1' of https://github.com/cooljeanius/apple-gdb-1824 into cooljeanius-patch-1
+
+	Change-Id: I9ac17364b20e8a65450a2bc967931f34d6b39c77
+
+2024-06-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	VS Code created some files
+
+	Change-Id: I66ace0f5a41392e2f92d9cbf8f31e731cc707490
+
+2024-06-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' into cooljeanius-patch-1
+
+2024-04-22  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Merge branch 'master' into cooljeanius-patch-1
+
+2024-03-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Update codeql.yml
+
+	Try turning 'c-cpp' back on
+
 2024-06-08  Eric Gallager  <egall@gwmail.gwu.edu>
 
 	tar commands are hard to get right

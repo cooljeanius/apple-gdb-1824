@@ -98,10 +98,7 @@ static int remote_kdp_feature = 0;
 struct target_ops kdp_ops;
 
 static void
-set_timeouts (args, from_tty, cmd)
-     char *args;
-     int from_tty;
-     struct cmd_list_element *cmd;
+set_timeouts(char *args, int from_tty, struct cmd_list_element *cmd)
 {
   kdp_set_timeouts (&c, kdp_timeout, kdp_retries);
 }
@@ -144,16 +141,13 @@ logger (kdp_log_level l, const char *format, ...)
 }
 
 static void
-kdp_open (name, from_tty)
-     char *name;
-     int from_tty;
+kdp_open(char *name, int from_tty)
 {
   push_target (&kdp_ops);
 }
 
 static void
-kdp_close (quitting)
-     int quitting;
+kdp_close(int quitting)
 {
 }
 
@@ -196,25 +190,30 @@ static void kdp_reattach_command(char *args, int from_tty)
 #endif /* TARGET_foo */
 
   kdpret = kdp_create (&c, logger, argv[0], kdp_default_port, kdp_timeout, kdp_retries);
-	if (kdpret != RR_SUCCESS) {
-		error ("unable to create connection for host \"%s\": %s", args, kdp_return_string (kdpret));
-	}
+  if (kdpret != RR_SUCCESS)
+    {
+      error("unable to create connection for host \"%s\": %s", args,
+	    kdp_return_string(kdpret));
+    }
 
   c.request->reattach_req.hdr.request = KDP_REATTACH;
   c.request->reattach_req.req_reply_port = c.reqport;
 
   kdpret = kdp_transaction (&c, c.request, c.response, "kdp_reattach");
   c.connected = 0;
-	if (kdpret != RR_SUCCESS) {
-		warning ("unable to disconnect host: %s", kdp_return_string (kdpret));
-		if (kdp_is_bound (&c))
-		{
-			kdpret = kdp_destroy (&c);
-			if (kdpret != RR_SUCCESS) {
-				error ("unable to deallocate KDP connection: %s", kdp_return_string (kdpret));
-			}
-		}
+  if (kdpret != RR_SUCCESS)
+    {
+      warning("unable to disconnect host: %s", kdp_return_string(kdpret));
+      if (kdp_is_bound(&c))
+	{
+	  kdpret = kdp_destroy(&c);
+	  if (kdpret != RR_SUCCESS)
+	    {
+	      error("unable to deallocate KDP connection: %s",
+		    kdp_return_string(kdpret));
+	    }
 	}
+    }
 
   kdp_ops.to_has_all_memory = 0;
   kdp_ops.to_has_memory = 0;
@@ -232,9 +231,7 @@ static void kdp_reattach_command(char *args, int from_tty)
 }
 
 static void
-kdp_detach_command (args, from_tty)
-     char *args;
-     int from_tty;
+kdp_detach_command(char *args, int from_tty)
 {
   kdp_connection c2;
   kdp_return_t kdpret;
@@ -339,9 +336,7 @@ kdp_remove_breakpoint(CORE_ADDR addr, char *contents_cache)
 }
 
 static void
-kdp_attach (args, from_tty)
-     char *args;
-     int from_tty;
+kdp_attach(char *args, int from_tty)
 {
   kdp_return_t kdpret, kdpret2;
   unsigned int old_seqno, old_exc_seqno;
@@ -487,9 +482,7 @@ kdp_attach (args, from_tty)
 }
 
 static void
-kdp_detach (args, from_tty)
-     char *args;
-     int from_tty;
+kdp_detach(char *args, int from_tty)
 {
   kdp_return_t kdpret;
 
@@ -639,8 +632,7 @@ kdp_wait (ptid_t pid, struct target_waitstatus *status, gdb_client_data client_d
 
 #if KDP_TARGET_POWERPC
 static void
-kdp_fetch_registers_ppc (regno)
-     int regno;
+kdp_fetch_registers_ppc(int regno)
 {
   unsigned int i;
 
@@ -718,8 +710,7 @@ kdp_fetch_registers_ppc (regno)
 
 #if KDP_TARGET_POWERPC
 static void
-kdp_store_registers_ppc (regno)
-     int regno;
+kdp_store_registers_ppc(int regno)
 {
   if (! kdp_is_connected (&c)) {
     error ("kdp: unable to store registers (not connected)");
@@ -772,8 +763,7 @@ kdp_store_registers_ppc (regno)
 
 #if KDP_TARGET_I386
 static void
-kdp_fetch_registers_i386 (regno)
-     int regno;
+kdp_fetch_registers_i386(int regno)
 {
   if (! kdp_is_connected (&c)) {
     error ("kdp: unable to fetch registers (not connected)");
@@ -839,8 +829,7 @@ kdp_fetch_registers_i386 (regno)
 
 #if KDP_TARGET_I386
 static void
-kdp_store_registers_i386 (regno)
-     int regno;
+kdp_store_registers_i386(int regno)
 {
   if (! kdp_is_connected (&c)) {
     error ("kdp: unable to store registers (not connected)");
@@ -892,8 +881,7 @@ kdp_store_registers_i386 (regno)
 #endif /* KDP_TARGET_I386 */
 
 static void
-kdp_store_registers (regno)
-     int regno;
+kdp_store_registers(int regno)
 {
   if (! kdp_is_connected (&c)) {
     error ("kdp: unable to store registers (not connected)");
@@ -923,8 +911,7 @@ kdp_store_registers (regno)
 }
 
 static void
-kdp_fetch_registers (regno)
-     int regno;
+kdp_fetch_registers(int regno)
 {
   if (! kdp_is_connected (&c)) {
     error ("kdp: unable to fetch registers (not connected)");
@@ -954,7 +941,7 @@ kdp_fetch_registers (regno)
 }
 
 static void
-kdp_prepare_to_store ()
+kdp_prepare_to_store(void)
 {
   kdp_fetch_registers (-1);
 }
@@ -1016,38 +1003,31 @@ kdp_xfer_memory (memaddr, myaddr, len, write)
 }
 
 static void
-kdp_files_info ()
+kdp_files_info(void)
 {
   printf_unfiltered ("\tNo connection information available.\n");
 }
 
 static void
-kdp_kill (args, from_tty)
-     char *args;
-     int from_tty;
+kdp_kill(char *args, int from_tty)
 {
   kdp_detach (args, from_tty);
 }
 
 static void
-kdp_load (args, from_tty)
-     char *args;
-     int from_tty;
+kdp_load(char *args, int from_tty)
 {
   error ("unsupported operation kdp_load");
 }
 
 static void
-kdp_create_inferior (execfile, args, env)
-     char *execfile;
-     char *args;
-     char **env;
+kdp_create_inferior(char *execfile, char *args, char **env)
 {
   error ("unsupported operation kdp_create_inferior");
 }
 
 static void
-kdp_mourn_inferior ()
+kdp_mourn_inferior(void)
 {
   unpush_target (&kdp_ops);
   generic_mourn_inferior ();
@@ -1222,7 +1202,7 @@ kdp_async (void (*callback) (enum inferior_event_type event_type,
 }
 
 static void
-init_kdp_ops ()
+init_kdp_ops(void)
 {
   kdp_ops.to_shortname = "remote-kdp";
   kdp_ops.to_longname = "Remote NeXT or Mac OS X system via KDP";
@@ -1257,10 +1237,8 @@ init_kdp_ops ()
 
 static void update_kdp_default_host_type PARAMS ((char *, int, struct cmd_list_element *));
 static void
-update_kdp_default_host_type (args, from_tty, c)
-     char *args;
-     int from_tty;
-     struct cmd_list_element *c;
+update_kdp_default_host_type(char *args, int from_tty,
+			     struct cmd_list_element *c)
 {
   int htype;
 
@@ -1278,7 +1256,7 @@ update_kdp_default_host_type (args, from_tty, c)
 }
 
 void
-_initialize_remote_kdp ()
+_initialize_remote_kdp(void)
 {
   static char *archlist[] = { "powerpc", "ia32", NULL };
 

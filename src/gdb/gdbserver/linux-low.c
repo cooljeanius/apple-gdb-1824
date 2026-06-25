@@ -1226,7 +1226,7 @@ usr_store_inferior_registers (int regno)
 #ifdef HAVE_LINUX_REGSETS
 
 static int
-regsets_fetch_inferior_registers ()
+regsets_fetch_inferior_registers(void)
 {
   struct regset_info *regset;
   int saw_general_regs = 0;
@@ -1283,7 +1283,7 @@ regsets_fetch_inferior_registers ()
 }
 
 static int
-regsets_store_inferior_registers ()
+regsets_store_inferior_registers(void)
 {
   struct regset_info *regset;
   int saw_general_regs = 0;
@@ -1574,7 +1574,7 @@ static struct target_ops linux_target_ops = {
 };
 
 static void
-linux_init_signals ()
+linux_init_signals(void)
 {
   /* FIXME drow/2002-06-09: As above, we should check with LinuxThreads
      to find what the cancel signal actually is.  */

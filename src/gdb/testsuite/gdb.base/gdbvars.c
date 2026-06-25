@@ -5,7 +5,7 @@ typedef void *ptr;
 ptr p = &p;
 
 int
-main ()
+main(void)
 {
 #ifdef usestubs
     set_debug_traps ();

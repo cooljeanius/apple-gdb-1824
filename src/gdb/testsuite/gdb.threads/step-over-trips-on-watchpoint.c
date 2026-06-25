@@ -50,7 +50,7 @@ wait_threads (void)
 }
 
 int
-main ()
+main(void)
 {
   int res;
   long i;

@@ -56,8 +56,9 @@ next_resize_window (int *lines_per_page, int *chars_per_line)
 }
 
 void
-_initialize_nextstep_xdep ()
+_initialize_nextstep_xdep(void)
 {
+  return;
 }
 
 /* EOF */

@@ -21,7 +21,9 @@ would appreciate credit if this program or parts of it are used.
 # ifdef HAVE_STRINGS_H
 #  include <strings.h>
 # else
-#  warning exp_glob.c expects a string-related header to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "exp_glob.c expects a string-related header to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_STRINGS_H */
 #endif /* HAVE_STRING_H */
 
@@ -29,11 +31,12 @@ would appreciate credit if this program or parts of it are used.
 /* The following functions implement expect's glob-style string matching */
 /* Exp_StringMatch allow's implements the unanchored front (or conversely */
 /* the '^') feature. Exp_StringMatch2 does the rest of the work. */
-int	/* returns # of chars that matched */
-Exp_StringMatch(string, pattern,offset)
-char *string;
-char *pattern;
-int *offset;	/* offset from beginning of string where pattern matches */
+int
+Exp_StringMatch (
+    char *string,
+    char *pattern,
+    int *offset	/* offset from beginning of string where pattern matches */
+)
 {
 	char *s;
 	int sm;	/* count of chars matched or -1 */
@@ -67,11 +70,11 @@ int *offset;	/* offset from beginning of string where pattern matches */
 /* The following functions implement expect's glob-style string matching */
 /* Exp_StringMatch allow's implements the unanchored front (or conversely */
 /* the '^') feature. Exp_StringMatch2 does the rest of the work. */
-int	/* returns # of chars that matched */
-Exp_StringMatch(string, pattern,offset)
-char *string;
-char *pattern;
-int *offset;	/* offset from beginning of string where pattern matches */
+int
+Exp_StringMatch(
+  char *string, char *pattern,
+  int *offset /* offset from beginning of string where pattern matches */
+)
 {
 	char *s;
 	int sm;	/* count of chars matched or -1 */
@@ -121,10 +124,11 @@ Like Tcl_StringMatch except that
 4) front-anchor is assumed (Tcl_StringMatch retries for non-front-anchor)
 */
 
-int Exp_StringMatch2(string,pattern)
-    register char *string;	/* String. */
-    register char *pattern;	/* Pattern, which may contain
+int
+Exp_StringMatch2(register char *string, /* String. */
+		 register char *pattern /* Pattern, which may contain
 				 * special characters. */
+)
 {
     char c2;
     int match = 0;	/* # of chars matched */

@@ -28,7 +28,7 @@ void *global_var_1;
 void *global_var_2;
 
 void
-breakpt ()
+breakpt(void)
 {
   /* Nothing. */
 }

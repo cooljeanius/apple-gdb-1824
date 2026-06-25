@@ -1,6 +1,6 @@
 /******************************************************************************
 * Copyright 1991 Advanced Micro Devices, Inc.
-* 
+*
 * This software is the property of Advanced Micro Devices, Inc  (AMD)  which
 * specifically  grants the user the right to modify, use and distribute this
 * software provided this notice is not removed or altered.  All other rights
@@ -26,7 +26,7 @@
 */
 static	char soc2udip_c[]="@(#)soc2udip.c	2.14  Daniel Mann";
 static char soc2udip_c_AMD[]="@(#)soc2udip.c	3.2, AMD";
-/* 
+/*
 *       This module converts UDI socket messages
 *	into UDI Procedural calls.
 *	It is used by TIP server processes
@@ -35,7 +35,9 @@ static char soc2udip_c_AMD[]="@(#)soc2udip.c	3.2, AMD";
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning soc2udip.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning soc2udip.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 #include <stdio.h>
 #include <stdlib.h>
@@ -136,9 +138,8 @@ char	*addr;
 #ifdef MSDOS
 /*********************************************************************** MAIN
 */
-main(argc, argv)
-int 	argc;
-char*	argv[];
+int
+main(int argc, char *argv[])
 {
     char	*domain_string = argv[1];
     char	*tip_string = argv[2];
@@ -147,7 +148,7 @@ char*	argv[];
     struct sockaddr	tip_sockaddr;
     struct hostent 	*tip_info_p;
     int		dfe_addrlen;
-    int		domain; 
+    int domain;
     int		pgrp;
 #define	NAME_LEN 20
     char	tip_host[NAME_LEN];
@@ -187,14 +188,14 @@ char*	argv[];
     }
 /*------------------------------------------------------------------- BIND */
     if(domain==AF_UNIX)
-    {	
-        memset( (char*)&tip_sockaddr, 0, sizeof(tip_sockaddr));
-        tip_sockaddr.sa_family = domain;
-        bcopy(tip_string, tip_sockaddr.sa_data, strlen(tip_string));
+      {
+	memset((char *) &tip_sockaddr, 0, sizeof(tip_sockaddr));
+	tip_sockaddr.sa_family = domain;
+	bcopy(tip_string, tip_sockaddr.sa_data, strlen(tip_string));
 	if (bind(tip_sd, &tip_sockaddr, sizeof(tip_sockaddr)) )
 	{   perror("TIP-ipc WARNING, server bind() failed");
 	}
-    }
+      }
     else if(domain == AF_INET)
     {
 	if(gethostname(tip_host, NAME_LEN))
@@ -262,8 +263,10 @@ char*	argv[];
    }
 }
 #else
-int main() {
-	return 0;
+int
+main(void)
+{
+  return 0;
 }
 #endif /* MSDOS */
 
@@ -271,7 +274,8 @@ int main() {
 /******************************************************************** SERVICE
 * Service each DFE request as they arrive.
 */
-service()
+int
+service(void)
 {
  UDIInt32	service_id;	/* requested DFE service */
 
@@ -568,8 +572,8 @@ service()
 	count_done_p = udr_getpos(udrs);
 	udr_inline(udrs, sizeof(UDICount));/* make space for count_done */
 	to_dfe_p = udr_getpos(udrs);
-        tip_errno = UDIRead (from, to_dfe_p, count, size, 
-		&count_done, host_endian);
+	tip_errno = UDIRead(from, to_dfe_p, count, size, &count_done,
+			    host_endian);
 	udr_inline(udrs,count_done*size);/* make space in socket buffer */
         udr_UDIError(udrs, &tip_errno);	/* send any TIP error */
 	udr_setpos(udrs, count_done_p);	/* restore count_done stream position */
@@ -596,15 +600,15 @@ service()
         udr_UDIBool(udrs, &host_endian);
 	from_dfe_p = udr_getpos(udrs);	/* fake DFE host address */
 	byte_count = size * count;
-	udr_readnow(udrs, byte_count);	/* read all data available from the 
+	udr_readnow(udrs, byte_count); /* read all data available from the
 					   socket into the stream buffer */
 
-        udrs->udr_op = UDR_ENCODE;	/* send all "out" parameters */
-        tip_errno = UDIWrite( from_dfe_p, to, count, size, 
-		&count_done, host_endian );
-        udr_UDICount(udrs, &count_done);
-        udr_UDIError(udrs, &tip_errno);	/* send any TIP error */
-        udr_sendnow(udrs);
+	udrs->udr_op = UDR_ENCODE; /* send all "out" parameters */
+	tip_errno = UDIWrite(from_dfe_p, to, count, size, &count_done,
+			     host_endian);
+	udr_UDICount(udrs, &count_done);
+	udr_UDIError(udrs, &tip_errno); /* send any TIP error */
+	udr_sendnow(udrs);
 	break;
     }
 /*-------------------------------------------------------------------- UDICopy
@@ -665,16 +669,16 @@ service()
     {
         UDIInt32   maxtime;     /* in -- maximum time to wait for completion */
         UDIPId     pid;        /* out -- pid of process which stopped if any */
-        UDIUInt32  stop_reason;/* out -- PC where process stopped */
-    
-        udr_UDIInt32(udrs, &maxtime);
+	UDIUInt32 stop_reason; /* out -- PC where process stopped */
 
-        udrs->udr_op = UDR_ENCODE;	/* send all "out" parameters */
-        tip_errno = UDIWait(maxtime, &pid, &stop_reason);
-        udr_UDIPId(udrs, &pid);
-        udr_UDIUInt32(udrs, &stop_reason);
-        udr_UDIError(udrs, &tip_errno);	/* send any TIP error */
-        udr_sendnow(udrs);
+	udr_UDIInt32(udrs, &maxtime);
+
+	udrs->udr_op = UDR_ENCODE; /* send all "out" parameters */
+	tip_errno = UDIWait(maxtime, &pid, &stop_reason);
+	udr_UDIPId(udrs, &pid);
+	udr_UDIUInt32(udrs, &stop_reason);
+	udr_UDIError(udrs, &tip_errno); /* send any TIP error */
+	udr_sendnow(udrs);
 	break;
     }
 /*----------------------------------------------------------- UDISetBreakpoint
@@ -689,12 +693,12 @@ service()
         udr_UDIResource(udrs, &addr); /* recv all "in" parameters */
         udr_UDIInt32(udrs, &passcount);
         udr_UDIBreakType(udrs, &type);
-    
-        udrs->udr_op = UDR_ENCODE;	/* send all "out" parameters */
-        tip_errno = UDISetBreakpoint (addr, passcount, type, &break_id);
-        udr_UDIBreakId(udrs, &break_id);
-        udr_UDIError(udrs, &tip_errno);	/* send any TIP error */
-        udr_sendnow(udrs);
+
+	udrs->udr_op = UDR_ENCODE; /* send all "out" parameters */
+	tip_errno = UDISetBreakpoint(addr, passcount, type, &break_id);
+	udr_UDIBreakId(udrs, &break_id);
+	udr_UDIError(udrs, &tip_errno); /* send any TIP error */
+	udr_sendnow(udrs);
 	break;
     }
 /*--------------------------------------------------------- UDIQueryBreakpoint

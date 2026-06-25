@@ -2,7 +2,8 @@
 
 OSType x[4] = { 'FeqA', 0, '\n\n\n\n', 'XXXX' };
 
-int main ()
+int
+main(void)
 {
  uint32_t a = 'abcd';
  uint32_t b = 'eeff';

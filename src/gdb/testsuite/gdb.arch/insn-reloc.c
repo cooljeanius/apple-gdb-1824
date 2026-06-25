@@ -541,7 +541,7 @@ static testcase_ftype testcases[] = {
 static size_t n_testcases = (sizeof (testcases) / sizeof (testcase_ftype));
 
 int
-main ()
+main(void)
 {
   int i = 0;
 

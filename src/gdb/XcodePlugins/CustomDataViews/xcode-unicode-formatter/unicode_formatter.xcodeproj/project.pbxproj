@@ -8,12 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		224350D00FE0FE7F006E14FC /* unicode_formatter.c in Sources */ = {isa = PBXBuildFile; fileRef = 226188660FE0F3D100FE8DC1 /* unicode_formatter.c */; };
-		224350D10FE0FE7F006E14FC /* si formatters.c in Sources */ = {isa = PBXBuildFile; fileRef = 226188670FE0F3D100FE8DC1 /* si formatters.c */; };
+		224350D10FE0FE7F006E14FC /* si_formatters.c in Sources */ = {isa = PBXBuildFile; fileRef = 226188670FE0F3D100FE8DC1 /* si_formatters.c */; };
 		224350D40FE0FE9C006E14FC /* si formatter.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 226188300FE0F0E000FE8DC1 /* si formatter.bundle */; };
 		226188250FE0F0E000FE8DC1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		2261882A0FE0F0E000FE8DC1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2263D8780FE01D3B00F410A4 /* CoreFoundation.framework */; };
 		226188680FE0F3D100FE8DC1 /* unicode_formatter.c in Sources */ = {isa = PBXBuildFile; fileRef = 226188660FE0F3D100FE8DC1 /* unicode_formatter.c */; };
-		226188690FE0F3D100FE8DC1 /* si formatters.c in Sources */ = {isa = PBXBuildFile; fileRef = 226188670FE0F3D100FE8DC1 /* si formatters.c */; };
+		226188690FE0F3D100FE8DC1 /* si_formatters.c in Sources */ = {isa = PBXBuildFile; fileRef = 226188670FE0F3D100FE8DC1 /* si_formatters.c */; };
 		226188A10FE0F5F000FE8DC1 /* CustomDataViews.plist in Resources */ = {isa = PBXBuildFile; fileRef = 226188A00FE0F5F000FE8DC1 /* CustomDataViews.plist */; };
 		226188A30FE0F62800FE8DC1 /* CustomDataViews.plist in Resources */ = {isa = PBXBuildFile; fileRef = 226188A20FE0F62800FE8DC1 /* CustomDataViews.plist */; };
 		226188D60FE0F85800FE8DC1 /* unicode_formatter_test.c in Sources */ = {isa = PBXBuildFile; fileRef = 2261886B0FE0F3F300FE8DC1 /* unicode_formatter_test.c */; };
@@ -60,7 +60,7 @@
 		226188300FE0F0E000FE8DC1 /* si formatter.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "si formatter.bundle"; sourceTree = BUILT_PRODUCTS_DIR; };
 		226188650FE0F3D100FE8DC1 /* unicode_formatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unicode_formatter.h; path = code/unicode_formatter.h; sourceTree = "<group>"; };
 		226188660FE0F3D100FE8DC1 /* unicode_formatter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unicode_formatter.c; path = code/unicode_formatter.c; sourceTree = "<group>"; };
-		226188670FE0F3D100FE8DC1 /* si formatters.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "si formatters.c"; path = "code/si formatters.c"; sourceTree = "<group>"; };
+		226188670FE0F3D100FE8DC1 /* si_formatters.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = si_formatters.c; path = code/si_formatters.c; sourceTree = "<group>"; };
 		2261886A0FE0F3F300FE8DC1 /* unicode_formatter_prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unicode_formatter_prefix.pch; path = code/unicode_formatter_prefix.pch; sourceTree = "<group>"; };
 		2261886B0FE0F3F300FE8DC1 /* unicode_formatter_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unicode_formatter_test.c; path = code/unicode_formatter_test.c; sourceTree = "<group>"; };
 		2261888F0FE0F4FD00FE8DC1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = resources/Info.plist; sourceTree = "<group>"; };
@@ -138,7 +138,7 @@
 				226188660FE0F3D100FE8DC1 /* unicode_formatter.c */,
 				2261886A0FE0F3F300FE8DC1 /* unicode_formatter_prefix.pch */,
 				2261886B0FE0F3F300FE8DC1 /* unicode_formatter_test.c */,
-				226188670FE0F3D100FE8DC1 /* si formatters.c */,
+				226188670FE0F3D100FE8DC1 /* si_formatters.c */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -279,7 +279,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				224350D00FE0FE7F006E14FC /* unicode_formatter.c in Sources */,
-				224350D10FE0FE7F006E14FC /* si formatters.c in Sources */,
+				224350D10FE0FE7F006E14FC /* si_formatters.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -288,7 +288,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				226188680FE0F3D100FE8DC1 /* unicode_formatter.c in Sources */,
-				226188690FE0F3D100FE8DC1 /* si formatters.c in Sources */,
+				226188690FE0F3D100FE8DC1 /* si_formatters.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

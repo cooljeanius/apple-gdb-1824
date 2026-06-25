@@ -1,6 +1,7 @@
 #include "list0.h"
 
-int main ()
+int
+main(void)
 {
     int x;
 #ifdef usestubs
@@ -37,7 +38,7 @@ int main ()
 }
 
 static void
-unused ()
+unused(void)
 {
     /* Not used for anything */
 }

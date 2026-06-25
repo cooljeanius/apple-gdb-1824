@@ -58,7 +58,7 @@ static PTR EXFUN((*old_realloc_hook), (PTR ptr, size_t size));
    tr_break.  */
 
 void
-tr_break()
+tr_break(void)
 {
   ;
 }
@@ -128,7 +128,7 @@ DEFUN(tr_reallochook, (ptr, size), PTR ptr AND size_t size)
    don't forget to set a breakpoint on tr_break!  */
 
 void
-mtrace()
+mtrace(void)
 {
   char *mallfile;
 

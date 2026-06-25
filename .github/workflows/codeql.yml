@@ -72,7 +72,7 @@ jobs:
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4.35.5
+      uses: github/codeql-action/init@v4.36.2
       with:
         languages: ${{ matrix.language }}
         # If you wish to specify custom queries, you can do so here or in a
@@ -327,7 +327,7 @@ jobs:
 
     - name: Setup Gradle
       if: matrix.language == 'java-kotlin'
-      uses: gradle/actions/setup-gradle@v6
+      uses: gradle/actions/setup-gradle@v6.2.0
     - name: Run build with Gradle Wrapper
       if: matrix.language == 'java-kotlin' && success()
       run: |
@@ -349,7 +349,7 @@ jobs:
     # putting it back to "Disabled" again for now:
     - name: Autobuild
       if: matrix.language != 'c-cpp'
-      uses: github/codeql-action/autobuild@v4.35.5
+      uses: github/codeql-action/autobuild@v4.36.2
 
     - name: Manual build
       if: matrix.language == 'c-cpp'
@@ -835,7 +835,7 @@ jobs:
           **/CFE_S_A/*.plist
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v4.35.5
+      uses: github/codeql-action/analyze@v4.36.2
       with:
         category: "/language:${{matrix.language}}"
       env:

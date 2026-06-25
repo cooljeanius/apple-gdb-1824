@@ -103,7 +103,7 @@ static struct breakpoint *break_base = 0;
 static int breakpoint_max_id = 0;
 
 static struct breakpoint *
-breakpoint_new()
+breakpoint_new(void)
 {
 	struct breakpoint *b = (struct breakpoint *)ckalloc(sizeof(struct breakpoint));
 	if (break_base) break_base->previous = b;
@@ -289,9 +289,8 @@ TclGetFrame2(interp, origFramePtr, string, framePtrPtr, dir)
     return result;
 }
 
-
-static char *printify(s)
-char *s;
+static char *
+printify(char *s)
 {
 	static int destlen = 0;
 	char *d;		/* ptr into dest */
@@ -492,9 +491,7 @@ char *level;
 /* the FramePtr from the proc, so we have to search the entire */
 /* stack frame to see if it is still there. */
 static int
-GoalFrame(goal,iptr)
-CallFrame *goal;
-Interp *iptr;
+GoalFrame(CallFrame *goal, Interp *iptr)
 {
 	CallFrame *cf = iptr->varFramePtr;
 
@@ -742,10 +739,8 @@ char **argv;
 	return TCL_RETURN;
 }
 
-static
-void
-breakpoint_destroy(b)
-struct breakpoint *b;
+static void
+breakpoint_destroy(struct breakpoint *b)
 {
 	if (b->file) ckfree(b->file);
 	if (b->pat) ckfree(b->pat);
@@ -769,9 +764,7 @@ struct breakpoint *b;
 }
 
 static void
-savestr(straddr,str)
-char **straddr;
-char *str;
+savestr(char **straddr, char *str)
 {
 	*straddr = ckalloc(strlen(str)+1);
 	strcpy(*straddr,str);
@@ -779,10 +772,9 @@ char *str;
 
 /* return 1 if a string is substring of a flag */
 static int
-flageq(flag,string,minlen)
-char *flag;
-char *string;
-int minlen;		/* at least this many chars must match */
+flageq(char *flag, char *string,
+       int minlen /* at least this many chars must match */
+)
 {
 	for (;*flag;flag++,string++,minlen--) {
 		if (*string == '\0') break;
@@ -1084,10 +1076,7 @@ Tcl_Interp *interp;
 }
 
 char **
-Dbg_ArgcArgv(argc,argv,copy)
-int argc;
-char *argv[];
-int copy;
+Dbg_ArgcArgv(int argc, char *argv[], int copy)
 {
 	char **alloc;
 

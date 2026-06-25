@@ -1,4 +1,4 @@
-/* Acorn Risc Machine host machine support.
+/* arm-xdep.c: Acorn Risc Machine host machine support.
    Copyright (C) 1988, 1989, 1991 Free Software Foundation, Inc.
 
 This file is part of GDB.
@@ -41,8 +41,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include <errno.h>
 
 void
-fetch_inferior_registers (regno)
-     int regno;		/* Original value discarded */
+fetch_inferior_registers(int regno /* Original value discarded */
+)
 {
   register unsigned int regaddr;
   char buf[MAX_REGISTER_RAW_SIZE];
@@ -54,7 +54,7 @@ fetch_inferior_registers (regno)
       - KERNEL_U_ADDR;
 
   registers_fetched ();
-  
+
   for (regno = 0; regno < 16; regno++)
     {
       regaddr = offset + regno * 4;
@@ -86,8 +86,7 @@ fetch_inferior_registers (regno)
    Otherwise, REGNO specifies which register (so we can save time).  */
 
 void
-store_inferior_registers (regno)
-     int regno;
+store_inferior_registers(int regno)
 {
   register unsigned int regaddr;
   char buf[80];
@@ -127,8 +126,8 @@ store_inferior_registers (regno)
 	}
     }
 }
-
-/* Work with core dump and executable files, for GDB. 
+
+/* Work with core dump and executable files, for GDB.
    This code would be in corefile.c if it weren't machine-dependent. */
 
 /* Structure to describe the chain of shared libraries used
@@ -148,17 +147,15 @@ static struct shared_library *shlib = 0;
 /* Hook for `exec_file_command' command to call.  */
 
 extern void (*exec_file_display_hook) ();
-   
+
 static CORE_ADDR unshared_text_start;
 
 /* extended header from exec file (for shared library info) */
 
 static struct exec_header exec_header;
-
+
 void
-core_file_command (filename, from_tty)
-     char *filename;
-     int from_tty;
+core_file_command(char *filename, int from_tty)
 {
   int val;
 
@@ -184,7 +181,7 @@ core_file_command (filename, from_tty)
     {
       filename = tilde_expand (filename);
       make_cleanup (free, filename);
-      
+
       if (have_inferior_p ())
 	error ("To look at a core file, you must kill the program with \"kill\".");
       corechan = open (filename, O_RDONLY, 0);
@@ -249,7 +246,7 @@ core_file_command (filename, from_tty)
 						   + 30);
 		  strcpy (buffer, "Reading register ");
 		  strcat (buffer, REGISTER_NAME (regno));
-						   
+
 		  perror_with_name (buffer);
 		}
 
@@ -275,7 +272,7 @@ core_file_command (filename, from_tty)
 }
 
 #if 0
-/* Work with core dump and executable files, for GDB. 
+/* Work with core dump and executable files, for GDB.
    This code would be in corefile.c if it weren't machine-dependent. */
 
 /* Structure to describe the chain of shared libraries used
@@ -295,7 +292,7 @@ static struct shared_library *shlib = 0;
 /* Hook for `exec_file_command' command to call.  */
 
 extern void (*exec_file_display_hook) ();
-   
+
 static CORE_ADDR unshared_text_start;
 
 /* extended header from exec file (for shared library info) */
@@ -303,9 +300,7 @@ static CORE_ADDR unshared_text_start;
 static struct exec_header exec_header;
 
 void
-exec_file_command (filename, from_tty)
-     char *filename;
-     int from_tty;
+exec_file_command (char *filename, int from_tty)
 {
   int val;
 
@@ -348,7 +343,7 @@ exec_file_command (filename, from_tty)
 #ifdef HEADER_SEEK_FD
 	HEADER_SEEK_FD (execchan);
 #endif
-	
+
 	val = myread (execchan, &exec_header, sizeof exec_header);
 	exec_aouthdr = exec_header.a_exec;
 

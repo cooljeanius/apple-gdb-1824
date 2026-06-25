@@ -22,7 +22,8 @@
 /* Shared library function */
 extern int shr2(int);
 
-int main ()
+int
+main(void)
 {
   char* cptr = "String 1";
   int b[2] = {5,8};

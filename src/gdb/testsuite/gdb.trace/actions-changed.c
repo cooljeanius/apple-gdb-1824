@@ -42,7 +42,8 @@ subr (int parm)
   return busy;
 }
 
-main()
+int
+main(void)
 {
   subr (1);
   end (1);

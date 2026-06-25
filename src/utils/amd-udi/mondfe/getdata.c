@@ -92,16 +92,12 @@ void convert32 PARAMS(( BYTE *byte));
 **        ASCII string.
 */
 
-
 int
-get_addr_29k(addr_str, addr_29k)
-   char   *addr_str;
-   struct  addr_29k_t  *addr_29k;
-   {
-   /* defaults memory addresses to D_MEM */
-   return(get_addr_29k_m(addr_str, addr_29k, D_MEM));
-   }
-
+get_addr_29k(char *addr_str, struct addr_29k_t *addr_29k)
+{
+  /* defaults memory addresses to D_MEM */
+  return (get_addr_29k_m(addr_str, addr_29k, D_MEM));
+}
 
 int
 get_addr_29k_m(addr_str, addr_29k, default_space)
@@ -136,10 +132,8 @@ get_addr_29k_m(addr_str, addr_29k, default_space)
 ** returned.
 */
 
-
-int
-addr_29k_ok(addr_29k)
-   struct  addr_29k_t  *addr_29k;
+   int
+   addr_29k_ok(struct addr_29k_t *addr_29k)
    {
    int     return_code;
    ADDR32  start_addr;
@@ -459,10 +453,8 @@ get_memory_29k(memory_str, addr_29k, default_space)
 ** 29k register into an addr_29k_t memory space / address pair.
 */
 
-int
-get_register_29k(reg_str, addr_29k)
-   char   *reg_str;
-   struct  addr_29k_t  *addr_29k;
+   int
+   get_register_29k(char *reg_str, struct addr_29k_t *addr_29k)
    {
    int     fields;
    ADDR32  reg_number;
@@ -520,10 +512,8 @@ get_register_29k(reg_str, addr_29k)
 ** described in get_addr_29k() above.
 */
 
-int
-get_alias_29k(reg_str, addr_29k)
-   char   *reg_str;
-   struct  addr_29k_t  *addr_29k;
+   int
+   get_alias_29k(char *reg_str, struct addr_29k_t *addr_29k)
    {
    int     i;
    int     result;
@@ -645,11 +635,8 @@ get_byte(buffer, data_byte)
 
    }  /* end get_byte() */
 
-
-int
-get_float(buffer, data_float)
-   char    *buffer;
-   float   *data_float;
+   int
+   get_float(char *buffer, float *data_float)
    {
    int      fields;
    char     error;
@@ -663,11 +650,8 @@ get_float(buffer, data_float)
 
    }  /* end get_float() */
 
-
-int
-get_double(buffer, data_double)
-   char    *buffer;
-   double  *data_double;
+   int
+   get_double(char *buffer, double *data_double)
    {
    int      fields;
    char     error;

@@ -127,55 +127,57 @@ GLOBAL	INT32	udi_waittime;
 
 /* Main routine */
 
-int main(argc, argv)
-   int   argc;
-   char *argv[];
-   {
+int
+main(int argc, char *argv[])
+{
+  char *temp;
+  int i;
+  UINT32 ProcessorState;
+  int GrossState;
+  INT32 retval;
 
-   char		*temp;
-   int		i;
-   UINT32	ProcessorState;
-   int		GrossState;
-   INT32	retval;
+  ProgramName = argv[0];
+  if (strpbrk(ProgramName, "/\\"))
+    {
+      temp = ProgramName + strlen(ProgramName);
+      while (!strchr("/\\", *--temp))
+	;
+      ProgramName = temp + 1;
+    }
 
-   ProgramName=argv[0];
-   if (strpbrk( ProgramName, "/\\" ))
-   {
-	temp = ProgramName + strlen( ProgramName );
-	while (!strchr( "/\\", *--temp ))
-		;
-	ProgramName = temp+1;
-   }
+  if (argc < 2)
+    {
+      fprintf(stderr, "MiniMON29K Release 3.0\n");
+      fprintf(stderr,
+	      "MONDFE Debugger Front End (UDI 1.2) Version %s Date %s\n",
+	      HOST_VERSION, HOST_DATE);
+      fatal_error(EMUSAGE);
+    }
 
-   if (argc < 2 ) {
-     fprintf(stderr, "MiniMON29K Release 3.0\n");
-     fprintf(stderr, "MONDFE Debugger Front End (UDI 1.2) Version %s Date %s\n", HOST_VERSION, HOST_DATE);
-     fatal_error(EMUSAGE);
-   }
+  /* Initialize stdin, stdout, sdterr to defaults */
+  MON_STDIN = fileno(stdin);
+  MON_STDOUT = fileno(stdout);
+  MON_STDERR = fileno(stderr);
+  NumberOfConnections = 0;
+  (void) strcpy(CoffFileName, "");
 
-   /* Initialize stdin, stdout, sdterr to defaults */
-   MON_STDIN = fileno(stdin);
-   MON_STDOUT = fileno(stdout);
-   MON_STDERR = fileno(stderr);
-   NumberOfConnections = 0;
-   (void) strcpy (CoffFileName,"");
-
-   udi_waittime = (INT32) 10;	/* default poll every ? secs */
-   /*
+  udi_waittime = (INT32) 10; /* default poll every ? secs */
+  /*
    ** Initialize host configuration structure (global), set defaults
    */
-   if (Mini_initialize (&host_config, &io_config, &init_info) != SUCCESS)
-      fatal_error(EMHINIT);
+  if (Mini_initialize(&host_config, &io_config, &init_info) != SUCCESS)
+    fatal_error(EMHINIT);
 
-   /* Parse args */
-   (void) Mini_parse_args(argc, argv);
+  /* Parse args */
+  (void) Mini_parse_args(argc, argv);
 
-   if (io_config.echo_mode == (INT32) TRUE) {
+  if (io_config.echo_mode == (INT32) TRUE)
+    {
       for (i=0; i < argc; i++)
 	 fprintf(io_config.echo_file, "%s ", argv[i]);
       fprintf(io_config.echo_file, "\n");
       fflush (io_config.echo_file);
-   };
+    };
 
 	   if ((monitor_enable == FALSE) & !Ex_loaded) {
 		   fatal_error (EMNOFILE);
@@ -274,9 +276,7 @@ int main(argc, argv)
    }
    return(0);
 
-   }   /* end Main */
-
-
+} /* end Main */
 
 /*
 ** Functions
@@ -349,95 +349,130 @@ warning(error_number)
 
 
 /* Parse the command line arguments */
-void
-Mini_parse_args(argc, argv)
-int	argc;
-char	**argv;
-{
-   int		i, j;
-   int		len;
+   void
+   Mini_parse_args(int argc, char **argv)
+   {
+     int i, j;
+     int len;
 
-   len = 0;
-   for (i = 1; i < argc; i++)  {	/* ISS */
-      len = len + (int) strlen(argv[i]);
-   };
-   if (len == (int) 0) {
-     connect_string = NULL;
-   } else {
-     if ((connect_string = (char *) malloc (len + argc)) == NULL) {
-	fatal_error(EMALLOC);
-     };
-     for (i = 1; i < argc; i++)  {	/* ISS */
-      if (strcasecmp(argv[i], "-TIP") == 0) {
-	  i++;
-          if (i >= argc)
-            fatal_error(EMUSAGE);
-	  connect_string = argv[i];
-      } else if (strcmp(argv[i], "-log") == 0) {
-	i++;
-	if (i >= argc)
-	  fatal_error(EMUSAGE);
-	(void) strcpy((char *)(&(io_config.log_filename[0])),argv[i]);
-	io_config.log_mode = (INT32) TRUE;
-      } else if (strcmp (argv[i], "-w") == 0) { /* Wait time param */
-	i++;
-	if (i >= argc)
-	  fatal_error(EMUSAGE);
-	if (sscanf(argv[i], "%ld", &udi_waittime) != 1)
-	  fatal_error(EMUSAGE);
-      } else if (strcmp (argv[i], "-ms") == 0) { /* mem stack size */
-	i++;
-	if (i >= argc)
-	  fatal_error(EMUSAGE);
-	if (sscanf(argv[i], "%lx", &init_info.mem_stack_size) != 1)
-	  fatal_error(EMUSAGE);
-      } else if (strcmp (argv[i], "-rs") == 0) { /* reg stack size */
-	i++;
-	if (i >= argc)
-	  fatal_error(EMUSAGE);
-	if (sscanf(argv[i], "%lx", &init_info.reg_stack_size) != 1)
-	  fatal_error(EMUSAGE);
-      } else if (strcmp(argv[i], "-d") == 0) {	
-         monitor_enable = TRUE;	
-      } else if (strcasecmp(argv[i], "-D") == 0) {	
-         monitor_enable = TRUE;	
-      } else if (strcmp(argv[i], "-le") == 0) {	
-         host_config.target_endian = LITTLE;	
-      } else if (strcmp(argv[i], "-q") == 0) {	
-         QuietMode = 1;	
-      } else if (strcmp(argv[i], "-c") == 0) {
-         i++;
-         if (i >= argc)
-            fatal_error(EMUSAGE);
-         (void) strcpy((char *)(&(io_config.cmd_filename[0])),argv[i]);
-         io_config.cmd_file_io = TRUE;
-      } else if (strcmp(argv[i], "-e") == 0) {
-         i++;
-         if (i >= argc)
-            fatal_error(EMUSAGE);
-         (void) strcpy((char *)(&(io_config.echo_filename[0])),argv[i]);
-	 io_config.echo_mode = (INT32) TRUE;
-	 if ((io_config.echo_file = fopen (io_config.echo_filename, "w")) == NULL) {
-	    warning (EMECHOPEN);
-	    io_config.echo_mode = (INT32) FALSE;
-	 }
-      } else { 
-	 (void) strcpy (&CoffFileName[0], argv[i]);
-	 Ex_argc = argc - i;
-	 (void) strcpy(Ex_argstring, argv[i]);
-	 for (j=1; j < Ex_argc; j++) {
-	   (void) strcat(Ex_argstring, " ");
-	   (void) strcat (Ex_argstring, argv[i+j]);
-	 }
-	 Ex_sym = 0;
-	 Ex_sects = (STYP_ABS|STYP_TEXT|STYP_LIT|STYP_DATA|STYP_BSS);
-	 Ex_space = (INT32) I_MEM;
-	 Ex_loaded = 1;  /* given */
-	 break;
-       }  
-     }; /* end for */
-   }; /* end if-else */
-}
+     len = 0;
+     for (i = 1; i < argc; i++)
+       { /* ISS */
+	 len = len + (int) strlen(argv[i]);
+       };
+     if (len == (int) 0)
+       {
+	 connect_string = NULL;
+       }
+     else
+       {
+	 if ((connect_string = (char *) malloc(len + argc)) == NULL)
+	   {
+	     fatal_error(EMALLOC);
+	   };
+	 for (i = 1; i < argc; i++)
+	   { /* ISS */
+	     if (strcasecmp(argv[i], "-TIP") == 0)
+	       {
+		 i++;
+		 if (i >= argc)
+		   fatal_error(EMUSAGE);
+		 connect_string = argv[i];
+	       }
+	     else if (strcmp(argv[i], "-log") == 0)
+	       {
+		 i++;
+		 if (i >= argc)
+		   fatal_error(EMUSAGE);
+		 (void) strcpy((char *) (&(io_config.log_filename[0])),
+			       argv[i]);
+		 io_config.log_mode = (INT32) TRUE;
+	       }
+	     else if (strcmp(argv[i], "-w") == 0)
+	       { /* Wait time param */
+		 i++;
+		 if (i >= argc)
+		   fatal_error(EMUSAGE);
+		 if (sscanf(argv[i], "%ld", &udi_waittime) != 1)
+		   fatal_error(EMUSAGE);
+	       }
+	     else if (strcmp(argv[i], "-ms") == 0)
+	       { /* mem stack size */
+		 i++;
+		 if (i >= argc)
+		   fatal_error(EMUSAGE);
+		 if (sscanf(argv[i], "%lx", &init_info.mem_stack_size) != 1)
+		   fatal_error(EMUSAGE);
+	       }
+	     else if (strcmp(argv[i], "-rs") == 0)
+	       { /* reg stack size */
+		 i++;
+		 if (i >= argc)
+		   fatal_error(EMUSAGE);
+		 if (sscanf(argv[i], "%lx", &init_info.reg_stack_size) != 1)
+		   fatal_error(EMUSAGE);
+	       }
+	     else if (strcmp(argv[i], "-d") == 0)
+	       {
+		 monitor_enable = TRUE;
+	       }
+	     else if (strcasecmp(argv[i], "-D") == 0)
+	       {
+		 monitor_enable = TRUE;
+	       }
+	     else if (strcmp(argv[i], "-le") == 0)
+	       {
+		 host_config.target_endian = LITTLE;
+	       }
+	     else if (strcmp(argv[i], "-q") == 0)
+	       {
+		 QuietMode = 1;
+	       }
+	     else if (strcmp(argv[i], "-c") == 0)
+	       {
+		 i++;
+		 if (i >= argc)
+		   fatal_error(EMUSAGE);
+		 (void) strcpy((char *) (&(io_config.cmd_filename[0])),
+			       argv[i]);
+		 io_config.cmd_file_io = TRUE;
+	       }
+	     else if (strcmp(argv[i], "-e") == 0)
+	       {
+		 i++;
+		 if (i >= argc)
+		   fatal_error(EMUSAGE);
+		 (void) strcpy((char *) (&(io_config.echo_filename[0])),
+			       argv[i]);
+		 io_config.echo_mode = (INT32) TRUE;
+		 if ((io_config.echo_file = fopen(io_config.echo_filename,
+						  "w"))
+		     == NULL)
+		   {
+		     warning(EMECHOPEN);
+		     io_config.echo_mode = (INT32) FALSE;
+		   }
+	       }
+	     else
+	       {
+		 (void) strcpy(&CoffFileName[0], argv[i]);
+		 Ex_argc = argc - i;
+		 (void) strcpy(Ex_argstring, argv[i]);
+		 for (j = 1; j < Ex_argc; j++)
+		   {
+		     (void) strcat(Ex_argstring, " ");
+		     (void) strcat(Ex_argstring, argv[i + j]);
+		   }
+		 Ex_sym = 0;
+		 Ex_sects = (STYP_ABS | STYP_TEXT | STYP_LIT | STYP_DATA
+			     | STYP_BSS);
+		 Ex_space = (INT32) I_MEM;
+		 Ex_loaded = 1; /* given */
+		 break;
+	       }
+	   }; /* end for */
+       }; /* end if-else */
+   }
 
 /* Function to initialize host_config and io_config data structures
  * to their default values *
@@ -485,8 +520,7 @@ INIT_INFO	*init;
 }
 
 void
-Def_CtrlC_Hdlr(num)
-int	num;
+Def_CtrlC_Hdlr(int num)
 {
   Mini_io_reset();
    if (!QuietMode) {

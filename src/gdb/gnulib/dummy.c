@@ -38,8 +38,10 @@
 extern int gl_dummy_symbol(void);
 
 /* This declaration ensures that the library will export at least 1 symbol: */
-int gl_dummy_symbol() {
-	return 0;
+int
+gl_dummy_symbol(void)
+{
+  return 0;
 }
 #else
 /* This declaration is solely to ensure that after preprocessing

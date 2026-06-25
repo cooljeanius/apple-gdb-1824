@@ -18,13 +18,13 @@
 int global_variable = 23;
 
 int
-increment ()
+increment(void)
 {
   return ++global_variable;
 }
 
 int
-main ()
+main(void)
 {
   return 0; 			/* BREAK */
 }

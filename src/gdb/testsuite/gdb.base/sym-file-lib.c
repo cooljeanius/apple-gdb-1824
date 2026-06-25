@@ -14,7 +14,7 @@
 */
 
 extern int
-bar ()
+bar(void)
 {
   return 1; /* gdb break at bar */
 }

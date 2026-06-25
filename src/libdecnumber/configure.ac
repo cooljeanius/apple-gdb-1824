@@ -21,7 +21,7 @@ dnl# Process this file with autoconf264 to generate a configuration script.
 
 AC_PREREQ([2.64])
 dnl# override.m4 is annoying; feel free to adjust this number as necessary:
-m4_define([_GCC_AUTOCONF_VERSION],[2.72])
+m4_define([_GCC_AUTOCONF_VERSION],[2.73])
 AC_INIT([libdecnumber],[0.0.1],[gcc-bugs@gcc.gnu.org],[libdecnumber])
 AC_CONFIG_AUX_DIR([..])dnl
 AC_CONFIG_SRCDIR([decNumber.h])dnl
@@ -74,7 +74,8 @@ ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wno-unused-value -Wwrite-strings \
 -Wmissing-declarations -Wnested-externs -Wundef -Wshadow -Wformat=2 \
 -Wold-style-definition -Wold-style-declaration -Wc++-compat -Wodr -Wabi \
 -Wmissing-format-attribute -Wcast-qual -Wout-of-line-declaration \
--Wmisleading-indentation -Wnull-dereference -Wzero-length-bounds -Wfatal-errors])
+-Wmisleading-indentation -Wnull-dereference -Wzero-length-bounds \
+-Wtrailing-whitespace -Wfatal-errors])
 ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-Wno-long-long])dnl
 
 # Only enable with --enable-werror-always until existing warnings are

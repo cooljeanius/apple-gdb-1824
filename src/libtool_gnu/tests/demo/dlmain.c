@@ -37,7 +37,7 @@ typedef struct
 extern LT_DLSYM_CONST lt_dlsymlist lt_preloaded_symbols[];
 
 int
-main ()
+main(void)
 {
   const lt_dlsymlist *s;
   int (*pfoo)() = 0;

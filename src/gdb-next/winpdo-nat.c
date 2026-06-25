@@ -33,7 +33,7 @@
  */
 
 #include "defs.h"
-#include "frame.h"		/* required by inferior.h */
+#include "frame.h" /* required by inferior.h */
 #include "inferior.h"
 #include "target.h"
 #include "wait.h"
@@ -406,8 +406,7 @@ static const struct xlate_exception
  */
 
 static void
-PrintErrorFormatted (err)
-     int err;
+PrintErrorFormatted(int err)
 {
   char *lpMessageBuffer;
 
@@ -425,10 +424,7 @@ PrintErrorFormatted (err)
 }
 
 static int
-check (ok, file, line)
-     int ok;
-     const char *file;
-     int line;
+check(int ok, const char *file, int line)
 {
   if (!ok)
     {
@@ -438,7 +434,8 @@ check (ok, file, line)
   return ok;
 }
 
-int isWin95()
+int
+isWin95(void)
 {
     static int is95 = -1;
     if (is95 < 0) {
@@ -454,8 +451,7 @@ int isWin95()
 }
 
 static void
-switch_context (tid)
-     int tid;
+switch_context(int tid)
 {
   DbgThread *thread;
   static int child_thread_alive ();
@@ -804,9 +800,7 @@ AddThread (process, tHandle, tId, startAddr, priority)
 }
 
 static void
-RemoveThread (process, threadId)
-     DbgProcess *process;
-     int	 threadId;
+RemoveThread(DbgProcess *process, int threadId)
 {
   DbgThread *freeme, *dontfreeme;
   int removed_current_thread = (current_thread &&
@@ -847,8 +841,7 @@ RemoveThread (process, threadId)
  */
 
 static int
-child_thread_alive (tId)
-     int tId;
+child_thread_alive(int tId)
 {
   DbgThread *thread;
 
@@ -860,8 +853,7 @@ child_thread_alive (tId)
 }
 
 static void
-SuspendThreads (process)
-     DbgProcess *process;
+SuspendThreads(DbgProcess *process)
 {
   DbgThread *thread = process->threads;
 
@@ -875,8 +867,7 @@ SuspendThreads (process)
 }
 
 static void
-ResumeThreads (process)
-     DbgProcess *process;
+ResumeThreads(DbgProcess *process)
 {
   DbgThread *thread = process->threads;
 
@@ -1098,9 +1089,7 @@ child_wait (int pid, struct target_waitstatus *ourstatus)
 /* Attach to process PID, then initialize for debugging it.  */
 
 static void
-child_attach (args, from_tty)
-     char *args;
-     int from_tty;
+child_attach(char *args, int from_tty)
 {
   int ok, pid;
   struct target_waitstatus dummy;
@@ -1136,11 +1125,8 @@ child_attach (args, from_tty)
   push_target (&child_ops);
 }
 
-
 static void
-child_detach (args, from_tty)
-     char *args;
-     int from_tty;
+child_detach(char *args, int from_tty)
 {
   if (from_tty)
     {
@@ -1170,8 +1156,7 @@ child_detach (args, from_tty)
 /* Print status information about what we are accessing.  */
 
 static void
-child_files_info (ignore)
-     struct target_ops *ignore;
+child_files_info(struct target_ops *ignore)
 {
   printf_filtered ("\tUsing the running image of %s %s.\n",
 		   attach_flag ? "attached" : "child",
@@ -1180,9 +1165,7 @@ child_files_info (ignore)
 
 /* ARGSUSED */
 static void
-child_open (arg, from_tty)
-     char *arg;
-     int from_tty;
+child_open(char *arg, int from_tty)
 {
   error ("Use the \"run\" command to start a Unix child process.");
 }
@@ -1331,12 +1314,8 @@ dos_paths_to_unix_paths (char *newenv)
  * ALLARGS is a string containing the arguments to the program.
  * ENV is the environment vector to pass. Errors reported with error().  */
 
-
 static void
-child_create_inferior (exec_file, allargs, env)
-     char *exec_file;
-     char *allargs;
-     char **env;
+child_create_inferior(char *exec_file, char *allargs, char **env)
 {
   char real_path[MAXPATHLEN];
   char *winenv;
@@ -1436,7 +1415,7 @@ child_create_inferior (exec_file, allargs, env)
 }
 
 static void
-child_mourn_inferior ()
+child_mourn_inferior(void)
 {
   unpush_target (&child_ops);
   current_process.handle = 0;
@@ -1448,7 +1427,7 @@ child_mourn_inferior ()
    ^C on the controlling terminal. */
 
 void
-child_stop ()
+child_stop(void)
 {
   DEBUG_EVENTS (("gdb: GenerateConsoleCtrlEvent (CTRLC_EVENT, %d)\n",
 		 current_process.id));
@@ -1575,19 +1554,19 @@ child_resume (int pid, int step, enum target_signal signal)
 }
 
 static void
-child_prepare_to_store ()
+child_prepare_to_store(void)
 {
   /* Do nothing, since we can store individual regs */
 }
 
 static int
-child_can_run ()
+child_can_run(void)
 {
   return 1;
 }
 
 static void
-child_close ()
+child_close(void)
 {
   DEBUG_EVENTS (("gdb: child_close, inferior_pid=%d\n", inferior_pid));
 }
@@ -1640,10 +1619,7 @@ struct target_ops child_ops =
 #include "environ.h"
 
 static void
-set_pathstyle_dos (args, from_tty, c)
-     char *args;
-     int from_tty;
-     struct cmd_list_element *c;
+set_pathstyle_dos(char *args, int from_tty, struct cmd_list_element *c)
 {
   char **vector = environ_vector (inferior_environ);
   char *thisvar;
@@ -1681,7 +1657,7 @@ int RobinHoodHack = 1;
 #endif /* NeXT_PDO */
 
 void
-_initialize_inftarg ()
+_initialize_inftarg(void)
 {
   struct cmd_list_element *c;
 
@@ -1774,7 +1750,7 @@ _initialize_inftarg ()
 }
 
 char *
-global_gdbinit_dir ()
+global_gdbinit_dir(void)
 {
   char *next_root = getenv ("NEXT_ROOT");
   char *gdbinit_dir = "NextDeveloper/Libraries/gdb";
@@ -1799,7 +1775,8 @@ global_gdbinit_dir ()
  * interfering with the current thread if it is sitting in a system
  * call (such as WaitForMultipleObjects) which it is 90% of the time.
  */
-void create_call_dummy_thread()
+void
+create_call_dummy_thread(void)
 {
   if (isWin95()) return;		/* no CreateRemoteThread() in win95 */
 
@@ -1842,7 +1819,8 @@ void create_call_dummy_thread()
   CHECK(SuspendThread(call_dummy_saved_thread.handle) != 0xffffffff);
 }
 
-void destroy_call_dummy_thread()
+void
+destroy_call_dummy_thread(void)
 {
   DbgThread *original_thread = call_dummy_saved_thread.oldthread;
   value_ptr exit_thread;

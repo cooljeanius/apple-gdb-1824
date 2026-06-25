@@ -17,21 +17,21 @@
 
    Contributed by Ken Werner <ken.werner@de.ibm.com>  */
 
-typedef int __attribute__ ((vector_size (4 * sizeof(int)))) int4;
-typedef unsigned int __attribute__ ((vector_size (4 * sizeof(unsigned int)))) uint4;
-typedef char __attribute__ ((vector_size (4 * sizeof(char)))) char4;
-typedef float __attribute__ ((vector_size (4 * sizeof(float)))) float4;
+typedef int __attribute__ int4;
+typedef unsigned int __attribute__ uint4;
+typedef char __attribute__ char4;
+typedef float __attribute__ float4;
 
-typedef int __attribute__ ((vector_size (2 * sizeof(int)))) int2;
-typedef long long __attribute__ ((vector_size (2 * sizeof(long long)))) longlong2;
-typedef float __attribute__ ((vector_size (2 * sizeof(float)))) float2;
-typedef double __attribute__ ((vector_size (2 * sizeof(double)))) double2;
+typedef int __attribute__ int2;
+typedef long long __attribute__ longlong2;
+typedef float __attribute__ float2;
+typedef double __attribute__ double2;
 
 int ia = 2;
 int ib = 1;
 float fa = 2;
 float fb = 1;
-long long lla __attribute__ ((mode(DI))) = 0x0000000100000001ll;
+long long lla __attribute__ = 0x0000000100000001ll;
 char4 c4 = {1, 2, 3, 4};
 int4 i4a = {2, 4, 8, 16};
 int4 i4b = {1, 2, 8, 4};
@@ -57,7 +57,7 @@ struct
 } struct_with_vector_1;
 
 int
-main ()
+main(void)
 {
   return 0;
 }

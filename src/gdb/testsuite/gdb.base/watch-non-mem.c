@@ -17,7 +17,8 @@
 
 int global = 0;
 
-int main()
+int
+main(void)
 {
   global++;
   global++;

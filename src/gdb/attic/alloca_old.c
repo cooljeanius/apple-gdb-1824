@@ -7,7 +7,7 @@
 
 	This implementation of the PWB library alloca() function,
 	which is used to allocate space off the run-time stack so
-	that it is automatically reclaimed upon procedure exit, 
+	that it is automatically reclaimed upon procedure exit,
 	was inspired by discussions with J. Q. Johnson of Cornell.
 
 	It should work under any C implementation that uses an
@@ -44,7 +44,7 @@ lose
 #  endif /* STACK_DIRECTION undefined */
 # endif /* static */
 #endif /* emacs */
- 
+
 #ifdef __STDC__
 typedef void	*pointer;		/* generic pointer type */
 #else
@@ -82,7 +82,7 @@ static int	stack_dir;		/* 1 or -1 once known */
 #define	STACK_DIR	stack_dir
 
 static void
-find_stack_direction (/* void */)
+find_stack_direction(void)
 {
   static char	*addr = NULL;	/* address of first
 				   `dummy', once known */
@@ -138,20 +138,22 @@ typedef union hdr
 static header *last_alloca_header = NULL; /* -> last alloca header */
 
 pointer
-alloca (size)			/* returns pointer to storage */
-     unsigned	size;		/* # bytes to allocate */
+alloca(/* returns pointer to storage */
+       unsigned size /* # bytes to allocate */
+)
 {
   auto char	probe;		/* probes stack depth: */
   register char	*depth = &probe;
 
 #if STACK_DIRECTION == 0
-	if (STACK_DIR == 0) {		/* unknown growth direction */
-		find_stack_direction ();
-	}
+  if (STACK_DIR == 0)
+    { /* unknown growth direction */
+      find_stack_direction();
+    }
 #endif /* STACK_DIRECTION == 0 */
 
-				/* Reclaim garbage, defined as all alloca()ed storage that
-				   was allocated from deeper in the stack than currently. */
+  /* Reclaim garbage, defined as all alloca()ed storage that
+			   was allocated from deeper in the stack than currently. */
 
   {
     register header	*hp;	/* traverses linked list */

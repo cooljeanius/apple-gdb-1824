@@ -3,7 +3,7 @@
 void foo (void);
 
 int
-main ()
+main(void)
 {
   typedef struct {
     char c;
@@ -17,7 +17,7 @@ main ()
 }
 
 void
-foo ()
+foo(void)
 {
   typedef struct {
     int i;

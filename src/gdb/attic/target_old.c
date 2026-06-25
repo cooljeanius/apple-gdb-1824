@@ -227,9 +227,7 @@ static void setup_target_debug PARAMS ((void));
 
 /* ARGSUSED */
 static void
-target_command (arg, from_tty)
-     char *arg;
-     int from_tty;
+target_command(char *arg, int from_tty)
 {
   fputs_filtered ("Argument required (target name).  Try `help target'\n",
 		  gdb_stdout);
@@ -238,8 +236,7 @@ target_command (arg, from_tty)
 /* Add a possible target architecture to the list.  */
 
 void
-add_target (t)
-     struct target_ops *t;
+add_target(struct target_ops *t)
 {
   if (!target_structs)
     {
@@ -271,7 +268,7 @@ information on the arguments for a particular protocol, type\n\
 /* Stub functions */
 
 void
-target_ignore ()
+target_ignore(void)
 {
 }
 
@@ -289,14 +286,14 @@ nomemory (memaddr, myaddr, len, write, t)
 }
 
 static void
-tcomplain ()
+tcomplain(void)
 {
   error ("You can't do that when your target is `%s'",
 	 current_target.to_shortname);
 }
 
 void
-noprocess ()
+noprocess(void)
 {
   error ("You can't do that without a process to debug.");
 }
@@ -312,7 +309,7 @@ nosymbol (name, addrp)
 
 /* ARGSUSED */
 static void
-nosupport_runtime ()
+nosupport_runtime(void)
 {
   if (!inferior_pid)
     noprocess ();
@@ -323,9 +320,7 @@ nosupport_runtime ()
 
 /* ARGSUSED */
 static void
-default_terminal_info (args, from_tty)
-     char *args;
-     int from_tty;
+default_terminal_info(char *args, int from_tty)
 {
   printf_unfiltered("No saved terminal information.\n");
 }
@@ -336,8 +331,7 @@ default_terminal_info (args, from_tty)
    the target, and the operation should be attempted.  */
 
 static void
-kill_or_be_killed (from_tty)
-     int from_tty;
+kill_or_be_killed(int from_tty)
 {
   if (target_has_execution)
     {
@@ -356,28 +350,21 @@ kill_or_be_killed (from_tty)
 }
 
 static void
-maybe_kill_then_attach (args, from_tty)
-     char *args;
-     int from_tty;
+maybe_kill_then_attach(char *args, int from_tty)
 {
   kill_or_be_killed (from_tty);
   target_attach (args, from_tty);
 }
 
 static void
-maybe_kill_then_create_inferior (exec, args, env)
-     char *exec;
-     char *args;
-     char **env;
+maybe_kill_then_create_inferior(char *exec, char *args, char **env)
 {
   kill_or_be_killed (0);
   target_create_inferior (exec, args, env);
 }
 
 static void
-default_clone_and_follow_inferior (child_pid, followed_child)
-  int  child_pid;
-  int  *followed_child;
+default_clone_and_follow_inferior(int child_pid, int *followed_child)
 {
   target_clone_and_follow_inferior (child_pid, followed_child);
 }
@@ -386,8 +373,7 @@ default_clone_and_follow_inferior (child_pid, followed_child)
    We default entries, at least to stubs that print error messages.  */
 
 void
-cleanup_target (t)
-     struct target_ops *t;
+cleanup_target(struct target_ops *t)
 {
 
 #define de_fault(field, value) \
@@ -459,7 +445,7 @@ cleanup_target (t)
    pushed target vectors.  */
 
 void
-update_current_target ()
+update_current_target(void)
 {
   struct target_stack_item *item;
   struct target_ops *t;
@@ -562,8 +548,7 @@ update_current_target ()
    checking them.  */
 
 int
-push_target (t)
-     struct target_ops *t;
+push_target(struct target_ops *t)
 {
   struct target_stack_item *cur, *prev, *tmp;
 
@@ -628,8 +613,7 @@ push_target (t)
    Return how many times it was removed (0 or 1).  */
 
 int
-unpush_target (t)
-     struct target_ops *t;
+unpush_target(struct target_ops *t)
 {
   struct target_stack_item *cur, *prev;
 
@@ -662,7 +646,7 @@ unpush_target (t)
 }
 
 void
-pop_target ()
+pop_target(void)
 {
   (current_target.to_close)(0);	/* Let it clean up */
   if (unpush_target (target_stack->target_ops) == 1)
@@ -921,9 +905,7 @@ bump:
 
 /* ARGSUSED */
 static void
-target_info (args, from_tty)
-     char *args;
-     int from_tty;
+target_info(char *args, int from_tty)
 {
   struct target_ops *t;
   struct target_stack_item *item;
@@ -958,8 +940,7 @@ target_info (args, from_tty)
    anything.  */
 
 void
-target_preopen (from_tty)
-     int from_tty;
+target_preopen(int from_tty)
 {
   dont_repeat();
 
@@ -981,9 +962,7 @@ target_preopen (from_tty)
 /* Detach a target after doing deferred register stores.  */
 
 void
-target_detach (args, from_tty)
-     char *args;
-     int from_tty;
+target_detach(char *args, int from_tty)
 {
   /* Handle any optimized stores to the inferior.  */
 #ifdef DO_DEFERRED_STORES
@@ -1014,8 +993,7 @@ target_link (modname, t_reloc)
    Result is always valid (error() is called for errors).  */
 
 static struct target_ops *
-find_default_run_target (do_mesg)
-     char *do_mesg;
+find_default_run_target(char *do_mesg)
 {
   struct target_ops **t;
   struct target_ops *runable = NULL;
@@ -1040,9 +1018,7 @@ find_default_run_target (do_mesg)
 }
 
 void
-find_default_attach (args, from_tty)
-     char *args;
-     int from_tty;
+find_default_attach(char *args, int from_tty)
 {
   struct target_ops *t;
 
@@ -1052,9 +1028,7 @@ find_default_attach (args, from_tty)
 }
 
 void
-find_default_require_attach (args, from_tty)
-     char *args;
-     int from_tty;
+find_default_require_attach(char *args, int from_tty)
 {
   struct target_ops *t;
 
@@ -1064,10 +1038,7 @@ find_default_require_attach (args, from_tty)
 }
 
 void
-find_default_require_detach (pid, args, from_tty)
-  int  pid;
-  char *  args;
-  int  from_tty;
+find_default_require_detach(int pid, char *args, int from_tty)
 {
   struct target_ops *t;
 
@@ -1077,10 +1048,7 @@ find_default_require_detach (pid, args, from_tty)
 }
 
 void
-find_default_create_inferior (exec_file, allargs, env)
-     char *exec_file;
-     char *allargs;
-     char **env;
+find_default_create_inferior(char *exec_file, char *allargs, char **env)
 {
   struct target_ops *t;
 
@@ -1090,9 +1058,7 @@ find_default_create_inferior (exec_file, allargs, env)
 }
 
 void
-find_default_clone_and_follow_inferior (child_pid, followed_child)
-  int  child_pid;
-  int  *followed_child;
+find_default_clone_and_follow_inferior(int child_pid, int *followed_child)
 {
   struct target_ops *t;
 
@@ -1102,13 +1068,13 @@ find_default_clone_and_follow_inferior (child_pid, followed_child)
 }
 
 static int
-return_zero ()
+return_zero(void)
 {
   return 0;
 }
 
 static int
-return_one ()
+return_one(void)
 {
   return 1;
 }
@@ -1117,7 +1083,7 @@ return_one ()
    some reason there is more than one, return NULL.  */
 
 struct target_ops *
-find_run_target ()
+find_run_target(void)
 {
   struct target_ops **t;
   struct target_ops *runable = NULL;
@@ -1138,7 +1104,7 @@ find_run_target ()
 }
 
 struct target_ops *
-find_core_target ()
+find_core_target(void)
 {
   struct target_ops **t;
   struct target_ops *runable = NULL;
@@ -1162,7 +1128,7 @@ find_core_target ()
 /* The inferior process has died.  Long live the inferior!  */
 
 void
-generic_mourn_inferior ()
+generic_mourn_inferior(void)
 {
   extern int show_breakpoint_hit_counts;
 
@@ -1293,457 +1259,555 @@ static struct {
 /* *INDENT-ON* */
 
 /* Return the string for a signal.  */
-char *
-target_signal_to_string (sig)
-     enum target_signal sig;
-{
-  if ((sig >= TARGET_SIGNAL_FIRST) && (sig <= TARGET_SIGNAL_LAST))
-    return signals[sig].string;
-  else
-    return signals[TARGET_SIGNAL_UNKNOWN].string;
-}
+  char *
+  target_signal_to_string(enum target_signal sig)
+  {
+    if ((sig >= TARGET_SIGNAL_FIRST) && (sig <= TARGET_SIGNAL_LAST))
+      return signals[sig].string;
+    else
+      return signals[TARGET_SIGNAL_UNKNOWN].string;
+  }
 
 /* Return the name for a signal.  */
-char *
-target_signal_to_name (sig)
-     enum target_signal sig;
-{
-  if (sig == TARGET_SIGNAL_UNKNOWN)
-    /* I think the code which prints this will always print it along with
+  char *
+  target_signal_to_name(enum target_signal sig)
+  {
+    if (sig == TARGET_SIGNAL_UNKNOWN)
+      /* I think the code which prints this will always print it along with
        the string, so no need to be verbose.  */
-    return "?";
-  return signals[sig].name;
-}
+      return "?";
+    return signals[sig].name;
+  }
 
 /* Given a name, return its signal.  */
-enum target_signal
-target_signal_from_name (name)
-     char *name;
-{
-  enum target_signal sig;
+  enum target_signal
+  target_signal_from_name(char *name)
+  {
+    enum target_signal sig;
 
-  /* It's possible we also should allow "SIGCLD" as well as "SIGCHLD"
+    /* It's possible we also should allow "SIGCLD" as well as "SIGCHLD"
      for TARGET_SIGNAL_SIGCHLD.  SIGIOT, on the other hand, is more
      questionable; seems like by now people should call it SIGABRT
      instead.  */
 
-  /* This ugly cast brought to you by the native VAX compiler.  */
-  for (sig = TARGET_SIGNAL_HUP;
-       signals[sig].name != NULL;
-       sig = (enum target_signal)((int)sig + 1))
-    if (STREQ (name, signals[sig].name))
-      return sig;
-  return TARGET_SIGNAL_UNKNOWN;
-}
+    /* This ugly cast brought to you by the native VAX compiler.  */
+    for (sig = TARGET_SIGNAL_HUP; signals[sig].name != NULL;
+	 sig = (enum target_signal)((int) sig + 1))
+      if (STREQ(name, signals[sig].name))
+	return sig;
+    return TARGET_SIGNAL_UNKNOWN;
+  }
 
 /* The following functions are to help certain targets deal
    with the signal/waitstatus stuff.  They could just as well be in
    a file called native-utils.c or unixwaitstatus-utils.c or whatever.  */
 
 /* Convert host signal to our signals.  */
-enum target_signal
-target_signal_from_host (hostsig)
-     int hostsig;
-{
-  /* A switch statement would make sense but would require special kludges
+  enum target_signal
+  target_signal_from_host(int hostsig)
+  {
+    /* A switch statement would make sense but would require special kludges
      to deal with the cases where more than one signal has the same number.  */
 
-  if (hostsig == 0) return TARGET_SIGNAL_0;
+    if (hostsig == 0)
+      return TARGET_SIGNAL_0;
 
-#if defined (SIGHUP)
-  if (hostsig == SIGHUP) return TARGET_SIGNAL_HUP;
+#if defined(SIGHUP)
+    if (hostsig == SIGHUP)
+      return TARGET_SIGNAL_HUP;
 #endif
-#if defined (SIGINT)
-  if (hostsig == SIGINT) return TARGET_SIGNAL_INT;
+#if defined(SIGINT)
+    if (hostsig == SIGINT)
+      return TARGET_SIGNAL_INT;
 #endif
-#if defined (SIGQUIT)
-  if (hostsig == SIGQUIT) return TARGET_SIGNAL_QUIT;
+#if defined(SIGQUIT)
+    if (hostsig == SIGQUIT)
+      return TARGET_SIGNAL_QUIT;
 #endif
-#if defined (SIGILL)
-  if (hostsig == SIGILL) return TARGET_SIGNAL_ILL;
+#if defined(SIGILL)
+    if (hostsig == SIGILL)
+      return TARGET_SIGNAL_ILL;
 #endif
-#if defined (SIGTRAP)
-  if (hostsig == SIGTRAP) return TARGET_SIGNAL_TRAP;
+#if defined(SIGTRAP)
+    if (hostsig == SIGTRAP)
+      return TARGET_SIGNAL_TRAP;
 #endif
-#if defined (SIGABRT)
-  if (hostsig == SIGABRT) return TARGET_SIGNAL_ABRT;
+#if defined(SIGABRT)
+    if (hostsig == SIGABRT)
+      return TARGET_SIGNAL_ABRT;
 #endif
-#if defined (SIGEMT)
-  if (hostsig == SIGEMT) return TARGET_SIGNAL_EMT;
+#if defined(SIGEMT)
+    if (hostsig == SIGEMT)
+      return TARGET_SIGNAL_EMT;
 #endif
-#if defined (SIGFPE)
-  if (hostsig == SIGFPE) return TARGET_SIGNAL_FPE;
+#if defined(SIGFPE)
+    if (hostsig == SIGFPE)
+      return TARGET_SIGNAL_FPE;
 #endif
-#if defined (SIGKILL)
-  if (hostsig == SIGKILL) return TARGET_SIGNAL_KILL;
+#if defined(SIGKILL)
+    if (hostsig == SIGKILL)
+      return TARGET_SIGNAL_KILL;
 #endif
-#if defined (SIGBUS)
-  if (hostsig == SIGBUS) return TARGET_SIGNAL_BUS;
+#if defined(SIGBUS)
+    if (hostsig == SIGBUS)
+      return TARGET_SIGNAL_BUS;
 #endif
-#if defined (SIGSEGV)
-  if (hostsig == SIGSEGV) return TARGET_SIGNAL_SEGV;
+#if defined(SIGSEGV)
+    if (hostsig == SIGSEGV)
+      return TARGET_SIGNAL_SEGV;
 #endif
-#if defined (SIGSYS)
-  if (hostsig == SIGSYS) return TARGET_SIGNAL_SYS;
+#if defined(SIGSYS)
+    if (hostsig == SIGSYS)
+      return TARGET_SIGNAL_SYS;
 #endif
-#if defined (SIGPIPE)
-  if (hostsig == SIGPIPE) return TARGET_SIGNAL_PIPE;
+#if defined(SIGPIPE)
+    if (hostsig == SIGPIPE)
+      return TARGET_SIGNAL_PIPE;
 #endif
-#if defined (SIGALRM)
-  if (hostsig == SIGALRM) return TARGET_SIGNAL_ALRM;
+#if defined(SIGALRM)
+    if (hostsig == SIGALRM)
+      return TARGET_SIGNAL_ALRM;
 #endif
-#if defined (SIGTERM)
-  if (hostsig == SIGTERM) return TARGET_SIGNAL_TERM;
+#if defined(SIGTERM)
+    if (hostsig == SIGTERM)
+      return TARGET_SIGNAL_TERM;
 #endif
-#if defined (SIGUSR1)
-  if (hostsig == SIGUSR1) return TARGET_SIGNAL_USR1;
+#if defined(SIGUSR1)
+    if (hostsig == SIGUSR1)
+      return TARGET_SIGNAL_USR1;
 #endif
-#if defined (SIGUSR2)
-  if (hostsig == SIGUSR2) return TARGET_SIGNAL_USR2;
+#if defined(SIGUSR2)
+    if (hostsig == SIGUSR2)
+      return TARGET_SIGNAL_USR2;
 #endif
-#if defined (SIGCLD)
-  if (hostsig == SIGCLD) return TARGET_SIGNAL_CHLD;
+#if defined(SIGCLD)
+    if (hostsig == SIGCLD)
+      return TARGET_SIGNAL_CHLD;
 #endif
-#if defined (SIGCHLD)
-  if (hostsig == SIGCHLD) return TARGET_SIGNAL_CHLD;
+#if defined(SIGCHLD)
+    if (hostsig == SIGCHLD)
+      return TARGET_SIGNAL_CHLD;
 #endif
-#if defined (SIGPWR)
-  if (hostsig == SIGPWR) return TARGET_SIGNAL_PWR;
+#if defined(SIGPWR)
+    if (hostsig == SIGPWR)
+      return TARGET_SIGNAL_PWR;
 #endif
-#if defined (SIGWINCH)
-  if (hostsig == SIGWINCH) return TARGET_SIGNAL_WINCH;
+#if defined(SIGWINCH)
+    if (hostsig == SIGWINCH)
+      return TARGET_SIGNAL_WINCH;
 #endif
-#if defined (SIGURG)
-  if (hostsig == SIGURG) return TARGET_SIGNAL_URG;
+#if defined(SIGURG)
+    if (hostsig == SIGURG)
+      return TARGET_SIGNAL_URG;
 #endif
-#if defined (SIGIO)
-  if (hostsig == SIGIO) return TARGET_SIGNAL_IO;
+#if defined(SIGIO)
+    if (hostsig == SIGIO)
+      return TARGET_SIGNAL_IO;
 #endif
-#if defined (SIGPOLL)
-  if (hostsig == SIGPOLL) return TARGET_SIGNAL_POLL;
+#if defined(SIGPOLL)
+    if (hostsig == SIGPOLL)
+      return TARGET_SIGNAL_POLL;
 #endif
-#if defined (SIGSTOP)
-  if (hostsig == SIGSTOP) return TARGET_SIGNAL_STOP;
+#if defined(SIGSTOP)
+    if (hostsig == SIGSTOP)
+      return TARGET_SIGNAL_STOP;
 #endif
-#if defined (SIGTSTP)
-  if (hostsig == SIGTSTP) return TARGET_SIGNAL_TSTP;
+#if defined(SIGTSTP)
+    if (hostsig == SIGTSTP)
+      return TARGET_SIGNAL_TSTP;
 #endif
-#if defined (SIGCONT)
-  if (hostsig == SIGCONT) return TARGET_SIGNAL_CONT;
+#if defined(SIGCONT)
+    if (hostsig == SIGCONT)
+      return TARGET_SIGNAL_CONT;
 #endif
-#if defined (SIGTTIN)
-  if (hostsig == SIGTTIN) return TARGET_SIGNAL_TTIN;
+#if defined(SIGTTIN)
+    if (hostsig == SIGTTIN)
+      return TARGET_SIGNAL_TTIN;
 #endif
-#if defined (SIGTTOU)
-  if (hostsig == SIGTTOU) return TARGET_SIGNAL_TTOU;
+#if defined(SIGTTOU)
+    if (hostsig == SIGTTOU)
+      return TARGET_SIGNAL_TTOU;
 #endif
-#if defined (SIGVTALRM)
-  if (hostsig == SIGVTALRM) return TARGET_SIGNAL_VTALRM;
+#if defined(SIGVTALRM)
+    if (hostsig == SIGVTALRM)
+      return TARGET_SIGNAL_VTALRM;
 #endif
-#if defined (SIGPROF)
-  if (hostsig == SIGPROF) return TARGET_SIGNAL_PROF;
+#if defined(SIGPROF)
+    if (hostsig == SIGPROF)
+      return TARGET_SIGNAL_PROF;
 #endif
-#if defined (SIGXCPU)
-  if (hostsig == SIGXCPU) return TARGET_SIGNAL_XCPU;
+#if defined(SIGXCPU)
+    if (hostsig == SIGXCPU)
+      return TARGET_SIGNAL_XCPU;
 #endif
-#if defined (SIGXFSZ)
-  if (hostsig == SIGXFSZ) return TARGET_SIGNAL_XFSZ;
+#if defined(SIGXFSZ)
+    if (hostsig == SIGXFSZ)
+      return TARGET_SIGNAL_XFSZ;
 #endif
-#if defined (SIGWIND)
-  if (hostsig == SIGWIND) return TARGET_SIGNAL_WIND;
+#if defined(SIGWIND)
+    if (hostsig == SIGWIND)
+      return TARGET_SIGNAL_WIND;
 #endif
-#if defined (SIGPHONE)
-  if (hostsig == SIGPHONE) return TARGET_SIGNAL_PHONE;
+#if defined(SIGPHONE)
+    if (hostsig == SIGPHONE)
+      return TARGET_SIGNAL_PHONE;
 #endif
-#if defined (SIGLOST)
-  if (hostsig == SIGLOST) return TARGET_SIGNAL_LOST;
+#if defined(SIGLOST)
+    if (hostsig == SIGLOST)
+      return TARGET_SIGNAL_LOST;
 #endif
-#if defined (SIGWAITING)
-  if (hostsig == SIGWAITING) return TARGET_SIGNAL_WAITING;
+#if defined(SIGWAITING)
+    if (hostsig == SIGWAITING)
+      return TARGET_SIGNAL_WAITING;
 #endif
-#if defined (SIGCANCEL)
-  if (hostsig == SIGCANCEL) return TARGET_SIGNAL_CANCEL;
+#if defined(SIGCANCEL)
+    if (hostsig == SIGCANCEL)
+      return TARGET_SIGNAL_CANCEL;
 #endif
-#if defined (SIGLWP)
-  if (hostsig == SIGLWP) return TARGET_SIGNAL_LWP;
+#if defined(SIGLWP)
+    if (hostsig == SIGLWP)
+      return TARGET_SIGNAL_LWP;
 #endif
-#if defined (SIGDANGER)
-  if (hostsig == SIGDANGER) return TARGET_SIGNAL_DANGER;
+#if defined(SIGDANGER)
+    if (hostsig == SIGDANGER)
+      return TARGET_SIGNAL_DANGER;
 #endif
-#if defined (SIGGRANT)
-  if (hostsig == SIGGRANT) return TARGET_SIGNAL_GRANT;
+#if defined(SIGGRANT)
+    if (hostsig == SIGGRANT)
+      return TARGET_SIGNAL_GRANT;
 #endif
-#if defined (SIGRETRACT)
-  if (hostsig == SIGRETRACT) return TARGET_SIGNAL_RETRACT;
+#if defined(SIGRETRACT)
+    if (hostsig == SIGRETRACT)
+      return TARGET_SIGNAL_RETRACT;
 #endif
-#if defined (SIGMSG)
-  if (hostsig == SIGMSG) return TARGET_SIGNAL_MSG;
+#if defined(SIGMSG)
+    if (hostsig == SIGMSG)
+      return TARGET_SIGNAL_MSG;
 #endif
-#if defined (SIGSOUND)
-  if (hostsig == SIGSOUND) return TARGET_SIGNAL_SOUND;
+#if defined(SIGSOUND)
+    if (hostsig == SIGSOUND)
+      return TARGET_SIGNAL_SOUND;
 #endif
-#if defined (SIGSAK)
-  if (hostsig == SIGSAK) return TARGET_SIGNAL_SAK;
+#if defined(SIGSAK)
+    if (hostsig == SIGSAK)
+      return TARGET_SIGNAL_SAK;
 #endif
-#if defined (SIGPRIO)
-  if (hostsig == SIGPRIO) return TARGET_SIGNAL_PRIO;
+#if defined(SIGPRIO)
+    if (hostsig == SIGPRIO)
+      return TARGET_SIGNAL_PRIO;
 #endif
 
-  /* Mach exceptions.  Assumes that the values for EXC_ are positive! */
-#if defined (EXC_BAD_ACCESS) && defined (_NSIG)
-  if (hostsig == _NSIG + EXC_BAD_ACCESS) return TARGET_EXC_BAD_ACCESS;
+    /* Mach exceptions.  Assumes that the values for EXC_ are positive! */
+#if defined(EXC_BAD_ACCESS) && defined(_NSIG)
+    if (hostsig == _NSIG + EXC_BAD_ACCESS)
+      return TARGET_EXC_BAD_ACCESS;
 #endif
-#if defined (EXC_BAD_INSTRUCTION) && defined (_NSIG)
-  if (hostsig == _NSIG + EXC_BAD_INSTRUCTION) return TARGET_EXC_BAD_INSTRUCTION;
+#if defined(EXC_BAD_INSTRUCTION) && defined(_NSIG)
+    if (hostsig == _NSIG + EXC_BAD_INSTRUCTION)
+      return TARGET_EXC_BAD_INSTRUCTION;
 #endif
-#if defined (EXC_ARITHMETIC) && defined (_NSIG)
-  if (hostsig == _NSIG + EXC_ARITHMETIC) return TARGET_EXC_ARITHMETIC;
+#if defined(EXC_ARITHMETIC) && defined(_NSIG)
+    if (hostsig == _NSIG + EXC_ARITHMETIC)
+      return TARGET_EXC_ARITHMETIC;
 #endif
-#if defined (EXC_EMULATION) && defined (_NSIG)
-  if (hostsig == _NSIG + EXC_EMULATION) return TARGET_EXC_EMULATION;
+#if defined(EXC_EMULATION) && defined(_NSIG)
+    if (hostsig == _NSIG + EXC_EMULATION)
+      return TARGET_EXC_EMULATION;
 #endif
-#if defined (EXC_SOFTWARE) && defined (_NSIG)
-  if (hostsig == _NSIG + EXC_SOFTWARE) return TARGET_EXC_SOFTWARE;
+#if defined(EXC_SOFTWARE) && defined(_NSIG)
+    if (hostsig == _NSIG + EXC_SOFTWARE)
+      return TARGET_EXC_SOFTWARE;
 #endif
-#if defined (EXC_BREAKPOINT) && defined (_NSIG)
-  if (hostsig == _NSIG + EXC_BREAKPOINT) return TARGET_EXC_BREAKPOINT;
+#if defined(EXC_BREAKPOINT) && defined(_NSIG)
+    if (hostsig == _NSIG + EXC_BREAKPOINT)
+      return TARGET_EXC_BREAKPOINT;
 #endif
 
-#if defined (SIGINFO)
-  if (hostsig == SIGINFO) return TARGET_SIGNAL_INFO;
+#if defined(SIGINFO)
+    if (hostsig == SIGINFO)
+      return TARGET_SIGNAL_INFO;
 #endif
 
-#if defined (REALTIME_LO)
-  if (hostsig >= REALTIME_LO && hostsig < REALTIME_HI)
-    return (enum target_signal)
-      (hostsig - 33 + (int) TARGET_SIGNAL_REALTIME_33);
+#if defined(REALTIME_LO)
+    if (hostsig >= REALTIME_LO && hostsig < REALTIME_HI)
+      return (enum target_signal)(hostsig - 33
+				  + (int) TARGET_SIGNAL_REALTIME_33);
 #endif
-  return TARGET_SIGNAL_UNKNOWN;
-}
+    return TARGET_SIGNAL_UNKNOWN;
+  }
 
-int
-target_signal_to_host (oursig)
-     enum target_signal oursig;
-{
-  switch (oursig)
-    {
-    case TARGET_SIGNAL_0: return 0;
+  int
+  target_signal_to_host(enum target_signal oursig)
+  {
+    switch (oursig)
+      {
+      case TARGET_SIGNAL_0:
+	return 0;
 
-#if defined (SIGHUP)
-    case TARGET_SIGNAL_HUP: return SIGHUP;
+#if defined(SIGHUP)
+      case TARGET_SIGNAL_HUP:
+	return SIGHUP;
 #endif
-#if defined (SIGINT)
-    case TARGET_SIGNAL_INT: return SIGINT;
+#if defined(SIGINT)
+      case TARGET_SIGNAL_INT:
+	return SIGINT;
 #endif
-#if defined (SIGQUIT)
-    case TARGET_SIGNAL_QUIT: return SIGQUIT;
+#if defined(SIGQUIT)
+      case TARGET_SIGNAL_QUIT:
+	return SIGQUIT;
 #endif
-#if defined (SIGILL)
-    case TARGET_SIGNAL_ILL: return SIGILL;
+#if defined(SIGILL)
+      case TARGET_SIGNAL_ILL:
+	return SIGILL;
 #endif
-#if defined (SIGTRAP)
-    case TARGET_SIGNAL_TRAP: return SIGTRAP;
+#if defined(SIGTRAP)
+      case TARGET_SIGNAL_TRAP:
+	return SIGTRAP;
 #endif
-#if defined (SIGABRT)
-    case TARGET_SIGNAL_ABRT: return SIGABRT;
+#if defined(SIGABRT)
+      case TARGET_SIGNAL_ABRT:
+	return SIGABRT;
 #endif
-#if defined (SIGEMT)
-    case TARGET_SIGNAL_EMT: return SIGEMT;
+#if defined(SIGEMT)
+      case TARGET_SIGNAL_EMT:
+	return SIGEMT;
 #endif
-#if defined (SIGFPE)
-    case TARGET_SIGNAL_FPE: return SIGFPE;
+#if defined(SIGFPE)
+      case TARGET_SIGNAL_FPE:
+	return SIGFPE;
 #endif
-#if defined (SIGKILL)
-    case TARGET_SIGNAL_KILL: return SIGKILL;
+#if defined(SIGKILL)
+      case TARGET_SIGNAL_KILL:
+	return SIGKILL;
 #endif
-#if defined (SIGBUS)
-    case TARGET_SIGNAL_BUS: return SIGBUS;
+#if defined(SIGBUS)
+      case TARGET_SIGNAL_BUS:
+	return SIGBUS;
 #endif
-#if defined (SIGSEGV)
-    case TARGET_SIGNAL_SEGV: return SIGSEGV;
+#if defined(SIGSEGV)
+      case TARGET_SIGNAL_SEGV:
+	return SIGSEGV;
 #endif
-#if defined (SIGSYS)
-    case TARGET_SIGNAL_SYS: return SIGSYS;
+#if defined(SIGSYS)
+      case TARGET_SIGNAL_SYS:
+	return SIGSYS;
 #endif
-#if defined (SIGPIPE)
-    case TARGET_SIGNAL_PIPE: return SIGPIPE;
+#if defined(SIGPIPE)
+      case TARGET_SIGNAL_PIPE:
+	return SIGPIPE;
 #endif
-#if defined (SIGALRM)
-    case TARGET_SIGNAL_ALRM: return SIGALRM;
+#if defined(SIGALRM)
+      case TARGET_SIGNAL_ALRM:
+	return SIGALRM;
 #endif
-#if defined (SIGTERM)
-    case TARGET_SIGNAL_TERM: return SIGTERM;
+#if defined(SIGTERM)
+      case TARGET_SIGNAL_TERM:
+	return SIGTERM;
 #endif
-#if defined (SIGUSR1)
-    case TARGET_SIGNAL_USR1: return SIGUSR1;
+#if defined(SIGUSR1)
+      case TARGET_SIGNAL_USR1:
+	return SIGUSR1;
 #endif
-#if defined (SIGUSR2)
-    case TARGET_SIGNAL_USR2: return SIGUSR2;
+#if defined(SIGUSR2)
+      case TARGET_SIGNAL_USR2:
+	return SIGUSR2;
 #endif
-#if defined (SIGCHLD) || defined (SIGCLD)
-    case TARGET_SIGNAL_CHLD: 
-#if defined (SIGCHLD)
-      return SIGCHLD;
-#else
-      return SIGCLD;
-#endif
+#if defined(SIGCHLD) || defined(SIGCLD)
+      case TARGET_SIGNAL_CHLD:
+# if defined(SIGCHLD)
+	return SIGCHLD;
+# else
+	return SIGCLD;
+# endif
 #endif /* SIGCLD or SIGCHLD */
-#if defined (SIGPWR)
-    case TARGET_SIGNAL_PWR: return SIGPWR;
+#if defined(SIGPWR)
+      case TARGET_SIGNAL_PWR:
+	return SIGPWR;
 #endif
-#if defined (SIGWINCH)
-    case TARGET_SIGNAL_WINCH: return SIGWINCH;
+#if defined(SIGWINCH)
+      case TARGET_SIGNAL_WINCH:
+	return SIGWINCH;
 #endif
-#if defined (SIGURG)
-    case TARGET_SIGNAL_URG: return SIGURG;
+#if defined(SIGURG)
+      case TARGET_SIGNAL_URG:
+	return SIGURG;
 #endif
-#if defined (SIGIO)
-    case TARGET_SIGNAL_IO: return SIGIO;
+#if defined(SIGIO)
+      case TARGET_SIGNAL_IO:
+	return SIGIO;
 #endif
-#if defined (SIGPOLL)
-    case TARGET_SIGNAL_POLL: return SIGPOLL;
+#if defined(SIGPOLL)
+      case TARGET_SIGNAL_POLL:
+	return SIGPOLL;
 #endif
-#if defined (SIGSTOP)
-    case TARGET_SIGNAL_STOP: return SIGSTOP;
+#if defined(SIGSTOP)
+      case TARGET_SIGNAL_STOP:
+	return SIGSTOP;
 #endif
-#if defined (SIGTSTP)
-    case TARGET_SIGNAL_TSTP: return SIGTSTP;
+#if defined(SIGTSTP)
+      case TARGET_SIGNAL_TSTP:
+	return SIGTSTP;
 #endif
-#if defined (SIGCONT)
-    case TARGET_SIGNAL_CONT: return SIGCONT;
+#if defined(SIGCONT)
+      case TARGET_SIGNAL_CONT:
+	return SIGCONT;
 #endif
-#if defined (SIGTTIN)
-    case TARGET_SIGNAL_TTIN: return SIGTTIN;
+#if defined(SIGTTIN)
+      case TARGET_SIGNAL_TTIN:
+	return SIGTTIN;
 #endif
-#if defined (SIGTTOU)
-    case TARGET_SIGNAL_TTOU: return SIGTTOU;
+#if defined(SIGTTOU)
+      case TARGET_SIGNAL_TTOU:
+	return SIGTTOU;
 #endif
-#if defined (SIGVTALRM)
-    case TARGET_SIGNAL_VTALRM: return SIGVTALRM;
+#if defined(SIGVTALRM)
+      case TARGET_SIGNAL_VTALRM:
+	return SIGVTALRM;
 #endif
-#if defined (SIGPROF)
-    case TARGET_SIGNAL_PROF: return SIGPROF;
+#if defined(SIGPROF)
+      case TARGET_SIGNAL_PROF:
+	return SIGPROF;
 #endif
-#if defined (SIGXCPU)
-    case TARGET_SIGNAL_XCPU: return SIGXCPU;
+#if defined(SIGXCPU)
+      case TARGET_SIGNAL_XCPU:
+	return SIGXCPU;
 #endif
-#if defined (SIGXFSZ)
-    case TARGET_SIGNAL_XFSZ: return SIGXFSZ;
+#if defined(SIGXFSZ)
+      case TARGET_SIGNAL_XFSZ:
+	return SIGXFSZ;
 #endif
-#if defined (SIGWIND)
-    case TARGET_SIGNAL_WIND: return SIGWIND;
+#if defined(SIGWIND)
+      case TARGET_SIGNAL_WIND:
+	return SIGWIND;
 #endif
-#if defined (SIGPHONE)
-    case TARGET_SIGNAL_PHONE: return SIGPHONE;
+#if defined(SIGPHONE)
+      case TARGET_SIGNAL_PHONE:
+	return SIGPHONE;
 #endif
-#if defined (SIGLOST)
-    case TARGET_SIGNAL_LOST: return SIGLOST;
+#if defined(SIGLOST)
+      case TARGET_SIGNAL_LOST:
+	return SIGLOST;
 #endif
-#if defined (SIGWAITING)
-    case TARGET_SIGNAL_WAITING: return SIGWAITING;
+#if defined(SIGWAITING)
+      case TARGET_SIGNAL_WAITING:
+	return SIGWAITING;
 #endif
-#if defined (SIGCANCEL)
-    case TARGET_SIGNAL_CANCEL: return SIGCANCEL;
+#if defined(SIGCANCEL)
+      case TARGET_SIGNAL_CANCEL:
+	return SIGCANCEL;
 #endif
-#if defined (SIGLWP)
-    case TARGET_SIGNAL_LWP: return SIGLWP;
+#if defined(SIGLWP)
+      case TARGET_SIGNAL_LWP:
+	return SIGLWP;
 #endif
-#if defined (SIGDANGER)
-    case TARGET_SIGNAL_DANGER: return SIGDANGER;
+#if defined(SIGDANGER)
+      case TARGET_SIGNAL_DANGER:
+	return SIGDANGER;
 #endif
-#if defined (SIGGRANT)
-    case TARGET_SIGNAL_GRANT: return SIGGRANT;
+#if defined(SIGGRANT)
+      case TARGET_SIGNAL_GRANT:
+	return SIGGRANT;
 #endif
-#if defined (SIGRETRACT)
-    case TARGET_SIGNAL_RETRACT: return SIGRETRACT;
+#if defined(SIGRETRACT)
+      case TARGET_SIGNAL_RETRACT:
+	return SIGRETRACT;
 #endif
-#if defined (SIGMSG)
-    case TARGET_SIGNAL_MSG: return SIGMSG;
+#if defined(SIGMSG)
+      case TARGET_SIGNAL_MSG:
+	return SIGMSG;
 #endif
-#if defined (SIGSOUND)
-    case TARGET_SIGNAL_SOUND: return SIGSOUND;
+#if defined(SIGSOUND)
+      case TARGET_SIGNAL_SOUND:
+	return SIGSOUND;
 #endif
-#if defined (SIGSAK)
-    case TARGET_SIGNAL_SAK: return SIGSAK;
+#if defined(SIGSAK)
+      case TARGET_SIGNAL_SAK:
+	return SIGSAK;
 #endif
-#if defined (SIGPRIO)
-    case TARGET_SIGNAL_PRIO: return SIGPRIO;
+#if defined(SIGPRIO)
+      case TARGET_SIGNAL_PRIO:
+	return SIGPRIO;
 #endif
 
-      /* Mach exceptions.  Assumes that the values for EXC_ are positive! */
-#if defined (EXC_BAD_ACCESS) && defined (_NSIG)
-    case TARGET_EXC_BAD_ACCESS: return _NSIG + EXC_BAD_ACCESS;
+	/* Mach exceptions.  Assumes that the values for EXC_ are positive! */
+#if defined(EXC_BAD_ACCESS) && defined(_NSIG)
+      case TARGET_EXC_BAD_ACCESS:
+	return _NSIG + EXC_BAD_ACCESS;
 #endif
-#if defined (EXC_BAD_INSTRUCTION) && defined (_NSIG)
-    case TARGET_EXC_BAD_INSTRUCTION: return _NSIG + EXC_BAD_INSTRUCTION;
+#if defined(EXC_BAD_INSTRUCTION) && defined(_NSIG)
+      case TARGET_EXC_BAD_INSTRUCTION:
+	return _NSIG + EXC_BAD_INSTRUCTION;
 #endif
-#if defined (EXC_ARITHMETIC) && defined (_NSIG)
-    case TARGET_EXC_ARITHMETIC: return _NSIG + EXC_ARITHMETIC;
+#if defined(EXC_ARITHMETIC) && defined(_NSIG)
+      case TARGET_EXC_ARITHMETIC:
+	return _NSIG + EXC_ARITHMETIC;
 #endif
-#if defined (EXC_EMULATION) && defined (_NSIG)
-    case TARGET_EXC_EMULATION: return _NSIG + EXC_EMULATION;
+#if defined(EXC_EMULATION) && defined(_NSIG)
+      case TARGET_EXC_EMULATION:
+	return _NSIG + EXC_EMULATION;
 #endif
-#if defined (EXC_SOFTWARE) && defined (_NSIG)
-    case TARGET_EXC_SOFTWARE: return _NSIG + EXC_SOFTWARE;
+#if defined(EXC_SOFTWARE) && defined(_NSIG)
+      case TARGET_EXC_SOFTWARE:
+	return _NSIG + EXC_SOFTWARE;
 #endif
-#if defined (EXC_BREAKPOINT) && defined (_NSIG)
-    case TARGET_EXC_BREAKPOINT: return _NSIG + EXC_BREAKPOINT;
+#if defined(EXC_BREAKPOINT) && defined(_NSIG)
+      case TARGET_EXC_BREAKPOINT:
+	return _NSIG + EXC_BREAKPOINT;
 #endif
 
-#if defined (SIGINFO)
-    case TARGET_SIGNAL_INFO: return SIGINFO;
+#if defined(SIGINFO)
+      case TARGET_SIGNAL_INFO:
+	return SIGINFO;
 #endif
 
-    default:
-#if defined (REALTIME_LO)
-      if (oursig >= TARGET_SIGNAL_REALTIME_33
-	  && oursig <= TARGET_SIGNAL_REALTIME_63)
-	{
-	  int retsig =
-	    (int)oursig - (int)TARGET_SIGNAL_REALTIME_33 + REALTIME_LO;
-	  if (retsig < REALTIME_HI)
-	    return retsig;
-	}
+      default:
+#if defined(REALTIME_LO)
+	if (oursig >= TARGET_SIGNAL_REALTIME_33
+	    && oursig <= TARGET_SIGNAL_REALTIME_63)
+	  {
+	    int retsig = (int) oursig - (int) TARGET_SIGNAL_REALTIME_33
+			 + REALTIME_LO;
+	    if (retsig < REALTIME_HI)
+	      return retsig;
+	  }
 #endif
       /* The user might be trying to do "signal SIGSAK" where this system
 	 doesn't have SIGSAK.  */
       warning ("Signal %s does not exist on this system.\n",
 	       target_signal_to_name (oursig));
       return 0;
-    }
-}
+      }
+  }
 
 /* Helper function for child_wait and the Lynx derivatives of child_wait.
    HOSTSTATUS is the waitstatus from wait() or the equivalent; store our
    translation of that in OURSTATUS.  */
-void
-store_waitstatus (ourstatus, hoststatus)
-     struct target_waitstatus *ourstatus;
-     int hoststatus;
-{
+  void
+  store_waitstatus(struct target_waitstatus *ourstatus, int hoststatus)
+  {
 #ifdef CHILD_SPECIAL_WAITSTATUS
-  /* CHILD_SPECIAL_WAITSTATUS should return nonzero and set *OURSTATUS
+    /* CHILD_SPECIAL_WAITSTATUS should return nonzero and set *OURSTATUS
      if it wants to deal with hoststatus.  */
-  if (CHILD_SPECIAL_WAITSTATUS (ourstatus, hoststatus))
-    return;
+    if (CHILD_SPECIAL_WAITSTATUS(ourstatus, hoststatus))
+      return;
 #endif
 
-  if (WIFEXITED (hoststatus))
-    {
-      ourstatus->kind = TARGET_WAITKIND_EXITED;
-      ourstatus->value.integer = WEXITSTATUS (hoststatus);
-    }
-  else if (!WIFSTOPPED (hoststatus))
-    {
-      ourstatus->kind = TARGET_WAITKIND_SIGNALLED;
-      ourstatus->value.sig = target_signal_from_host (WTERMSIG (hoststatus));
-    }
-  else
-    {
-      ourstatus->kind = TARGET_WAITKIND_STOPPED;
-      ourstatus->value.sig = target_signal_from_host (WSTOPSIG (hoststatus));
-    }
-}
+    if (WIFEXITED(hoststatus))
+      {
+	ourstatus->kind = TARGET_WAITKIND_EXITED;
+	ourstatus->value.integer = WEXITSTATUS(hoststatus);
+      }
+    else if (!WIFSTOPPED(hoststatus))
+      {
+	ourstatus->kind = TARGET_WAITKIND_SIGNALLED;
+	ourstatus->value.sig = target_signal_from_host(WTERMSIG(hoststatus));
+      }
+    else
+      {
+	ourstatus->kind = TARGET_WAITKIND_STOPPED;
+	ourstatus->value.sig = target_signal_from_host(WSTOPSIG(hoststatus));
+      }
+  }
 
 /* In some circumstances we allow a command to specify a numeric
    signal.  The idea is to keep these circumstances limited so that
@@ -1753,15 +1817,14 @@ store_waitstatus (ourstatus, hoststatus)
    lenient and allow 1-15 which should match host signal numbers on
    most systems.  Use of symbolic signal names is strongly encouraged.  */
 
-enum target_signal
-target_signal_from_command (num)
-     int num;
-{
-  if (num >= 1 && num <= 15)
-    return (enum target_signal)num;
-  error ("Only signals 1-15 are valid as numeric signals.\n\
+  enum target_signal
+  target_signal_from_command(int num)
+  {
+    if (num >= 1 && num <= 15)
+      return (enum target_signal) num;
+    error("Only signals 1-15 are valid as numeric signals.\n\
 Use \"info signals\" for a list of symbolic signals.");
-}
+  }
 
 /* Returns zero to leave the inferior alone, one to interrupt it.  */
 int (*target_activity_function) PARAMS ((void));
@@ -1771,8 +1834,7 @@ int target_activity_fd;
    buffer.  */
 
 char *
-normal_pid_to_str (pid)
-     int pid;
+normal_pid_to_str(int pid)
 {
   static char buf[30];
 
@@ -1797,8 +1859,7 @@ normal_pid_to_str (pid)
    target_acknowledge_forked_child.
    */
 static void
-normal_target_post_startup_inferior (pid)
-  int  pid;
+normal_target_post_startup_inferior(int pid)
 {
   /* This space intentionally left blank. */
 }
@@ -1807,7 +1868,7 @@ normal_target_post_startup_inferior (pid)
    vector.  */
 
 static void
-init_dummy_target ()
+init_dummy_target(void)
 {
   dummy_target.to_shortname = "None";
   dummy_target.to_longname = "None";
@@ -1825,9 +1886,7 @@ init_dummy_target ()
 static struct target_ops debug_target;
 
 static void
-debug_to_open (args, from_tty)
-     char *args;
-     int from_tty;
+debug_to_open(char *args, int from_tty)
 {
   debug_target.to_open (args, from_tty);
 
@@ -1835,8 +1894,7 @@ debug_to_open (args, from_tty)
 }
 
 static void
-debug_to_close (quitting)
-     int quitting;
+debug_to_close(int quitting)
 {
   debug_target.to_close (quitting);
 
@@ -1844,19 +1902,15 @@ debug_to_close (quitting)
 }
 
 static void
-debug_to_attach (args, from_tty)
-     char *args;
-     int from_tty;
+debug_to_attach(char *args, int from_tty)
 {
   debug_target.to_attach (args, from_tty);
 
   fprintf_unfiltered (gdb_stderr, "target_attach (%s, %d)\n", args, from_tty);
 }
 
-
 static void
-debug_to_post_attach (pid)
-  int  pid;
+debug_to_post_attach(int pid)
 {
   debug_target.to_post_attach (pid);
 
@@ -1864,9 +1918,7 @@ debug_to_post_attach (pid)
 }
 
 static void
-debug_to_require_attach (args, from_tty)
-     char *args;
-     int from_tty;
+debug_to_require_attach(char *args, int from_tty)
 {
   debug_target.to_require_attach (args, from_tty);
 
@@ -1875,9 +1927,7 @@ debug_to_require_attach (args, from_tty)
 }
 
 static void
-debug_to_detach (args, from_tty)
-     char *args;
-     int from_tty;
+debug_to_detach(char *args, int from_tty)
 {
   debug_target.to_detach (args, from_tty);
 
@@ -1885,10 +1935,7 @@ debug_to_detach (args, from_tty)
 }
 
 static void
-debug_to_require_detach (pid, args, from_tty)
-  int  pid;
-  char *  args;
-  int  from_tty;
+debug_to_require_detach(int pid, char *args, int from_tty)
 {
   debug_target.to_require_detach (pid, args, from_tty);
 
@@ -1897,10 +1944,7 @@ debug_to_require_detach (pid, args, from_tty)
 }
 
 static void
-debug_to_resume (pid, step, siggnal)
-     int pid;
-     int step;
-     enum target_signal siggnal;
+debug_to_resume(int pid, int step, enum target_signal siggnal)
 {
   debug_target.to_resume (pid, step, siggnal);
 
@@ -1910,9 +1954,7 @@ debug_to_resume (pid, step, siggnal)
 }
 
 static int
-debug_to_wait (pid, status)
-     int pid;
-     struct target_waitstatus *status;
+debug_to_wait(int pid, struct target_waitstatus *status)
 {
   int retval;
 
@@ -1959,9 +2001,7 @@ debug_to_wait (pid, status)
 }
 
 static void
-debug_to_post_wait (pid, status)
-  int  pid;
-  int  status;
+debug_to_post_wait(int pid, int status)
 {
   debug_target.to_post_wait (pid, status);
 
@@ -1970,8 +2010,7 @@ debug_to_post_wait (pid, status)
 }
 
 static void
-debug_to_fetch_registers (regno)
-     int regno;
+debug_to_fetch_registers(int regno)
 {
   debug_target.to_fetch_registers (regno);
 
@@ -1987,8 +2026,7 @@ debug_to_fetch_registers (regno)
 }
 
 static void
-debug_to_store_registers (regno)
-     int regno;
+debug_to_store_registers(int regno)
 {
   debug_target.to_store_registers (regno);
 
@@ -2002,7 +2040,7 @@ debug_to_store_registers (regno)
 }
 
 static void
-debug_to_prepare_to_store ()
+debug_to_prepare_to_store(void)
 {
   debug_target.to_prepare_to_store ();
 
@@ -2048,8 +2086,7 @@ debug_to_xfer_memory (memaddr, myaddr, len, write, target)
 }
 
 static void
-debug_to_files_info (target)
-     struct target_ops *target;
+debug_to_files_info(struct target_ops *target)
 {
   debug_target.to_files_info (target);
 
@@ -2089,7 +2126,7 @@ debug_to_remove_breakpoint (addr, save)
 }
 
 static void
-debug_to_terminal_init ()
+debug_to_terminal_init(void)
 {
   debug_target.to_terminal_init ();
 
@@ -2097,7 +2134,7 @@ debug_to_terminal_init ()
 }
 
 static void
-debug_to_terminal_inferior ()
+debug_to_terminal_inferior(void)
 {
   debug_target.to_terminal_inferior ();
 
@@ -2105,7 +2142,7 @@ debug_to_terminal_inferior ()
 }
 
 static void
-debug_to_terminal_ours_for_output ()
+debug_to_terminal_ours_for_output(void)
 {
   debug_target.to_terminal_ours_for_output ();
 
@@ -2113,7 +2150,7 @@ debug_to_terminal_ours_for_output ()
 }
 
 static void
-debug_to_terminal_ours ()
+debug_to_terminal_ours(void)
 {
   debug_target.to_terminal_ours ();
 
@@ -2121,9 +2158,7 @@ debug_to_terminal_ours ()
 }
 
 static void
-debug_to_terminal_info (arg, from_tty)
-     char *arg;
-     int from_tty;
+debug_to_terminal_info(char *arg, int from_tty)
 {
   debug_target.to_terminal_info (arg, from_tty);
 
@@ -2132,7 +2167,7 @@ debug_to_terminal_info (arg, from_tty)
 }
 
 static void
-debug_to_kill ()
+debug_to_kill(void)
 {
   debug_target.to_kill ();
 
@@ -2140,9 +2175,7 @@ debug_to_kill ()
 }
 
 static void
-debug_to_load (args, from_tty)
-     char *args;
-     int from_tty;
+debug_to_load(char *args, int from_tty)
 {
   debug_target.to_load (args, from_tty);
 
@@ -2164,10 +2197,7 @@ debug_to_lookup_symbol (name, addrp)
 }
 
 static void
-debug_to_create_inferior (exec_file, args, env)
-     char *exec_file;
-     char *args;
-     char **env;
+debug_to_create_inferior(char *exec_file, char *args, char **env)
 {
   debug_target.to_create_inferior (exec_file, args, env);
 
@@ -2176,8 +2206,7 @@ debug_to_create_inferior (exec_file, args, env)
 }
 
 static void
-debug_to_post_startup_inferior (pid)
-  int  pid;
+debug_to_post_startup_inferior(int pid)
 {
   debug_target.to_post_startup_inferior (pid);
 
@@ -2186,8 +2215,7 @@ debug_to_post_startup_inferior (pid)
 }
 
 static void
-debug_to_acknowledge_created_inferior (pid)
-  int  pid;
+debug_to_acknowledge_created_inferior(int pid)
 {
   debug_target.to_acknowledge_created_inferior (pid);
 
@@ -2196,9 +2224,7 @@ debug_to_acknowledge_created_inferior (pid)
 }
 
 static void
-debug_to_clone_and_follow_inferior (child_pid, followed_child)
-  int  child_pid;
-  int  *followed_child;
+debug_to_clone_and_follow_inferior(int child_pid, int *followed_child)
 {
   debug_target.to_clone_and_follow_inferior (child_pid, followed_child);
 
@@ -2208,7 +2234,7 @@ debug_to_clone_and_follow_inferior (child_pid, followed_child)
 }
 
 static void
-debug_to_post_follow_inferior_by_clone ()
+debug_to_post_follow_inferior_by_clone(void)
 {
   debug_target.to_post_follow_inferior_by_clone ();
 
@@ -2216,8 +2242,7 @@ debug_to_post_follow_inferior_by_clone ()
 }
 
 static int
-debug_to_insert_fork_catchpoint (pid)
-  int  pid;
+debug_to_insert_fork_catchpoint(int pid)
 {
   int  retval;
 
@@ -2230,8 +2255,7 @@ debug_to_insert_fork_catchpoint (pid)
 }
 
 static int
-debug_to_remove_fork_catchpoint (pid)
-  int  pid;
+debug_to_remove_fork_catchpoint(int pid)
 {
   int  retval;
 
@@ -2244,8 +2268,7 @@ debug_to_remove_fork_catchpoint (pid)
 }
 
 static int
-debug_to_insert_vfork_catchpoint (pid)
-  int  pid;
+debug_to_insert_vfork_catchpoint(int pid)
 {
   int  retval;
 
@@ -2258,8 +2281,7 @@ debug_to_insert_vfork_catchpoint (pid)
 }
 
 static int
-debug_to_remove_vfork_catchpoint (pid)
-  int  pid;
+debug_to_remove_vfork_catchpoint(int pid)
 {
   int  retval;
 
@@ -2272,9 +2294,7 @@ debug_to_remove_vfork_catchpoint (pid)
 }
 
 static int
-debug_to_has_forked (pid, child_pid)
-  int  pid;
-  int *  child_pid;
+debug_to_has_forked(int pid, int *child_pid)
 {
   int  has_forked;
 
@@ -2287,9 +2307,7 @@ debug_to_has_forked (pid, child_pid)
 }
 
 static int
-debug_to_has_vforked (pid, child_pid)
-  int  pid;
-  int *  child_pid;
+debug_to_has_vforked(int pid, int *child_pid)
 {
   int  has_vforked;
 
@@ -2302,7 +2320,7 @@ debug_to_has_vforked (pid, child_pid)
 }
 
 static int
-debug_to_can_follow_vfork_prior_to_exec ()
+debug_to_can_follow_vfork_prior_to_exec(void)
 {
   int  can_immediately_follow_vfork;
 
@@ -2315,11 +2333,8 @@ debug_to_can_follow_vfork_prior_to_exec ()
 }
 
 static void
-debug_to_post_follow_vfork (parent_pid, followed_parent, child_pid, followed_child)
-  int  parent_pid;
-  int  followed_parent;
-  int  child_pid;
-  int  followed_child;
+debug_to_post_follow_vfork(int parent_pid, int followed_parent, int child_pid,
+			   int followed_child)
 {
   debug_target.to_post_follow_vfork (parent_pid, followed_parent, child_pid, followed_child);
 
@@ -2329,8 +2344,7 @@ debug_to_post_follow_vfork (parent_pid, followed_parent, child_pid, followed_chi
 }
 
 static int
-debug_to_insert_exec_catchpoint (pid)
-  int  pid;
+debug_to_insert_exec_catchpoint(int pid)
 {
   int  retval;
 
@@ -2343,8 +2357,7 @@ debug_to_insert_exec_catchpoint (pid)
 }
 
 static int
-debug_to_remove_exec_catchpoint (pid)
-  int  pid;
+debug_to_remove_exec_catchpoint(int pid)
 {
   int  retval;
 
@@ -2357,9 +2370,7 @@ debug_to_remove_exec_catchpoint (pid)
 }
 
 static int
-debug_to_has_execd (pid, execd_pathname)
-  int  pid;
-  char **  execd_pathname;
+debug_to_has_execd(int pid, char **execd_pathname)
 {
   int  has_execd;
 
@@ -2373,7 +2384,7 @@ debug_to_has_execd (pid, execd_pathname)
 }
 
 static int
-debug_to_reported_exec_events_per_exec_call ()
+debug_to_reported_exec_events_per_exec_call(void)
 {
   int  reported_exec_events;
 
@@ -2387,10 +2398,8 @@ debug_to_reported_exec_events_per_exec_call ()
 }
 
 static int
-debug_to_has_syscall_event (pid, kind, syscall_id)
-  int  pid;
-  enum target_waitkind *  kind;
-  int *  syscall_id;
+debug_to_has_syscall_event(int pid, enum target_waitkind *kind,
+			   int *syscall_id)
 {
   int  has_syscall_event;
   char *  kind_spelling = "??";
@@ -2419,10 +2428,7 @@ debug_to_has_syscall_event (pid, kind, syscall_id)
 }
 
 static int
-debug_to_has_exited (pid, wait_status, exit_status)
-  int  pid;
-  int  wait_status;
-  int *  exit_status;
+debug_to_has_exited(int pid, int wait_status, int *exit_status)
 {
   int  has_exited;
 
@@ -2435,7 +2441,7 @@ debug_to_has_exited (pid, wait_status, exit_status)
 }
 
 static void
-debug_to_mourn_inferior ()
+debug_to_mourn_inferior(void)
 {
   debug_target.to_mourn_inferior ();
 
@@ -2443,7 +2449,7 @@ debug_to_mourn_inferior ()
 }
 
 static int
-debug_to_can_run ()
+debug_to_can_run(void)
 {
   int retval;
 
@@ -2455,8 +2461,7 @@ debug_to_can_run ()
 }
 
 static void
-debug_to_notice_signals (pid)
-     int pid;
+debug_to_notice_signals(int pid)
 {
   debug_target.to_notice_signals (pid);
 
@@ -2464,8 +2469,7 @@ debug_to_notice_signals (pid)
 }
 
 static int
-debug_to_thread_alive (pid)
-     int pid;
+debug_to_thread_alive(int pid)
 {
   int retval;
 
@@ -2478,8 +2482,7 @@ debug_to_thread_alive (pid)
 }
 
 static char *
-debug_to_pid_to_str (pid)
-     int pid;
+debug_to_pid_to_str(int pid)
 {
   char *retval;
 
@@ -2491,7 +2494,7 @@ debug_to_pid_to_str (pid)
 }
 
 static void
-debug_to_stop ()
+debug_to_stop(void)
 {
   debug_target.to_stop ();
 
@@ -2499,11 +2502,7 @@ debug_to_stop ()
 }
 
 static int
-debug_to_query (type, req, resp, siz)
-  int type;
-  char *req;
-  char *resp;
-  int *siz;
+debug_to_query(int type, char *req, char *resp, int *siz)
 {
   int retval;
 
@@ -2515,9 +2514,7 @@ debug_to_query (type, req, resp, siz)
 }
 
 static struct symtab_and_line *
-debug_to_enable_exception_callback (kind, enable)
-  enum exception_event_kind kind;
-  int enable;
+debug_to_enable_exception_callback(enum exception_event_kind kind, int enable)
 {
   struct symtab_and_line *result;
   result = debug_target.to_enable_exception_callback (kind, enable);
@@ -2528,7 +2525,7 @@ debug_to_enable_exception_callback (kind, enable)
 }
 
 static struct exception_event_record *
-debug_to_get_current_exception_event ()
+debug_to_get_current_exception_event(void)
 {
   struct exception_event_record *result;
   result = debug_target.to_get_current_exception_event();
@@ -2537,8 +2534,7 @@ debug_to_get_current_exception_event ()
 }
 
 static char *
-debug_to_pid_to_exec_file (pid)
-  int  pid;
+debug_to_pid_to_exec_file(int pid)
 {
   char *  exec_file;
 
@@ -2551,8 +2547,7 @@ debug_to_pid_to_exec_file (pid)
 }
 
 static char *
-debug_to_core_file_to_sym_file (core)
-  char *  core;
+debug_to_core_file_to_sym_file(char *core)
 {
   char *  sym_file;
 
@@ -2565,7 +2560,7 @@ debug_to_core_file_to_sym_file (core)
 }
 
 static void
-setup_target_debug ()
+setup_target_debug(void)
 {
   memcpy (&debug_target, &current_target, sizeof debug_target);
 
@@ -2634,7 +2629,7 @@ Shows the entire stack of targets currently in use (including the exec-file,\n\
 core-file, and process, if any), as well as the symbol file name.";
 
 void
-initialize_targets ()
+initialize_targets(void)
 {
   init_dummy_target ();
   push_target (&dummy_target);

@@ -143,24 +143,80 @@ union {
 
 /*** Functions returning type ********/
 
-char		v_char_func () { return(0); }
-signed char	v_signed_char_func () { return (0); }
-unsigned char	v_unsigned_char_func () { return (0); }
+char
+v_char_func(void)
+{
+  return (0);
+}
+signed char
+v_signed_char_func(void)
+{
+  return (0);
+}
+unsigned char
+v_unsigned_char_func(void)
+{
+  return (0);
+}
 
-short		v_short_func () { return (0); }
-signed short	v_signed_short_func () { return (0); }
-unsigned short	v_unsigned_short_func () { return (0); }
+short
+v_short_func(void)
+{
+  return (0);
+}
+signed short
+v_signed_short_func(void)
+{
+  return (0);
+}
+unsigned short
+v_unsigned_short_func(void)
+{
+  return (0);
+}
 
-int		v_int_func () { return (0); }
-signed int	v_signed_int_func () { return (0); }
-unsigned int	v_unsigned_int_func () { return (0); }
+int
+v_int_func(void)
+{
+  return (0);
+}
+signed int
+v_signed_int_func(void)
+{
+  return (0);
+}
+unsigned int
+v_unsigned_int_func(void)
+{
+  return (0);
+}
 
-long		v_long_func () { return (0); }
-signed long	v_signed_long_func () { return (0); }
-unsigned long	v_unsigned_long_func () { return (0); }
+long
+v_long_func(void)
+{
+  return (0);
+}
+signed long
+v_signed_long_func(void)
+{
+  return (0);
+}
+unsigned long
+v_unsigned_long_func(void)
+{
+  return (0);
+}
 
-float		v_float_func () { return (0.0); }
-double		v_double_func () { return (0.0); }
+float
+v_float_func(void)
+{
+  return (0.0);
+}
+double
+v_double_func(void)
+{
+  return (0.0);
+}
 
 /**** Some misc more complicated things *******/
 
@@ -204,7 +260,8 @@ enum cars {chevy, ford, porsche} clunker;
 
 /***********/
 
-int main ()
+int
+main(void)
 {
 #ifdef usestubs
   set_debug_traps();

@@ -5,9 +5,11 @@
 
 #include "expect_cf.h"
 #include <stdio.h>
-/*#include <varargs.h> */		/* tclInt.h drags in varargs.h. Since Pyramid */
-/*				       */		/* objects to including varargs.h twice, just */
-/*				       */		/* omit this one. */
+#if defined(HAVE_VARARGS_H) && !defined(PYRAMID)
+# include <varargs.h> /* tclInt.h drags in varargs.h. Since Pyramid */
+		      /* objects to including varargs.h twice, just */
+		      /* omit this one. */
+#endif /* HAVE_VARARGS_H && !PYRAMID */
 #include "tclInt.h"
 #include "expect_comm.h"
 #include "exp_int.h"
@@ -59,9 +61,8 @@ exp_log TCL_VARARGS_DEF(int,arg1)
 /* send to log if open */
 /* use this function for logging the parent/child conversation */
 void
-exp_nflog(buf,force_stdout)
-char *buf;
-int force_stdout;	/* override value of loguser */
+exp_nflog(char *buf, int force_stdout /* override value of loguser */
+)
 {
 	int length = strlen(buf);
 
@@ -127,10 +128,11 @@ exp_errorlog TCL_VARARGS_DEF(char *,arg1)
 /* use this function for logging the parent/child conversation */
 /*ARGSUSED*/
 void
-exp_nferrorlog(buf,force_stdout)
-char *buf;
-int force_stdout;	/* not used, only declared here for compat with */
-			/* exp_nflog() */
+exp_nferrorlog(
+  char *buf,
+  int force_stdout /* not used, only declared here for compat with */
+)
+/* exp_nflog() */
 {
 	int length = strlen(buf);
 	fwrite(buf,1,length,stderr);
@@ -147,7 +149,7 @@ static char *outp;	/* pointer into out_buffer - static in order */
 
 
 void
-exp_init_log()
+exp_init_log (void)
 {
 	out_buffer = ckalloc(BUFSIZ);
 	out_buffer_size = BUFSIZ;
@@ -155,7 +157,7 @@ exp_init_log()
 }
 
 char *
-enlarge_out_buffer()
+enlarge_out_buffer (void)
 {
 	int offset = outp - out_buffer;
 

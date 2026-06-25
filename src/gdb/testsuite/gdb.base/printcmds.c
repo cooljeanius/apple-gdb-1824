@@ -92,7 +92,8 @@ struct some_arrays *parrays = &arrays;
 
 /* -- */
 
-int main ()
+int
+main(void)
 {
 #ifdef usestubs
   set_debug_traps();

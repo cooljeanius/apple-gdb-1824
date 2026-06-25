@@ -15,12 +15,14 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-void func1 ()
+void
+func1(void)
 {
   return;
 }
 
-int func2 ()
+int
+func2(void)
 {
   return 0;
 }

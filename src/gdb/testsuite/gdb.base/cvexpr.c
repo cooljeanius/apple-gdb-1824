@@ -277,7 +277,8 @@ void use (void *p)
 {
 }
 
-int main ()
+int
+main(void)
 {
   use (&v_char);
   use (&v_signed_char);

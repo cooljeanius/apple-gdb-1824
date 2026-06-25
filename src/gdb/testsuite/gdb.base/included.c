@@ -18,7 +18,7 @@
 #include "included.h"
 
 int
-main()
+main(void)
 {
   return 0;
 }

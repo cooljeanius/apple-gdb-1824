@@ -22,7 +22,8 @@ float b32;
 double b64;
 long double b128;
 
-int main()
+int
+main(void)
 {
   b32 = 1.5f;
   b64 = 2.25;

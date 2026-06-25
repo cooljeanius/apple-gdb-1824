@@ -3,15 +3,16 @@
 extern int foo2();
 
 int
-foo1()
+foo1(void)
 {
 }
 
 int
-bar1()
+bar1(void)
 {
 }
 
-main()
+int
+main(void)
 {
 }

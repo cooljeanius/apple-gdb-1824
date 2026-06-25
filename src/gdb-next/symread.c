@@ -1,4 +1,4 @@
-/* SYM symbol-table support for Mach, for GDB.
+/* symread.c: SYM symbol-table support for Mach, for GDB.
    Copyright 1997  Free Software Foundation, Inc.
    Written by Klee Dienes.  Contributed by Apple Computer, Inc.
 
@@ -1148,7 +1148,7 @@ void sym_dump_command (char *args, int from_tty)
 #endif /* !__i386__ */
 
 void
-_initialize_symread ()
+_initialize_symread(void)
 {
 #ifndef __i386__
   sym_builtin_type_pstr = make_pointer_type (builtin_type_char, NULL);

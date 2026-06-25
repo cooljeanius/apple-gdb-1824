@@ -52,7 +52,7 @@ const int coremaker_ro = 201;	/* In Read-Only Data section */
    to test for specific errors when running the core maker. */
 
 void
-mmapdata ()
+mmapdata(void)
 {
   int j, fd;
 
@@ -101,7 +101,7 @@ mmapdata ()
 }
 
 void
-func2 ()
+func2(void)
 {
   int coremaker_local[5];
   int i;
@@ -128,12 +128,13 @@ func2 ()
 }
 
 void
-func1 ()
+func1(void)
 {
   func2 ();
 }
 
-int main ()
+int
+main(void)
 {
   fprintf (stdout, "%d\n", getpid());
   fflush (stdout);

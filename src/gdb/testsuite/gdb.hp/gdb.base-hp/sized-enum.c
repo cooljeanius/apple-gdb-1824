@@ -17,8 +17,8 @@ char enum Tiny {
   brown
 };
 
-
-main()
+int
+main(void)
 {
   enum Normal normal[3];
   short enum Small small[3];

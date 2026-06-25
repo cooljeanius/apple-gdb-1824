@@ -31,7 +31,7 @@ foo (int i1)
 }
 
 int
-main ()
+main(void)
 {
   return !foo (1);
 }

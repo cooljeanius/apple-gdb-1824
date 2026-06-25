@@ -20,7 +20,7 @@ enum e { I, J = 0xffffffffU, K = 0xf000000000000000ULL } e = J, f = K;
 enum { ZERO };
 
 void
-dummy()
+dummy(void)
 {
 }
 

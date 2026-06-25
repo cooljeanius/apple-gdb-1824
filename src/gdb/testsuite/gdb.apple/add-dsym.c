@@ -17,7 +17,7 @@ bar (char *in_char, int shift)
 }
 
 int
-main ()
+main(void)
 {
   int shift_amt = foo (111);
   int iter;

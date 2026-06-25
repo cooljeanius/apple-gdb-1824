@@ -37,7 +37,7 @@ end (void)
 }
 
 int
-main ()
+main(void)
 {
   begin ();
 

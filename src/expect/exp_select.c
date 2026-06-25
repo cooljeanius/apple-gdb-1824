@@ -9,7 +9,11 @@ would appreciate credit if this program or parts of it are used.
 */
 
 /* suppress file-empty warnings produced by some compilers */
-void exp_unused() {}
+void
+exp_unused(void)
+{
+  return;
+}
 
 #if 0 /* WHOLE FILE!!!! */
 #include "expect_cf.h"
@@ -285,7 +289,7 @@ long usec;		/* microseconds */
 
 /* set things up for later calls to event handler */
 void
-exp_init_event()
+exp_init_event (void)
 {
 #if 0
 # ifdef _SC_OPEN_MAX

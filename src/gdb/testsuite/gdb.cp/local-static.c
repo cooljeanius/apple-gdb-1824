@@ -143,7 +143,7 @@ free_inline_func (void)
 }
 
 int
-main ()
+main(void)
 {
   int i;
 

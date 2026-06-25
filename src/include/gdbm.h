@@ -1,4 +1,4 @@
-/* GNU DBM - DataBase Manager include file
+/* GNU DBM - DataBase Manager include file  -*- C -*-
    Copyright 1989, 1991  Free Software Foundation, Inc.
    Written by Philip A. Nelson.
 
@@ -14,7 +14,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.  */
 
 /* You may contact the author by:
        e-mail:  phil@wwu.edu
@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
                 Western Washington University
                 Bellingham, WA 98226
         phone:  (206) 676-3035
-       
+
 *************************************************************************/
 
 /* Parameters to gdbm_open for READERS, WRITERS, and WRITERS who

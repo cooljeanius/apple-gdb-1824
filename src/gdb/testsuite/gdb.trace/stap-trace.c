@@ -18,11 +18,11 @@
 #if USE_PROBES
 
 #define _SDT_HAS_SEMAPHORES
-__extension__ unsigned short test_user_semaphore __attribute__ ((unused)) __attribute__ ((section (".probes")));
-#define TEST test_user_semaphore
+__extension__ unsigned short test_user_semaphore __attribute__ __attribute__;
+# define TEST test_user_semaphore
 
-__extension__ unsigned short test_two_semaphore __attribute__ ((unused)) __attribute__ ((section (".probes")));
-#define TEST2 test_two_semaphore
+__extension__ unsigned short test_two_semaphore __attribute__ __attribute__;
+# define TEST2 test_two_semaphore
 
 #else
 
@@ -61,7 +61,7 @@ nothing (void)
 }
 
 int
-main()
+main(void)
 {
   f (f (23));
   m1 (46);

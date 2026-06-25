@@ -26,29 +26,28 @@ void *thread_function(void *arg);
 
 unsigned int args[1];
 
-int main() {
-    int res;
-    pthread_t threads[2];
-    void *thread_result;
-    long i = 1;
+int
+main(void)
+{
+  int res;
+  pthread_t threads[2];
+  void *thread_result;
+  long i = 1;
 
-    args[0] = 1;
-    res = pthread_create(&threads[0],
-			 NULL,
-			 thread_function,
-			 (void *) 0);
+  args[0] = 1;
+  res = pthread_create(&threads[0], NULL, thread_function, (void *) 0);
 
-    /* thread-specific.exp: last thread start.  */
-    args[1] = 1;
+  /* thread-specific.exp: last thread start.  */
+  args[1] = 1;
 
-    /* Don't run forever.  Run just short of it :)  */
-    while (i > 0)
-      {
-	/* thread-specific.exp: main loop.  */
-	(i) ++;
-      }
+  /* Don't run forever.  Run just short of it :)  */
+  while (i > 0)
+    {
+      /* thread-specific.exp: main loop.  */
+      (i)++;
+    }
 
-    exit(EXIT_SUCCESS);
+  exit(EXIT_SUCCESS);
 }
 
 void *thread_function(void *arg) {

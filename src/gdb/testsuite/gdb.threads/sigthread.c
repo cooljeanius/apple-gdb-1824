@@ -53,7 +53,8 @@ thread_function (void *arg)
     pthread_kill (child_thread_two, SIGUSR2);
 }
 
-int main()
+int
+main(void)
 {
   int i;
 

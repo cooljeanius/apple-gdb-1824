@@ -1,7 +1,7 @@
 char array[4];
 
 int
-main ()
+main(void)
 {
   return 0;
 }

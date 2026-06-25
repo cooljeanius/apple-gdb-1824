@@ -22,4 +22,8 @@ or obtained by writing to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-int hell1() { return 1; }
+int
+hell1(void)
+{
+  return 1;
+}

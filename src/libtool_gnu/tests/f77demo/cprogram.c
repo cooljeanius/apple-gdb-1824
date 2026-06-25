@@ -25,7 +25,7 @@ or obtained by writing to the Free Software Foundation, Inc.,
 #include <stdio.h>
 
 int
-main ()
+main(void)
 {
   int arg,cres,fres;
   

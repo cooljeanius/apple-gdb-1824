@@ -1,11 +1,12 @@
-void x()
+void
+x(void)
 {
   void (*fp)() = 0;
   fp();
 }
 
 int
-main()
+main(void)
 {
   x();
   return 0;

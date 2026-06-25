@@ -67,7 +67,7 @@ ioctl(int desc, unsigned long code, ...)
   return desc;
 }
 
-RETSIGTYPE (* signal ()) ()
+RETSIGTYPE (*signal(void))(void)
 {}
 
 int
@@ -103,7 +103,8 @@ getcwd(char *buf, size_t len)
 }
 
 /* Used to check for existence of .gdbinit.  Say no: */
-int access()
+int
+access(void)
 {
   return -1;
 }
@@ -223,8 +224,7 @@ fclose(FILE *desc)
 }
 
 int
-fstat(desc, statbuf)
-     struct stat *statbuf;
+fstat(int desc, struct stat *statbuf)
 {
   if (desc != sourcedesc)
     {
@@ -310,7 +310,7 @@ lseek(int desc, off_t pos, int whence)
 /* Output in kdb can go only to the terminal, so the stream
    specified may be ignored.  */
 int
-printf(a1, a2, a3, a4, a5, a6, a7, a8, a9)
+printf(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), a1, a2, a3, a4, a5, a6, a7, a8, a9);
@@ -318,7 +318,8 @@ printf(a1, a2, a3, a4, a5, a6, a7, a8, a9)
 }
 
 int
-fprintf(ign, a1, a2, a3, a4, a5, a6, a7, a8, a9)
+fprintf(int ign, int a1, int a2, int a3, int a4, int a5, int a6, int a7,
+	int a8, int a9)
 {
   char buffer[1024];
   snprintf(buffer, sizeof(buffer), a1, a2, a3, a4, a5, a6, a7, a8, a9);
@@ -346,7 +347,7 @@ fputc(int c, FILE *ign)
    library would cause fflush to be loaded from it too.
    In fact there should be no need to call this (I hope).  */
 static void
-_flsbuf()
+_flsbuf(void)
 {
   error("_flsbuf was actually called.");
 }
@@ -442,7 +443,8 @@ write_register(int regno, REGISTER_TYPE value)
 
 /* System calls needed in relation to running the "inferior".  */
 
-int vfork()
+int
+vfork(void)
 {
   /* Just appear to "succeed".  Say the inferior's pid is 1.  */
   return 1;

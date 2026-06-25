@@ -23,7 +23,7 @@ static struct {
 } global;
 
 int
-main ()
+main(void)
 {
   global.x = 23;
   global.y.x2 = 47;

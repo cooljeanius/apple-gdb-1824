@@ -26,7 +26,7 @@ end (void)
 }
 
 int
-main ()
+main(void)
 {
   subr (1);
   end ();

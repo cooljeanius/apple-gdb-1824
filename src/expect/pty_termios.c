@@ -235,9 +235,10 @@ char *exp_pty_error;
 
 #if 0
 static void
-pty_stty(s,name)
-char *s;		/* args to stty */
-char *name;		/* name of pty */
+pty_stty (
+    char *s,		/* args to stty */
+    char *name		/* name of pty */
+)
 {
 # define MAX_ARGLIST 10240
 	char buf[MAX_ARGLIST];	/* overkill is easier */
@@ -258,8 +259,8 @@ char *name;		/* name of pty */
 	signal(SIGCHLD, old);	/* restore signal handler */
 }
 
-exec_stty(s)
-char *s;
+int
+exec_stty (char *s)
 {
 	char *args[50];
 	char *cp;
@@ -295,9 +296,9 @@ char *s;
 #endif /*0*/
 
 static void
-pty_stty(s,name)
-char *s;		/* args to stty */
-char *name;		/* name of pty */
+pty_stty(char *s, /* args to stty */
+	 char *name /* name of pty */
+)
 {
 #define MAX_ARGLIST 10240
 	char buf[MAX_ARGLIST];	/* overkill is easier */
@@ -325,13 +326,10 @@ exp_tty exp_tty_original;
 #define GET_TTYTYPE	0
 #define SET_TTYTYPE	1
 static void
-ttytype(request,fd,ttycopy,ttyinit,s)
-int request;
-int fd;
-		/* following are used only if request == SET_TTYTYPE */
-int ttycopy;	/* true/false, copy from /dev/tty */
-int ttyinit;	/* if true, initialize to sane state */
-char *s;	/* stty args */
+ttytype(int request, int fd, int ttycopy, /* true/false, copy from /dev/tty */
+	int ttyinit, /* if true, initialize to sane state */
+	char *s /* stty args */
+)
 {
 	if (request == GET_TTYTYPE) {
 #ifdef HAVE_TCSETATTR
@@ -382,7 +380,7 @@ char *s;	/* stty args */
 }
 
 void
-exp_init_pty()
+exp_init_pty(void)
 {
 #if !defined(HAVE_GETPTY) && !defined(HAVE__GETPTY) && !defined(HAVE_PTC) && !defined(HAVE_PTC_PTS) && !defined(HAVE_PTMX) && !defined(HAVE_CONVEX_GETPTY) && !defined(_SEQUENT_) && !defined(HAVE_SCO_CLIST_PTYS) && !defined(HAVE_OPENPTY)
 # ifdef HAVE_PTYM
@@ -658,9 +656,9 @@ getptymaster()
 /*   after slave is opened */
 /*ARGSUSED*/
 void
-exp_slave_control(master,control)
-int master;
-int control;	/* if 1, enable pty trapping of close/open/ioctl */
+exp_slave_control(
+  int master, int control /* if 1, enable pty trapping of close/open/ioctl */
+)
 {
 #ifdef HAVE_PTYTRAP
 	ioctl(master, TIOCTRAP, &control);
@@ -745,8 +743,7 @@ interface was intended to be used!
 */
 
 int
-exp_wait_for_slave_open(fd)
-int fd;
+exp_wait_for_slave_open(int fd)
 {
 	fd_set excep;
 	struct timeval t;
@@ -808,9 +805,9 @@ int fd;
 #endif /* HAVE_PTYTRAP */
 
 void
-exp_pty_exit()
+exp_pty_exit(void)
 {
-	return; /* a stub so we can do weird things on the cray */
+  return; /* a stub so we can do weird things on the cray */
 }
 
 /* EOF */

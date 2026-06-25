@@ -118,7 +118,7 @@ static const char hexchars[]="0123456789abcdef";
 
 static unsigned long saved_stack_pointer;
 
-/* Number of bytes of registers.  */
+/* Number of bytes of registers: */
 #define NUMREGBYTES (NUMREGS * 4)
 enum regnames { G0, G1, G2, G3, G4, G5, G6, G7,
 		O0, O1, O2, O3, O4, O5, SP, O7,
@@ -147,291 +147,291 @@ enum regnames { G0, G1, G2, G3, G4, G5, G6, G7,
 
 extern void trap_low();
 
-asm("
-	.reserve trapstack, 1000 * 4, \"bss\", 8
-
-	.data
-	.align	4
-
-in_trap_handler:
-	.word	0
-
-	.text
-	.align 4
-
-! This function is called when any SPARC trap (except window overflow or
-! underflow) occurs.  It makes sure that the invalid register window is still
-! available before jumping into C code.  It will also restore the world if you
-! return from handle_exception.
-!
-! On entry, trap_low expects l1 and l2 to contain pc and npc respectivly.
-
-	.globl _trap_low
-_trap_low:
-	mov	%psr, %l0
-	mov	%wim, %l3
-
-	srl	%l3, %l0, %l4		! wim >> cwp
-	and	%l4, 0xff, %l4		! Mask off windows 28, 29
-	cmp	%l4, 1
-	bne	window_fine		! Branch if not in the invalid window
-	nop
-
-! Handle window overflow
-
-	mov	%g1, %l4		! Save g1, we use it to hold the wim
-	srl	%l3, 1, %g1		! Rotate wim right
-	and	%g1, 0xff, %g1		! Mask off windows 28, 29
-	tst	%g1
-	bg	good_wim		! Branch if new wim is non-zero
-	nop
-
-! At this point, we need to bring a 1 into the high order bit of the wim.
-! Since we do NOT want to make any assumptions about the number of register
-! windows, we figure it out dynamically so as to setup the wim correctly.
-
-	! The normal way does NOT work on the sparclet as register windows
-	! 28 and 29 are special purpose windows.
-	!not	%g1			! Fill g1 with ones
-	!mov	%g1, %wim		! Fill the wim with ones
-	!nop
-	!nop
-	!nop
-	!mov	%wim, %g1		! Read back the wim
-	!inc	%g1			! Now g1 has 1 just to left of wim
-	!srl	%g1, 1, %g1		! Now put 1 at top of wim
-
-	mov	0x80, %g1		! Hack for sparclet
-
-	! This does NOT work on the sparclet.
-	!mov	%g0, %wim		! Clear wim so that subsequent save
-					!  will NOT trap
-	andn	%l3, 0xff, %l5		! Clear wim but not windows 28, 29
-	mov	%l5, %wim
-	nop
-	nop
-	nop
-
-good_wim:
-	save	%g0, %g0, %g0		! Slip into next window
-	mov	%g1, %wim		! Install the new wim
-
-	std	%l0, [%sp + 0 * 4]	! save L & I registers
-	std	%l2, [%sp + 2 * 4]
-	std	%l4, [%sp + 4 * 4]
-	std	%l6, [%sp + 6 * 4]
-
-	std	%i0, [%sp + 8 * 4]
-	std	%i2, [%sp + 10 * 4]
-	std	%i4, [%sp + 12 * 4]
-	std	%i6, [%sp + 14 * 4]
-
-	restore				! Go back to trap window.
-	mov	%l4, %g1		! Restore %g1
-
-window_fine:
-	sethi	%hi(in_trap_handler), %l4
-	ld	[%lo(in_trap_handler) + %l4], %l5
-	tst	%l5
-	bg	recursive_trap
-	inc	%l5
-
-	set	trapstack+1000*4, %sp	! Switch to trap stack
-
-recursive_trap:
-	st	%l5, [%lo(in_trap_handler) + %l4]
-	sub	%sp,(16+1+6+1+88)*4,%sp ! Make room for input & locals
- 					! + hidden arg + arg spill
-					! + doubleword alignment
-					! + registers[121]
-
-	std	%g0, [%sp + (24 + 0) * 4] ! registers[Gx]
-	std	%g2, [%sp + (24 + 2) * 4]
-	std	%g4, [%sp + (24 + 4) * 4]
-	std	%g6, [%sp + (24 + 6) * 4]
-
-	std	%i0, [%sp + (24 + 8) * 4] ! registers[Ox]
-	std	%i2, [%sp + (24 + 10) * 4]
-	std	%i4, [%sp + (24 + 12) * 4]
-	std	%i6, [%sp + (24 + 14) * 4]
-
-	! FP regs (sparclet does NOT have fpu)
-
-	mov	%y, %l4
-	mov	%tbr, %l5
-	st	%l4, [%sp + (24 + 64) * 4] ! Y
-	st	%l0, [%sp + (24 + 65) * 4] ! PSR
-	st	%l3, [%sp + (24 + 66) * 4] ! WIM
-	st	%l5, [%sp + (24 + 67) * 4] ! TBR
-	st	%l1, [%sp + (24 + 68) * 4] ! PC
-	st	%l2, [%sp + (24 + 69) * 4] ! NPC
-					! CPSR and FPSR not impl
-	or	%l0, 0xf20, %l4
-	mov	%l4, %psr		! Turn on traps, disable interrupts
-	nop
-        nop
-        nop
-
-! Save coprocessor state.
-! See SK/demo/hdlc_demo/ldc_swap_context.S.
-
-	mov	%psr, %l0
-	sethi	%hi(0x2000), %l5		! EC bit in PSR
-	or	%l5, %l0, %l5
-	mov	%l5, %psr			! enable coprocessor
-	nop			! 3 nops after write to %psr (needed?)
-	nop
-	nop
-	crdcxt	%ccsr, %l1			! capture CCSR
-	mov	0x6, %l2
-	cwrcxt	%l2, %ccsr	! set CCP state machine for CCFR
-	crdcxt	%ccfr, %l2			! capture CCOR
-	cwrcxt	%l2, %ccfr			! tickle  CCFR
-	crdcxt	%ccfr, %l3			! capture CCOBR
-	cwrcxt	%l3, %ccfr			! tickle  CCFR
-	crdcxt	%ccfr, %l4			! capture CCIBR
-	cwrcxt	%l4, %ccfr			! tickle  CCFR
-	crdcxt	%ccfr, %l5			! capture CCIR
-	cwrcxt	%l5, %ccfr			! tickle  CCFR
-	crdcxt	%ccpr, %l6			! capture CCPR
-	crdcxt	%cccrcr, %l7			! capture CCCRCR
-	st	%l1, [%sp + (24 + 72) * 4]	! save CCSR
-	st	%l2, [%sp + (24 + 75) * 4]	! save CCOR
-	st	%l3, [%sp + (24 + 76) * 4]	! save CCOBR
-	st	%l4, [%sp + (24 + 77) * 4]	! save CCIBR
-	st	%l5, [%sp + (24 + 78) * 4]	! save CCIR
-	st	%l6, [%sp + (24 + 73) * 4]	! save CCPR
-	st	%l7, [%sp + (24 + 74) * 4]	! save CCCRCR
-	mov	%l0, %psr 			! restore original PSR
-	nop			! 3 nops after write to %psr (needed?)
-	nop
-	nop
-
-! End of saving coprocessor state.
-! Save asr regs
-
-! Part of this is silly -- we should not display ASR15 or ASR19 at all.
-
-	sethi	%hi(0x01000000), %l6
-	st	%l6, [%sp + (24 + 81) * 4]	! ASR15 == NOP
-	sethi	%hi(0xdeadc0de), %l6
-	or	%l6, %lo(0xdeadc0de), %l6
-	st	%l6, [%sp + (24 + 84) * 4]	! ASR19 == DEADC0DE
-
-	rd	%asr1, %l4
-	st	%l4, [%sp + (24 + 80) * 4]
-!	rd	%asr15, %l4			! must not read ASR15
-!	st	%l4, [%sp + (24 + 81) * 4]	! (illegal instr trap)
-	rd	%asr17, %l4
-	st	%l4, [%sp + (24 + 82) * 4]
-	rd	%asr18, %l4
-	st	%l4, [%sp + (24 + 83) * 4]
-!	rd	%asr19, %l4			! must not read asr19
-!	st	%l4, [%sp + (24 + 84) * 4]	! (halts the CPU)
-	rd	%asr20, %l4
-	st	%l4, [%sp + (24 + 85) * 4]
-	rd	%asr21, %l4
-	st	%l4, [%sp + (24 + 86) * 4]
-	rd	%asr22, %l4
-	st	%l4, [%sp + (24 + 87) * 4]
-
-! End of saving asr regs
-
-	call	_handle_exception
-	add	%sp, 24 * 4, %o0	! Pass address of registers
-
-! Reload all of the registers that are NOT on the stack
-
-	ld	[%sp + (24 + 1) * 4], %g1 ! registers[Gx]
-	ldd	[%sp + (24 + 2) * 4], %g2
-	ldd	[%sp + (24 + 4) * 4], %g4
-	ldd	[%sp + (24 + 6) * 4], %g6
-
-	ldd	[%sp + (24 + 8) * 4], %i0 ! registers[Ox]
-	ldd	[%sp + (24 + 10) * 4], %i2
-	ldd	[%sp + (24 + 12) * 4], %i4
-	ldd	[%sp + (24 + 14) * 4], %i6
-
-	! FP regs (sparclet does NOT have fpu)
-
-! Update the coprocessor registers.
-! See SK/demo/hdlc_demo/ldc_swap_context.S.
-
-	mov	%psr, %l0
-	sethi	%hi(0x2000), %l5		! EC bit in PSR
-	or	%l5, %l0, %l5
-	mov	%l5, %psr			! enable coprocessor
-	nop			! 3 nops after write to %psr (needed?)
-	nop
-	nop
-
-	mov 0x6, %l2
-	cwrcxt	%l2, %ccsr	! set CCP state machine for CCFR
-
-	ld	[%sp + (24 + 72) * 4], %l1	! saved CCSR
-	ld	[%sp + (24 + 75) * 4], %l2	! saved CCOR
-	ld	[%sp + (24 + 76) * 4], %l3	! saved CCOBR
-	ld	[%sp + (24 + 77) * 4], %l4	! saved CCIBR
-	ld	[%sp + (24 + 78) * 4], %l5	! saved CCIR
-	ld	[%sp + (24 + 73) * 4], %l6	! saved CCPR
-	ld	[%sp + (24 + 74) * 4], %l7	! saved CCCRCR
-
-	cwrcxt	%l2, %ccfr			! restore CCOR
-	cwrcxt	%l3, %ccfr			! restore CCOBR
-	cwrcxt	%l4, %ccfr			! restore CCIBR
-	cwrcxt	%l5, %ccfr			! restore CCIR
-	cwrcxt	%l6, %ccpr			! restore CCPR
-	cwrcxt	%l7, %cccrcr			! restore CCCRCR
-	cwrcxt	%l1, %ccsr			! restore CCSR
-
-	mov %l0, %psr				! restore PSR
-	nop		! 3 nops after write to %psr (needed?)
-	nop
-	nop
-
-! End of coprocessor handling stuff.
-! Update asr regs
-
-	ld	[%sp + (24 + 80) * 4], %l4
-	wr	%l4, %asr1
-!	ld	[%sp + (24 + 81) * 4], %l4	! cannot write asr15
-!	wr	%l4, %asr15
-	ld	[%sp + (24 + 82) * 4], %l4
-	wr	%l4, %asr17
-	ld	[%sp + (24 + 83) * 4], %l4
-	wr	%l4, %asr18
-!	ld	[%sp + (24 + 84) * 4], %l4	! cannot write asr19
-!	wr	%l4, %asr19
-!	ld	[%sp + (24 + 85) * 4], %l4	! cannot write asr20
-!	wr	%l4, %asr20
-!	ld	[%sp + (24 + 86) * 4], %l4	! cannot write asr21
-!	wr	%l4, %asr21
-	ld	[%sp + (24 + 87) * 4], %l4
-	wr	%l4, %asr22
-
-! End of restoring asr regs
-
-
-	ldd	[%sp + (24 + 64) * 4], %l0 ! Y & PSR
-	ldd	[%sp + (24 + 68) * 4], %l2 ! PC & NPC
-
-	restore				! Ensure that previous window is valid
-	save	%g0, %g0, %g0		!  by causing a window_underflow trap
-
-	mov	%l0, %y
-	mov	%l1, %psr		! Make sure that traps are disabled
-					! for rett
-	nop	! 3 nops after write to %psr (needed?)
-	nop
-	nop
-
-	sethi	%hi(in_trap_handler), %l4
-	ld	[%lo(in_trap_handler) + %l4], %l5
-	dec	%l5
-	st	%l5, [%lo(in_trap_handler) + %l4]
-
-	jmpl	%l2, %g0		! Restore old PC
-	rett	%l3			! Restore old nPC
+asm(" \
+	.reserve trapstack, 1000 * 4, \"bss\", 8 \
+ \
+	.data \
+	.align	4 \
+ \
+in_trap_handler: \
+	.word	0 \
+ \
+	.text \
+	.align 4 \
+ \
+! This function is called when any SPARC trap (except window overflow or \
+! underflow) occurs.  It makes sure that the invalid register window is still \
+! available before jumping into C code.  It will also restore the world if you \
+! return from handle_exception. \
+! \
+! On entry, trap_low expects l1 and l2 to contain pc and npc respectivly. \
+ \
+	.globl _trap_low \
+_trap_low: \
+	mov	%psr, %l0 \
+	mov	%wim, %l3 \
+ \
+	srl	%l3, %l0, %l4		! wim >> cwp \
+	and	%l4, 0xff, %l4		! Mask off windows 28, 29 \
+	cmp	%l4, 1 \
+	bne	window_fine		! Branch if not in the invalid window \
+	nop \
+ \
+! Handle window overflow \
+ \
+	mov	%g1, %l4		! Save g1, we use it to hold the wim \
+	srl	%l3, 1, %g1		! Rotate wim right \
+	and	%g1, 0xff, %g1		! Mask off windows 28, 29 \
+	tst	%g1 \
+	bg	good_wim		! Branch if new wim is non-zero \
+	nop \
+ \
+! At this point, we need to bring a 1 into the high order bit of the wim. \
+! Since we do NOT want to make any assumptions about the number of register \
+! windows, we figure it out dynamically so as to setup the wim correctly. \
+ \
+	! The normal way does NOT work on the sparclet as register windows \
+	! 28 and 29 are special purpose windows. \
+	!not	%g1			! Fill g1 with ones \
+	!mov	%g1, %wim		! Fill the wim with ones \
+	!nop \
+	!nop \
+	!nop \
+	!mov	%wim, %g1		! Read back the wim \
+	!inc	%g1			! Now g1 has 1 just to left of wim \
+	!srl	%g1, 1, %g1		! Now put 1 at top of wim \
+ \
+	mov	0x80, %g1		! Hack for sparclet \
+ \
+	! This does NOT work on the sparclet. \
+	!mov	%g0, %wim		! Clear wim so that subsequent save \
+					!  will NOT trap \
+	andn	%l3, 0xff, %l5		! Clear wim but not windows 28, 29 \
+	mov	%l5, %wim \
+	nop \
+	nop \
+	nop \
+ \
+good_wim: \
+	save	%g0, %g0, %g0		! Slip into next window \
+	mov	%g1, %wim		! Install the new wim \
+ \
+	std	%l0, [%sp + 0 * 4]	! save L & I registers \
+	std	%l2, [%sp + 2 * 4] \
+	std	%l4, [%sp + 4 * 4] \
+	std	%l6, [%sp + 6 * 4] \
+ \
+	std	%i0, [%sp + 8 * 4] \
+	std	%i2, [%sp + 10 * 4] \
+	std	%i4, [%sp + 12 * 4] \
+	std	%i6, [%sp + 14 * 4] \
+ \
+	restore				! Go back to trap window. \
+	mov	%l4, %g1		! Restore %g1 \
+ \
+window_fine: \
+	sethi	%hi(in_trap_handler), %l4 \
+	ld	[%lo(in_trap_handler) + %l4], %l5 \
+	tst	%l5 \
+	bg	recursive_trap \
+	inc	%l5 \
+ \
+	set	trapstack+1000*4, %sp	! Switch to trap stack \
+ \
+recursive_trap: \
+	st	%l5, [%lo(in_trap_handler) + %l4] \
+	sub	%sp,(16+1+6+1+88)*4,%sp ! Make room for input & locals \
+					! + hidden arg + arg spill \
+					! + doubleword alignment \
+					! + registers[121] \
+ \
+	std	%g0, [%sp + (24 + 0) * 4] ! registers[Gx] \
+	std	%g2, [%sp + (24 + 2) * 4] \
+	std	%g4, [%sp + (24 + 4) * 4] \
+	std	%g6, [%sp + (24 + 6) * 4] \
+ \
+	std	%i0, [%sp + (24 + 8) * 4] ! registers[Ox] \
+	std	%i2, [%sp + (24 + 10) * 4] \
+	std	%i4, [%sp + (24 + 12) * 4] \
+	std	%i6, [%sp + (24 + 14) * 4] \
+ \
+	! FP regs (sparclet does NOT have fpu) \
+ \
+	mov	%y, %l4 \
+	mov	%tbr, %l5 \
+	st	%l4, [%sp + (24 + 64) * 4] ! Y \
+	st	%l0, [%sp + (24 + 65) * 4] ! PSR \
+	st	%l3, [%sp + (24 + 66) * 4] ! WIM \
+	st	%l5, [%sp + (24 + 67) * 4] ! TBR \
+	st	%l1, [%sp + (24 + 68) * 4] ! PC \
+	st	%l2, [%sp + (24 + 69) * 4] ! NPC \
+					! CPSR and FPSR not impl \
+	or	%l0, 0xf20, %l4 \
+	mov	%l4, %psr		! Turn on traps, disable interrupts \
+	nop \
+        nop \
+        nop \
+ \
+! Save coprocessor state. \
+! See SK/demo/hdlc_demo/ldc_swap_context.S. \
+ \
+	mov	%psr, %l0 \
+	sethi	%hi(0x2000), %l5		! EC bit in PSR \
+	or	%l5, %l0, %l5 \
+	mov	%l5, %psr			! enable coprocessor \
+	nop			! 3 nops after write to %psr (needed?) \
+	nop \
+	nop \
+	crdcxt	%ccsr, %l1			! capture CCSR \
+	mov	0x6, %l2 \
+	cwrcxt	%l2, %ccsr	! set CCP state machine for CCFR \
+	crdcxt	%ccfr, %l2			! capture CCOR \
+	cwrcxt	%l2, %ccfr			! tickle  CCFR \
+	crdcxt	%ccfr, %l3			! capture CCOBR \
+	cwrcxt	%l3, %ccfr			! tickle  CCFR \
+	crdcxt	%ccfr, %l4			! capture CCIBR \
+	cwrcxt	%l4, %ccfr			! tickle  CCFR \
+	crdcxt	%ccfr, %l5			! capture CCIR \
+	cwrcxt	%l5, %ccfr			! tickle  CCFR \
+	crdcxt	%ccpr, %l6			! capture CCPR \
+	crdcxt	%cccrcr, %l7			! capture CCCRCR \
+	st	%l1, [%sp + (24 + 72) * 4]	! save CCSR \
+	st	%l2, [%sp + (24 + 75) * 4]	! save CCOR \
+	st	%l3, [%sp + (24 + 76) * 4]	! save CCOBR \
+	st	%l4, [%sp + (24 + 77) * 4]	! save CCIBR \
+	st	%l5, [%sp + (24 + 78) * 4]	! save CCIR \
+	st	%l6, [%sp + (24 + 73) * 4]	! save CCPR \
+	st	%l7, [%sp + (24 + 74) * 4]	! save CCCRCR \
+	mov	%l0, %psr 			! restore original PSR \
+	nop			! 3 nops after write to %psr (needed?) \
+	nop \
+	nop \
+ \
+! End of saving coprocessor state. \
+! Save asr regs \
+ \
+! Part of this is silly -- we should not display ASR15 or ASR19 at all. \
+ \
+	sethi	%hi(0x01000000), %l6 \
+	st	%l6, [%sp + (24 + 81) * 4]	! ASR15 == NOP \
+	sethi	%hi(0xdeadc0de), %l6 \
+	or	%l6, %lo(0xdeadc0de), %l6 \
+	st	%l6, [%sp + (24 + 84) * 4]	! ASR19 == DEADC0DE \
+ \
+	rd	%asr1, %l4 \
+	st	%l4, [%sp + (24 + 80) * 4] \
+!	rd	%asr15, %l4			! must not read ASR15 \
+!	st	%l4, [%sp + (24 + 81) * 4]	! (illegal instr trap) \
+	rd	%asr17, %l4 \
+	st	%l4, [%sp + (24 + 82) * 4] \
+	rd	%asr18, %l4 \
+	st	%l4, [%sp + (24 + 83) * 4] \
+!	rd	%asr19, %l4			! must not read asr19 \
+!	st	%l4, [%sp + (24 + 84) * 4]	! (halts the CPU) \
+	rd	%asr20, %l4 \
+	st	%l4, [%sp + (24 + 85) * 4] \
+	rd	%asr21, %l4 \
+	st	%l4, [%sp + (24 + 86) * 4] \
+	rd	%asr22, %l4 \
+	st	%l4, [%sp + (24 + 87) * 4] \
+ \
+! End of saving asr regs \
+ \
+	call	_handle_exception \
+	add	%sp, 24 * 4, %o0	! Pass address of registers \
+ \
+! Reload all of the registers that are NOT on the stack \
+ \
+	ld	[%sp + (24 + 1) * 4], %g1 ! registers[Gx] \
+	ldd	[%sp + (24 + 2) * 4], %g2 \
+	ldd	[%sp + (24 + 4) * 4], %g4 \
+	ldd	[%sp + (24 + 6) * 4], %g6 \
+ \
+	ldd	[%sp + (24 + 8) * 4], %i0 ! registers[Ox] \
+	ldd	[%sp + (24 + 10) * 4], %i2 \
+	ldd	[%sp + (24 + 12) * 4], %i4 \
+	ldd	[%sp + (24 + 14) * 4], %i6 \
+ \
+	! FP regs (sparclet does NOT have fpu) \
+ \
+! Update the coprocessor registers. \
+! See SK/demo/hdlc_demo/ldc_swap_context.S. \
+ \
+	mov	%psr, %l0 \
+	sethi	%hi(0x2000), %l5		! EC bit in PSR \
+	or	%l5, %l0, %l5 \
+	mov	%l5, %psr			! enable coprocessor \
+	nop			! 3 nops after write to %psr (needed?) \
+	nop \
+	nop \
+ \
+	mov 0x6, %l2 \
+	cwrcxt	%l2, %ccsr	! set CCP state machine for CCFR \
+ \
+	ld	[%sp + (24 + 72) * 4], %l1	! saved CCSR \
+	ld	[%sp + (24 + 75) * 4], %l2	! saved CCOR \
+	ld	[%sp + (24 + 76) * 4], %l3	! saved CCOBR \
+	ld	[%sp + (24 + 77) * 4], %l4	! saved CCIBR \
+	ld	[%sp + (24 + 78) * 4], %l5	! saved CCIR \
+	ld	[%sp + (24 + 73) * 4], %l6	! saved CCPR \
+	ld	[%sp + (24 + 74) * 4], %l7	! saved CCCRCR \
+ \
+	cwrcxt	%l2, %ccfr			! restore CCOR \
+	cwrcxt	%l3, %ccfr			! restore CCOBR \
+	cwrcxt	%l4, %ccfr			! restore CCIBR \
+	cwrcxt	%l5, %ccfr			! restore CCIR \
+	cwrcxt	%l6, %ccpr			! restore CCPR \
+	cwrcxt	%l7, %cccrcr			! restore CCCRCR \
+	cwrcxt	%l1, %ccsr			! restore CCSR \
+ \
+	mov %l0, %psr				! restore PSR \
+	nop		! 3 nops after write to %psr (needed?) \
+	nop \
+	nop \
+ \
+! End of coprocessor handling stuff. \
+! Update asr regs \
+ \
+	ld	[%sp + (24 + 80) * 4], %l4 \
+	wr	%l4, %asr1 \
+!	ld	[%sp + (24 + 81) * 4], %l4	! cannot write asr15 \
+!	wr	%l4, %asr15 \
+	ld	[%sp + (24 + 82) * 4], %l4 \
+	wr	%l4, %asr17 \
+	ld	[%sp + (24 + 83) * 4], %l4 \
+	wr	%l4, %asr18 \
+!	ld	[%sp + (24 + 84) * 4], %l4	! cannot write asr19 \
+!	wr	%l4, %asr19 \
+!	ld	[%sp + (24 + 85) * 4], %l4	! cannot write asr20 \
+!	wr	%l4, %asr20 \
+!	ld	[%sp + (24 + 86) * 4], %l4	! cannot write asr21 \
+!	wr	%l4, %asr21 \
+	ld	[%sp + (24 + 87) * 4], %l4 \
+	wr	%l4, %asr22 \
+ \
+! End of restoring asr regs \
+ \
+ \
+	ldd	[%sp + (24 + 64) * 4], %l0 ! Y & PSR \
+	ldd	[%sp + (24 + 68) * 4], %l2 ! PC & NPC \
+ \
+	restore				! Ensure that previous window is valid \
+	save	%g0, %g0, %g0		!  by causing a window_underflow trap \
+ \
+	mov	%l0, %y \
+	mov	%l1, %psr		! Make sure that traps are disabled \
+					! for rett \
+	nop	! 3 nops after write to %psr (needed?) \
+	nop \
+	nop \
+ \
+	sethi	%hi(in_trap_handler), %l4 \
+	ld	[%lo(in_trap_handler) + %l4], %l5 \
+	dec	%l5 \
+	st	%l5, [%lo(in_trap_handler) + %l4] \
+ \
+	jmpl	%l2, %g0		! Restore old PC \
+	rett	%l3			! Restore old nPC \
 ");
 
 /* Convert ch from a hex digit to an int */
@@ -642,20 +642,20 @@ set_debug_traps (void)
   initialized = 1;
 }
 
-asm ("
-! Trap handler for memory errors.  This just sets mem_err to be non-zero.  It
-! assumes that %l1 is non-zero.  This should be safe, as it is doubtful that
-! 0 would ever contain code that could mem fault.  This routine will skip
-! past the faulting instruction after setting mem_err.
-
-	.text
-	.align 4
-
-_fltr_set_mem_err:
-	sethi %hi(_mem_err), %l0
-	st %l1, [%l0 + %lo(_mem_err)]
-	jmpl %l2, %g0
-	rett %l2+4
+asm(" \
+! Trap handler for memory errors.  This just sets mem_err to be non-zero.  It \
+! assumes that %l1 is non-zero.  This should be safe, as it is doubtful that \
+! 0 would ever contain code that could mem fault.  This routine will skip \
+! past the faulting instruction after setting mem_err. \
+ \
+	.text \
+	.align 4 \
+ \
+_fltr_set_mem_err: \
+	sethi %hi(_mem_err), %l0 \
+	st %l1, [%l0 + %lo(_mem_err)] \
+	jmpl %l2, %g0 \
+	rett %l2+4 \
 ");
 
 static void
@@ -670,15 +670,15 @@ set_mem_fault_trap (int enable)
     exceptionHandler(0x29, trap_low);
 }
 
-asm ("
-	.text
-	.align 4
-
-_dummy_hw_breakpoint:
-	jmpl %l2, %g0
-	rett %l2+4
-	nop
-	nop
+asm(" \
+	.text \
+	.align 4 \
+ \
+_dummy_hw_breakpoint: \
+	jmpl %l2, %g0 \
+	rett %l2+4 \
+	nop \
+	nop \
 ");
 
 static void
@@ -699,16 +699,16 @@ get_in_break_mode (void)
   int x;
   mesg("get_in_break_mode, sp = ");
   phex(&x);
-#endif
+#endif /* 0 */
   set_hw_breakpoint_trap(1);
 
-  asm("
-        sethi   %hi(0xff10), %l4
-        or      %l4, %lo(0xff10), %l4
-	sta 	%g0, [%l4]0x1
-	nop
-	nop
-	nop
+  asm(" \
+        sethi   %hi(0xff10), %l4 \
+        or      %l4, %lo(0xff10), %l4 \
+	sta 	%g0, [%l4]0x1 \
+	nop \
+	nop \
+	nop \
       ");
 
   set_hw_breakpoint_trap(0);
@@ -775,40 +775,40 @@ handle_exception (unsigned long *registers)
 
 /* First, we must force all of the windows to be spilled out */
 
-  asm("
-	! Ugh.  sparclet has broken save
-	!save %sp, -64, %sp
-	save
-	add %fp,-64,%sp
-	!save %sp, -64, %sp
-	save
-	add %fp,-64,%sp
-	!save %sp, -64, %sp
-	save
-	add %fp,-64,%sp
-	!save %sp, -64, %sp
-	save
-	add %fp,-64,%sp
-	!save %sp, -64, %sp
-	save
-	add %fp,-64,%sp
-	!save %sp, -64, %sp
-	save
-	add %fp,-64,%sp
-	!save %sp, -64, %sp
-	save
-	add %fp,-64,%sp
-	!save %sp, -64, %sp
-	save
-	add %fp,-64,%sp
-	restore
-	restore
-	restore
-	restore
-	restore
-	restore
-	restore
-	restore
+  asm(" \
+	! Ugh.  sparclet has broken save \
+	!save %sp, -64, %sp \
+	save \
+	add %fp,-64,%sp \
+	!save %sp, -64, %sp \
+	save \
+	add %fp,-64,%sp \
+	!save %sp, -64, %sp \
+	save \
+	add %fp,-64,%sp \
+	!save %sp, -64, %sp \
+	save \
+	add %fp,-64,%sp \
+	!save %sp, -64, %sp \
+	save \
+	add %fp,-64,%sp \
+	!save %sp, -64, %sp \
+	save \
+	add %fp,-64,%sp \
+	!save %sp, -64, %sp \
+	save \
+	add %fp,-64,%sp \
+	!save %sp, -64, %sp \
+	save \
+	add %fp,-64,%sp \
+	restore \
+	restore \
+	restore \
+	restore \
+	restore \
+	restore \
+	restore \
+	restore \
 ");
 
   if (registers[PC] == (unsigned long)breakinst)
@@ -1021,7 +1021,7 @@ handle_exception (unsigned long *registers)
 	  break;
 #endif /* 0 */
 	case 'r':		/* Reset */
-	  asm ("call 0
+	  asm("call 0 \
 		nop ");
 	  break;
 	}			/* switch */
@@ -1042,17 +1042,17 @@ breakpoint (void)
   if (!initialized)
     return;
 
-  asm("	.globl _breakinst
-
-	_breakinst: ta 1
+  asm("	.globl _breakinst \
+ \
+	_breakinst: ta 1 \
       ");
 }
 
 static void
 hw_breakpoint (void)
 {
-  asm("
-      ta 127
+  asm(" \
+      ta 127 \
       ");
 }
 
@@ -1060,109 +1060,109 @@ hw_breakpoint (void)
 static void
 splet_temp(void)
 {
-  asm("	sub	%sp,(16+1+6+1+121)*4,%sp ! Make room for input & locals
- 					! + hidden arg + arg spill
-					! + doubleword alignment
-					! + registers[121]
-
-! Leave a trail of breadcrumbs! (save register save area for debugging)
-	mov	%sp, %l0
-	add	%l0, 24*4, %l0
-	sethi	%hi(_debug_registers), %l1
-	st	%l0, [%lo(_debug_registers) + %l1]
-
-! Save the Alternate Register Set: (not implemented yet)
-!    To save the Alternate Register set, we must:
-!    1) Save the current SP in some global location.
-!    2) Swap the register sets.
-!    3) Save the Alternate SP in the Y register
-!    4) Fetch the SP that we saved in step 1.
-!    5) Use that to save the rest of the regs (not forgetting ASP in Y)
-!    6) Restore the Alternate SP from Y
-!    7) Swap the registers back.
-
-! 1) Copy the current stack pointer to global _SAVED_STACK_POINTER:
-	sethi	%hi(_saved_stack_pointer), %l0
-	st	%sp, [%lo(_saved_stack_pointer) + %l0]
-
-! 2) Swap the register sets:
-	mov	%psr, %l1
-	sethi	%hi(0x10000), %l2
-	xor	%l1, %l2, %l1
-	mov	%l1, %psr
-	nop			! 3 nops after write to %psr (needed?)
-	nop
-	nop
-
-! 3) Save Alternate L0 in Y
-	wr	%l0, 0, %y
-
-! 4) Load former SP into alternate SP, using L0
-	sethi	%hi(_saved_stack_pointer), %l0
-	or	%lo(_saved_stack_pointer), %l0, %l0
-	swap	[%l0], %sp
-
-! 4.5) Restore alternate L0
-	rd	%y, %l0
-
-! 5) Save the Alternate Window Registers
-	st	%r0, [%sp + (24 + 88) * 4]	! AWR0
-	st	%r1, [%sp + (24 + 89) * 4]	! AWR1
-	st	%r2, [%sp + (24 + 90) * 4]	! AWR2
-	st	%r3, [%sp + (24 + 91) * 4]	! AWR3
-	st	%r4, [%sp + (24 + 92) * 4]	! AWR4
-	st	%r5, [%sp + (24 + 93) * 4]	! AWR5
-	st	%r6, [%sp + (24 + 94) * 4]	! AWR6
-	st	%r7, [%sp + (24 + 95) * 4]	! AWR7
-	st	%r8, [%sp + (24 + 96) * 4]	! AWR8
-	st	%r9, [%sp + (24 + 97) * 4]	! AWR9
-	st	%r10, [%sp + (24 + 98) * 4]	! AWR10
-	st	%r11, [%sp + (24 + 99) * 4]	! AWR11
-	st	%r12, [%sp + (24 + 100) * 4]	! AWR12
-	st	%r13, [%sp + (24 + 101) * 4]	! AWR13
-!	st	%r14, [%sp + (24 + 102) * 4]	! AWR14	(SP)
-	st	%r15, [%sp + (24 + 103) * 4]	! AWR15
-	st	%r16, [%sp + (24 + 104) * 4]	! AWR16
-	st	%r17, [%sp + (24 + 105) * 4]	! AWR17
-	st	%r18, [%sp + (24 + 106) * 4]	! AWR18
-	st	%r19, [%sp + (24 + 107) * 4]	! AWR19
-	st	%r20, [%sp + (24 + 108) * 4]	! AWR20
-	st	%r21, [%sp + (24 + 109) * 4]	! AWR21
-	st	%r22, [%sp + (24 + 110) * 4]	! AWR22
-	st	%r23, [%sp + (24 + 111) * 4]	! AWR23
-	st	%r24, [%sp + (24 + 112) * 4]	! AWR24
-	st	%r25, [%sp + (24 + 113) * 4]	! AWR25
-	st	%r26, [%sp + (24 + 114) * 4]	! AWR26
-	st	%r27, [%sp + (24 + 115) * 4]	! AWR27
-	st	%r28, [%sp + (24 + 116) * 4]	! AWR28
-	st	%r29, [%sp + (24 + 117) * 4]	! AWR29
-	st	%r30, [%sp + (24 + 118) * 4]	! AWR30
-	st	%r31, [%sp + (24 + 119) * 4]	! AWR21
-
-! Get the Alternate PSR (I hope...)
-
-	rd	%psr, %l2
-	st	%l2, [%sp + (24 + 120) * 4]	! APSR
-
-! Do NOT forget the alternate stack pointer
-
-	rd	%y, %l3
-	st	%l3, [%sp + (24 + 102) * 4]	! AWR14 (SP)
-
-! 6) Restore the Alternate SP (saved in Y)
-
-	rd	%y, %o6
-
-
-! 7) Swap the registers back:
-
-	mov	%psr, %l1
-	sethi	%hi(0x10000), %l2
-	xor	%l1, %l2, %l1
-	mov	%l1, %psr
-	nop			! 3 nops after write to %psr (needed?)
-	nop
-	nop
+  asm("	sub	%sp,(16+1+6+1+121)*4,%sp ! Make room for input & locals \
+					! + hidden arg + arg spill \
+					! + doubleword alignment \
+					! + registers[121] \
+ \
+! Leave a trail of breadcrumbs! (save register save area for debugging) \
+	mov	%sp, %l0 \
+	add	%l0, 24*4, %l0 \
+	sethi	%hi(_debug_registers), %l1 \
+	st	%l0, [%lo(_debug_registers) + %l1] \
+ \
+! Save the Alternate Register Set: (not implemented yet) \
+!    To save the Alternate Register set, we must: \
+!    1) Save the current SP in some global location. \
+!    2) Swap the register sets. \
+!    3) Save the Alternate SP in the Y register \
+!    4) Fetch the SP that we saved in step 1. \
+!    5) Use that to save the rest of the regs (not forgetting ASP in Y) \
+!    6) Restore the Alternate SP from Y \
+!    7) Swap the registers back. \
+ \
+! 1) Copy the current stack pointer to global _SAVED_STACK_POINTER: \
+	sethi	%hi(_saved_stack_pointer), %l0 \
+	st	%sp, [%lo(_saved_stack_pointer) + %l0] \
+ \
+! 2) Swap the register sets: \
+	mov	%psr, %l1 \
+	sethi	%hi(0x10000), %l2 \
+	xor	%l1, %l2, %l1 \
+	mov	%l1, %psr \
+	nop			! 3 nops after write to %psr (needed?) \
+	nop \
+	nop \
+ \
+! 3) Save Alternate L0 in Y \
+	wr	%l0, 0, %y \
+ \
+! 4) Load former SP into alternate SP, using L0 \
+	sethi	%hi(_saved_stack_pointer), %l0 \
+	or	%lo(_saved_stack_pointer), %l0, %l0 \
+	swap	[%l0], %sp \
+ \
+! 4.5) Restore alternate L0 \
+	rd	%y, %l0 \
+ \
+! 5) Save the Alternate Window Registers \
+	st	%r0, [%sp + (24 + 88) * 4]	! AWR0 \
+	st	%r1, [%sp + (24 + 89) * 4]	! AWR1 \
+	st	%r2, [%sp + (24 + 90) * 4]	! AWR2 \
+	st	%r3, [%sp + (24 + 91) * 4]	! AWR3 \
+	st	%r4, [%sp + (24 + 92) * 4]	! AWR4 \
+	st	%r5, [%sp + (24 + 93) * 4]	! AWR5 \
+	st	%r6, [%sp + (24 + 94) * 4]	! AWR6 \
+	st	%r7, [%sp + (24 + 95) * 4]	! AWR7 \
+	st	%r8, [%sp + (24 + 96) * 4]	! AWR8 \
+	st	%r9, [%sp + (24 + 97) * 4]	! AWR9 \
+	st	%r10, [%sp + (24 + 98) * 4]	! AWR10 \
+	st	%r11, [%sp + (24 + 99) * 4]	! AWR11 \
+	st	%r12, [%sp + (24 + 100) * 4]	! AWR12 \
+	st	%r13, [%sp + (24 + 101) * 4]	! AWR13 \
+!	st	%r14, [%sp + (24 + 102) * 4]	! AWR14	(SP) \
+	st	%r15, [%sp + (24 + 103) * 4]	! AWR15 \
+	st	%r16, [%sp + (24 + 104) * 4]	! AWR16 \
+	st	%r17, [%sp + (24 + 105) * 4]	! AWR17 \
+	st	%r18, [%sp + (24 + 106) * 4]	! AWR18 \
+	st	%r19, [%sp + (24 + 107) * 4]	! AWR19 \
+	st	%r20, [%sp + (24 + 108) * 4]	! AWR20 \
+	st	%r21, [%sp + (24 + 109) * 4]	! AWR21 \
+	st	%r22, [%sp + (24 + 110) * 4]	! AWR22 \
+	st	%r23, [%sp + (24 + 111) * 4]	! AWR23 \
+	st	%r24, [%sp + (24 + 112) * 4]	! AWR24 \
+	st	%r25, [%sp + (24 + 113) * 4]	! AWR25 \
+	st	%r26, [%sp + (24 + 114) * 4]	! AWR26 \
+	st	%r27, [%sp + (24 + 115) * 4]	! AWR27 \
+	st	%r28, [%sp + (24 + 116) * 4]	! AWR28 \
+	st	%r29, [%sp + (24 + 117) * 4]	! AWR29 \
+	st	%r30, [%sp + (24 + 118) * 4]	! AWR30 \
+	st	%r31, [%sp + (24 + 119) * 4]	! AWR21 \
+ \
+! Get the Alternate PSR (I hope...) \
+ \
+	rd	%psr, %l2 \
+	st	%l2, [%sp + (24 + 120) * 4]	! APSR \
+ \
+! Do NOT forget the alternate stack pointer \
+ \
+	rd	%y, %l3 \
+	st	%l3, [%sp + (24 + 102) * 4]	! AWR14 (SP) \
+ \
+! 6) Restore the Alternate SP (saved in Y) \
+ \
+	rd	%y, %o6 \
+ \
+ \
+! 7) Swap the registers back: \
+ \
+	mov	%psr, %l1 \
+	sethi	%hi(0x10000), %l2 \
+	xor	%l1, %l2, %l1 \
+	mov	%l1, %psr \
+	nop			! 3 nops after write to %psr (needed?) \
+	nop \
+	nop \
 ");
 }
 

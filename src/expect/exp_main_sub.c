@@ -99,9 +99,8 @@ ClientData clientData;
 	exp_pty_exit();
 }
 
-static
-void
-exp_init_pty_exit()
+static void
+exp_init_pty_exit(void)
 {
 	Tcl_CreateExitHandler(exp_pty_exit_for_tcl,(ClientData)0);
 }

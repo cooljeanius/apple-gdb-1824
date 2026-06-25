@@ -296,7 +296,8 @@ force_unwind_stop (int version, _Unwind_Action actions,
   return _URC_NO_REASON;
 }
 
-static void force_unwind ()
+static void
+force_unwind(void)
 {
   struct _Unwind_Exception *exc = malloc (sizeof (*exc));
   memset (&exc->exception_class, 0, sizeof (exc->exception_class));
@@ -311,24 +312,28 @@ static void force_unwind ()
   abort ();
 }
 
-static void handler (void *p __attribute__((unused)))
+static void
+handler(void *p __attribute__)
 {
   exit (0);
 }
 
-__attribute__((noinline)) static void callme ()
+__attribute__ static void
+callme(void)
 {
   CFI_ESCAPE;
   force_unwind ();
 }
 
-__attribute__((noinline)) static void doit ()
+__attribute__ static void
+doit(void)
 {
   char dummy __attribute__((cleanup (handler)));
   callme ();
 }
 
-int main()
+int
+main(void)
 { 
   doit ();
   abort ();

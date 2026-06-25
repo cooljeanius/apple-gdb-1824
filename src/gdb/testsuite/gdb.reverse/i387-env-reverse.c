@@ -9,7 +9,8 @@ float *float_memory;
 long double ldx = 88888888888888888888.88, ldy = 9999999999999999999.99;
 double x = 100.345, y = 25.7789;
 /* marks FPU stack as empty */
-void empty_fpu_stack()
+void
+empty_fpu_stack(void)
 {
   asm ("ffree %st(1) \n\t"
        "ffree %st(2) \n\t"
@@ -21,7 +22,8 @@ void empty_fpu_stack()
 }   
 
 /* initialization of floats */
-void init_floats()
+void
+init_floats(void)
 {
   no1 = 10.45;
   no2 = 20.77;
@@ -37,7 +39,8 @@ void init_floats()
   *(float_memory + 3) = 556.556;
 }
 
-int main()
+int
+main(void)
 {
   init_floats();
   empty_fpu_stack();    /* BEGIN I387-FLOAT-REVERSE */  

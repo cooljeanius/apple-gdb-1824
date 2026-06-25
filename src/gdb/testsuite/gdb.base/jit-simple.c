@@ -27,11 +27,13 @@ int spacer = 4;
 
 struct jit_descriptor __jit_debug_descriptor = { 1, 0, 0, 0 };
 
-void __jit_debug_register_code()
+void
+__jit_debug_register_code(void)
 {
 }
 
-int main()
+int
+main(void)
 {
   return 0;
 }

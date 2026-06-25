@@ -50,10 +50,8 @@ static int ready_fd = EXP_SPAWN_ID_BAD;
 static int ready_mask;
 static int default_mask = TCL_READABLE | TCL_EXCEPTION;
 
-
 void
-exp_event_disarm(fd)
-int fd;
+exp_event_disarm(int fd)
 {
 #if TCL_MAJOR_VERSION < 8
 	Tcl_DeleteFileHandler(exp_fs[fd].Master);
@@ -87,8 +85,7 @@ Tcl_FileProc *filehandler;
 }
 
 static void
-exp_arm_background_filehandler_force(m)
-int m;
+exp_arm_background_filehandler_force(int m)
 {
 #if TCL_MAJOR_VERSION < 8
 	Tcl_CreateFileHandler(exp_fs[m].Master,
@@ -103,8 +100,7 @@ int m;
 }
 
 void
-exp_arm_background_filehandler(m)
-int m;
+exp_arm_background_filehandler(int m)
 {
 	switch (exp_fs[m].bg_status) {
 	case unarmed:
@@ -121,8 +117,7 @@ int m;
 }
 
 void
-exp_disarm_background_filehandler(m)
-int m;
+exp_disarm_background_filehandler(int m)
 {
 	switch (exp_fs[m].bg_status) {
 	case blocked:
@@ -143,8 +138,7 @@ int m;
 /* After exp_close returns, we will not have an opportunity to disarm */
 /* because the fd will be invalid, so we force it here. */
 void
-exp_disarm_background_filehandler_force(m)
-int m;
+exp_disarm_background_filehandler_force(int m)
 {
 	switch (exp_fs[m].bg_status) {
 	case blocked:
@@ -162,8 +156,7 @@ int m;
 /* this can only be called at the end of the bg handler in which */
 /* case we know the status is some kind of "blocked" */
 void
-exp_unblock_background_filehandler(m)
-int m;
+exp_unblock_background_filehandler(int m)
 {
 	switch (exp_fs[m].bg_status) {
 	case blocked:
@@ -182,8 +175,7 @@ int m;
 /* this can only be called at the beginning of the bg handler in which */
 /* case we know the status must be "armed" */
 void
-exp_block_background_filehandler(m)
-int m;
+exp_block_background_filehandler(int m)
 {
 	exp_fs[m].bg_status = blocked;
 	exp_event_disarm_fast(m,exp_background_filehandler);
@@ -454,7 +446,7 @@ Tcl_Interp *interp;
 
 /* set things up for later calls to event handler */
 void
-exp_init_event()
+exp_init_event(void)
 {
 	exp_event_exit = exp_event_exit_real;
 }

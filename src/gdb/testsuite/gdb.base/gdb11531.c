@@ -29,7 +29,7 @@ struct rec
 static struct rec myrec;
 
 int
-main ()
+main(void)
 {
   myrec.x = 5;
   myrec.y = 3.4;

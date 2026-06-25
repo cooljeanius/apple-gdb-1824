@@ -1,8 +1,8 @@
 /* cplus-dem.c
-   Demangler for GNU C++ 
+   Demangler for GNU C++
    Copyright (C) 1989 Free Software Foundation, Inc.
    written by James Clark (jjc@jclark.uucp)
-   
+
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
@@ -27,7 +27,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 /* This file exports one function
 
    char *cplus_demangle (const char *name, int mode)
-   
+
    If NAME is a mangled function name produced by GNU C++, then
    a pointer to a malloced string giving a C++ representation
    of the name will be returned; otherwise NULL will be returned.
@@ -39,7 +39,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
    If MODE >= 0, parameters are emitted; otherwise not.
 
    For example,
-   
+
    cplus_demangle ("foo__1Ai",  0)	=> "A::foo(int)"
    cplus_demangle ("foo__1Ai",  1)	=> "A::foo(int)"
    cplus_demangle ("foo__1Ai", -1)	=> "A::foo"
@@ -69,8 +69,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <strings.h>
 #define memcpy(s1, s2, n) bcopy ((s2), (s1), (n))
 #define memcmp(s1, s2, n) bcmp ((s2), (s1), (n))
-#define strchr index 
-#define strrchr rindex
+# define strchr index
+# define strrchr rindex
 #endif
 
 /* This is '$' on systems where the assembler can deal with that.
@@ -203,8 +203,7 @@ static void remember_type ();
 /* Takes operator name as e.g. "++" and returns mangled
    operator name (e.g. "postincrement_expr"), or NULL if not found.  */
 char *
-cplus_mangle_opname (opname)
-     char *opname;
+cplus_mangle_opname(char *opname)
 {
   int i, len = strlen (opname);
 
@@ -218,9 +217,7 @@ cplus_mangle_opname (opname)
 }
 
 char *
-cplus_demangle (type, arg_mode)
-     const char *type;
-     int arg_mode;
+cplus_demangle(const char *type, int arg_mode)
 {
   string decl;
   int n;
@@ -382,9 +379,7 @@ cplus_demangle (type, arg_mode)
 }
 
 static int
-get_count (type, count)
-     const char **type;
-     int *count;
+get_count(const char **type, int *count)
 {
   if (!isdigit (**type))
     return 0;
@@ -395,12 +390,12 @@ get_count (type, count)
     {
       const char *p = *type;
       int n = *count;
-      do 
+      do
 	{
 	  n *= 10;
 	  n += *p - '0';
 	  p += 1;
-	} 
+	}
       while (isdigit (*p));
       if (*p == '_')
 	{
@@ -414,10 +409,7 @@ get_count (type, count)
 /* result will be initialised here; it will be freed on failure */
 
 static int
-do_type (type, result, arg_mode)
-     const char **type;
-     string *result;
-     int arg_mode;
+do_type(const char **type, string *result, int arg_mode)
 {
   int n;
   int done;
@@ -498,7 +490,7 @@ do_type (type, result, arg_mode)
 		n *= 10;
 		n += **type - '0';
 		*type += 1;
-	      } 
+	      }
 	    while (isdigit (**type));
 	    if (strlen (*type) < n)
 	      {
@@ -739,10 +731,7 @@ do_type (type, result, arg_mode)
 /* `result' will be initialised in do_type; it will be freed on failure */
 
 static int
-do_arg (type, result, arg_mode)
-     const char **type;
-     string *result;
-     int arg_mode;
+do_arg(const char **type, string *result, int arg_mode)
 {
   const char *start = *type;
 
@@ -753,9 +742,7 @@ do_arg (type, result, arg_mode)
 }
 
 static void
-remember_type (start, len)
-     const char *start;
-     int len;
+remember_type(const char *start, int len)
 {
   char *tem;
 
@@ -782,10 +769,7 @@ remember_type (start, len)
    it won't be freed on failure */
 
 static int
-do_args (type, decl, arg_mode)
-     const char **type;
-     string *decl;
-     int arg_mode;
+do_args(const char **type, string *decl, int arg_mode)
 {
   string arg;
   int need_comma = 0;
@@ -847,12 +831,10 @@ do_args (type, decl, arg_mode)
 }
 
 static void
-munge_function_name (name, arg_mode)
-     string *name;
-     int arg_mode;
+munge_function_name(string *name, int arg_mode)
 {
-  if (!string_empty (name) && name->p - name->b >= 3 
-      && name->b[0] == 'o' && name->b[1] == 'p' && name->b[2] == CPLUS_MARKER)
+  if (!string_empty(name) && name->p - name->b >= 3 && name->b[0] == 'o'
+      && name->b[1] == 'p' && name->b[2] == CPLUS_MARKER)
     {
       int i;
       /* see if it's an assignment expression */
@@ -878,8 +860,8 @@ munge_function_name (name, arg_mode)
 	  for (i = 0; i < sizeof (optable)/sizeof (optable[0]); i++)
 	    {
 	      int len = name->p - name->b - 3;
-	      if (strlen (optable[i].in) == len 
-		  && memcmp (optable[i].in, name->b + 3, len) == 0)
+	      if (strlen(optable[i].in) == len
+		  && memcmp(optable[i].in, name->b + 3, len) == 0)
 		{
 		  string_clear (name);
 		  string_append (name, "operator");
@@ -910,9 +892,7 @@ munge_function_name (name, arg_mode)
 /* a mini string-handling package */
 
 static void
-string_need (s, n)
-     string *s;
-     int n;
+string_need(string *s, int n)
 {
   if (s->b == NULL)
     {
@@ -933,8 +913,7 @@ string_need (s, n)
 }
 
 static void
-string_delete (s)
-     string *s;
+string_delete(string *s)
 {
   if (s->b != NULL)
     {
@@ -944,35 +923,31 @@ string_delete (s)
 }
 
 static void
-string_init (s)
-     string *s;
+string_init(string *s)
 {
   s->b = s->p = s->e = NULL;
 }
 
-static void 
-string_clear (s)
-     string *s;
+static void
+string_clear(string *s)
 {
   s->p = s->b;
 }
 
 static int
-string_empty (s)
-     string *s;
+string_empty(string *s)
 {
   return s->b == s->p;
 }
 
 static void
-string_append (p, s)
-     string *p;
-     const char *s;
+string_append(string *p, const char *s)
 {
   int n;
-	if (s == NULL || *s == '\0') {
-		return;
-	}
+  if (s == NULL || *s == '\0')
+    {
+      return;
+    }
   n = strlen (s);
   string_need (p, n);
   memcpy (p->p, s, n);
@@ -980,13 +955,13 @@ string_append (p, s)
 }
 
 static void
-string_appends (p, s)
-     string *p, *s;
+string_appends(string *p, string *s)
 {
   int n;
-	if (s->b == s->p) {
-		return;
-	}
+  if (s->b == s->p)
+    {
+      return;
+    }
   n = s->p - s->b;
   string_need (p, n);
   memcpy (p->p, s->b, n);
@@ -994,23 +969,19 @@ string_appends (p, s)
 }
 
 static void
-string_appendn (p, s, n)
-     string *p;
-     const char *s;
-     int n;
+string_appendn(string *p, const char *s, int n)
 {
-	if (n == 0) {
-		return;
-	}
+  if (n == 0)
+    {
+      return;
+    }
   string_need (p, n);
   memcpy (p->p, s, n);
   p->p += n;
 }
 
 static void
-string_prepend (p, s)
-     string *p;
-     const char *s;
+string_prepend(string *p, const char *s)
 {
   if (s == NULL || *s == '\0')
     return;
@@ -1019,8 +990,7 @@ string_prepend (p, s)
 
 #if 0
 static void
-string_prepends (p, s)
-     string *p, *s;
+string_prepends (string *p, string *s)
 {
   if (s->b == s->p)
     return;
@@ -1029,10 +999,7 @@ string_prepends (p, s)
 #endif /* 0 */
 
 static void
-string_prependn (p, s, n)
-     string *p;
-     const char *s;
-     int n;
+string_prependn(string *p, const char *s, int n)
 {
   char *q;
 

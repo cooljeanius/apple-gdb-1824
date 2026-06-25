@@ -54,7 +54,7 @@ int nspertp = 0;
    a bunch of system time).  */
 
 unsigned long long
-myclock ()
+myclock(void)
 {
   struct timeval tm, tm2;
   struct rusage ru;

@@ -96,7 +96,7 @@ fill_structs (void)
 }
 
 int
-main ()
+main(void)
 {
   fill_structs ();
 

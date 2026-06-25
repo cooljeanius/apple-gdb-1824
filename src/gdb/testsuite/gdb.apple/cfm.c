@@ -3,7 +3,8 @@
 
 #include <Carbon/Carbon.h>
 
-void f ()
+void
+f(void)
 {
 	printf("Done loading libraries.\n");
 }

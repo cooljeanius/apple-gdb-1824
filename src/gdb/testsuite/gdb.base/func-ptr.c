@@ -16,7 +16,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 void
-bar ()
+bar(void)
 {
 }
 
@@ -24,7 +24,7 @@ typedef void foo (void);
 foo *pbar = bar;
 
 int
-main ()
+main(void)
 {
   return 0;
 }

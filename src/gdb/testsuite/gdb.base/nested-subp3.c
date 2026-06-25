@@ -59,7 +59,7 @@ parent (int first, callback_t cb)
 }
 
 int
-main ()
+main(void)
 {
   parent (1, NULL);
   return 0;

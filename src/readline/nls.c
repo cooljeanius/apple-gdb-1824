@@ -126,8 +126,7 @@ _rl_init_eightbit(void)
 
 #if !defined (HAVE_SETLOCALE)
 static char *
-normalize_codeset (codeset)
-     char *codeset;
+normalize_codeset(char *codeset)
 {
   size_t namelen, i;
   int len, all_digits;
@@ -173,9 +172,7 @@ normalize_codeset (codeset)
 
 /* Isolate codeset portion of locale specification. */
 static char *
-find_codeset (name, lenp)
-     char *name;
-     size_t *lenp;
+find_codeset(char *name, size_t *lenp)
 {
   char *cp, *language, *result;
 

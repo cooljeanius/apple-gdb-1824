@@ -40,7 +40,8 @@ enum {
   itimer_virtual = ITIMER_VIRTUAL
 } itimer = ITIMER_VIRTUAL;
 
-main ()
+int
+main(void)
 {
 
   /* Set up the signal handler.  */

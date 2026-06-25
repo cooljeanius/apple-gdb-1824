@@ -24,7 +24,8 @@ foo (int first, long long second, int third, long long fourth, int fifth, long l
 
 }
 
-int main ()
+int
+main(void)
 {
   long long blubby;
 

@@ -45,9 +45,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include "gdbcmd.h"
 
-exec_file_command (filename, from_tty)
-     char *filename;
-     int from_tty;
+int
+exec_file_command(char *filename, int from_tty)
 {
   int val;
   int n;
@@ -240,7 +239,8 @@ xfer_core_file (memaddr, myaddr, len)
 
 /* Here from info files command to print an address map.  */
 
-print_maps ()
+int
+print_maps(void)
 {
   struct pmap ptrs[200];
   int n;
@@ -286,8 +286,7 @@ print_maps ()
    Sort into increasing order on address, and put core file sections
    before exec file sections if both files contain the same addresses.  */
 
-static ptr_cmp (a, b)
-     struct pmap *a, *b;
+static ptr_cmp(struct pmap *a, struct pmap *b)
 {
   if (a->mem_addr != b->mem_addr) return a->mem_addr - b->mem_addr;
   return a->which - b->which;
@@ -307,8 +306,7 @@ static ptr_cmp (a, b)
 /* Return 1 if NAME is a trapped internal variable, else 0. */
 
 int
-is_trapped_internalvar (name)
-     char *name;
+is_trapped_internalvar(char *name)
 {
     if ((name[0] == 'c' || name[0] == 'C')
 	&& name[1] >= '0' && name[1] <= '9'
@@ -392,9 +390,7 @@ value_of_trapped_internalvar (var)
    array[LENGTH] of ELEMENT_TYPE.  */
 
 static struct type *
-vector_type (element_type, length)
-     struct type *element_type;
-     long length;
+vector_type(struct type *element_type, long length)
 {
   struct type *type = (struct type *) xmalloc (sizeof (struct type));
   bzero (type, sizeof type);
@@ -478,8 +474,7 @@ decout (stream, type, val)
    formats to apply to aggregates, but is still handy occasionally.  */
 
 static void
-set_base_command (arg)
-    char *arg;
+set_base_command(char *arg)
 {
   int new_radix;
 
@@ -497,8 +492,7 @@ set_base_command (arg)
 /* Turn pipelining on or off in the inferior. */
 
 static void
-set_pipelining_command (arg)
-    char *arg;
+set_pipelining_command(char *arg)
 {
   if (!arg)
     {
@@ -516,8 +510,7 @@ set_pipelining_command (arg)
 /* Enable, disable, or force parallel execution in the inferior.  */
 
 static void
-set_parallel_command (arg)
-     char *arg;
+set_parallel_command(char *arg)
 {
   struct rlimit rl;
   int prevparallel = parallel;
@@ -546,8 +539,7 @@ set_parallel_command (arg)
 /* Add a new name for an existing command.  */
 
 static void
-alias_command (arg)
-    char *arg;
+alias_command(char *arg)
 {
     static char *aliaserr = "usage is `alias NEW OLD', no args allowed";
     char *newname = arg;
@@ -604,7 +596,8 @@ alias_command (arg)
 /* Print the current thread number, and any threads with signals in the
    queue.  */
 
-thread_info ()
+int
+thread_info(void)
 {
   struct threadpid *p;
 
@@ -632,8 +625,8 @@ thread_info ()
 }
 
 /* Return string describing a signal.subcode number: */
-static char *subsig_name(signo, subcode)
-     int signo, subcode;
+static char *
+subsig_name(int signo, int subcode)
 {
   static char *subsig4[] = {
     "error exit", "privileged instruction", "unknown",
@@ -684,7 +677,7 @@ static char *subsig_name(signo, subcode)
    for all active threads.  */
 
 static void
-threadstat ()
+threadstat(void)
 {
   int t;
 
@@ -702,8 +695,8 @@ threadstat ()
 
 /* Change the current thread to ARG.  */
 
-set_thread_command (arg)
-     char *arg;
+int
+set_thread_command(char *arg)
 {
     int thread;
 
@@ -734,9 +727,7 @@ set_thread_command (arg)
    mind.  */
 
 static void
-convex_cont_command (proc_count_exp, from_tty)
-     char *proc_count_exp;
-     int from_tty;
+convex_cont_command(char *proc_count_exp, int from_tty)
 {
   all_continue = 1;
   cont_command (proc_count_exp, from_tty);
@@ -744,9 +735,8 @@ convex_cont_command (proc_count_exp, from_tty)
 
 /* Here on 1CONT command.  Resume only the current thread.  */
 
-one_cont_command (proc_count_exp, from_tty)
-     char *proc_count_exp;
-     int from_tty;
+int
+one_cont_command(char *proc_count_exp, int from_tty)
 {
   cont_command (proc_count_exp, from_tty);
 }
@@ -755,8 +745,8 @@ one_cont_command (proc_count_exp, from_tty)
    or just register ARG if ARG is a communication register,
    or the 3-word resource structure in memory at address ARG.  */
 
-comm_registers_info (arg)
-    char *arg;
+int
+comm_registers_info(char *arg)
 {
   int i, regnum;
 
@@ -807,8 +797,7 @@ comm_registers_info (arg)
 /* Print the psw */
 
 static void
-psw_info (arg)
-    char *arg;
+psw_info(char *arg)
 {
   struct pswbit
     {
@@ -865,8 +854,9 @@ psw_info (arg)
 			 (psw & p->bit) >> p->pos, p->text);
     }
 }
-
-_initialize_convex_dep ()
+
+int
+_initialize_convex_dep(void)
 {
   add_com ("alias", class_support, alias_command,
 	   "Add a new name for an existing command.");

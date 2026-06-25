@@ -22,7 +22,7 @@
 extern int hithere2 ();
 
 int
-main()
+main(void)
 {
   hithere2();
   return 0;

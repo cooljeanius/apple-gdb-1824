@@ -10,9 +10,9 @@ vector_fun (vector unsigned int a, vector unsigned int b)
   c = vec_add (a, b);
   return c;
 }
- 
+
 int
-main ()
+main(void)
 {
   vector unsigned int y; 
   vector unsigned int x; 

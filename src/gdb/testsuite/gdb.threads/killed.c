@@ -33,7 +33,7 @@ child_func (void *dummy)
 }
 
 int
-main ()
+main(void)
 {
   pthread_t child;
 

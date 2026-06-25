@@ -1,4 +1,4 @@
-/* Target-machine dependent code for the AMD 29000
+/* a29k-tdep.c: Target-machine dependent code for the AMD 29000
    Copyright 1990, 1991, 1992, 1993, 1994, 1995
    Free Software Foundation, Inc.
    Contributed by Cygnus Support.  Written by Jim Kingdon.
@@ -45,9 +45,7 @@ static CORE_ADDR rstack_high_address = UINT_MAX;
 /* Should call_function allocate stack space for a struct return?  */
 /* On the a29k objects over 16 words require the caller to allocate space.  */
 int
-a29k_use_struct_convention (gcc_p, type)
-     int gcc_p;
-     struct type *type;
+a29k_use_struct_convention(int gcc_p, struct type *type)
 {
   return (TYPE_LENGTH (type) > 16 * 4);
 }
@@ -66,7 +64,7 @@ struct prologue_info
 };
 
 /* Examine the prologue of a function which starts at PC.  Return
-   the first addess past the prologue.  If MSIZE is non-NULL, then
+   the first address past the prologue.  If MSIZE is non-NULL, then
    set *MSIZE to the memory stack frame size.  If RSIZE is non-NULL,
    then set *RSIZE to the register stack frame size (not including
    incoming arguments and the return address & frame pointer stored
@@ -396,9 +394,7 @@ examine_tag (p, is_trans, argcount, msize, mfp_used)
    of stacks and the frame cache in tm-a29k.h for more detail.  */
 
 static void
-init_frame_info (innermost_frame, frame)
-     int innermost_frame;
-     struct frame_info *frame;
+init_frame_info(int innermost_frame, struct frame_info *frame)
 {
   CORE_ADDR p;
   long insn;
@@ -415,7 +411,7 @@ init_frame_info (innermost_frame, frame)
     frame->frame = frame->next->frame + frame->next->rsize;
   
 #if 0 /* CALL_DUMMY_LOCATION == ON_STACK */
-  This wont work;
+# error "This will fail"
 #else
   if (PC_IN_CALL_DUMMY (p, 0, 0))
 #endif
@@ -502,8 +498,7 @@ init_frame_info (innermost_frame, frame)
 }
 
 void
-init_extra_frame_info (frame)
-     struct frame_info *frame;
+init_extra_frame_info(struct frame_info *frame)
 {
   if (frame->next == 0)
     /* Assume innermost frame.  May produce strange results for "info frame"
@@ -517,9 +512,7 @@ init_extra_frame_info (frame)
 }
 
 void
-init_frame_pc (fromleaf, frame)
-     int fromleaf;
-     struct frame_info *frame;
+init_frame_pc(int fromleaf, struct frame_info *frame)
 {
   frame->pc = (fromleaf ? SAVED_PC_AFTER_CALL (frame->next) :
 	     frame->next ? FRAME_SAVED_PC (frame->next) : read_pc ());
@@ -757,7 +750,7 @@ a29k_get_saved_register (raw_buffer, optimized, addrp, frame, regnum, lvalp)
    restoring all saved registers.  */
 
 void
-pop_frame ()
+pop_frame(void)
 {
   struct frame_info *frame = get_current_frame ();
   CORE_ADDR rfb = read_register (RFB_REGNUM);		      
@@ -819,8 +812,8 @@ pop_frame ()
 
 /* Push an empty stack frame, to record the current PC, etc.  */
 
-void 
-push_dummy_frame ()
+void
+push_dummy_frame(void)
 {
   long w;
   CORE_ADDR rab, gr1;
@@ -947,7 +940,7 @@ gdb_print_insn_a29k (memaddr, info)
 enum a29k_processor_types processor_type = a29k_unknown;
 
 void
-a29k_get_processor_type ()
+a29k_get_processor_type(void)
 {
   unsigned int cfg_reg = (unsigned int) read_register (CFG_REGNUM);
 
@@ -1015,7 +1008,7 @@ get_longjmp_target(pc)
 #endif /* GET_LONGJMP_TARGET */
 
 void
-_initialize_a29k_tdep ()
+_initialize_a29k_tdep(void)
 {
   extern CORE_ADDR text_end;
 

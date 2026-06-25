@@ -23,18 +23,20 @@
 int i = 0;
 
 void
-small_frame ()
+small_frame(void)
 {
   i++; /* set breakpoint here */
 }
 
-void medium_frame ()
+void
+medium_frame(void)
 {
   char S [16384];
   small_frame ();
 }
 
-void big_frame ()
+void
+big_frame(void)
 {
 #ifdef __SPU__
   char S [131072];
@@ -45,7 +47,7 @@ void big_frame ()
 }
 
 void
-main ()
+main(void)
 {
   small_frame ();
   medium_frame ();

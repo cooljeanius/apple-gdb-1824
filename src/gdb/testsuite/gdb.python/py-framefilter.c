@@ -146,7 +146,8 @@ int func5(int f, int d)
   return i;
 }
 
-main()
+int
+main(void)
 {
   int z = 32;
   int y = 44;

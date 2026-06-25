@@ -26,7 +26,7 @@ struct object
 } varobject = { 1 };
 
 int
-main ()
+main(void)
 {
   return 0;
 }

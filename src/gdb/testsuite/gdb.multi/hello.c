@@ -19,9 +19,14 @@ short hglob = 1;
 
 short glob = 92;
 
-int commonfun() { bar(); } /* from hello */
+int
+commonfun(void)
+{
+  bar();
+} /* from hello */
 
-bar()
+int
+bar(void)
 {
   if (glob == 0)
     exit(1);
@@ -33,7 +38,8 @@ hello(int x)
   return x + 45;
 }
 
-main()
+int
+main(void)
 {
   int tmpx;
 

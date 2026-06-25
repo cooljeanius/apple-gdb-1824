@@ -22,7 +22,7 @@ dummy_1 (int a, int b, int c)
 }
 
 int
-main ()
+main(void)
 {
   return 0;
 }

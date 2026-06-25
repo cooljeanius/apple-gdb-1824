@@ -49,9 +49,9 @@ EXTERN int		Tktest_Init _ANSI_ARGS_((Tcl_Interp *interp));
  */
 
 int
-main(argc, argv)
-    int argc;			/* Number of command-line arguments. */
-    char **argv;		/* Values of command-line arguments. */
+main(int argc,   /* Number of command-line arguments. */
+     char **argv /* Values of command-line arguments. */
+)
 {
     Tk_Main(argc, argv, Tcl_AppInit);
     return 0;			/* Needed only to prevent compiler warning. */

@@ -34,7 +34,8 @@ void *thread_func (void *arg)
   return 0;
 }
 
-int main()
+int
+main(void)
 {
   pthread_t thr;
   void *ret;

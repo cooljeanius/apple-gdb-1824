@@ -33,7 +33,8 @@ DEF_BBIT_TAKEN (1, 49);
 
 #define EXPECT(X) if (!(X)) abort ();
 
-main ()
+int
+main(void)
 {
   EXPECT (bbit_is_taken_0_10 (&taken_0_10));
   EXPECT (!bbit_is_taken_0_10 (&not_taken_0_10));

@@ -3,7 +3,7 @@ typedef struct _NSSize { float width; float height; } NSSize;
 typedef struct _NSRect { NSPoint origin; NSSize size; } NSRect;
 
 int
-main ()
+main(void)
 {
   int a = getpid ();
   NSRect b;

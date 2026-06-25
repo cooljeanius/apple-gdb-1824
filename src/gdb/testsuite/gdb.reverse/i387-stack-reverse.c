@@ -1,9 +1,12 @@
+/* i387-stack-reverse.c */
+
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
 
 /* marks FPU stack as empty */
-void empty_fpu_stack()
+void
+empty_fpu_stack(void)
 {
   asm ("ffree %st(1) \n\t"
        "ffree %st(2) \n\t"
@@ -12,15 +15,17 @@ void empty_fpu_stack()
        "ffree %st(5) \n\t"
        "ffree %st(6) \n\t"
        "ffree %st(7)");
-}   
-
-/* tests floating point arithmatic */
-void test_arith_floats()
-{
-  
 }
 
-int main()
+/* tests floating point arithmetic */
+void
+test_arith_floats(void)
+{
+  /* TODO: implement this */
+}
+
+int
+main(void)
 {
   empty_fpu_stack();    /* BEGIN I387-FLOAT-REVERSE */
   

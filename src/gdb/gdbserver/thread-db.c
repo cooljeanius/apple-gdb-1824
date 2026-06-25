@@ -173,7 +173,7 @@ thread_db_death_event (CORE_ADDR where)
 #endif /* 0 */
 
 static int
-thread_db_enable_reporting ()
+thread_db_enable_reporting(void)
 {
   td_thr_events_t events;
   td_notify_t notify;
@@ -329,7 +329,7 @@ thread_db_look_up_symbols (void)
 }
 
 int
-thread_db_init ()
+thread_db_init(void)
 {
   int err;
 

@@ -103,9 +103,8 @@ open_context_file (int context_fd, char *name, int flags)
   return open (buf, flags);
 }
 
-
 int
-do_event_test ()
+do_event_test(void)
 {
   spu_write_event_mask (MFC_MULTI_SRC_SYNC_EVENT); /* 0x1000 */  /* Marker Event */
   spu_write_event_mask (MFC_PRIV_ATTN_EVENT); /* 0x0800 */
@@ -124,7 +123,7 @@ do_event_test ()
 }
 
 int
-do_dma_test ()
+do_dma_test(void)
 {
   #define MAP_FAILED      (-1ULL)
   #define PROT_READ       0x1
@@ -165,7 +164,7 @@ do_dma_test ()
 }
 
 int
-do_mailbox_test ()
+do_mailbox_test(void)
 {
   /* Write to SPU Outbound Mailbox.  */
   if (spu_stat_out_mbox ())            /* Marker Mbox */
@@ -179,7 +178,7 @@ do_mailbox_test ()
 }
 
 int
-do_signal_test ()
+do_signal_test(void)
 {
   struct stat fdstat;
   int context_fd = find_context_fd ();

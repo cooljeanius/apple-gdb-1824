@@ -18,13 +18,13 @@
 #include "solib-search.h"
 
 int
-main ()
+main(void)
 {
   lib1_func1 ();
   return 0;
 }
 
 void
-break_here ()
+break_here(void)
 {
 }

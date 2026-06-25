@@ -14,9 +14,9 @@ vector_fun (vector int a, vector int b)
   c = __ev_and (a, b);
   return c;
 }
- 
+
 int
-main ()
+main(void)
 {
   vector int y; 
   vector int x; 

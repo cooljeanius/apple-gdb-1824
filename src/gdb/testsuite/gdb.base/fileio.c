@@ -69,7 +69,7 @@ static const char *strerrno (int err);
 #define STRING      "Hello World"
 
 int
-test_open ()
+test_open(void)
 {
   int ret;
 
@@ -119,7 +119,7 @@ test_open ()
 }
 
 int
-test_write ()
+test_write(void)
 {
   int fd, ret;
 
@@ -156,7 +156,7 @@ test_write ()
 }
 
 int
-test_read ()
+test_read(void)
 {
   int fd, ret;
   char buf[16];
@@ -186,7 +186,7 @@ test_read ()
 }
 
 int
-test_lseek ()
+test_lseek(void)
 {
   int fd;
   off_t ret = 0;
@@ -221,7 +221,7 @@ test_lseek ()
 }
 
 int
-test_close ()
+test_close(void)
 {
   int fd, ret;
 
@@ -245,7 +245,7 @@ test_close ()
 }
 
 int
-test_stat ()
+test_stat(void)
 {
   int ret;
   struct stat st;
@@ -276,7 +276,7 @@ test_stat ()
 }
 
 int
-test_fstat ()
+test_fstat(void)
 {
   int fd, ret;
   struct stat st;
@@ -305,7 +305,7 @@ test_fstat ()
 }
 
 int
-test_isatty ()
+test_isatty(void)
 {
   int fd;
 
@@ -326,9 +326,8 @@ test_isatty ()
     printf ("isatty 5: file couldn't open\n");
 }
 
-
 int
-test_system ()
+test_system(void)
 {
   /*
    * Requires test framework to switch on "set remote system-call-allowed 1"
@@ -349,7 +348,7 @@ test_system ()
 }
 
 int
-test_rename ()
+test_rename(void)
 {
   int ret;
   struct stat st;
@@ -397,7 +396,7 @@ test_rename ()
 }
 
 int
-test_unlink ()
+test_unlink(void)
 {
   int ret;
   char name[256];
@@ -436,7 +435,7 @@ test_unlink ()
 }
 
 int
-test_time ()
+test_time(void)
 {
   time_t ret, t;
 
@@ -487,7 +486,7 @@ strerrno (int err)
 }
 
 int
-main ()
+main(void)
 {
   /* Don't change the order of the calls.  They partly depend on each other */
   test_open ();

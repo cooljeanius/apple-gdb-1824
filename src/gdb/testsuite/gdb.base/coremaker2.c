@@ -71,7 +71,8 @@ func1 (int x)
   func2 (x * 2);
 }
 
-int main ()
+int
+main(void)
 {
   func1 (10);
   return 0;

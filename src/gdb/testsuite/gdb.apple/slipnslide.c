@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <mach-o/dyld.h>
 
-int main ()
+int
+main(void)
 {
 
   fputs ("hi\n", stdout);

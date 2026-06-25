@@ -182,7 +182,7 @@ struct string_repr string_1 = { { "one" } };
 struct string_repr string_2 = { { "two" } };
 
 int
-main ()
+main(void)
 {
   struct ss  ss;
   struct ss  ssa[2];

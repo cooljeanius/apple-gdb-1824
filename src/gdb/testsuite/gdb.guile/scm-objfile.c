@@ -16,7 +16,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 int
-main ()
+main(void)
 {
   int some_var = 0;
   return 0;

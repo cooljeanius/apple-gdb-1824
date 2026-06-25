@@ -17,7 +17,8 @@
 /* Bleah!! */
 int remote_debug = 0;
 
-int main()
+int
+main(void)
 {
   set_debug_traps();
   breakpoint();

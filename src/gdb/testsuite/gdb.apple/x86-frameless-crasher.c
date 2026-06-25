@@ -1,6 +1,7 @@
 #include <stdio.h>
 
-int foo3 (arg)
+int
+foo3(int arg)
 {
   char *foo = (char *) 0x0;
   int i = 10;

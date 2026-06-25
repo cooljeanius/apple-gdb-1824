@@ -18,12 +18,12 @@
 /* http://sourceware.org/bugzilla/show_bug.cgi?id=14643 */
 
 static void
-thread ()
+thread(void)
 {
 }
 
 int
-main ()
+main(void)
 {
   int x = 0;
   thread (); /* set breakpoint 1 here */

@@ -42,8 +42,8 @@ static i386_follow_jump ();
 #include <sgtty.h>
 #define TERMINAL struct sgttyb
 
-store_inferior_registers(regno)
-int regno;
+int
+store_inferior_registers(int regno)
 {
   struct pt_regset regs;
   int reg_tmp, i;
@@ -113,7 +113,7 @@ int regno;
 }
 
 void
-fetch_inferior_registers()
+fetch_inferior_registers(void)
 {
     int i;
     struct pt_regset regs;
@@ -152,9 +152,7 @@ fetch_inferior_registers()
 #include "gdbcore.h"
 
 void
-core_file_command (filename, from_tty)
-     char *filename;
-     int from_tty;
+core_file_command(char *filename, int from_tty)
 {
   int val;
   extern char registers[];
@@ -246,9 +244,7 @@ printf("u.u_tsize= %#x, u.u_dsize= %#x, u.u_ssize= %#x, stack_off= %#x\n",
 }
 
 /* from i386-dep.c */
-static
-print_387_control_word (control)
-unsigned short control;
+static print_387_control_word(int control)
 {
   printf ("control 0x%04x: ", control);
   printf ("compute to ");
@@ -283,9 +279,7 @@ unsigned short control;
 				control & 0xe080);
 }
 
-static
-print_387_status_word (status)
-     unsigned short status;
+static print_387_status_word(int status)
 {
   printf ("status %#04x: ", status);
   if (status & 0xff) {
@@ -308,9 +302,7 @@ print_387_status_word (status)
   printf ("top %d\n", (status >> 11) & 7);
 }
 
-static
-print_fpu_status(ep)
-struct pt_regset ep;
+static print_fpu_status(struct pt_regset ep)
 
 {
     int i;
@@ -367,9 +359,8 @@ struct pt_regset ep;
 	printf ("warning: rsvd5 is 0x%x\n", ep.pr_fpu.fpu_rsvd5);
 }
 
-
-print_1167_control_word(pcr)
-unsigned int pcr;
+int
+print_1167_control_word(unsigned int pcr)
 
 {
     int pcr_tmp;
@@ -443,8 +434,8 @@ unsigned int pcr;
     printf("\n");
 }
 
-print_1167_regs(regs)
-long regs[FPA_NREGS];
+int
+print_1167_regs(long regs[FPA_NREGS])
 
 {
     int i;
@@ -472,8 +463,8 @@ long regs[FPA_NREGS];
     }
 }
 
-print_fpa_status(ep)
-struct pt_regset ep;
+int
+print_fpa_status(struct pt_regset ep)
 
 {
 
@@ -487,7 +478,8 @@ struct pt_regset ep;
     }
 }
 
-i386_float_info ()
+int
+i386_float_info(void)
 
 {
     char ubuf[UPAGES*NBPG];
@@ -511,9 +503,8 @@ i386_float_info ()
     print_fpa_status(regset);
 }
 
-i387_to_double (from, to)
-     char *from;
-     char *to;
+int
+i387_to_double(char *from, char *to)
 {
   long *lp;
   /* push extended mode on 387 stack, then pop in double mode
@@ -541,9 +532,8 @@ i387_to_double (from, to)
   asm ("popl %eax");		/* flush saved copy */
 }
 
-double_to_i387 (from, to)
-     char *from;
-     char *to;
+int
+double_to_i387(char *from, char *to)
 {
   /* push double mode on 387 stack, then pop in extended mode
    * no errors are possible because every 64-bit pattern

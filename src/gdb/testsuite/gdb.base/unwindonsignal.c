@@ -22,7 +22,7 @@
 #include <unistd.h>
 
 void
-gen_signal ()
+gen_signal(void)
 {
   /* According to sigall.exp, SIGABRT is always supported.  */
 #ifdef SIGABRT
@@ -35,12 +35,12 @@ gen_signal ()
 /* Easy place to set a breakpoint.  */
 
 void
-stop_here ()
+stop_here(void)
 {
 }
 
 int
-main ()
+main(void)
 {
 #ifdef usestubs
   set_debug_traps ();

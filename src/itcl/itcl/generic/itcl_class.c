@@ -473,8 +473,8 @@ ItclDestroyClassNamesp(cdata)
  * ------------------------------------------------------------------------
  */
 static void
-ItclFreeClass(cdata)
-    char *cdata;  /* class definition to be destroyed */
+ItclFreeClass(char *cdata /* class definition to be destroyed */
+)
 {
     ItclClass *cdefnPtr = (ItclClass*)cdata;
 

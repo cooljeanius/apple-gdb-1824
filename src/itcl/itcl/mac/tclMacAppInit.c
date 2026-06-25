@@ -184,7 +184,7 @@ Tcl_AppInit(
  */
 
 static int
-MacintoshInit()
+MacintoshInit(void)
 {
 #if GENERATING68K && !GENERATINGCFM
     SetApplLimit(GetApplLimit() - (TCL_MAC_68K_STACK_GROWTH));

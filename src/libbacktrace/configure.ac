@@ -35,7 +35,7 @@ dnl# This is a hack because autoconf finds the AC\_INIT from
 dnl# ../config/override.m4 first if it is present, which is annoying.
 dnl# Feel free to re-define to whichever version of autoconf
 dnl# that you are using:
-m4_define([_GCC_AUTOCONF_VERSION],[2.72])
+m4_define([_GCC_AUTOCONF_VERSION],[2.73])
 AC_INIT([libbacktrace],[version-unused],[],[libbacktrace])
 AC_CONFIG_SRCDIR([backtrace.h])dnl
 AC_CONFIG_AUX_DIR([..])dnl
@@ -243,7 +243,7 @@ ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings -Wnested-externs \
 -Wnull-dereference -Wdangling-else -Wduplicate-decl-specifier -Wpointer-arith \
 -Wmemset-elt-size -Wswitch-unreachable -Wexpansion-to-defined -Wpointer-sign \
 -Wshadow-local -Wc99-c11-compat -Wzero-length-bounds -Wfatal-errors \
--fanalyzer],[WARN_FLAGS])dnl
+-Wtrailing-whitespace -fanalyzer],[WARN_FLAGS])dnl
 
 # deal with potential name mismatch:
 if test "x${WARN_FLAGS}" = "x" && test "x${WARN_CFLAGS}" != "x"; then

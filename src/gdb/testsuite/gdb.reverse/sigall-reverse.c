@@ -1163,10 +1163,10 @@ gen_TERM (void)
 {
   kill (getpid (), SIGTERM);
 return 0;
-}  
-
+}
+
 int
-main ()
+main(void)
 {
 #ifdef usestubs
   set_debug_traps ();

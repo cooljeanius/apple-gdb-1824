@@ -18,7 +18,7 @@
 #include "line-symtabs.h"
 
 int
-main ()
+main(void)
 {
   header_function ();
   return 0;

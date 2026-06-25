@@ -356,7 +356,7 @@ static struct serial_ops mac_ops =
 };
 
 void
-_initialize_ser_mac ()
+_initialize_ser_mac(void)
 {
   serial_add_interface (&mac_ops);
 }

@@ -390,7 +390,7 @@ am__v_MFLAG_0 = -s
 am__v_MFLAG_1 = -w
 
 disassemble.lo: disassemble.c $(INCDIR)/dis-asm.h
-	$(AM_V_CC)$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ \
+	$(AM_V_CC)$(LIBTOOL) --tag=CC --mode=compile $(COMPILE) -c @archdefs@ \
 	  $(srcdir)/disassemble.c
 disassemle.o: disassemble.lo
 
@@ -707,7 +707,7 @@ s390-opc.tab: s390-mkopc s390-opc.txt
 	$(AM_V_GEN)./s390-mkopc < $(srcdir)/s390-opc.txt > s390-opc.tab
 
 sh-dis.lo: sh-dis.c sh-opc.h sysdep.h config.h
-	$(AM_V_CC)$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ $<
+	$(AM_V_CC)$(LIBTOOL) --tag=CC --mode=compile $(COMPILE) -c @archdefs@ $<
 sh-dis.o: sh-dis.lo
 
 # This dependency stuff is copied from BFD.

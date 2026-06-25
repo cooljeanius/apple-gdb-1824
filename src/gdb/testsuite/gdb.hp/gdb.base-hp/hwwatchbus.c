@@ -3,7 +3,8 @@
    */
 int *  bogus_p = (int *)3;
 
-int main()
+int
+main(void)
 {
   *bogus_p = 0xdeadbeef;
 }

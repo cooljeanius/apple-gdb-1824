@@ -78,13 +78,10 @@ exp_tty exp_tty_original;
 #define GET_TTYTYPE	0
 #define SET_TTYTYPE	1
 static void
-ttytype(request,fd,ttycopy,ttyinit,s)
-int request;
-int fd;
-		/* following are used only if request == SET_TTYTYPE */
-int ttycopy;	/* if true, copy from /dev/tty */
-int ttyinit;	/* if true, initialize to sane state */
-char *s;	/* stty args */
+ttytype(int request, int fd, int ttycopy, /* if true, copy from /dev/tty */
+	int ttyinit, /* if true, initialize to sane state */
+	char *s /* stty args */
+)
 {
 	static struct	tchars tc;		/* special characters */
 	static struct	ltchars lc;		/* local special characters */
@@ -145,7 +142,7 @@ char *s;	/* stty args */
 }
 
 void
-exp_init_pty()
+exp_init_pty(void)
 {
 	tty_type = & slave_name[strlen("/dev/")];
 	tty_bank = &master_name[strlen("/dev/pty")];
@@ -211,9 +208,7 @@ getptymaster()
 /* see comment in pty_termios.c */
 /*ARGSUSED*/
 void
-exp_slave_control(master,control)
-int master;
-int control;
+exp_slave_control(int master, int control)
 {
 }
 
@@ -242,7 +237,7 @@ char *stty_args;
 }
 
 void
-exp_pty_exit()
+exp_pty_exit(void)
 {
 	/* a stub so we can do weird things on the cray */
 }

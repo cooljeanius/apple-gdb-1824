@@ -86,8 +86,8 @@ fill_run (char string[], int start, int len, int first)
     string[start + i] = first + i;
 }
 
-
-int main ()
+int
+main(void)
 {
 #ifdef usestubs
   set_debug_traps();

@@ -572,10 +572,7 @@ print_insn_arg (d, buffer, p, addr, stream)
    BUFFER contains the instruction.  */
 
 static int
-fetch_arg (buffer, code, bits)
-     unsigned char *buffer;
-     char code;
-     int bits;
+fetch_arg(unsigned char *buffer, int code, int bits)
 {
   register int val;
   switch (code)

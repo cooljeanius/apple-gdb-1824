@@ -1,10 +1,11 @@
-void marker1 ()
+void
+marker1(void)
 {
     
 }
 
-
-int main()
+int
+main(void)
 {
     char C, *pC, **ppC, ***pppC, ****ppppC, *****pppppC, ******ppppppC;
     unsigned char UC, *pUC;

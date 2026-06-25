@@ -24,7 +24,7 @@ func (int local)
 }
 
 int
-main ()
+main(void)
 {
   global_variable = 23;
   return func (23);

@@ -67,7 +67,10 @@ struct jit_descriptor
 };
 
 /* GDB puts a breakpoint in this function.  */
-void __attribute__((noinline)) __jit_debug_register_code () { }
+void
+__jit_debug_register_code(void)
+{
+}
 
 /* Make sure to specify the version statically, because the
    debugger may check the version before we can set it.  */

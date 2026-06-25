@@ -21,7 +21,7 @@ do_nothing (void)
 }
 
 int
-main ()
+main(void)
 {
   int i;
 

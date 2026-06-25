@@ -22,7 +22,8 @@ static int mem3[MEMSIZE];
 static int mem4[MEMSIZE];
 static int mem5[MEMSIZE];
 
-int main()
+int
+main(void)
 {
   return 0;
 }

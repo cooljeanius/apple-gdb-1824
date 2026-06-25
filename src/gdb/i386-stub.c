@@ -566,9 +566,7 @@ putpacket (unsigned char *buffer)
 
 /* FIXME: to transition from old-style, need to use varargs properly */
 void
-debug_error(format, parm)
-     const char *format;
-     char *parm;
+debug_error(const char *format, char *parm)
 {
   if (remote_debug)
     fprintf(stderr, format, parm);

@@ -1,5 +1,6 @@
 __thread int i_tls = 1;
-int foo ()
+int
+foo(void)
 {
   return i_tls;
 }

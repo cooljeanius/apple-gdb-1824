@@ -109,7 +109,7 @@ sse4_test (void)
 } /* end sse4_test */
 
 int
-main ()
+main(void)
 {
   sse_test ();
   ssse3_test ();

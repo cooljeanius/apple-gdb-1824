@@ -66,8 +66,7 @@ static void fetch_core_registers PARAMS ((char *, unsigned, int, CORE_ADDR));
 /* Get all registers from the inferior */
 
 void
-fetch_inferior_registers (regno)
-     int regno;
+fetch_inferior_registers(int regno)
 {
   register unsigned int regaddr;
   char buf[MAX_REGISTER_RAW_SIZE];
@@ -97,8 +96,7 @@ fetch_inferior_registers (regno)
    Otherwise, REGNO specifies which register (so we can save time).  */
 
 void
-store_inferior_registers (regno)
-     int regno;
+store_inferior_registers(int regno)
 {
   register unsigned int regaddr;
   char buf[80];
@@ -238,7 +236,7 @@ static struct core_fns mips_core_fns =
 };
 
 void
-_initialize_core_mips ()
+_initialize_core_mips(void)
 {
   add_core_fns (&mips_core_fns);
 }

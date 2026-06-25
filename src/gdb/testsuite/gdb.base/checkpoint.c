@@ -20,7 +20,8 @@
 
 long lines = 0;
 
-main()
+int
+main(void)
 {
   char linebuf[128];
   FILE *in, *out;

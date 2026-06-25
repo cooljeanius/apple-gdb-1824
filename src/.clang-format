@@ -20,11 +20,11 @@
 # !!! DO NOT BULK REFORMAT FILES !!!
 
 # This style is still in flux and still considered "alpha".
-# Once you have configured your git hooks properly, you ought to be
-# able to use "git clang-format" or the like to reformat just the
-# parts your patch touches -- at most.  At some point in the future
-# we will bulk reformat, and at that point we will send out new
-# instructions.
+# Once you have configured your git hooks properly (how?), you ought
+# to be able to use "git clang-format" or the like to reformat just
+# the parts your patch touches -- at most.  At some point in the
+# future we will bulk reformat, and at that point we will send out
+# new instructions.
 
 # There is currently not a blessed version of clang-format.
 # This was tried with versions 18-21 with various results.
@@ -42,7 +42,7 @@
 # Options here are generally in alphabetical order.
 
 Language: Cpp
-# BasedOnStyle: GNU
+BasedOnStyle: GNU
 AccessModifierOffset: -2
 AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: false
@@ -50,7 +50,8 @@ AlignConsecutiveDeclarations: false
 AlignConsecutiveMacros: false
 AlignEscapedNewlines: Left
 AlignOperands: true
-AlignTrailingComments: true
+AlignTrailingComments:
+  Kind: Leave
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: false
@@ -140,10 +141,12 @@ IncludeBlocks: Preserve
 IndentCaseLabels: false
 # This next setting is incorrect, but that is a clang-format issue.
 IndentGotoLabels: true
-IndentPPDirectives: None
+IndentPPDirectives: AfterHash
 IndentWidth: 2
 IndentWrappedFunctionNames: false
+InsertNewlineAtEOF: true
 KeepEmptyLinesAtTheStartOfBlocks: false
+KeepFormFeed: true
 LineEnding: LF
 # MacroBlockBegin: ''
 # MacroBlockEnd: ''
@@ -163,6 +166,7 @@ PenaltyBreakOpenParenthesis: 100
 # PenaltyExcessCharacter
 # PenaltyReturnTypeOnItsOwnLine
 PointerAlignment: Right
+PPIndentWidth: 1
 # RawStringFormats: [ I don't think we need this ]
 # Should be IndentOnly but that requires clang 20.
 ReflowComments: false
@@ -176,7 +180,7 @@ SpaceBeforeAssignmentOperators: true
 SpaceBeforeCpp11BracedList: true
 SpaceBeforeCtorInitializerColon: true
 SpaceBeforeInheritanceColon: true
-SpaceBeforeParens: Always
+SpaceBeforeParens: ControlStatementsExceptControlMacros
 SpaceBeforeRangeBasedForLoopColon: true
 SpaceBeforeSquareBrackets: false
 SpaceInEmptyBlock: false
@@ -185,7 +189,11 @@ SpacesInAngles: false
 SpacesInContainerLiterals: true
 SpacesInParens: Never
 SpacesInSquareBrackets: false
-Standard: c++17
+Standard: c++03
 TabWidth: 8
 TypenameMacros: [ 'ENUM_BITFIELD' ]
 UseTab: ForContinuationAndIndentation
+WhitespaceSensitiveMacros: [
+  CONCAT2, CONCAT3, CONCAT4, CONCAT5, CONCAT6, STRINGX,
+  XCONCAT2, XCONCAT3, XCONCAT4, XCONCAT5, XCONCAT6
+  ]

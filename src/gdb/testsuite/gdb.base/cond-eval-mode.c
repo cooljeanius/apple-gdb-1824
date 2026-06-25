@@ -34,7 +34,7 @@ bar (int i)
 }
 
 void
-test ()
+test(void)
 {
   foo (1);
   foo (2);
@@ -42,7 +42,7 @@ test ()
 }
 
 int
-main ()
+main(void)
 {
   int i;
 

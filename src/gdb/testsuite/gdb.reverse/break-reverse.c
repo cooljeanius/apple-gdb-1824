@@ -17,19 +17,22 @@
 
 int xyz;
 
-int bar ()
+int
+bar(void)
 {
   xyz = 2; /* break in bar */
   return 1;
 }
 
-int foo ()
+int
+foo(void)
 {
   xyz = 1; /* break in foo */
   return bar ();
 }
 
-int main ()
+int
+main(void)
 {
   xyz = 0;	/* break in main */
   foo ();

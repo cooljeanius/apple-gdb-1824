@@ -44,7 +44,8 @@ UDIHostMemPtr  msg;		/* out -- text of msg */
      UDITerminate() is used to tell the  TIP  that  the
      DFE is finished.
 */
-UDITerminate()
+int
+UDITerminate(void)
 {
 }
 

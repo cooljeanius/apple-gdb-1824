@@ -1070,8 +1070,8 @@ Itcl_ParseVarResolver(interp, name, contextNs, flags, rPtr)
  * ------------------------------------------------------------------------
  */
 static void
-ItclFreeParserCommandData(cdata)
-    char* cdata;  /* client data to be destroyed */
+ItclFreeParserCommandData(char *cdata /* client data to be destroyed */
+)
 {
     ckfree(cdata);
 }

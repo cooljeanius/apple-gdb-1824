@@ -31,7 +31,7 @@ or obtained by writing to the Free Software Foundation, Inc.,
 int nothing = FOO_RET;
 
 int
-foo ()
+foo(void)
 {
   printf ("cos (0.0) = %g\n", (double) cos ((double) 0.0));
   return FOO_RET;

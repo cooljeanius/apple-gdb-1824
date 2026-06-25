@@ -245,7 +245,6 @@ AC_SUBST([YFLAGS_SEP1])dnl
 AC_PROG_LEX([yywrap])
 AM_PROG_LEX dnl# is required by the next 1, but call it explicitly anyways
 AX_PROG_FLEX([
-  # (this is not currently used, but it could be)
   EXTRA_LFLAGS_SEP=''
 ],[
   EXTRA_LFLAGS_SEP='#'
@@ -430,12 +429,14 @@ AC_GETTEXT_SUBCHECKS
 dnl# I forget, why am I not just using AM\_GNU\_GETTEXT?
 dnl# Anyways... continuing with library checks:
 AC_CHECK_LIB([c],[printf])
-AS_IF([test "x${GCC}" = "xyes" && test "x${CC}" != "xclang"],[
+AS_IF([test "x${GCC}" = "xyes" && test "x${CC}" != "xclang" && test -d ../libssp],[
   AC_CHECK_LIB([ssp],[__chk_fail],[],[
     AC_CHECK_LIB([ssp],[__memcpy_chk],[],[
       AC_CHECK_LIB([ssp],[__strcpy_chk],[],[])dnl
     ])dnl
   ])dnl
+],[
+  AC_MSG_NOTICE([skipping checks for libssp])dnl
 ])dnl
   ## check arch when "main()" is the only function for which we check:
 ARCHLESS_LDFLAGS="${LDFLAGS}"
@@ -790,9 +791,13 @@ AC_CHECK_FUNCS([atexit bindtextdomain ctime dcgettext dirname dup2 expandargv \
 AC_SEARCH_LIBS([fcntl],[fcntl posix unix compat gcc gcc_s crt iberty c gnu])dnl
 AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu mingwex msvcrt ucrt ucrtbase])dnl
 AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu mingwex msvcrt ucrt ucrtbase])dnl
-AC_SEARCH_LIBS([__chk_fail],[ssp gcc iberty c gnu])dnl
-AC_SEARCH_LIBS([__memcpy_chk],[ssp gcc iberty c gnu])dnl
-AC_SEARCH_LIBS([__strcpy_chk],[ssp gcc iberty c gnu])dnl
+AS_IF([test "x${GCC}" = "xyes" && test "x${CC}" != "xclang" && test -d ../libssp],[
+  AC_SEARCH_LIBS([__chk_fail],[ssp gcc iberty c gnu])dnl
+  AC_SEARCH_LIBS([__memcpy_chk],[ssp gcc iberty c gnu])dnl
+  AC_SEARCH_LIBS([__strcpy_chk],[ssp gcc iberty c gnu])dnl
+],[
+  AC_MSG_NOTICE([skipping checks for symbols usually found in libssp])dnl
+])dnl
 
 dnl# possible alternatives to mktemp():
 AC_CHECK_FUNC([mkstemp],

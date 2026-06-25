@@ -25,9 +25,8 @@ or obtained by writing to the Free Software Foundation, Inc.,
 #include "foo.h"
 #include <stdio.h>
 
-
 int
-main ()
+main(void)
 {
   int value;
 

@@ -470,7 +470,7 @@ tuiDefaultWinViewportHeight (type, layout)
 **        manipulation.
 */
 void
-_initialize_tuiLayout ()
+_initialize_tuiLayout(void)
 {
   if (tui_version)
     {
@@ -1079,10 +1079,9 @@ _showSourceDisassemCommand ()
   return;
 }				/* _showSourceDisassemCommand */
 
-
 /*
 **    _showData().
-**        Show the Source/Data/Command or the Dissassembly/Data/Command layout
+**        Show the Source/Data/Command or the Disassembly/Data/Command layout
 */
 static void
 #ifdef __STDC__
@@ -1277,7 +1276,7 @@ _makeSourceOrDisassemWindow (winInfoPtr, type, height, originY)
   TuiGenWinInfoPtr executionInfo = (TuiGenWinInfoPtr) NULL;
 
   /*
-    ** Create the exeuction info window.
+    ** Create the execution info window.
     */
   if (type == SRC_WIN)
     executionInfo = sourceExecInfoWinPtr ();

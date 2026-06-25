@@ -1783,8 +1783,7 @@ rl_message (va_alist)
 }
 #else /* !USE_VARARGS: */
 int
-rl_message (format, arg1, arg2)
-     char *format;
+rl_message(char *format, int arg1, int arg2)
 {
   sprintf (msg_buf, format, arg1, arg2);
   msg_buf[sizeof(msg_buf) - 1] = '\0';	/* overflow? */

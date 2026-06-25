@@ -21,7 +21,8 @@ uint32_t thirty_two = 7;
 
 uint32_t *thirty_two_p = &thirty_two;
 
-int main ()
+int
+main(void)
 {
   return 0;			/* BREAK */
 }

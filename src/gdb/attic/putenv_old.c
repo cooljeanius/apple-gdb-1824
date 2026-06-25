@@ -70,11 +70,10 @@ char  *malloc();
 /*								*/
 /****************************************************************/
 
+int
+putenv(char *entry)
 
-putenv( entry )
-  char *entry;
-
-  {
+{
   unsigned length;
   unsigned size;
   char     **p;
@@ -117,6 +116,6 @@ putenv( entry )
   environ = new_environ;
 
   return(NULL);
-  }
+}
 
 /* EOF */

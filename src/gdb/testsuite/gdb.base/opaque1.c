@@ -3,7 +3,8 @@ struct foo {
     int b;
 } afoo = { 1, 2};
 
-struct foo *getfoo ()
+struct foo *
+getfoo(void)
 {
     return (&afoo);
 }

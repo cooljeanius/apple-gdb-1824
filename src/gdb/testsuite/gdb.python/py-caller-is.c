@@ -34,7 +34,7 @@ top_func (void)
 }
 
 int
-main ()
+main(void)
 {
   top_func ();
   return 0;

@@ -123,9 +123,21 @@ INT32   hif_gettz PARAMS((UINT32 *gr96, UINT32 *gr97));
 #ifdef	MSDOS
 /* Stub out functions not available in MS-DOS */
 int   ioctl(int x, int y);
-int   ioctl(x, y) int x; int y; {return(0);}
-void  kbd_raw()     {return;}
-void  kbd_restore() {return;}
+int
+ioctl(int x, int y)
+{
+  return (0);
+}
+void
+kbd_raw(void)
+{
+  return;
+}
+void
+kbd_restore(void)
+{
+  return;
+}
 #endif /* MSDOS */
 
 /*

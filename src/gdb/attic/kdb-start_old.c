@@ -27,7 +27,8 @@ static char *environment[] = {0};
 
 char **environ;
 
-start ()
+int
+start(void)
 {
 #ifdef NAMES_HAVE_UNDERSCORE
   INIT_STACK (_kdb_stack_beg, _kdb_stack_end);

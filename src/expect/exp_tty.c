@@ -64,21 +64,20 @@ int exp_stdout_is_tty;
 #define tty_cooked exp_tty_cooked
 
 int
-exp_israw()
+exp_israw(void)
 {
-	return is_raw;
+  return is_raw;
 }
 
 int
-exp_isecho()
+exp_isecho(void)
 {
-	return !is_noecho;
+  return !is_noecho;
 }
 
 /* if set == 1, set it to raw, else unset it */
 void
-exp_tty_raw(set)
-int set;
+exp_tty_raw(int set)
 {
 	if (set == 1) {
 		is_raw = TRUE;
@@ -109,8 +108,7 @@ int set;
 }
 
 void
-exp_tty_echo(set)
-int set;
+exp_tty_echo(int set)
 {
 	if (set == 1) {
 		is_noecho = FALSE;
@@ -228,23 +226,23 @@ int echo;
 #if 0
 /* avoids scoping problems */
 void
-exp_update_cooked_from_current() {
+exp_update_cooked_from_current (void) {
 	tty_cooked = tty_current;
 }
 
 int
-exp_update_real_tty_from_current() {
+exp_update_real_tty_from_current (void) {
 	return(exp_tty_set_simple(&tty_current));
 }
 
 int
-exp_update_current_from_real_tty() {
+exp_update_current_from_real_tty (void) {
 	return(exp_tty_get_simple(&tty_current));
 }
 #endif /* 0 */
 
 void
-exp_init_stdio()
+exp_init_stdio(void)
 {
 	exp_stdin_is_tty = isatty(0);
 	exp_stdout_is_tty = isatty(1);
@@ -276,9 +274,8 @@ int fd;
 /* If len == 0, use strlen to compute it */
 /* NB: if terminal is not in raw mode, nothing is done. */
 char *
-exp_cook(s,len)
-char *s;
-int *len;	/* current and new length of s */
+exp_cook(char *s, int *len /* current and new length of s */
+)
 {
 	static int destlen = 0;
 	static char *dest = 0;

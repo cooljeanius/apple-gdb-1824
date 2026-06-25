@@ -43,14 +43,13 @@ struct macho_symfile_info {
 };
 
 static void
-macho_new_init (objfile)
-     struct objfile *objfile;
+macho_new_init(struct objfile *objfile)
 {
+  (void) objfile;
 }
 
 static void
-macho_symfile_init (objfile)
-     struct objfile *objfile;
+macho_symfile_init(struct objfile *objfile)
 {
   objfile->sym_stab_info =
     xmmalloc (objfile->md, sizeof (struct dbx_symfile_info));
@@ -67,9 +66,7 @@ macho_symfile_init (objfile)
 }
 
 static void
-macho_symfile_read (objfile, mainline)
-     struct objfile *objfile;
-     int mainline;
+macho_symfile_read(struct objfile *objfile, int mainline)
 {
   bfd *abfd = objfile->obfd;
 
@@ -199,15 +196,12 @@ macho_symfile_read (objfile, mainline)
 }
 
 static void
-macho_symfile_finish (objfile)
-     struct objfile *objfile;
+macho_symfile_finish(struct objfile *objfile)
 {
 }
 
 static void
-macho_symfile_offsets (objfile, addrs)
-     struct objfile *objfile;
-     struct section_addr_info *addrs;
+macho_symfile_offsets(struct objfile *objfile, struct section_addr_info *addrs)
 {
   unsigned int i;
 
@@ -244,7 +238,7 @@ static struct sym_fns macho_sym_fns =
 };
 
 void
-_initialize_machoread ()
+_initialize_machoread(void)
 {
   struct cmd_list_element *cmd;
 

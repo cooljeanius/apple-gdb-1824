@@ -1,4 +1,4 @@
-/* m88k-xdep.c
+/* m88k-xdep.c  -*- C -*-
    Copyright (C) 1988, 1990 Free Software Foundation, Inc.
 
 This file is part of GDB.
@@ -66,9 +66,9 @@ extern jmp_buf stack_jmp;
 
 extern int errno;
 extern char registers[REGISTER_BYTES];
-
+
 void
-fetch_inferior_registers ()
+fetch_inferior_registers(void)
 {
   register int regno;
   register unsigned int regaddr;
@@ -78,7 +78,7 @@ fetch_inferior_registers ()
   struct USER u;
   unsigned int offset;
 
-  offset = (char *) &u.pt_r0 - (char *) &u; 
+  offset = (char *) &u.pt_r0 - (char *) &u;
   regaddr = offset; /* byte offset to r0;*/
 
 /*  offset = ptrace (3, inferior_pid, offset, 0) - KERNEL_U_ADDR; */
@@ -86,7 +86,7 @@ fetch_inferior_registers ()
     {
       /*regaddr = register_addr (regno, offset);*/
 	/* 88k enhancement  */
-        
+
       for (i = 0; i < REGISTER_RAW_SIZE (regno); i += sizeof (int))
  	{
  	  *(int *) &buf[i] = ptrace (3, inferior_pid, regaddr, 0);
@@ -107,8 +107,8 @@ fetch_inferior_registers ()
    If REGNO is -1, do this for all registers.
    Otherwise, REGNO specifies which register (so we can save time).  */
 
-store_inferior_registers (regno)
-     int regno;
+int
+store_inferior_registers(int regno)
 {
   register unsigned int regaddr;
   char buf[80];
@@ -116,69 +116,73 @@ store_inferior_registers (regno)
   struct USER u;
 
 #if defined(BCS)
-#if defined(DGUX)
+# if defined(DGUX)
 
   unsigned int offset = (char *) &u.pt_r0 - (char *) &u;
 
-#endif /* defined (DGUX) */
+# endif /* defined (DGUX) */
 #else
 
   unsigned int offset = (char *) &u.pt_r0 - (char *) &u;
 
 #endif /* defined(BCS) */
-/*  offset = ptrace (3, inferior_pid, offset, 0) - KERNEL_U_ADDR; */
+#if 0
+  offset = ptrace (3, inferior_pid, offset, 0) - KERNEL_U_ADDR;
+#endif /* 0 */
   regaddr = offset;
 
   if (regno >= 0)
     {
-/*      regaddr = register_addr (regno, offset); */
-        if (regno < PC_REGNUM)
-           { 
-	     regaddr = offset + regno * sizeof (int);
-             errno = 0;
-             ptrace (6, inferior_pid, regaddr, read_register (regno));
-             if (errno != 0)
-	       {
-	         sprintf (buf, "writing register number %d", regno);
-	         perror_with_name (buf);
-	       }
-           }
-	else if (regno == SXIP_REGNUM)
-             ptrace (6, inferior_pid, SXIP_OFFSET, read_register(regno));
-	else if (regno == SNIP_REGNUM)
-	     ptrace (6, inferior_pid, SNIP_OFFSET, read_register(regno));
-	else if (regno == SFIP_REGNUM)
-	     ptrace (6, inferior_pid, SFIP_OFFSET, read_register(regno));
-	else printf ("Bad register number for store_inferior routine\n");
+#if 0
+      regaddr = register_addr (regno, offset);
+#endif /* 0 */
+      if (regno < PC_REGNUM)
+	{
+	  regaddr = offset + regno * sizeof(int);
+	  errno = 0;
+	  ptrace(6, inferior_pid, regaddr, read_register(regno));
+	  if (errno != 0)
+	    {
+	      sprintf(buf, "writing register number %d", regno);
+	      perror_with_name(buf);
+	    }
+	}
+      else if (regno == SXIP_REGNUM)
+	ptrace(6, inferior_pid, SXIP_OFFSET, read_register(regno));
+      else if (regno == SNIP_REGNUM)
+	ptrace(6, inferior_pid, SNIP_OFFSET, read_register(regno));
+      else if (regno == SFIP_REGNUM)
+	ptrace(6, inferior_pid, SFIP_OFFSET, read_register(regno));
+      else
+	printf("Bad register number for store_inferior routine\n");
     }
-  else { 
-         for (regno = 0; regno < NUM_REGS - 3; regno++)
-           {
-      /*      regaddr = register_addr (regno, offset); */
-              errno = 0;
-              regaddr = offset + regno * sizeof (int);
-              ptrace (6, inferior_pid, regaddr, read_register (regno));
-              if (errno != 0)
-         	{
-	          sprintf (buf, "writing register number %d", regno);
-	          perror_with_name (buf);
-	        }
-           }
-	 ptrace (6,inferior_pid,SXIP_OFFSET,read_register(SXIP_REGNUM));
-	 ptrace (6,inferior_pid,SNIP_OFFSET,read_register(SNIP_REGNUM));
-	 ptrace (6,inferior_pid,SFIP_OFFSET,read_register(SFIP_REGNUM));
-       }	
-           
-
+  else
+    {
+      for (regno = 0; regno < NUM_REGS - 3; regno++)
+	{
+#if 0
+	  regaddr = register_addr (regno, offset);
+#endif /* 0 */
+	  errno = 0;
+	  regaddr = offset + regno * sizeof(int);
+	  ptrace(6, inferior_pid, regaddr, read_register(regno));
+	  if (errno != 0)
+	    {
+	      sprintf(buf, "writing register number %d", regno);
+	      perror_with_name(buf);
+	    }
+	}
+      ptrace(6, inferior_pid, SXIP_OFFSET, read_register(SXIP_REGNUM));
+      ptrace(6, inferior_pid, SNIP_OFFSET, read_register(SNIP_REGNUM));
+      ptrace(6, inferior_pid, SFIP_OFFSET, read_register(SFIP_REGNUM));
+    }
 }
 
 #if 0
 /* Core files are now a function of BFD.  */
 
 void
-core_file_command (filename, from_tty)
-     char *filename;
-     int from_tty;
+core_file_command (char *filename, int from_tty)
 {
   int val;
   extern char registers[];
@@ -211,7 +215,7 @@ core_file_command (filename, from_tty)
     {
       filename = tilde_expand (filename);
       make_cleanup (free, filename);
-      
+
       if (have_inferior_p ())
 	error ("To look at a core file, you must kill the inferior with \"kill\".");
       corechan = open (filename, O_RDONLY, 0);
@@ -281,7 +285,7 @@ core_file_command (filename, from_tty)
 	}
       init_tdesc();
       current_context = init_dcontext();
-      set_current_frame ( create_new_frame(get_frame_base (read_pc()), 
+      set_current_frame ( create_new_frame(get_frame_base (read_pc()),
 					    read_pc ()));
       select_frame (get_current_frame (), 0);
       validate_files ();
@@ -292,7 +296,8 @@ core_file_command (filename, from_tty)
 #endif /* 0 */
 
 /* blockend is the address of the end of the user structure */
-m88k_register_u_addr (blockend, regnum)
+int
+m88k_register_u_addr(int blockend, int regnum)
 {
   struct USER u;
   int ustart = blockend - sizeof (struct USER);
@@ -333,9 +338,11 @@ m88k_register_u_addr (blockend, regnum)
     case PSR_REGNUM:  return (ustart + ((int) &u.pt_psr - (int) &u));
     case FPSR_REGNUM: return (ustart + ((int) &u.pt_fpsr - (int) &u));
     case FPCR_REGNUM: return (ustart + ((int) &u.pt_fpcr - (int) &u));
-    case SXIP_REGNUM: return (ustart + SXIP_OFFSET); 
+    case SXIP_REGNUM:
+      return (ustart + SXIP_OFFSET);
     case SNIP_REGNUM: return (ustart + SNIP_OFFSET);
-    case SFIP_REGNUM: return (ustart + SFIP_OFFSET); 
+    case SFIP_REGNUM:
+      return (ustart + SFIP_OFFSET);
     default: return (blockend + sizeof (REGISTER_TYPE) * regnum);
     }
 }

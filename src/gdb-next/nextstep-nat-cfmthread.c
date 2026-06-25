@@ -50,8 +50,9 @@ void next_cfm_thread_destroy (next_cfm_thread_status *s)
 }
 
 void
-_initialize_nextstep_nat_cfmthread ()
+_initialize_nextstep_nat_cfmthread(void)
 {
+  return;
 }
 
 /* EOF */

@@ -348,7 +348,7 @@ ExpGetHandleProc(instanceData, direction, handlePtr)
 }
 
 int
-expChannelCountGet()
+expChannelCountGet(void)
 {
     ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
     return tsdPtr->channelCount;
@@ -454,7 +454,7 @@ expWaitOnOne() {
 }
 
 void
-exp_background_channelhandlers_run_all()
+exp_background_channelhandlers_run_all(void)
 {
     ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
     ExpState *esPtr;
@@ -554,10 +554,11 @@ expCreateChannel(interp,fdin,fdout,pid)
 }
 
 void
-expChannelInit() {
-    ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
+expChannelInit(void)
+{
+  ThreadSpecificData *tsdPtr = TCL_TSD_INIT(&dataKey);
 
-    tsdPtr->channelCount = 0;
+  tsdPtr->channelCount = 0;
 }
 
 /* EOF */

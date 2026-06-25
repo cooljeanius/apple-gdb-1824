@@ -6187,7 +6187,7 @@ unsigned char random_data[RANDOM_DATA_SIZE] = {
 };
 
 int
-main() 
+main(void)
 {
   long size = sizeof (random_data) / sizeof (random_data[0]);
   printf ("%d\n", random_data [size - 1]);

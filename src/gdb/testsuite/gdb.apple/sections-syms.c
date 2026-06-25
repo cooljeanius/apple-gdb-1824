@@ -1,5 +1,6 @@
 int i = 1;
 
-int f ()
+int
+f(void)
 {
 }

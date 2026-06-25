@@ -91,8 +91,8 @@ tcflag_t old_lflag;
 cc_t     old_vtime;
 struct termios term;
 
-int 
-main()
+int
+main(void)
 {
     fd_set fds;
 

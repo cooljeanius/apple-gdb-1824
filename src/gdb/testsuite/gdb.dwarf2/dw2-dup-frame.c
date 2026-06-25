@@ -15,20 +15,20 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 void
-stop_frame ()
+stop_frame(void)
 {
   /* The debug information for this frame is modified in the accompanying
      .S file, to mark a set of registers as being DW_CFA_same_value.  */
 }
 
 void
-first_frame ()
+first_frame(void)
 {
   stop_frame ();
 }
 
 int
-main ()
+main(void)
 {
   first_frame ();
 

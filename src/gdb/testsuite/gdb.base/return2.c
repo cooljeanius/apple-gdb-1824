@@ -22,42 +22,50 @@ union {
   char      ffff[80];
 } testval;
 
-void void_func ()
+void
+void_func(void)
 {
   void_test = 1;
 }
 
-char char_func ()
+char
+char_func(void)
 {
   return char_returnval;
 }
 
-short short_func ()
+short
+short_func(void)
 {
   return short_returnval;
 }
 
-int int_func ()
+int
+int_func(void)
 {
   return int_returnval;
 }
 
-long long_func ()
+long
+long_func(void)
 {
   return long_returnval;
 }
 
-long long long_long_func ()
+long long
+long_long_func(void)
 {
   return long_long_returnval;
 }
 
-float float_func ()
+float
+float_func(void)
 {
   return float_returnval;
 }
 
-double double_func ()
+double
+double_func(void)
 {
   return double_returnval;
 }

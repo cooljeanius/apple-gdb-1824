@@ -8,7 +8,7 @@ static void param_reg (register signed char pr_char,
 int bkpt;
 
 int
-main ()
+main(void)
 {
 #ifdef usestubs
   set_debug_traps ();
@@ -22,7 +22,10 @@ main ()
   return 0;
 }
 
-static void dummy () {}
+static void
+dummy(void)
+{
+}
 
 static void
 param_reg(register signed char pr_char,

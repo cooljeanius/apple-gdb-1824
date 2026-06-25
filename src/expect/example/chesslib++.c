@@ -9,7 +9,7 @@ extern "C" {
 }
 
 void
-timedout()
+timedout(void)
 {
 	fprintf(stderr,"timed out\n");
 	exit(-1);
@@ -56,31 +56,37 @@ send_move(int fd)
 	write(fd,move,strlen(move));
 }
 
-main(){
-	int fd1, fd2;
+int
+main(void)
+{
+  int fd1, fd2;
 
-	exp_loguser = 1;
-	exp_timeout = 3600;
+  exp_loguser = 1;
+  exp_timeout = 3600;
 
-	fd1 = exp_spawnl("chess","chess",(char *)0);
+  fd1 = exp_spawnl("chess", "chess", (char *) 0);
 
-	if (-1 == exp_expectl(fd1,exp_glob,"Chess\r\n",0,exp_end)) exit;
+  if (-1 == exp_expectl(fd1, exp_glob, "Chess\r\n", 0, exp_end))
+    exit;
 
-	if (-1 == write(fd1,"first\r",6)) exit;
+  if (-1 == write(fd1, "first\r", 6))
+    exit;
 
-	read_first_move(fd1);
+  read_first_move(fd1);
 
-	fd2 = exp_spawnl("chess","chess",(char *)0);
+  fd2 = exp_spawnl("chess", "chess", (char *) 0);
 
-	if (-1 == exp_expectl(fd2,exp_glob,"Chess\r\n",0,exp_end)) exit;
+  if (-1 == exp_expectl(fd2, exp_glob, "Chess\r\n", 0, exp_end))
+    exit;
 
-	for (;;) {
-		send_move(fd2);
-		read_counter_move(fd2);
+  for (;;)
+    {
+      send_move(fd2);
+      read_counter_move(fd2);
 
-		send_move(fd1);
-		read_move(fd1);
-	}
+      send_move(fd1);
+      read_move(fd1);
+    }
 }
 
 /* EOF */

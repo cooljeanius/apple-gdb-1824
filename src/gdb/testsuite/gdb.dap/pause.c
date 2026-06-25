@@ -18,25 +18,25 @@
 #include <unistd.h>
 
 int
-do_nothing ()
+do_nothing(void)
 {
   return 91;
 }
 
 int
-return_false ()
+return_false(void)
 {
   return 0;
 }
 
 void
-sleep_a_bit ()
+sleep_a_bit(void)
 {
   sleep (1);			/* STOP */
 }
 
 int
-main ()
+main(void)
 {
   while (1)
     sleep_a_bit ();

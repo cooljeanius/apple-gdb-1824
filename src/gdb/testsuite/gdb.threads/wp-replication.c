@@ -69,7 +69,7 @@ empty_cycle (void)
 }
 
 int
-main ()
+main(void)
 {
   int res;
   pthread_t threads[NR_THREADS];

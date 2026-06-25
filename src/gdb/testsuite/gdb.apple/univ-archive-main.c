@@ -1,6 +1,7 @@
 void foo();
 
-int main ()
+int
+main(void)
 {
   int c = 10;
   foo ();

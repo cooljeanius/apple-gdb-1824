@@ -37,43 +37,37 @@ it successfully, please mail back the changes to me.  - Don
 
 /*ARGSUSED*/
 void
-exp_arm_background_filehandler(m)
-int m;
+exp_arm_background_filehandler(int m)
 {
 }
 
 /*ARGSUSED*/
 void
-exp_disarm_background_filehandler(m)
-int m;
+exp_disarm_background_filehandler(int m)
 {
 }
 
 /*ARGSUSED*/
 void
-exp_disarm_background_filehandler_force(m)
-int m;
+exp_disarm_background_filehandler_force(int m)
 {
 }
 
 /*ARGSUSED*/
 void
-exp_unblock_background_filehandler(m)
-int m;
+exp_unblock_background_filehandler(int m)
 {
 }
 
 /*ARGSUSED*/
 void
-exp_block_background_filehandler(m)
-int m;
+exp_block_background_filehandler(int m)
 {
 }
 
 /*ARGSUSED*/
 void
-exp_event_disarm(fd)
-int fd;
+exp_event_disarm(int fd)
 {
 }
 
@@ -176,7 +170,7 @@ long usec;		/* microseconds */
 
 /* set things up for later calls to event handler */
 void
-exp_init_event()
+exp_init_event(void)
 {
 	exp_event_exit = 0;
 }

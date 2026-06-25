@@ -47,7 +47,7 @@ repos:
     hooks:
       - id: black
         types_or: [file]
-        files: '^gdb/.*\.py(\.in)?$'
+        files: '^src/gdb/.*\.py(\.in)?$'
   - repo: https://github.com/pycqa/flake8
     rev: 7.3.0
     hooks:
@@ -55,10 +55,10 @@ repos:
         types_or: [file]
         # Run this for (in glob notation):
         #
-        #  - gdb/gdb-gdb.py.in
-        #  - gdb/*.py
-        #  - gdb/python/**/*.py
-        #  - gdb/testsuite/*.py
+        #  - src/gdb/gdb-gdb.py.in
+        #  - src/gdb/*.py
+        #  - src/gdb/python/**/*.py
+        #  - src/gdb/testsuite/*.py
         #
         files: '^gdb/.*\.py(\.in)?$'
         args: [--config, gdb/setup.cfg]
@@ -67,17 +67,17 @@ repos:
     hooks:
       - id: isort
         types_or: [file]
-        files: '^gdb/.*\.py(\.in)?$'
+        files: '^src/gdb/.*\.py(\.in)?$'
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.2
     hooks:
     - id: codespell
-      files: '^(gdb/(tui|target|data-directory|po|system-gdbinit|mi|syscalls|arch|regformats|python|guile|config|cli|testsuite/gdb.(dap|gdb|go|guile|mi|modula2|objc|opencl|opt|pascal|perf|reverse|rocm|server|stabs|xml)))/'
-      args: [--config, gdb/contrib/setup.cfg]
+      files: '^src/(gdb/(tui|target|data-directory|po|system-gdbinit|mi|syscalls|arch|regformats|python|guile|config|cli|testsuite/gdb.(dap|gdb|go|guile|mi|modula2|objc|opencl|opt|pascal|perf|reverse|rocm|server|stabs|xml)))/'
+      args: [--config, src/gdb/contrib/setup.cfg]
     - id: codespell
       name: codespell-log
       entry: src/gdb/contrib/codespell-log.sh
-      args: [--config, gdb/contrib/setup.cfg]
+      args: [--config, src/gdb/contrib/setup.cfg]
       always_run: true
       verbose: true
       stages: [commit-msg]
@@ -86,15 +86,15 @@ repos:
       - id: check-include-guards
         name: check-include-guards
         language: python
-        entry: gdb/check-include-guards.py
+        entry: src/gdb/check-include-guards.py
         # All gdb header files, but not headers in the test suite.
-        files: '^(gdb(support|server)?)/.*\.h$'
+        files: '^src/(gdb(support|server)?)/.*\.h$'
         exclude: '.*/testsuite/.*'
       - id: check-gnu-style
         name: check-gnu-style
         language: python
         additional_dependencies: ['termcolor', 'unidiff']
-        entry: gdb/contrib/check-gnu-style-pre-commit.sh
+        entry: src/gdb/contrib/check-gnu-style-pre-commit.sh
         files: '^(gdb(support|server)?)/.*\.(c|h|cc)$'
         exclude: '.*/testsuite/.*'
         verbose: true
@@ -102,7 +102,7 @@ repos:
       - id: check-whitespace
         name: check-whitespace
         language: script
-        entry: gdb/contrib/check-whitespace-pre-commit.py
+        entry: src/gdb/contrib/check-whitespace-pre-commit.py
         files: '^(gdb(support|server)?)/.*$'
         pass_filenames: true
         stages: [pre-commit]
@@ -119,4 +119,4 @@ repos:
       - id: tclint
         args: [--trust-plugins]
         types_or: [file]
-        files: '^gdb/testsuite/.*\.(exp|tcl)$'
+        files: '^src/gdb/testsuite/.*\.(exp|tcl)$'

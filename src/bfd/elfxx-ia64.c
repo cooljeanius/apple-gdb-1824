@@ -1749,12 +1749,10 @@ elfNN_ia64_dynamic_symbol_p (h, info, r_type)
 
   return _bfd_elf_dynamic_symbol_p (h, info, ignore_protected);
 }
-
-static struct bfd_hash_entry*
-elfNN_ia64_new_elf_hash_entry (entry, table, string)
-     struct bfd_hash_entry *entry;
-     struct bfd_hash_table *table;
-     const char *string;
+
+static struct bfd_hash_entry *
+elfNN_ia64_new_elf_hash_entry(struct bfd_hash_entry *entry,
+			      struct bfd_hash_table *table, const char *string)
 {
   struct elfNN_ia64_link_hash_entry *ret;
   ret = (struct elfNN_ia64_link_hash_entry *) entry;

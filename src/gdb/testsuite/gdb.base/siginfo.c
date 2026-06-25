@@ -39,7 +39,8 @@ handler (int sig)
 } /* handler */
 #endif
 
-main ()
+int
+main(void)
 {
   /* Set up the signal handler.  */
   {

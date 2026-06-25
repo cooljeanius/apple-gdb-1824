@@ -20,7 +20,7 @@
 volatile int x, y;
 
 int
-main ()
+main(void)
 {
   x = foo (y);
   return 0;

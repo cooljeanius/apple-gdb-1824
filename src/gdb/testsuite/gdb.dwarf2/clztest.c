@@ -3,8 +3,8 @@
 
 volatile int vv;
 
-__attribute__((noinline, noclone)) long
-foo (long x)
+__attribute__ long
+foo(long x)
 {
   long f = __builtin_clzl (x);
   long g = f;
@@ -13,8 +13,8 @@ foo (long x)
   return f;	/* { dg-final { gdb-test 12 "f" "43" } } */
 }
 
-__attribute__((noinline, noclone)) long
-bar (long x)
+__attribute__ long
+bar(long x)
 {
   long f = __builtin_clzl (x);
   long g = f;
@@ -24,7 +24,7 @@ bar (long x)
 }
 
 int
-main ()
+main(void)
 {
   long x = vv;
   foo (x + 0x123456UL);

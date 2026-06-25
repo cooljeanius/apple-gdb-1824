@@ -25,26 +25,25 @@ void *thread_function(void *arg); /* Pointer to function executed by each thread
 
 unsigned int args[NUM+1];
 
-int main() {
-    int res;
-    pthread_t threads[NUM];
-    void *thread_result;
-    long i;
+int
+main(void)
+{
+  int res;
+  pthread_t threads[NUM];
+  void *thread_result;
+  long i;
 
-    for (i = 1; i <= NUM; i++)
-      {
-	args[i] = 1;
-	res = pthread_create(&threads[i - 1],
-		             NULL,
-			     thread_function,
-			     (void *) i);
-      }
+  for (i = 1; i <= NUM; i++)
+    {
+      args[i] = 1;
+      res = pthread_create(&threads[i - 1], NULL, thread_function, (void *) i);
+    }
 
-    /* schedlock.exp: last thread start.  */
-    args[0] = 1;
-    thread_function ((void *) 0);
+  /* schedlock.exp: last thread start.  */
+  args[0] = 1;
+  thread_function((void *) 0);
 
-    exit(EXIT_SUCCESS);
+  exit(EXIT_SUCCESS);
 }
 
 void *thread_function(void *arg) {

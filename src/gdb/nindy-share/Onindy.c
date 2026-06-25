@@ -101,10 +101,10 @@ fromhex(int h)
  * Returns 0 by default.
  ******************************************************************************/
 static int
-hexbin( n, hexp, binp )
-    int n;		/* Number of bytes to convert (twice this many digits)*/
-    char *hexp;		/* Get hex from here		*/
-    char *binp;		/* Put binary here		*/
+hexbin(int n, /* Number of bytes to convert (twice this many digits)*/
+       char *hexp, /* Get hex from here		*/
+       char *binp /* Put binary here		*/
+)
 {
 	while ( n-- ) {
 		*binp++ = (fromhex(*hexp) << 4) | fromhex(*(hexp+1));
@@ -120,10 +120,10 @@ hexbin( n, hexp, binp )
  * Returns 0 by default.
  ******************************************************************************/
 static int
-binhex( n, binp, hexp )
-    int n;              /* Number of bytes to convert   */
-    char *binp;         /* Get binary from here         */
-    char *hexp;         /* Place hex here               */
+binhex(int n, /* Number of bytes to convert   */
+       char *binp, /* Get binary from here         */
+       char *hexp /* Place hex here               */
+)
 {
 	static char tohex[] = "0123456789abcdef";
 
@@ -142,10 +142,8 @@ binhex( n, binp, hexp )
  *	return the passed value unchanged.
  *
  ******************************************************************************/
-static
-long
-byte_order( n )
-    long n;
+static long
+byte_order(long n)
 {
 	long rev;
 	int i;
@@ -174,9 +172,7 @@ byte_order( n )
  * Returns 0 by default.
  ******************************************************************************/
 static int
-say( fmt, arg1, arg2 )
-    char *fmt;
-    int arg1, arg2;
+say(char *fmt, int arg1, int arg2)
 {
 	if ( !quiet ) {
 		printf( fmt, arg1, arg2 );
@@ -194,7 +190,7 @@ say( fmt, arg1, arg2 )
 /* Read a single character from the remote end.  */
 
 static int
-readchar()
+readchar(void)
 {
   /* FIXME: Do we really want to be reading without a timeout?  */
   return serial_readchar (nindy_serial, -1);
@@ -207,8 +203,7 @@ readchar()
  * Returns 0 by default.
  ******************************************************************************/
 static int
-getpkt (buf)
-     char *buf;
+getpkt(char *buf)
 {
 	unsigned char recv;	/* Checksum received		*/
 	unsigned char csum;	/* Checksum calculated		*/
@@ -231,7 +226,7 @@ getpkt (buf)
 		if ( csum == recv ) {
 			break;
 		}
-	
+
 		fprintf(stderr,
 			"Bad checksum (recv=0x%02x; calc=0x%02x); retrying\r\n",
 								recv, csum );
@@ -251,10 +246,10 @@ getpkt (buf)
  * Returns 0 by default.
  ******************************************************************************/
 static int
-putpkt( cmd )
-    char *cmd; /* Command to be sent, without lead ^P (\020)
+putpkt(char *cmd /* Command to be sent, without lead ^P (\020)
 		        * or trailing checksum
 		        */
+)
 {
 	char ack;	/* Response received from NINDY		*/
 	char checksum[4];
@@ -304,15 +299,15 @@ putpkt( cmd )
  * Returns 0 by default.
  ******************************************************************************/
 static int
-send( buf, ack_required )
-    char *buf; /* Message to be sent to NINDY; replaced by
+send(char *buf, /* Message to be sent to NINDY; replaced by
 			    * NINDY's response.
 			    */
-    int ack_required; /* 1 means NINDY's response MUST be either "X00" (no
+     int ack_required /* 1 means NINDY's response MUST be either "X00" (no
 			           * error) or an error code "Xnn".
 			           * 0 means that it is OK as long as it does NOT
 			           * begin with "Xnn".
 			           */
+)
 {
 	int errnum;
 	static const char *errmsg[] = {
@@ -368,9 +363,10 @@ send( buf, ack_required )
  *	the specified address. If the 'addr' is -1, all breakpoints of
  *	the specified type are deleted.
  ******************************************************************************/
-int OninBptDel( addr, data )
-    long addr;	/* Address in 960 memory	*/
-    int data;	/* '1' => data bkpt, '0' => instruction breakpoint */
+int
+OninBptDel(long addr, /* Address in 960 memory	*/
+	   int data /* '1' => data bkpt, '0' => instruction breakpoint */
+)
 {
 	char buf[100];
 
@@ -388,9 +384,10 @@ int OninBptDel( addr, data )
  *	Ask NINDY to set the specified type of *hardware* breakpoint at
  *	the specified address.
  ******************************************************************************/
-int OninBptSet( addr, data )
-    long addr;	/* Address in 960 memory	*/
-    int data;	/* '1' => data bkpt, '0' => instruction breakpoint */
+int
+OninBptSet(long addr, /* Address in 960 memory	*/
+	   int data /* '1' => data bkpt, '0' => instruction breakpoint */
+)
 {
 	char buf[100];
 
@@ -404,7 +401,8 @@ int OninBptSet( addr, data )
  *	Since it will no longer be in GDB mode, do NOT wait for a response.
  * Returns 0 by default.
  ******************************************************************************/
-int OninGdbExit()
+int
+OninGdbExit(void)
 {
 	putpkt( "E" );
 	return 0;
@@ -416,8 +414,9 @@ int OninGdbExit()
  *	in it is memory at the current ip.
  * Returns 0 by default.
  ******************************************************************************/
-int OninGo( step_flag )
-    int step_flag;	/* 1 => run in single-step mode */
+int
+OninGo(int step_flag /* 1 => run in single-step mode */
+)
 {
 	putpkt( step_flag ? "s" : "c" );
 	return 0;
@@ -429,10 +428,11 @@ int OninGo( step_flag )
  *	Read a string of bytes from NINDY's address space (960 memory).
  * Returns 0 by default.
  ******************************************************************************/
-int OninMemGet(ninaddr, hostaddr, len)
-     long ninaddr;	/* Source address, in the 960 memory space	*/
-     char *hostaddr;	/* Destination address, in our memory space	*/
-     int len;		/* Number of bytes to read			*/
+int
+OninMemGet(long ninaddr, /* Source address, in the 960 memory space	*/
+	   char *hostaddr, /* Destination address, in our memory space	*/
+	   int len /* Number of bytes to read			*/
+)
 {
   /* How much do we send at a time?  */
 #define OLD_NINDY_MEMBYTES 1024
@@ -460,10 +460,11 @@ int OninMemGet(ninaddr, hostaddr, len)
  *	Write a string of bytes into NINDY's address space (960 memory).
  * Returns 0 by default.
  ******************************************************************************/
-int OninMemPut( destaddr, srcaddr, len )
-     long destaddr;	/* Destination address, in NINDY memory space	*/
-     char *srcaddr;	/* Source address, in our memory space		*/
-     int len;		/* Number of bytes to write			*/
+int
+OninMemPut(long destaddr, /* Destination address, in NINDY memory space	*/
+	   char *srcaddr, /* Source address, in our memory space		*/
+	   int len /* Number of bytes to write			*/
+)
 {
 	char buf[2*OLD_NINDY_MEMBYTES+20];	/* Buffer: binary in, hex out		*/
 	char *p;		/* Pointer into buffer			*/
@@ -494,10 +495,10 @@ int OninMemPut( destaddr, srcaddr, len )
  *
  ******************************************************************************/
 long
-OninRegGet( regname )
-    char *regname; /* Register name recognized by NINDY, subject to the
+OninRegGet(char *regname /* Register name recognized by NINDY, subject to the
 			        * above limitations.
 					*/
+)
 {
 	char buf[200];
 	long val;
@@ -517,11 +518,12 @@ OninRegGet( regname )
  *
  * Returns 0 by default.
  ******************************************************************************/
-int OninRegPut( regname, val )
-    char *regname; /* Register name recognized by NINDY, subject to the
+int
+OninRegPut(char *regname, /* Register name recognized by NINDY, subject to the
 			        * above limitations.
 			        */
-    long val;		/* New contents of register, in host byte-order	*/
+	   long val /* New contents of register, in host byte-order	*/
+)
 {
 	char buf[200];
 
@@ -535,10 +537,10 @@ int OninRegPut( regname, val )
  *	Get a dump of the contents of the entire 960 register set.  The
  *	individual registers appear in the dump in the following order:
  *
- *		pfp  sp   rip  r3   r4   r5   r6   r7 
- *		r8   r9   r10  r11  r12  r13  r14  r15 
- *		g0   g1   g2   g3   g4   g5   g6   g7 
- *		g8   g9   g10  g11  g12  g13  g14  fp 
+ *		pfp  sp   rip  r3   r4   r5   r6   r7
+ *		r8   r9   r10  r11  r12  r13  r14  r15
+ *		g0   g1   g2   g3   g4   g5   g6   g7
+ *		g8   g9   g10  g11  g12  g13  g14  fp
  *		pc   ac   ip   tc   fp0  fp1  fp2  fp3
  *
  *	Each individual register comprises exactly 4 bytes, except for
@@ -549,8 +551,9 @@ int OninRegPut( regname, val )
  *
  * Returns 0 by default.
  ******************************************************************************/
-int OninRegsGet( regp )
-    char *regp;		/* Where to place the register dump */
+int
+OninRegsGet(char *regp /* Where to place the register dump */
+)
 {
 	char buf[(2*OLD_NINDY_REGISTER_BYTES)+10];   /* Registers in ASCII hex */
 
@@ -571,8 +574,9 @@ int OninRegsGet( regp )
  *
  * Returns 0 by default.
  ******************************************************************************/
-int OninRegsPut( regp )
-    char *regp;		/* Pointer to desired values of registers */
+int
+OninRegsPut(char *regp /* Pointer to desired values of registers */
+)
 {
 	char buf[(2*OLD_NINDY_REGISTER_BYTES)+10];   /* Registers in ASCII hex */
 
@@ -710,11 +714,12 @@ int OninSrq(void)
  *	    - contents of register fp (little-endian byte order)
  ******************************************************************************/
 char
-OninStopWhy( whyp, ipp, fpp, spp )
-    char *whyp;	/* Return the 'why' code through this pointer	*/
-    char *ipp;	/* Return contents of register ip through this pointer	*/
-    char *fpp;	/* Return contents of register fp through this pointer	*/
-    char *spp;	/* Return contents of register sp through this pointer	*/
+OninStopWhy(
+  char *whyp, /* Return the 'why' code through this pointer	*/
+  char *ipp, /* Return contents of register ip through this pointer	*/
+  char *fpp, /* Return contents of register fp through this pointer	*/
+  char *spp /* Return contents of register sp through this pointer	*/
+)
 {
 	char buf[30];
 	char stop_exit;
@@ -736,11 +741,11 @@ OninStopWhy( whyp, ipp, fpp, spp )
  * Returns 0 by default.
  ******************************************************************************/
 static int
-OninStrGet( ninaddr, hostaddr )
-     unsigned long ninaddr;	/* Address of string in NINDY memory space */
-     char *hostaddr; /* Address of the buffer to which string should
+OninStrGet(unsigned long ninaddr, /* Address of string in NINDY memory space */
+	   char *hostaddr /* Address of the buffer to which string should
 				      * be copied.
 				      */
+)
 {
   /* FIXME: seems to be an arbitrary limit on the length of the string.  */
 	char buf[BUFSIZE];	/* String as 2 ASCII hex digits per byte */
@@ -754,7 +759,7 @@ OninStrGet( ninaddr, hostaddr )
 	return 0;
 }
 
-#if 0
+#ifdef USE_THE_UNUSED
 /* never used.  */
 
 /******************************************************************************
@@ -767,8 +772,8 @@ OninStrGet( ninaddr, hostaddr )
  *
  ******************************************************************************/
 int
-OninVersion( p )
-     char *p;		/* Where to place version string */
+OninVersion(char *p /* Where to place version string */
+)
 {
   /* FIXME: this is an arbitrary limit on the length of version string.  */
 	char buf[BUFSIZE];
@@ -778,6 +783,6 @@ OninVersion( p )
 	strcpy( p, buf );
 	return strlen( buf );
 }
-#endif /* 0 */
+#endif /* USE_THE_UNUSED */
 
 /* EOF */

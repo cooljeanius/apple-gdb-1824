@@ -26,7 +26,10 @@
 #include "jithost.h"
 #include "jit-protocol.h"
 
-void __attribute__((noinline)) __jit_debug_register_code () { }
+void
+__jit_debug_register_code(void)
+{
+}
 
 struct jit_descriptor __jit_debug_descriptor = { 1, 0, 0, 0 };
 struct jit_code_entry only_entry;

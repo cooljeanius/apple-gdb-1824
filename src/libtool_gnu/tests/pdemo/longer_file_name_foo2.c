@@ -28,7 +28,7 @@ or obtained by writing to the Free Software Foundation, Inc.,
 #include <math.h>
 
 int
-foo2()
+foo2(void)
 {
   printf ("foo2 cos (0.0) = %g\n", (double) cos ((double) 0.0));
   return FOO_RET;

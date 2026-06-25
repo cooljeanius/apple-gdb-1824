@@ -276,13 +276,11 @@ gnuv2_value_rtti_type (struct value *v, int *full, int *top, int *using_enc)
         {
           if (TYPE_LENGTH(rtti_type) > TYPE_LENGTH(known_type))
             {
-              if (full)
-                *full = 0;
+              *full = 0;
             }
           else
             {
-              if (full)
-                *full = 1;
+              *full = 1;
             }
         }
     }

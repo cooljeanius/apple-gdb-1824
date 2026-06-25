@@ -28,14 +28,14 @@ or obtained by writing to the Free Software Foundation, Inc.,
 #include <math.h>
 
 int
-foo()
+foo(void)
 {
   printf ("cos (0.0) = %g\n", (double) cos ((double) 0.0));
   return FOO_RET;
 }
 
 int
-hello()
+hello(void)
 {
   printf ("** This is libfoo **\n");
   return HELLO_RET;

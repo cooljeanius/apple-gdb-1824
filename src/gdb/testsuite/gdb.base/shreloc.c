@@ -9,7 +9,8 @@ extern ATTRIBUTES void fn_2 (int);
 extern ATTRIBUTES int extern_var_1;
 extern ATTRIBUTES int extern_var_2;
 
-int main ()
+int
+main(void)
 {
   fn_1 (extern_var_1);
   fn_2 (extern_var_2);

@@ -17,26 +17,22 @@
 
 static volatile int v;
 
-static void __attribute__((noinline, noclone))
-e (int i, double j)
+static void __attribute__ e(int i, double j)
 {
   v = 0;
 }
 
-static int __attribute__((noinline, noclone))
-data (void)
+static int __attribute__ data(void)
 {
   return 10;
 }
 
-static int __attribute__((noinline, noclone))
-data2 (void)
+static int __attribute__ data2(void)
 {
   return 20;
 }
 
-static int __attribute__((noinline, noclone))
-different (int val)
+static int __attribute__ different(int val)
 {
   val++;
   e (val, val);
@@ -44,8 +40,7 @@ asm ("breakhere_different:");
   return val;
 }
 
-static int __attribute__((noinline, noclone))
-validity (int lost, int born)
+static int __attribute__ validity(int lost, int born)
 {
   lost = data ();
   e (0, 0.0);
@@ -53,15 +48,14 @@ asm ("breakhere_validity:");
   return born;
 }
 
-static void __attribute__((noinline, noclone))
-invalid (int inv)
+static void __attribute__ invalid(int inv)
 {
   e (0, 0.0);
 asm ("breakhere_invalid:");
 }
 
 int
-main ()
+main(void)
 {
   different (5);
   validity (5, data ());

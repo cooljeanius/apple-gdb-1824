@@ -55,9 +55,7 @@ static struct target_ops remote_d10v_ops;
    NAME is the filename used for communication.  */
 
 static void
-remote_d10v_open (name, from_tty)
-     char *name;
-     int from_tty;
+remote_d10v_open(char *name, int from_tty)
 {
   pop_target ();
   push_remote_target (name, from_tty);
@@ -223,9 +221,8 @@ remote_d10v_translate_xfer_address (memaddr, nr_bytes, targ_addr, targ_len)
   *targ_len = nr_bytes;
 }
 
-
 void
-_initialize_remote_d10v ()
+_initialize_remote_d10v(void)
 {
   remote_d10v_ops.to_shortname = "d10v";
   remote_d10v_ops.to_longname = "Remote d10v serial target in gdb-specific protocol";

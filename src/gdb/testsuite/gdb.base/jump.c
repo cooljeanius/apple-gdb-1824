@@ -12,8 +12,8 @@ static int square (x)
   return x*x;
 }
 
-
-int main ()
+int
+main(void)
 {
   int i = 99;
 

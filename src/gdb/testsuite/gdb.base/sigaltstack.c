@@ -75,8 +75,8 @@ catcher (int signal)
     }
 }
 
-
-main ()
+int
+main(void)
 {
   /* Set up the altstack.  */
   {

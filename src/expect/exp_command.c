@@ -1,4 +1,4 @@
-/* exp_command.c - the bulk of the Expect commands
+/* exp_command.c - the bulk of the Expect commands  -*- C -*-
 
 Written by: Don Libes, NIST, 2/6/90
 
@@ -164,8 +164,7 @@ static Tcl_HashTable slaveNames;
 
 #ifdef FULLTRAPS
 static void
-init_traps(traps)
-RETSIGTYPE (*traps[])();
+init_traps(RETSIGTYPE (*traps[])(void))
 {
 	int i;
 
@@ -222,8 +221,7 @@ char *msg;
 /* following routine is not current used, but might be later */
 /* returns fd or -1 if no such entry */
 static int
-pid_to_fd(pid)
-int pid;
+pid_to_fd (int pid)
 {
 	int fd;
 
@@ -239,8 +237,7 @@ static char close_cmd[] = "close";
 
 /* zero out the wait status field */
 static void
-exp_wait_zero(status)
-WAIT_STATUS_TYPE *status;
+exp_wait_zero(WAIT_STATUS_TYPE *status)
 {
 	int i;
 
@@ -251,8 +248,7 @@ WAIT_STATUS_TYPE *status;
 
 /* prevent an fd from being allocated */
 void
-exp_busy(fd)
-int fd;
+exp_busy(int fd)
 {
 	int x = open("/dev/null",0);
 	if (x != fd) {
@@ -292,8 +288,7 @@ struct exp_f *f;
 
 /*ARGSUSED*/
 void
-exp_trap_on(master)
-int master;
+exp_trap_on(int master)
 {
 #ifdef HAVE_PTYTRAP
 	if (master == -1) return;
@@ -302,8 +297,7 @@ int master;
 }
 
 int
-exp_trap_off(name)
-char *name;
+exp_trap_off(char *name)
 {
 #ifdef HAVE_PTYTRAP
 	int master;
@@ -329,9 +323,7 @@ char *name;
 
 /*ARGSUSED*/
 void
-sys_close(fd,f)
-int fd;
-struct exp_f *f;
+sys_close(int fd, struct exp_f *f)
 {
 	/* Ignore close errors. Some systems are really odd and */
 	/* return errors for no evident reason. Anyway, receiving */
@@ -448,9 +440,7 @@ int fd;
 }
 
 static struct exp_f *
-fd_new(fd,pid)
-int fd;
-int pid;
+fd_new(int fd, int pid)
 {
 	int i, low;
 	struct exp_f *newfs;	/* temporary, so we do NOT lose old exp_fs */
@@ -525,10 +515,7 @@ int pid;
 
 #if 0
 void
-exp_global_init(eg,duration,location)
-struct expect_global *eg;
-int duration;
-int location;
+exp_global_init (struct expect_global *eg, int duration, int location)
 {
 	eg->ecases = 0;
 	eg->ecount = 0;
@@ -557,7 +544,7 @@ Tcl_Interp *interp;
 }
 
 void
-exp_init_spawn_ids()
+exp_init_spawn_ids(void)
 {
 	/* note whether 0,1,2 are connected to a terminal so that if we */
 	/* disconnect, we can shut these down. We would really like to */
@@ -579,8 +566,7 @@ exp_init_spawn_ids()
 }
 
 void
-exp_close_on_exec(fd)
-int fd;
+exp_close_on_exec(int fd)
 {
 	(void) fcntl(fd,F_SETFD,1);
 }
@@ -589,9 +575,7 @@ int fd;
 
 #if 0
 static void
-show_pgrp(fd,string)
-int fd;
-char *string;
+show_pgrp (int fd, char *string)
 {
 	int pgrp;
 
@@ -605,8 +589,7 @@ char *string;
 }
 
 static void
-set_pgrp(fd)
-int fd;
+set_pgrp (int fd)
 {
 	int pgrp = getpgrp(0);
 	if (-1 == ioctl(fd,TIOCSETPGRP,&pgrp)) perror("TIOCSETPGRP");
@@ -617,9 +600,7 @@ int fd;
 
 /*ARGSUSED*/
 static void
-set_slave_name(f,name)
-struct exp_f *f;
-char *name;
+set_slave_name(struct exp_f *f, char *name)
 {
 #ifdef HAVE_PTYTRAP
 	int newptr;

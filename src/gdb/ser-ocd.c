@@ -84,7 +84,7 @@ ocd_raw (scb)
 }
 
 static void
-ocd_readremote ()
+ocd_readremote(void)
 {
 }
 
@@ -203,7 +203,7 @@ static struct serial_ops ocd_ops =
 };
 
 void
-_initialize_ser_ocd_bdm ()
+_initialize_ser_ocd_bdm(void)
 {
   serial_add_interface (&ocd_ops);
 }

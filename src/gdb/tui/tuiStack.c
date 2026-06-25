@@ -1,5 +1,6 @@
 /*
-** This module contains functions for displaying the locator information in the locator window.
+** This module contains functions for displaying the locator information in the
+** locator window.
 */
 
 #include "defs.h"
@@ -358,10 +359,9 @@ tuiUpdateLocatorDisplay (frameInfo)
   return;
 }				/* tuiUpdateLocatorDisplay */
 
-
 /*
 ** tuiShowFrameInfo().
-**        Function to print the frame inforrmation for the TUI.
+**        Function to print the frame information for the TUI.
 */
 void
 #ifdef __STDC__
@@ -447,10 +447,9 @@ tuiShowFrameInfo (fi)
   return;
 }				/* tuiShowFrameInfo */
 
-
 /*
 ** tui_vShowFrameInfo().
-**        Function to print the frame inforrmation for the TUI with args in a va_list.
+**        Function to print the frame information for the TUI with args in a va_list.
 */
 void
 #ifdef __STDC__
@@ -475,7 +474,7 @@ tui_vShowFrameInfo (args)
 **      Function to initialize gdb commands, for tui window stack manipulation.
 */
 void
-_initialize_tuiStack ()
+_initialize_tuiStack(void)
 {
   if (tui_version)
     {

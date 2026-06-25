@@ -1,4 +1,4 @@
-/* 
+/*
  * tkTableCell.c --
  *
  *	This module implements cell sort functions for table
@@ -28,8 +28,8 @@
 #include "tkTable.h"
 
 #ifndef UCHAR
-#define UCHAR(c) ((unsigned char) (c))
-#endif
+# define UCHAR(c) ((unsigned char) (c))
+#endif /* !UCHAR */
 
 /*
  * During execution of the "lsort" command, structures of the following
@@ -70,8 +70,9 @@ static int		DictionaryCompare _ANSI_ARGS_((char *left,
  *----------------------------------------------------------------------
  */
 static int
-TableSortCompareProc(first, second)
-    CONST VOID *first, *second;		/* Elements to be compared. */
+TableSortCompareProc(CONST VOID *first,
+		     CONST VOID *second /* Elements to be compared. */
+)
 {
     char *str1 = *((char **) first);
     char *str2 = *((char **) second);
@@ -136,10 +137,8 @@ TableCellSort(Table *tablePtr, char *str)
  *----------------------------------------------------------------------
  */
 
-static int 
-DictionaryCompare (
-    char *left,
-    char *right          /* The strings to compare */
+static int
+DictionaryCompare(char *left, char *right /* The strings to compare */
 )
 {
     int diff, zeros;
@@ -376,7 +375,7 @@ TableCellSortObj(Tcl_Interp *interp, Tcl_Obj *listObjPtr)
     int length, i;
     Tcl_Obj *sortedObjPtr, **listObjPtrs;
     SortElement *elementArray;
-    SortElement *elementPtr;        
+    SortElement *elementPtr;
 
     if (Tcl_ListObjGetElements(interp, listObjPtr,
 			       &length, &listObjPtrs) != TCL_OK) {

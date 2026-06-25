@@ -14,13 +14,13 @@ csub (x)
 }
 
 int
-langs0__2do ()
+langs0__2do(void)
 {
   return fsub_ () + 2;
 }
 
 int
-main ()
+main(void)
 {
 #ifdef usestubs
   set_debug_traps();

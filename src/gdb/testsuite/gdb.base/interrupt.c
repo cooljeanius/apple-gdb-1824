@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 int
-main ()
+main(void)
 {
   char x;
   int nbytes;
@@ -34,7 +34,7 @@ main ()
 }
 
 int
-func1 ()
+func1(void)
 {
   return 4;
 }

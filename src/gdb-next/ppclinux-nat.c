@@ -45,7 +45,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include <sys/procfs.h>
 
 int
-kernel_u_size ()
+kernel_u_size(void)
 {
   return (sizeof (struct user));
 }
@@ -74,6 +74,7 @@ int ppc_register_u_addr(int blockend, int regnum)
     }
 }
 
+void
 supply_gregset(gregset_t *gregsetp)
 {
     int regi;
@@ -89,6 +90,7 @@ supply_gregset(gregset_t *gregsetp)
     supply_register(XER_REGNUM, (char *) &rsp->xer);
 }
 
+void
 supply_fpregset(fpregset_t *fpregsetp)
 {
     int regi;

@@ -578,8 +578,8 @@ Itcl_ChangeMemberFunc(interp, mfunc, arglist, body)
  * ------------------------------------------------------------------------
  */
 void
-Itcl_DeleteMemberFunc(cdata)
-    char* cdata;  /* pointer to member function definition */
+Itcl_DeleteMemberFunc(char *cdata /* pointer to member function definition */
+)
 {
     ItclMemberFunc* mfunc = (ItclMemberFunc*)cdata;
 
@@ -745,8 +745,8 @@ Itcl_CreateMemberCode(interp, cdefn, arglist, body, mcodePtr)
  * ------------------------------------------------------------------------
  */
 void
-Itcl_DeleteMemberCode(cdata)
-    char* cdata;  /* pointer to member function definition */
+Itcl_DeleteMemberCode(char *cdata /* pointer to member function definition */
+)
 {
     ItclMemberCode* mcode = (ItclMemberCode*)cdata;
 

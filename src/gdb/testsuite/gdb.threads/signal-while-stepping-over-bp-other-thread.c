@@ -78,9 +78,8 @@ child_function_2 (void *arg)
   pthread_exit (NULL);
 }
 
-
 int
-main ()
+main(void)
 {
   int res;
   long i;

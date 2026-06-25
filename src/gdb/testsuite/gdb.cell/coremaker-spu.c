@@ -20,7 +20,7 @@
 #include <spu_mfcio.h>
 
 void
-terminal_func ()
+terminal_func(void)
 {
   spu_write_out_intr_mbox (0);
   spu_read_in_mbox ();

@@ -1,5 +1,5 @@
 int
-dummy_function ()
+dummy_function(void)
 {
   return 600;
 }

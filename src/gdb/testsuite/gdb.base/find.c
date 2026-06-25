@@ -36,13 +36,13 @@ static int search_buf_size;
 static int x;
 
 static void
-stop_here ()
+stop_here(void)
 {
   x = 1; // stop here
 }
 
 static void
-init_bufs ()
+init_bufs(void)
 {
   search_buf_size = BUF_SIZE;
   search_buf = malloc (search_buf_size);
@@ -52,7 +52,7 @@ init_bufs ()
 }
 
 int
-main ()
+main(void)
 {
   init_bufs ();
 

@@ -3464,7 +3464,8 @@ build_warnings="${diag_formatting_opts} -Wreturn-type -Wcomment -Wtrigraphs \
 -Wenum-conversion -Wbuiltin-declaration-mismatch \
 -Walloc-zero -Walloc-size-larger-than=2147483647 \
 -Wmultistatement-macros -Wif-not-aligned -Wattribute-alias \
--Wmissing-attributes -Wstring-compare -Wzero-length-bounds"
+-Wmissing-attributes -Wstring-compare -Wzero-length-bounds \
+-Wtrailing-whitespace"
 link_warnings=""
 
 if test "x${enable_build_with_cxx}" = "xyes"; then
@@ -3481,7 +3482,8 @@ if test "x${enable_build_with_cxx}" = "xyes"; then
 -Wclass-memaccess -Wnon-pod-varargs -Wdeprecated-copy -Wdeprecated-copy-dtor \
 -Wpessimizing-move -Wredundant-move -Wclass-conversion -Wctad-maybe-unsupported \
 -Wrange-loop-construct -Wdeprecated-enum-enum-conversion \
--Wdeprecated-enum-float-conversion -Wmismatched-new-delete -Wvexing-parse"
+-Wdeprecated-enum-float-conversion -Wmismatched-new-delete -Wvexing-parse \
+-Wdangling-reference"
   build_warnings="${build_warnings} ${cxx_warnings} -fpermissive"
 else
   c_warnings="-Wimplicit -Wunsuffixed-float-constants -Wjump-misses-init \
@@ -3489,7 +3491,7 @@ else
 -Woverride-init -Woverride-init-side-effects -Wduplicate-decl-specifier \
 -Wmissing-parameter-type -Wold-style-declaration -Wold-style-definition \
 -Wstrict-prototypes -Wnested-externs -Wabsolute-value -Warray-parameter \
--fno-common -fstrict-flex-arrays=0"
+-Wunterminated-string-initialization -fno-common -fstrict-flex-arrays=0"
   if test -f /usr/X11/include/X11/Xlib.h && test "x${enable_gdbtk}" = "xyes"; then
     AC_MSG_WARN([Disabling C++ compatibility warnings for gdbtk])
   else
@@ -3754,6 +3756,7 @@ fi
 #  * -Wpacked-not-aligned (triggers in headers outside of our control)
 #  * -Wexpansion-to-defined (triggers in headers outside of our control)
 #  * -Wfloat-conversion (triggers in headers outside of our control)
+#  * -Wleading-whitespace=kind (need to decide the kind)
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)

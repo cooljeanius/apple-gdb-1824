@@ -1257,7 +1257,8 @@ void *mempcpy(void *dest, const void *src, size_t n)
 #ifdef _LIBC
 /* If we want to free all resources we have to do some work at
  * program's end: */
-libc_freeres_fn(free_mem)
+int
+libc_freeres_fn(int free_mem)
 {
   void *old;
 

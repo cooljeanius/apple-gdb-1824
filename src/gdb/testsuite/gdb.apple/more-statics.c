@@ -9,7 +9,8 @@ int second_global_int = 6;
 static int second_static_int = 7;
 static int second_static_doesnt_match = 8;
 
-int foo ()
+int
+foo(void)
 {
   /* Use all the variables so -gused won't strip them.  */
   if (strcmp (second_const_char, "something") != 0)

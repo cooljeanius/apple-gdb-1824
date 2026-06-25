@@ -31,7 +31,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 # include "np1-opcode.h"
 #endif /* GOULD_PN */
 
-/* GOULD RISC instructions are never longer than this many bytes.  */
+/* GOULD RISC instructions are never longer than this many bytes: */
 #define MAXLEN 4
 
 /* Number of elements in the opcode table.  */
@@ -195,8 +195,8 @@ print_insn (memaddr, stream)
 /*
  * Find the number of arguments to a function.
  */
-findarg(frame)
-	struct frame_info *frame;
+int
+findarg(struct frame_info *frame)
 {
 	register struct symbol *func;
 	register unsigned pc;
@@ -214,10 +214,10 @@ findarg(frame)
 #endif
 
         return (-1);
-} 
+}
 
 /*
- * In the case of the NPL, the frame's norminal address is Br2 and the 
+ * In the case of the NPL, the frame's norminal address is Br2 and the
  * previous routines frame is up the stack X bytes.  Finding out what
  * 'X' is can be tricky.
  *
@@ -230,7 +230,7 @@ findframe(thisframe)
 {
     register FRAME_ADDR pointer;
     FRAME_ADDR framechain();
-#if 0    
+#if 0
     struct frame_info *frame;
 
     /* Setup toplevel frame structure */

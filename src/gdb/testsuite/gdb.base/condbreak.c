@@ -4,8 +4,7 @@
 
 /* VxWorks does not supply atoi.  */
 static int
-atoi (z)
-     char *z;
+atoi(char *z)
 {
   int i = 0;
 
@@ -17,8 +16,8 @@ atoi (z)
 /* I don't know of any way to pass an array to VxWorks.  This function
    can be called directly from gdb.  */
 
-vxmain (arg)
-char *arg;
+int
+vxmain(char *arg)
 {
   char *argv[2];
 
@@ -45,10 +44,24 @@ int marker2 (int a) { return (1); }
 void marker3 (char *a, char *b) {}
 void marker4 (long d) {}
 #else
-int marker1 () { return (0); }
-int marker2 (a) int a; { return (1); }
-void marker3 (a, b) char *a, *b; {}
-void marker4 (d) long d; {}
+int
+marker1(void)
+{
+  return (0);
+}
+int
+marker2(int a)
+{
+  return (1);
+}
+void
+marker3(char *a, char *b)
+{
+}
+void
+marker4(long d)
+{
+}
 #endif
 
 /*

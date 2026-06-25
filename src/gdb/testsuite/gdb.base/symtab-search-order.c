@@ -18,7 +18,7 @@
 extern int shlib_1_func (void);
 
 int
-main ()
+main(void)
 {
   /* We need a reference to shlib_1_func to make sure its shlib is
      not discarded from the link.  This happens on windows.  */

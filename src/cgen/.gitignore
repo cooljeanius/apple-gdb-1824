@@ -10,9 +10,22 @@ GRTAGS
 GSYMS
 GPATH
 tags
-cscope*.out
+*.out
 *.status
 *.cache
 config*.lineno
 Makefile
 stamp-*
+*.info
+*.tmp
+testsuite/*.cpu
+testsuite/test-utils.sh
+*~
+
+# In case someone runs automake -a locally,
+# and it puts the auxfiles here instead of in
+# the proper auxdir (i.e. the parent directory)
+config.guess
+config.sub
+install-sh
+missing

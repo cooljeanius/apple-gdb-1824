@@ -16,7 +16,7 @@
 extern int foo (void);
 
 int
-main ()
+main(void)
 {
   return foo ();
 }

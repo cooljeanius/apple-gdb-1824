@@ -14,7 +14,7 @@ initialize (void)
 }
 
 int
-main ()
+main(void)
 {
   initialize ();
 }

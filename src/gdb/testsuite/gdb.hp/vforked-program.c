@@ -1,6 +1,7 @@
 #include <stdio.h>
 
-main()
+int
+main(void)
 {
   printf("Hello from vforked_program...\n");
 }

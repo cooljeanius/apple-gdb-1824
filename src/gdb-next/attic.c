@@ -3,8 +3,7 @@
  */
 
 static char
-translate_state (state)
-     int state;
+translate_state(int state)
 {
   switch (state) {
   case TH_STATE_RUNNING:

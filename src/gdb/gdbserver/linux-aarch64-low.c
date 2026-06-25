@@ -731,7 +731,7 @@ aarch64_notify_debug_reg_change (const struct aarch64_debug_reg_state *state,
    current process' arch-specific data area.  */
 
 static struct aarch64_debug_reg_state *
-aarch64_get_debug_reg_state ()
+aarch64_get_debug_reg_state(void)
 {
   struct process_info *proc;
 

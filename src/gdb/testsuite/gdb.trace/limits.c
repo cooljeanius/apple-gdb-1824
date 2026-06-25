@@ -18,18 +18,18 @@ static void baz(int z)
 {
 }
 
-static void begin ()	/* called before anything else */
+static void
+begin(void) /* called before anything else */
 {
 }
 
-static void end ()	/* called after everything else */
+static void
+end(void) /* called after everything else */
 {
 }
 
 int
-main (argc, argv, envp)
-     int argc;
-     char *argv[], **envp;
+main(int argc, char *argv[], char **envp)
 {
   int i;
 

@@ -17,7 +17,8 @@
 
 int variable = 23;
 
-int main ()
+int
+main(void)
 {
   int variable = 97;
   return 0;			/* BREAK */

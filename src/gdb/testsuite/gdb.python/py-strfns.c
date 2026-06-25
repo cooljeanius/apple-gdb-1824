@@ -36,7 +36,7 @@ bfunc (const char *arg)
 }
 
 int
-main ()
+main(void)
 {
   func (str1);
   func (str2);

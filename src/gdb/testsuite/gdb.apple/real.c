@@ -4,9 +4,8 @@ struct real_struct
   int second_elem;
 } global_struct;
 
-
 int
-real_function ()
+real_function(void)
 {
   return 500;
 }

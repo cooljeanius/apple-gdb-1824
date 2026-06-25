@@ -45,7 +45,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <sys/core.h>
 
 void
-fetch_inferior_registers ()
+fetch_inferior_registers(void)
 {
   struct regs inferior_registers;
   struct fp_state inferior_fp_registers;
@@ -69,8 +69,8 @@ fetch_inferior_registers ()
    If REGNO is -1, do this for all registers.
    Otherwise, REGNO specifies which register (so we can save time).  */
 
-store_inferior_registers (regno)
-     int regno;
+int
+store_inferior_registers(int regno)
 {
   struct regs inferior_registers;
   struct fp_state inferior_fp_registers;
@@ -109,11 +109,8 @@ store_inferior_registers (regno)
 /* Machine-dependent code which would otherwise be in core.c */
 /* Work with core files, for GDB. */
 
-
 void
-core_file_command (filename, from_tty)
-     char *filename;
-     int from_tty;
+core_file_command(char *filename, int from_tty)
 {
   int val;
   extern char registers[];
@@ -208,9 +205,8 @@ core_file_command (filename, from_tty)
     printf ("No core file now.\n");
 }
 
-i387_to_double (from, to)
-     char *from;
-     char *to;
+int
+i387_to_double(char *from, char *to)
 {
   long *lp;
   /* push extended mode on 387 stack, then pop in double mode
@@ -238,9 +234,8 @@ i387_to_double (from, to)
   asm ("popl %eax");		/* flush saved copy */
 }
 
-double_to_i387 (from, to)
-     char *from;
-     char *to;
+int
+double_to_i387(char *from, char *to)
 {
   /* push double mode on 387 stack, then pop in extended mode
    * no errors are possible because every 64-bit pattern
@@ -258,22 +253,19 @@ double_to_i387 (from, to)
 /* These functions should NOT be called when we are cross-debugging.  */
 
 void
-fetch_inferior_registers ()
+fetch_inferior_registers(void)
 {
 }
 
 /* ARGSUSED */
-store_inferior_registers (regno)
-     int regno;
+int
+store_inferior_registers(int regno)
 {
 }
 
 /* ARGSUSED */
 void
-fetch_core_registers (core_reg_sect, core_reg_size, which)
-     char *core_reg_sect;
-     unsigned core_reg_size;
-     int which;
+fetch_core_registers(char *core_reg_sect, unsigned core_reg_size, int which)
 {
 }
 

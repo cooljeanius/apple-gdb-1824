@@ -49,7 +49,8 @@ callee1 (int intarg, char *strarg, double fltarg)
   callee2 (intarg, strarg);
 }
 
-main ()
+int
+main(void)
 {
   callee1 (2, "A string argument.", 3.5);
   callee1 (2, "A string argument.", 3.5);

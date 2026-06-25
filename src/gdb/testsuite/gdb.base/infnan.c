@@ -20,7 +20,7 @@ double	b = 0.0/0.0;
 double  c;
 
 int
-main()
+main(void)
 {
   c = a + b;
   return 0;

@@ -6,9 +6,8 @@
    */
 int  global_i = 0;
 
-main (argc, argv)
-  int  argc;
-  char *  argv[];
+int
+main(int argc, char *argv[])
 {
   /* There is a local_j in follow_exec, which exec's us.  We
      should not be able to see that other definition of local_j

@@ -1,4 +1,4 @@
-/* MPW-Unix compatibility library.
+/* mpw.c: MPW-Unix compatibility library.
    Copyright (C) 1993, 1994, 1995, 1996 Free Software Foundation, Inc.
 
 This file is part of the libiberty library.
@@ -124,8 +124,7 @@ mpwify_filename(char *unixname, char *macname)
 /* MPW-flavored basename finder. */
 
 char *
-mpw_basename (name)
-  char *name;
+mpw_basename(char *name)
 {
   char *base = name;
 
@@ -146,8 +145,7 @@ mpw_basename (name)
    basename have failed.  */
 
 char *
-mpw_mixed_basename (name)
-  char *name;
+mpw_mixed_basename(char *name)
 {
   char *base = name;
 
@@ -272,21 +270,21 @@ mpw_fwrite (char *ptr, int size, int nitems, FILE *stream)
 }
 
 int
-link ()
+link(void)
 {
   fprintf (stderr, "link not available!\n");
   mpw_abort ();
 }
 
 int
-fork ()
+fork(void)
 {
   fprintf (stderr, "fork not available!\n");
   mpw_abort ();
 }
 
 int
-vfork ()
+vfork(void)
 {
   fprintf (stderr, "vfork not available!\n");
   mpw_abort ();
@@ -368,14 +366,14 @@ chmod (char *path, int mode)
 
 #ifndef USE_MW_HEADERS
 int
-getuid ()
+getuid(void)
 {
   /* One value is as good as another... */
   return 0;
 }
 
 int
-getgid ()
+getgid(void)
 {
   /* One value is as good as another... */
   return 0;
@@ -387,7 +385,7 @@ getgid ()
    exit cleanly. */
 
 void
-mpw_abort ()
+mpw_abort(void)
 {
   /* Make sure no output still buffered up, then zap into MacsBug. */
   fflush(stdout);
@@ -418,7 +416,7 @@ getrusage (int who, struct rusage *rusage)
 }
 
 int
-sbrk ()
+sbrk(void)
 {
   return 0;
 }
@@ -475,14 +473,15 @@ mkdir (char *path, int mode)
 }
 
 int
-rmdir ()
+rmdir(void)
 {
   errno = ENOSYS;
   return -1;
 }
 #endif /* !USE_MW_HEADERS */
 
-chown ()
+int
+chown(void)
 {
   errno = ENOSYS;
   return -1;
@@ -642,7 +641,8 @@ fstat (int fd, struct stat *buf)
 
 #endif /* n USE_MW_HEADERS */
 
-chdir ()
+int
+chdir(void)
 {
   errno = ENOSYS;
   return (-1);
@@ -660,7 +660,7 @@ getcwd (char *buf, int size)
 /* This should probably be more elaborate for MPW. */
 
 char *
-getpwd ()
+getpwd(void)
 {
   return ":";
 }
@@ -744,8 +744,8 @@ mpw_creat (char *path, /* mode_t */ int mode)
 /* This is a hack to get control in an MPW tool before it crashes the
    machine.  */
 
-mpw_special_init (name)
-     char *name;
+int
+mpw_special_init(char *name)
 {
   if (strstr (name, "DEBUG"))
     DebugStr("\pat beginning of program");
@@ -938,7 +938,8 @@ mpw_end_progress (char *str, char *file, int line)
 
 /* Test program.  */
 
-main ()
+int
+main(void)
 {
   int i, j;
   double x = 1.0, y = 2.4;
