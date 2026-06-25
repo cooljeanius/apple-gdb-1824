@@ -166,7 +166,8 @@ class G_mul_worker(XMethodWorker):
 class G_methods_matcher(XMethodMatcher):
     def __init__(self):
         XMethodMatcher.__init__(self, "G_methods")
-        self.methods = [XMethod("size_diff"), XMethod("size_mul"), XMethod("mul")]
+        self.methods = [XMethod("size_diff"), XMethod(
+            "size_mul"), XMethod("mul")]
 
     def _is_enabled(self, name):
         for method in self.methods:
@@ -217,7 +218,8 @@ global_dm_list = [
         # exactly!
         type_A.const().reference(),
     ),
-    SimpleXMethodMatcher(r"plus_plus_A", r"^dop::A$", r"operator\+\+", plus_plus_A),
+    SimpleXMethodMatcher(r"plus_plus_A", r"^dop::A$",
+                         r"operator\+\+", plus_plus_A),
     SimpleXMethodMatcher(r"A_geta", r"^dop::A$", r"^geta$", A_geta),
     SimpleXMethodMatcher(
         r"A_getarray", r"^dop::A$", r"^getarray$", A_getarray, type_array
@@ -238,5 +240,7 @@ global_dm_list = [
 
 for matcher in global_dm_list:
     gdb.xmethod.register_xmethod_matcher(gdb, matcher)
-gdb.xmethod.register_xmethod_matcher(gdb.current_progspace(), G_methods_matcher())
-gdb.xmethod.register_xmethod_matcher(gdb.current_progspace(), E_method_matcher())
+gdb.xmethod.register_xmethod_matcher(
+    gdb.current_progspace(), G_methods_matcher())
+gdb.xmethod.register_xmethod_matcher(
+    gdb.current_progspace(), E_method_matcher())

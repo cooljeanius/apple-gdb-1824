@@ -61,7 +61,7 @@ def inf_num(i):
 # Print information about each inferior, and the connection it is
 # using.
 def info_inferiors():
-    all_inferiors = sorted(gdb.inferiors(), key=inf_num)
+    sorted(gdb.inferiors(), key=inf_num)
     for i in gdb.inferiors():
         print(
             "Inferior %d, Connection #%d: %s"

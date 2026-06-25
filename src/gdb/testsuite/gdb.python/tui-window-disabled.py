@@ -77,13 +77,13 @@ class EventWindow:
         self._events.insert(0, type)
         if not perform_valid_check or self._win.is_valid():
             if update_title:
-                self._win.title = "This Is The Event Window (" + str(self._count) + ")"
+                self._win.title = "This Is The Event Window (" + str(
+                    self._count) + ")"
             else:
                 self.render()
 
     def render(self):
         self._win.erase()
-        w = self._win.width
         h = self._win.height
         for i in range(min(h, len(self._events))):
             self._win.write(self._events[i] + "\n")

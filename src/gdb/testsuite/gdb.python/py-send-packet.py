@@ -35,7 +35,8 @@ def get_thread_list_str():
     if not isinstance(conn, gdb.RemoteTargetConnection):
         raise gdb.GdbError("connection is the wrong type")
     while True:
-        str = conn.send_packet("qXfer:threads:read::%d,200" % start_pos).decode("ascii")
+        str = conn.send_packet("qXfer:threads:read::%d,200" %
+                               start_pos).decode("ascii")
         start_pos += 200
         c = str[0]
         str = str[1:]
@@ -114,7 +115,8 @@ def check_global_var(expected_val):
     val = int(gdb.parse_and_eval("global_var"))
     val = val & 0xFFFFFFFF
     if val != expected_val:
-        raise gdb.GdbError("global_var is 0x%x, expected 0x%x" % (val, expected_val))
+        raise gdb.GdbError("global_var is 0x%x, expected 0x%x" %
+                           (val, expected_val))
 
 
 # Return a bytes object representing an 'X' packet header with
