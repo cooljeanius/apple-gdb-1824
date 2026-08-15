@@ -18,7 +18,7 @@
     "dompurify": "^3.4.13"
   },
   "devDependencies": {
-    "eslint": "^10.8.0",
+    "eslint": "^10.8.1",
     "finalhandler": "^2.1.1",
     "modernizr": "^3.13.1",
     "serve-static": "^2.2.1",
