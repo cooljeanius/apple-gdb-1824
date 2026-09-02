@@ -45,6 +45,7 @@ opcodes/Makefile and sim/<arch>/Makefile for the supported processors.
 
 CGEN uses Guile so Guile must be installed.
 CGEN has been tested with Guile 1.4.1, 1.6.8, and 1.8.5.
+Upstream CGEN has been tested with Guile 3.0.7.
 Support for older versions of Guile will be removed in time.
 
 Source Layout
@@ -93,10 +94,12 @@ doc/cgenint.texi - top level .texi file for cgen internals
 Code to read .cpu files
 -----------------------
 
-These files provide the basic support for reading in .cpu files. They
-contain no application specific code (and ideally as little C generating
-code as possible too), they are intended to be application independent.  Applications (e.g. the opcode table generator and the simulator support
-generator) are built on top of these files.
+These files provide the basic support for reading in .cpu files.
+They contain no application specific code (and ideally as little
+C generating code as possible too), they are intended to be
+application independent.
+Applications (e.g. the opcode table generator and the simulator
+support generator) are built on top of these files.
 
 attr.scm - attribute support
 enum.scm - enum support
