@@ -20,7 +20,7 @@
 ;   elm-alist
 ;   method-alist
 ;   full-elm-initial-list
-;   full-method-alist ; ??? not currently used
+;   full-method-alist ; ???: not currently used
 ;   class-descriptor)
 ;
 ; PARENT-NAME-LIST is a list of the names of parent classes (the inheritance
@@ -1317,16 +1317,12 @@
 ; provide a simple version.
 ; FIXME: Need deep copier instead.
 
-(if (defined? 'vector-copy)
-    (eval1 '(define -object-vector-copy vector-copy))
-    (eval1 '(define (-object-vector-copy v) (list->vector (vector->list v))))
-)
+(define /object-vector-copy vector-copy)
 
 ; Profiling support
 
 (if (and #f (defined? 'proc-profile))
     (begin
-      (proc-profile elm-get)
       (proc-profile elm-xset!)
       (proc-profile elm-present?)
       (proc-profile -method-lookup)
