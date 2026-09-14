@@ -311,8 +311,7 @@
 	  (logit 3 "   instantiated.\n")
 	  (current-insn-add! sub-insn))
 
-	(begin
-	  logit 3 "    failed ifield assertions.\n")))
+	))
 
   *UNSPECIFIED*
 )

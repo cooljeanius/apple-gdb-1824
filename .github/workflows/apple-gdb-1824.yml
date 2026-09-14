@@ -64,12 +64,13 @@ jobs:
       - run: cd src/gdb/doc && make doxy && sync && make all-doc && sync && make diststuff && sync && make links2roff
       - run: cd src && make info && sync && find . -name '*.info' -print
       - run: cd src && make check-zlib && sync && make check-libiberty
-      - run: cd src && yamllint ./*/*/*/*/META.yml && sync && echo "" && sleep 1
+      - run: cd src && yamllint ./*/*/*/*/META.yml && sync && echo "linted" && sleep 1
       - run: cd src/texinfo/js && (npm install || npm audit || npm ci || npm install-ci-test || npm install-test || stat package.json)
       - run: cd src && make check-texinfo_js && find . -name '*.js' -print
       - run: cd src && sync && find . -name '*.js' -print0 | xargs -0 node -c --trace-warnings 2>&1
       - run: cd src && sync && make -C tcl/unix tcltest && sync
       - run: cd src && for dir in sim itcl; do if test -e ${dir}/Makefile; then (echo "running testsuite for ${dir}" && make check-${dir} V=0 RUNTESTFLAGS="-v" && sleep 1); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "skipping testing ${dir}"; fi; done
+      - run: cd src/cgen && sync && export GUILE_AUTO_COMPILE=0 && (make html-local || make sim-arch)
       - run: cd src/utils && for dir in misc msdos spu sparclite wince; do if test -e ${dir}/Makefile; then (echo "in $(pwd), and running testsuite for ${dir}" && make check-${dir} V=0 RUNTESTFLAGS="-v" && sleep 1); elif test -d ${dir}; then ls ${dir}/Makefile*; else echo "in $(pwd), skipping testing ${dir}"; fi; done
       - run: (time (pwd && sync && ls && sync && stat . && sync)) && sleep 1 && echo "done"
         if: "${{ success() }}"
@@ -86,7 +87,13 @@ jobs:
         if: "${{ failure() }}"
         run: |
           find . -name config.log -print0 | xargs -0 cat | grep -i error | sort | uniq
-          if test -x /usr/bin/texi2dvi; then /usr/bin/texi2dvi --version; fi
+          if test -x /usr/bin/texi2dvi; then \
+            sync && echo "texi2dvi version is:"; \
+            sync && /usr/bin/texi2dvi --version; \
+          else \
+            sync && echo "skipping texi2dvi version check..."; \
+          fi
+          sync && echo "guile is:" && sync && which guile && guile --version
     strategy:
       fail-fast: false
       matrix:
