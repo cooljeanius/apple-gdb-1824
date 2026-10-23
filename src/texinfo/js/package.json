@@ -15,7 +15,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "optionator": "^0.9.4",
-    "dompurify": "^3.4.16"
+    "dompurify": "^3.4.17"
   },
   "devDependencies": {
     "eslint": "^10.12.0",
