@@ -2,7 +2,9 @@ dnl#                                               -*- Autoconf -*-
 dnl# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.59])
-AC_INIT([cgen],[1.1],[dje@sebabeach.org])
+dnl# The "25" is a generic indicator that we are ahead of the original 1.1,
+dnl# but behind the 1.1.50 that upstream uses:
+AC_INIT([cgen],[1.1.25],[dje@sebabeach.org])
 AC_CONFIG_AUX_DIR([..])
 AC_CONFIG_SRCDIR([read.scm])
 AC_CANONICAL_TARGET
@@ -53,5 +55,5 @@ if test "${srcdir}" != "."; then
   fi
 fi
 ],[])dnl
-AC_CONFIG_FILES([Makefile doc/Makefile])dnl
+AC_CONFIG_FILES([Makefile doc/Makefile testsuite/Makefile testsuite/test-utils.sh])dnl
 AC_OUTPUT

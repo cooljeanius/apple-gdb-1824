@@ -74,12 +74,18 @@
 (if (memq 'debug-extensions *features*)
     (begin
       (debug-enable 'backtrace)
-      (debug-enable 'debug)
+      (if (< *guile-major-version* 3)
+        (debug-enable 'debug)
+      )
       (debug-enable 'backwards)
       (debug-set! depth 2000)
-      (debug-set! maxdepth 2000)
+      (if (< *guile-major-version* 3)
+        (debug-set! maxdepth 2000)
+      )
       (debug-set! stack 100000)
-      (debug-set! frames 10)))
+      (if (< *guile-major-version* 3)
+        (debug-set! frames 10)
+      )))
 (read-enable 'positions)
 
 ;;; Call THUNK, with debugging enabled if FLAG is true, or disabled if

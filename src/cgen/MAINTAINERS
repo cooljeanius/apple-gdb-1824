@@ -1,0 +1,24 @@
+		CGEN Maintainers
+
+This file describes different groups of people who are, together, the
+maintainers and developers of the CGEN project.  Don't worry - it sounds
+more complicated than it really is.
+
+If you are considering contributing a patch, you'll want to send them to
+cgen@sourceware.org.  See the mailing list page for more information:
+https://sourceware.org/mailman/listinfo/cgen
+
+	Global Maintainers
+
+Frank Ch. Eigler		fche@redhat.com
+Jose E. Marchesi		jemarch@gnu.org
+
+	Maintainers for particular pieces
+
+GNU simulator:
+See global maintainers in sim/MAINTAINERS
+Mike Frysinger	<vapier@gentoo.org>
+
+	Write After Approval Maintainers
+
+If you have git push access to this repo, you're in this group already :).
