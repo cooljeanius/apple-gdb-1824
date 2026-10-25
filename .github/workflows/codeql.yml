@@ -54,9 +54,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ['actions', 'c-cpp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby']
+        include:
+          - language: actions
+            build-mode: none
+          - language: c-cpp
+            build-mode: manual
+          - language: go
+            build-mode: none
+          - language: java-kotlin
+            build-mode: autobuild
+          - language: javascript-typescript
+            build-mode: autobuild
+          - language: python
+            build-mode: autobuild
+          - language: ruby
+            build-mode: autobuild
         # CodeQL supports the following languages:
-        # 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript',
+        # 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript',
         # 'python', 'ruby', 'swift'
         # Use only 'java-kotlin' to analyze code written in Java, Kotlin or both
         # Use 'javascript-typescript' to analyze code written in JavaScript,
@@ -376,8 +390,7 @@ jobs:
         else \
           ./configure --enable-silent-rules; \
         fi
-        make -ki -C libcheckpoint || \
-          make -ki -C libcheckpoint -f Makefile_orig || \
+        make -ki -C libcheckpoint -f Makefile_orig || \
           make -ki -C macsbug || make -ki -C macsbug/gdb_plugin_support || \
           (if test -x "$(which ant)"; then ant; else echo "no usable ant"; fi)
         cd src
