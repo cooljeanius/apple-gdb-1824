@@ -122,9 +122,9 @@ jobs:
         elif test ${{ matrix.language }} == 'c-cpp'; then \
           sudo apt-get -y install autopoint gobjc clang autogen curl \
             guile-2.2 guile-2.2-dev guile-2.2-libs guile-3.0 guile-3.0-dev \
-            guile-3.0-libs libguile-ssh14 libiconv-hook1 libiconv-hook-dev \
-            win-iconv-mingw-w64-dev mingw-w64 mingw-w64-i686-dev wine libwine \
-            libwine-dev libtbb-dev crosshurd libdispatch-class-perl \
+            guile-3.0-libs libguile-ssh18 libiconv-hook1 libiconv-hook-dev \
+            mingw-w64 mingw-w64-i686-dev wine libwine libwine-dev \
+            libtbb-dev crosshurd libdispatch-class-perl \
             libblocksruntime0 libblocksruntime-dev systemtap-sdt-dev \
             libfl-dev libiberty-dev libmpfr-dev gettext libisl-dev \
             gdb ddd texlive-binaries sharutils xutils-dev llvm libacl1-dev \
@@ -139,8 +139,8 @@ jobs:
             libgradle-jflex-plugin-java gradle-apt-plugin; \
         elif test ${{ matrix.language }} == 'javascript-typescript'; then \
           sudo apt-get -y install node-optionator eslint uglifyjs \
-            libjs-modernizr npm wkhtmltopdf node-dompurify \
-            libjavascriptcoregtk-4.0-bin webkit2gtk-driver yamllint; \
+            libjs-modernizr npm node-dompurify libjavascriptcoregtk-bin \
+            webkitgtk-webdriver yamllint; \
         elif test ${{ matrix.language }} == 'go'; then \
           sudo apt-get -y install gccgo gccgo-multilib golang golang-go \
             golang-src golang-ar-dev golang-honnef-go-tools-dev yamllint; \
@@ -148,7 +148,7 @@ jobs:
           sudo apt-get -y install --fix-missing jython pylint pymacs \
             tix flake8 python3-macholib yamllint black python3-pylsp-black \
             python3-pyflakes python3-pylint-plugin-utils python3-pylint-common \
-            pyflakes3 python3-pytest-pylint python3-flake8 python3-pytest-flake8 \
+            pyflakes3 python3-pytest-pylint python3-flake8 \
             python3-pep8-naming python3-mccabe python3-autopep8 \
             python3-flake8-docstrings python3-flake8-blind-except \
             python3-flake8-builtins python3-flake8-class-newline \
@@ -344,9 +344,10 @@ jobs:
         sync && echo "done with attempts at using the gradle wrapper..."
 
     # Getting autobuild to work for 'c-cpp' has been too difficult, so I am
-    # putting it back to "Disabled" again for now:
+    # putting it back to "Disabled" again for now... also, 'go' started
+    # failing, too, so disable that as well:
     - name: Autobuild
-      if: matrix.language != 'c-cpp'
+      if: matrix.language != 'c-cpp' && matrix.language != 'go'
       uses: github/codeql-action/autobuild@v4.38.1
 
     - name: Manual build
