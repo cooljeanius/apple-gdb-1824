@@ -299,6 +299,7 @@ jobs:
           else \
             sync && echo "no linters found for go ($(which go))." && sleep 1; \
           fi; \
+          mv -v Makefile Makefile_with_infloop; \
         elif test ${{ matrix.language }} == 'python' && test -x "$(which python)"; then \
           sync && which -a pylint && which -a flake8 && which -a black; \
           which -a ruff || which -a pyupgrade || which -a autopep8; \
