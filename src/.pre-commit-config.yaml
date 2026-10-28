@@ -104,6 +104,7 @@ repos:
         language: script
         entry: src/gdb/contrib/check-whitespace-pre-commit.py
         files: '^(gdb(support|server)?)/.*$'
+        exclude: '^src/opcodes/m4/.*\.m4'
         pass_filenames: true
         stages: [pre-commit]
       - id: pre-commit-setup

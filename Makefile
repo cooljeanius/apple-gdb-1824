@@ -1,5 +1,8 @@
 # Top-level makefile for Apple's fork of gdb
 # If this Makefile does not work, try the one in ./src
+# FIXME: there is an infinite loop somewhere in here that broke some CI tasks
+# when GitHub's "ubuntu-latest" label moved from 24.04 to 26.04. Find it and
+# eliminate it.
 
 OLD_GDB_VERSION = 6.3.50-20050815
 export GDB_VERSION = 6.3.50-$(shell date "+%Y%m%d")
@@ -9,7 +12,8 @@ OLD_BINUTILS_VERSION = 2.13-20021117
 export BINUTILS_VERSION = 2.13-$(shell date "+%Y%m%d")
 BINUTILS_RC_VERSION = 46
 
-# Keep line below uncommented for debugging shell commands
+# Keep line below uncommented for debugging shell commands... or maybe I should
+# wrap this in a conditional like some of the others used in this file?
 SHELL = /bin/sh -ex
 
 .PHONY: all clean configure build install installsrc installhdrs headers \

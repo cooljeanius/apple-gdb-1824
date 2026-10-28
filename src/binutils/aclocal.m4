@@ -1415,6 +1415,7 @@ AC_SUBST(am__xargs_n)
 
 m4_include([m4/ax_prog_bison.m4])
 m4_include([m4/ax_prog_flex.m4])
+m4_include([m4/host-cpu-c-abi.m4])
 m4_include([m4/iconv.m4])
 m4_include([m4/intlmacosx.m4])
 m4_include([m4/lcmessage.m4])
