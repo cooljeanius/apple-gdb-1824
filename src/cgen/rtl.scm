@@ -239,12 +239,9 @@
       *UNSPECIFIED*))
 )
 
-(define define-rtx-node
-  ; Written this way so Hobbit can handle it.
-  (defmacro:syntax-transformer (lambda arg-list
-				 (apply def-rtx-node arg-list)
-				 nil))
-)
+(define-macro (define-rtx-node . args)
+  (cons 'def-rtx-node
+	(map (lambda (arg) `',arg) args)))
 
 ; Same as define-rtx-node but don't pre-evaluate the arguments.
 ; Remember that `mode' must be the first argument.
@@ -267,12 +264,9 @@
       *UNSPECIFIED*))
 )
 
-(define define-rtx-syntax-node
-  ; Written this way so Hobbit can handle it.
-  (defmacro:syntax-transformer (lambda arg-list
-				 (apply def-rtx-syntax-node arg-list)
-				 nil))
-)
+(define-macro (define-rtx-syntax-node . args)
+  (cons 'def-rtx-syntax-node
+	(map (lambda (arg) `',arg) args)))
 
 ; Same as define-rtx-node but return an operand (usually an <operand> object).
 ; ??? `mode' must be the first argument?
@@ -295,12 +289,9 @@
       *UNSPECIFIED*))
 )
 
-(define define-rtx-operand-node
-  ; Written this way so Hobbit can handle it.
-  (defmacro:syntax-transformer (lambda arg-list
-				 (apply def-rtx-operand-node arg-list)
-				 nil))
-)
+(define-macro (define-rtx-operand-node . args)
+  (cons 'def-rtx-operand-node
+	(map (lambda (arg) `',arg) args)))
 
 ; Convert one rtx expression into another.
 ; NAME-ARGS is a list of the operation name and arguments.
@@ -324,12 +315,10 @@
       *UNSPECIFIED*))
 )
 
-(define define-rtx-macro-node
-  ; Written this way so Hobbit can handle it.
-  (defmacro:syntax-transformer (lambda arg-list
-				 (apply def-rtx-macro-node arg-list)
-				 nil))
-)
+(define-macro (define-rtx-macro-node . args)
+  (cons 'def-rtx-macro-node
+	(map (lambda (arg) `',arg) args)))
+
 
 ; RTL macro expansion.
 ; RTL macros are different than pmacros.  The difference is that the expansion
